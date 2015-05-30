@@ -1,0 +1,105 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_fdiv_input_queue_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+// coverage_def FPU_FDIV_INPUT_QUEUE_COV (bit [5:0] fpu_fdiv_input_queue_state)
+// {
+
+// state declarations
+
+  state s_FPU_FDIV_INQ_EMPTY0 ( FPU_FDIV_INQ_EMPTY0 );
+  state s_FPU_FDIV_INQ_EMPTY1 ( FPU_FDIV_INQ_EMPTY1 );
+  state s_FPU_FDIV_INQ_EMPTY2 ( FPU_FDIV_INQ_EMPTY2 );
+  state s_FPU_FDIV_INQ_EMPTY3 ( FPU_FDIV_INQ_EMPTY3 );
+  state s_FPU_FDIV_INQ_EMPTY4 ( FPU_FDIV_INQ_EMPTY4 );
+  state s_FPU_FDIV_INQ_EMPTY5 ( FPU_FDIV_INQ_EMPTY5 );
+  state s_FPU_FDIV_INQ_EMPTY6 ( FPU_FDIV_INQ_EMPTY6 );
+  state s_FPU_FDIV_INQ_EMPTY7 ( FPU_FDIV_INQ_EMPTY7 );
+
+  state s_FPU_FDIV_INQ_ONE0 ( FPU_FDIV_INQ_ONE0   ); 
+  state s_FPU_FDIV_INQ_ONE1 ( FPU_FDIV_INQ_ONE1   );
+  state s_FPU_FDIV_INQ_ONE2 ( FPU_FDIV_INQ_ONE2   ); 
+  state s_FPU_FDIV_INQ_ONE3 ( FPU_FDIV_INQ_ONE3   );
+  state s_FPU_FDIV_INQ_ONE4 ( FPU_FDIV_INQ_ONE4   );
+  state s_FPU_FDIV_INQ_ONE5 ( FPU_FDIV_INQ_ONE5   );
+  state s_FPU_FDIV_INQ_ONE6 ( FPU_FDIV_INQ_ONE6   );
+  state s_FPU_FDIV_INQ_ONE7 ( FPU_FDIV_INQ_ONE7   );
+
+  state s_FPU_FDIV_INQ_TWO0 ( FPU_FDIV_INQ_TWO0  );
+  state s_FPU_FDIV_INQ_TWO1 ( FPU_FDIV_INQ_TWO1  );
+  state s_FPU_FDIV_INQ_TWO2 ( FPU_FDIV_INQ_TWO2  );
+  state s_FPU_FDIV_INQ_TWO3 ( FPU_FDIV_INQ_TWO3  );
+  state s_FPU_FDIV_INQ_TWO4 ( FPU_FDIV_INQ_TWO4  );
+  state s_FPU_FDIV_INQ_TWO5 ( FPU_FDIV_INQ_TWO5  );
+  state s_FPU_FDIV_INQ_TWO6 ( FPU_FDIV_INQ_TWO6  );
+  state s_FPU_FDIV_INQ_TWO7 ( FPU_FDIV_INQ_TWO7  );
+
+  state s_FPU_FDIV_INQ_THREE0 ( FPU_FDIV_INQ_THREE0 );
+  state s_FPU_FDIV_INQ_THREE1 ( FPU_FDIV_INQ_THREE1 );
+  state s_FPU_FDIV_INQ_THREE2 ( FPU_FDIV_INQ_THREE2 );
+  state s_FPU_FDIV_INQ_THREE3 ( FPU_FDIV_INQ_THREE3 );
+  state s_FPU_FDIV_INQ_THREE4 ( FPU_FDIV_INQ_THREE4 );
+  state s_FPU_FDIV_INQ_THREE5 ( FPU_FDIV_INQ_THREE5 ); 
+  state s_FPU_FDIV_INQ_THREE6 ( FPU_FDIV_INQ_THREE6 );
+  state s_FPU_FDIV_INQ_THREE7 ( FPU_FDIV_INQ_THREE7 );
+
+  state s_FPU_FDIV_INQ_FOUR0  ( FPU_FDIV_INQ_FOUR0 );
+  state s_FPU_FDIV_INQ_FOUR1  ( FPU_FDIV_INQ_FOUR1 );
+  state s_FPU_FDIV_INQ_FOUR2  ( FPU_FDIV_INQ_FOUR2 );
+  state s_FPU_FDIV_INQ_FOUR3  ( FPU_FDIV_INQ_FOUR3 );
+  state s_FPU_FDIV_INQ_FOUR4  ( FPU_FDIV_INQ_FOUR4 );
+  state s_FPU_FDIV_INQ_FOUR5  ( FPU_FDIV_INQ_FOUR5 );
+  state s_FPU_FDIV_INQ_FOUR6  ( FPU_FDIV_INQ_FOUR6 ); 
+  state s_FPU_FDIV_INQ_FOUR7  ( FPU_FDIV_INQ_FOUR7 ); 
+
+  state s_FPU_FDIV_INQ_FIVE0  ( FPU_FDIV_INQ_FIVE0 );
+  state s_FPU_FDIV_INQ_FIVE1  ( FPU_FDIV_INQ_FIVE1 );
+  state s_FPU_FDIV_INQ_FIVE2  ( FPU_FDIV_INQ_FIVE2 );
+  state s_FPU_FDIV_INQ_FIVE3  ( FPU_FDIV_INQ_FIVE3 );
+  state s_FPU_FDIV_INQ_FIVE4  ( FPU_FDIV_INQ_FIVE4 );
+  state s_FPU_FDIV_INQ_FIVE5  ( FPU_FDIV_INQ_FIVE5 );
+  state s_FPU_FDIV_INQ_FIVE6  ( FPU_FDIV_INQ_FIVE6 );
+  state s_FPU_FDIV_INQ_FIVE7  ( FPU_FDIV_INQ_FIVE7 );
+
+  state s_FPU_FDIV_INQ_SIX0   ( FPU_FDIV_INQ_SIX0 );
+  state s_FPU_FDIV_INQ_SIX1   ( FPU_FDIV_INQ_SIX1 );
+  state s_FPU_FDIV_INQ_SIX2   ( FPU_FDIV_INQ_SIX2 );
+  state s_FPU_FDIV_INQ_SIX3   ( FPU_FDIV_INQ_SIX3 );
+  state s_FPU_FDIV_INQ_SIX4   ( FPU_FDIV_INQ_SIX4 ); 
+  state s_FPU_FDIV_INQ_SIX5   ( FPU_FDIV_INQ_SIX5 );
+  state s_FPU_FDIV_INQ_SIX6   ( FPU_FDIV_INQ_SIX6 );
+  state s_FPU_FDIV_INQ_SIX7   ( FPU_FDIV_INQ_SIX7 );
+
+  state s_FPU_FDIV_INQ_SEVEN0 ( FPU_FDIV_INQ_SEVEN0 );
+  state s_FPU_FDIV_INQ_SEVEN1 ( FPU_FDIV_INQ_SEVEN1 );
+  state s_FPU_FDIV_INQ_SEVEN2 ( FPU_FDIV_INQ_SEVEN2 );  
+  state s_FPU_FDIV_INQ_SEVEN3 ( FPU_FDIV_INQ_SEVEN3 );  
+  state s_FPU_FDIV_INQ_SEVEN4 ( FPU_FDIV_INQ_SEVEN4 ); 
+  state s_FPU_FDIV_INQ_SEVEN5 ( FPU_FDIV_INQ_SEVEN5 ); 
+  state s_FPU_FDIV_INQ_SEVEN6 ( FPU_FDIV_INQ_SEVEN6 );  
+  state s_FPU_FDIV_INQ_SEVEN7 ( FPU_FDIV_INQ_SEVEN7 ); 
+
+// }

@@ -1,0 +1,25 @@
+.##########################################################################
+.#
+.# File:	mmu_cov_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file that uses a map of the sys(tem) being
+.#	simulated and decides on:
+.#		number of cores
+.#		instance path for each core (for mmu)
+.# $Id: mmu_cov_inc.pal,v 1.2 2002/12/14 03:30:22 sj138243 Exp $
+.#
+.##########################################################################
+. $cores	= 1;		# default settings
+. $sys		= "CMP";	# default system being simulated
+.# END_INIT
+. $THREADS_PER_CORE	= 4;	# a frequently used constant
+.
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+// sys = $sys, cores = $cores
+.
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]		= $i;
+.	$MMU_COV_PATHS[$i]	= "cmp_top.iop.sparc${i}";
+. }

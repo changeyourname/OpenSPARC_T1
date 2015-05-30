@@ -1,0 +1,182 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: sparc.flist
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+# --------------------------------------------
+# EXU files
+# --------------------------------------------
+design/sys/iop/sparc/exu/rtl/sparc_exu.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_alu.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_aluadder64.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_aluaddsub.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_alulogic.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_aluor32.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_aluspr.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_aluzcmp64.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_alu_16eql.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_byp.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_byp_eccgen.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_div.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_div_yreg.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_div_32eql.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecc.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecc_dec.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_eclbyplog.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_eclbyplog_rs1.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_eclccr.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_eclcomp7.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_cnt6.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_divcntl.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_eccctl.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_mdqctl.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_wb.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_reg.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_rml.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_rml_cwp.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_rml_inc3.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_rndrob.v
+design/sys/iop/sparc/exu/rtl/sparc_exu_shft.v
+# --------------------------------------------
+# FFU files
+# --------------------------------------------
+design/sys/iop/sparc/ffu/rtl/sparc_ffu.v
+design/sys/iop/sparc/ffu/rtl/sparc_ffu_ctl.v
+design/sys/iop/sparc/ffu/rtl/sparc_ffu_ctl_visctl.v
+design/sys/iop/sparc/ffu/rtl/sparc_ffu_dp.v
+design/sys/iop/sparc/ffu/rtl/sparc_ffu_part_add32.v
+design/sys/iop/sparc/ffu/rtl/sparc_ffu_vis.v
+# --------------------------------------------
+# IFU files
+# --------------------------------------------
+design/sys/iop/sparc/ifu/rtl/sparc_ifu.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_cmp35.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_ctr5.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_dcl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_dec.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_errctl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_errdp.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_fcl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_fdp.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_wseldp.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_mbist.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_sscan.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_ifqctl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_ifqdp.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_imd.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_incr46.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_invctl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_lfsr5.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_lru4.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_milfsm.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_par16.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_par32.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_par34.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_swl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_swpla.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_thrcmpl.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_thrfsm.v
+design/sys/iop/sparc/ifu/rtl/sparc_ifu_rndrob.v
+# --------------------------------------------
+# LSU files
+# --------------------------------------------
+design/sys/iop/sparc/lsu/rtl/lsu.v
+design/sys/iop/sparc/lsu/rtl/lsu_asi_decode.v	
+design/sys/iop/sparc/lsu/rtl/lsu_dcdp.v
+design/sys/iop/sparc/lsu/rtl/lsu_excpctl.v
+design/sys/iop/sparc/lsu/rtl/lsu_dctl.v
+design/sys/iop/sparc/lsu/rtl/lsu_dctldp.v
+design/sys/iop/sparc/lsu/rtl/lsu_tagdp.v
+design/sys/iop/sparc/lsu/rtl/lsu_tlbdp.v
+design/sys/iop/sparc/lsu/rtl/lsu_pcx_qmon.v
+design/sys/iop/sparc/lsu/rtl/lsu_rrobin_picker2.v	
+design/sys/iop/sparc/lsu/rtl/lsu_stb_ctl.v
+design/sys/iop/sparc/lsu/rtl/lsu_stb_ctldp.v
+design/sys/iop/sparc/lsu/rtl/lsu_stb_rwctl.v
+design/sys/iop/sparc/lsu/rtl/lsu_stb_rwdp.v
+design/sys/iop/sparc/lsu/rtl/lsu_qctl1.v
+design/sys/iop/sparc/lsu/rtl/lsu_qctl2.v
+design/sys/iop/sparc/lsu/rtl/lsu_qdp1.v
+design/sys/iop/sparc/lsu/rtl/lsu_qdp2.v
+design/sys/iop/sparc/lsu/rtl/lsu_dcache_lfsr.v
+design/sys/iop/sparc/lsu/rtl/lsu_dc_parity_gen.v
+# --------------------------------------------
+# MUL files
+# --------------------------------------------
+design/sys/iop/sparc/mul/rtl/sparc_mul_top.v
+design/sys/iop/sparc/mul/rtl/sparc_mul_cntl.v
+design/sys/iop/sparc/mul/rtl/sparc_mul_dp.v
+# --------------------------------------------
+# SPU files
+# --------------------------------------------
+design/sys/iop/sparc/spu/rtl/spu.v
+design/sys/iop/sparc/spu/rtl/spu_ctl.v
+design/sys/iop/sparc/spu/rtl/spu_wen.v
+design/sys/iop/sparc/spu/rtl/spu_madp.v
+design/sys/iop/sparc/spu/rtl/spu_mactl.v
+design/sys/iop/sparc/spu/rtl/spu_maaddr.v
+design/sys/iop/sparc/spu/rtl/spu_mald.v
+design/sys/iop/sparc/spu/rtl/spu_mamul.v
+design/sys/iop/sparc/spu/rtl/spu_maaeqb.v
+design/sys/iop/sparc/spu/rtl/spu_mared.v
+design/sys/iop/sparc/spu/rtl/spu_maexp.v
+design/sys/iop/sparc/spu/rtl/spu_mast.v
+design/sys/iop/sparc/spu/rtl/spu_lsurpt1.v
+design/sys/iop/sparc/spu/rtl/spu_lsurpt.v
+# --------------------------------------------
+# TLU files
+# --------------------------------------------
+design/sys/iop/sparc/tlu/rtl/tlu.v
+design/sys/iop/sparc/tlu/rtl/tlu_incr64.v
+design/sys/iop/sparc/tlu/rtl/tlu_mmu_ctl.v
+design/sys/iop/sparc/tlu/rtl/tlu_mmu_dp.v
+design/sys/iop/sparc/tlu/rtl/tlu_pib.v
+design/sys/iop/sparc/tlu/rtl/tlu_addern_32.v
+design/sys/iop/sparc/tlu/rtl/tlu_prencoder16.v
+design/sys/iop/sparc/tlu/rtl/tlu_rrobin_picker.v
+design/sys/iop/sparc/tlu/rtl/tlu_tcl.v
+design/sys/iop/sparc/tlu/rtl/tlu_tdp.v
+design/sys/iop/sparc/tlu/rtl/tlu_hyperv.v
+design/sys/iop/sparc/tlu/rtl/tlu_misctl.v
+design/sys/iop/sparc/tlu/rtl/sparc_tlu_dec64.v
+design/sys/iop/sparc/tlu/rtl/sparc_tlu_intctl.v
+design/sys/iop/sparc/tlu/rtl/sparc_tlu_intdp.v
+design/sys/iop/sparc/tlu/rtl/sparc_tlu_penc64.v
+design/sys/iop/sparc/tlu/rtl/sparc_tlu_zcmp64.v
+# --------------------------------------------
+# Top level Files
+# --------------------------------------------
+design/sys/iop/sparc/rtl/sparc.v
+design/sys/iop/sparc/rtl/bw_clk_cl_sparc_cmp.v
+design/sys/iop/sparc/rtl/cpx_spc_rpt.v
+design/sys/iop/sparc/rtl/cpx_spc_buf.v
+# --------------------------------------------
+# Libaray files
+# --------------------------------------------
+design/sys/iop/common/rtl/swrvr_clib.v
+design/sys/iop/common/rtl/swrvr_dlib.v
+design/sys/iop/common/rtl/cmp_sram_redhdr.v
+design/sys/iop/common/rtl/test_stub_bist.v
+design/sys/iop/common/rtl/test_stub_scan.v
+design/sys/iop/common/rtl/cluster_header.v
+design/sys/iop/common/rtl/synchronizer_asr.v
+design/sys/iop/pr_macro/rtl/mul64.v
+
+lib/u1/u1.behV
+lib/m1/m1.behV

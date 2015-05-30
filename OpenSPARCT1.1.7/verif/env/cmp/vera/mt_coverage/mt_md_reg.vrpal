@@ -1,0 +1,124 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_md_reg.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lyang -- Fri Feb 28 13:25:11 PST 2003
+// mul and div and reg write port W1 and w2
+
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+
+
+
+class MD_RegWrite {
+  local bit [3:0] mul_div_sig;
+  local bit [4:0] w1_sig;
+  local bit [5:0] w2_sig;
+
+  /*
+    these are changed to samples.....
+  local MUL_DIV mul_div_cov;
+  local W1_ARB w1_cov;
+  local W2_ARB w2_cov;
+  */
+  local mt_cov_port my_pt;
+
+  bit [3:0] mul_div_sample;
+  bit [4:0] w1_arb_state_id;
+  bit [5:0] w2_arb_state_id;
+
+  event smpl_event;
+
+  task new (mt_cov_port pt) {
+    my_pt = pt;
+    mul_div_sig = 0;
+    w1_sig = 0;
+    w2_sig = 0;
+    /*
+    mul_div_cov = newcov(mul_div_sig, @(posedge my_pt.\$cmp_clk));
+    w1_cov  = newcov(w1_sig, @(posedge my_pt.\$cmp_clk));
+    w2_cov  = newcov(w2_sig, @(posedge my_pt.\$cmp_clk));
+    */
+    CoverOn();
+  }
+
+  local task Going();
+  local task CoverOn();
+
+}
+
+task MD_RegWrite::Going()
+{
+  // thread id
+  mul_div_sig[1:0]
+    = my_pt.\$thr_d == 4'b0001 ? 0
+    : my_pt.\$thr_d == 4'b0010 ? 1
+    : my_pt.\$thr_d == 4'b0100 ? 2
+    : 3;
+  
+  mul_div_sig[3] = my_pt.\$new_mul_d;
+  mul_div_sig[2] = my_pt.\$new_div_d;
+
+  // id
+  w1_sig[1:0] = my_pt.\$ecl_irf_tid_m;
+
+  w1_sig[4] = my_pt.\$ecl_byp_sel_load_m;
+  w1_sig[3] = my_pt.\$ecl_byp_sel_pipe_m;
+  w1_sig[2] = my_pt.\$ecl_byp_sel_restore_m;
+  
+  
+
+  // id
+  w2_sig[1:0] = my_pt.\$ecl_irf_tid_g;
+  // load
+  w2_sig[5]   = my_pt.\$ecl_byp_sel_load_g;
+  // div
+  w2_sig[4]   = my_pt.\$ecl_byp_sel_restore_g;
+  // mul
+  w2_sig[3]   = ~my_pt.\$ecl_sel_mul_g;
+  // 
+  w2_sig[2]   = ~my_pt.\$ecl_sel_div_g;
+
+}
+
+
+task MD_RegWrite::CoverOn ()
+{
+  integer done = 0;
+
+  fork {
+    while (!done) {
+      @ (posedge my_pt.\$cmp_clk);
+      Going();
+      mul_div_sample =  mul_div_sig;
+      w1_arb_state_id = w1_sig;
+      w2_arb_state_id = w2_sig;
+  
+      trigger(ONE_SHOT, smpl_event);
+ 
+    }
+  } {
+    @ (posedge my_pt.\$cmp_diag_done);
+    done = 1;
+    {
+
+    }
+  } join none
+}

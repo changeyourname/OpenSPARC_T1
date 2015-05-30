@@ -1,0 +1,175 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: bwbfm.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "cpxpacket.vrh"
+#include "pcxpacket.vrh"
+
+/////////////////////////////////////////////////////////////////
+// class declaration
+/////////////////////////////////////////////////////////////////
+
+class BW_BFM {
+    
+    string name;                        // the name of the class
+    string cmdfile;                     // command file 
+    pcx_port pcx_bind;                  // a pcx port to interact with.
+    cpx_port cpx_bind;                  // a cpx_port to interact with
+    bit [PCX_CP_HI-PCX_CP_LO:0] cpu_id; // cpu_id
+    PcxPacket pcx_packet;               // a pcx packet to be sent
+    PcxPacket pcx_packet2;              // the second  pcx packet to be sent for CAS
+    integer shoot;                      // issue a transaction
+    integer type;                       // the transaction type - LD == 0, CAS= 1, INT=2
+    
+    
+    task new(pcx_port pcx_bind, cpx_port cpx_bind, bit [PCX_CP_HI-PCX_CP_LO:0] cpu_id,
+             string cmdfile, string name = "BW_BFM");
+    task drv_req();
+}
+
+/////////////////////////////////////////////////////////////////
+// constructor
+/////////////////////////////////////////////////////////////////
+
+task BW_BFM::new(pcx_port pcx_bind, cpx_port cpx_bind, bit [PCX_CP_HI-PCX_CP_LO:0] cpu_id,
+                 string cmdfile, string name = "BW_BFM") {
+    integer i = 0;
+    
+    this.shoot = 0;
+    this.pcx_bind = pcx_bind;
+    this.cpx_bind = cpx_bind;
+    this.cpu_id = cpu_id;
+    this.cmdfile = cmdfile;
+    this.name = name; 
+    this.pcx_packet = new();
+    this.pcx_packet2 = new();
+    
+
+    fork
+    {
+        drv_req ();
+    }
+    join none
+}
+
+/////////////////////////////////////////////////////////////////
+// drive out a pcx request
+/////////////////////////////////////////////////////////////////
+
+task BW_BFM::drv_req() {
+    
+    PcxPacket pcx;
+    bit [4:0] req;
+
+    
+    while(1) {
+        if(!shoot) {
+            pcx_bind.$spc_pcx_req_pq = 5'h0;
+            pcx_bind.$spc_pcx_atom_pq = 1'b0;
+            pcx_bind.$spc_pcx_data_pa = 64'h0;
+        }
+        else {
+            // shoot LOAD
+            if(type == 0) {
+                printf("%d : sniper bfm issuing a ld\n", get_time(LO));
+                
+                case(pcx_packet.addr[7:6]) {
+                    2'b00: req = 5'h01;
+                    2'b01: req = 5'h02;
+                    2'b10: req = 5'h04;
+                    2'b11: req = 5'h08;
+                }
+                
+                pcx_bind.$spc_pcx_req_pq = req;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_req_pq = 5'h0;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                pcx_bind.$spc_pcx_data_pa = pcx_packet.get_pkt();
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_data_pa = PCX_WIDTH'h0;
+                shoot = 0;
+            }
+            // shoot CAS
+            else if(type == 1) {
+                printf("%d : sniper bfm issuing a cas\n", get_time(LO));
+                
+                case(pcx_packet.addr[7:6]) {
+                    2'b00: req = 5'h01;
+                    2'b01: req = 5'h02;
+                    2'b10: req = 5'h04;
+                    2'b11: req = 5'h08;
+                }
+                
+                pcx_bind.$spc_pcx_req_pq = req;
+                pcx_bind.$spc_pcx_atom_pq = 1'b1;
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_req_pq = 5'h0;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                pcx_bind.$spc_pcx_data_pa = pcx_packet.get_pkt();
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_req_pq = 5'h0;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                pcx_bind.$spc_pcx_data_pa = pcx_packet2.get_pkt();
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_data_pa = PCX_WIDTH'h0;
+                shoot = 0;
+            }
+            // shoot INT
+            else if(type == 2) {
+                printf("%d : sniper bfm issuing an int\n", get_time(LO));
+                
+                case(pcx_packet.addr[7:6]) {
+                    2'b00: req = 5'h01;
+                    2'b01: req = 5'h02;
+                    2'b10: req = 5'h04;
+                    2'b11: req = 5'h08;
+                }
+                
+                pcx_bind.$spc_pcx_req_pq = req;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_req_pq = 5'h0;
+                pcx_bind.$spc_pcx_atom_pq = 1'b0;
+                pcx_bind.$spc_pcx_data_pa = pcx_packet.get_pkt();
+                @(posedge cmp_top.cmp_gclk);
+                
+                pcx_bind.$spc_pcx_data_pa = PCX_WIDTH'h0;
+                shoot = 0;
+            }
+            else {
+                printf ("%d : ERROR sniper bfm: something is wrong\n", get_time(LO));
+            }
+        } // shoot
+
+        @(posedge cmp_top.cmp_gclk);
+    } // while(1)
+}
+    

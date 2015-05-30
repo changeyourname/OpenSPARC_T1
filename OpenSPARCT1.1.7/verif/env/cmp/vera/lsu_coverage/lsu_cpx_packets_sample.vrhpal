@@ -1,0 +1,152 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_cpx_packets_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// CPX packet (excluding Store, Stream Store, and Evict) received by the Core (LSU)
+
+// lsu_cpx_packets_state = {cpx_spc_data_rdy_cx2, cpx_spc_data_cx2[144:96]};
+
+// Load                                rdy   vld   reqtype   miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Load_regular         ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_invway0         ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_invway1         ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_invway2         ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_invway3         ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_ce              ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx1, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_ue              ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'b1x, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'b00, 32'bx} );
+
+// Prefetch                            rdy   vld   reqtype   miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Prefetch_regular     ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b01, 32'bx} );
+wildcard bad_state Prefetch_invway      ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b1xx, 1'bx, 2'b01, 32'bx} );
+wildcard state Prefetch_ce          ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx1, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b01, 32'bx} );
+wildcard state Prefetch_ue          ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'b1x, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b01, 32'bx} );
+
+// Atomic Load                         rdy   vld   reqtype   miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state AtomicLoad_regular   ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b10, 32'bx} );
+wildcard bad_state AtomicLoad_invway    ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b1xx, 1'bx, 2'b10, 32'bx} );
+wildcard state AtomicLoad_ce        ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx1, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b10, 32'bx} );
+wildcard state AtomicLoad_ue        ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'b1x, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'b10, 32'bx} );
+
+// Ifill                               rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Ifill_f4b            ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b1, 2'b00, 32'bx} );
+wildcard bad_state Ifill_f4b_invway     ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b1xx, 1'b1, 2'b00, 32'bx} );
+wildcard state Ifill1_regular       ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} );
+wildcard state Ifill2_regular       ( {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_invway0_noinv  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway1_noinv  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway2_noinv  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway3_noinv  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_noinv_invway0  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_noinv_invway1  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_noinv_invway2  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_noinv_invway3  ( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_invway0_invway0( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway0_invway1( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway0_invway2( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway0_invway3( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_invway1_invway0( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway1_invway1( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway1_invway2( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway1_invway3( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_invway2_invway0( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway2_invway1( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway2_invway2( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway2_invway3( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b10, 32'bx} );
+//                                     rdy   vld   reqtype    miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard trans Ifill_invway3_invway0( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b100, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway3_invway1( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b101, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway3_invway2( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b110, 1'b0, 2'b10, 32'bx} );
+wildcard trans Ifill_invway3_invway3( {1'b1, 1'b1, IFILL_RET, 1'bx, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b00, 32'bx} ->
+                                      {1'b1, 1'b1, IFILL_RET, 1'b0, 2'bxx, 1'bx, 2'bx, 3'b111, 1'b0, 2'b10, 32'bx} );
+
+// Strload                             rdy   vld   reqtype      miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Strload_regular      ( {1'b1, 1'b1, STRLOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'bx0, 32'bx} );
+wildcard bad_state Strload_invway       ( {1'b1, 1'b1, STRLOAD_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'b1xx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Strload_ce           ( {1'b1, 1'b1, STRLOAD_RET, 1'bx, 2'bx1, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Strload_ue           ( {1'b1, 1'b1, STRLOAD_RET, 1'bx, 2'b1x, 1'b1, 2'bx, 3'b0xx, 1'bx, 2'bx0, 32'bx} );
+
+// Int                                 rdy   vld   reqtype  miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Int_regular          ( {1'b1, 1'b1, INT_RET, 1'b0, 2'b00, 1'b0, 2'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_broadcast        ( {1'b1, 1'b1, INT_RET, 1'b0, 2'b00, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+// FP                                  rdy   vld   reqtype  miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state FP_regular           ( {1'b1, 1'b1, FP_RET,  1'bx, 2'bxx, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+
+// Forward Request (from IOB)          rdy   vld   reqtype     miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state FwdRq_read_L2        ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b0, 2'bxx, 24'bx,8'bxxxxxxxx} );
+wildcard state FwdRq_write_L2       ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b0, 2'bxx, 24'bx,8'bxxxxxxxx} );
+wildcard state FwdRq_read_L1I       ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b100000xx} );
+wildcard state FwdRq_write_L1I      ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b100000xx} );
+wildcard state FwdRq_read_L1D       ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b010000xx} );
+wildcard state FwdRq_write_L1D      ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b010000xx} );
+wildcard state FwdRq_read_bist      ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b001000xx} );
+wildcard state FwdRq_write_bist     ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b001000xx} );
+wildcard state FwdRq_read_margin    ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b000100xx} );
+wildcard state FwdRq_write_margin   ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b000100xx} );
+wildcard state FwdRq_read_deftr0    ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001000} );
+wildcard state FwdRq_read_deftr1    ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001001} );
+wildcard state FwdRq_read_deftr2    ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001010} );
+wildcard state FwdRq_read_deftr3    ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001011} );
+wildcard state FwdRq_write_deftr0   ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001000} );
+wildcard state FwdRq_write_deftr1   ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001001} );
+wildcard state FwdRq_write_deftr2   ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001010} );
+wildcard state FwdRq_write_deftr3   ( {1'b1, 1'b1, FWD_RQ_RET, 1'bx, 2'bxx, 1'b0, 2'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b00001011} );
+
+// Forward Reply (from L2)             rdy   vld   reqtype      miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state FwdRpy_read          ( {1'b1, 1'b1, FWD_RPY_RET, 1'bx, 2'bxx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state FwdRpy_write         ( {1'b1, 1'b1, FWD_RPY_RET, 1'bx, 2'b00, 1'b0, 2'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+// Error                               rdy   vld   reqtype  miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Error_ce             ( {1'b1, 1'b1, ERR_RET, 1'b0, 2'b01, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+wildcard state Error_ue             ( {1'b1, 1'b1, ERR_RET, 1'b0, 2'b10, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+wildcard state Error_both           ( {1'b1, 1'b1, ERR_RET, 1'b0, 2'b11, 1'bx, 2'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+
+// Dcache_inv                          rdy   vld   reqtype  miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Dcache_inv           ( {1'b1, 1'b1, ST_ACK,  1'bx, 2'b00, 1'b0, 2'bx, 3'bxxx, 1'bx, 2'b00, 5'b00001,27'bx} );
+
+// Icache_inv                          rdy   vld   reqtype  miss  err    nc    thr   invway  f4b   at pf  data[127:96]
+wildcard state Icache_inv           ( {1'b1, 1'b1, ST_ACK,  1'bx, 2'b00, 1'b0, 2'bx, 3'bxxx, 1'bx, 2'b00, 5'b00010,27'bx} );

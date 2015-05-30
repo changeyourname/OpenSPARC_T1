@@ -1,0 +1,52 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_vis_add_sub_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+
+// coverage_def VIS_ADD_SUB_COV (bit[`VIS_ADD_SUB_WIDTH-1:0] vis_add_sub_state) {
+  //state declarations
+
+
+ state s_ADD_EVEN_ODD_EVEN_SGL		(ADD_EVEN_ODD_EVEN_SGL);    
+ state s_ADD_EVEN_ODD_ODD_SGL    	(ADD_EVEN_ODD_ODD_SGL);    
+ state s_ADD_EVEN_EVEN_EVEN_SGL  	(ADD_EVEN_EVEN_EVEN_SGL);  
+ state s_ADD_EVEN_EVEN_ODD_SGL   	(ADD_EVEN_EVEN_ODD_SGL);   
+ state s_ADD_ODD_EVEN_EVEN_SGL   	(ADD_ODD_EVEN_EVEN_SGL);   
+ state s_ADD_ODD_EVEN_ODD_SGL    	(ADD_ODD_EVEN_ODD_SGL);    
+ state s_ADD_ODD_ODD_EVEN_SGL    	(ADD_ODD_ODD_EVEN_SGL);    
+ state s_ADD_ODD_ODD_ODD_SGL     	(ADD_ODD_ODD_ODD_SGL);     
+ state s_SUB_EVEN_ODD_EVEN_SGL   	(SUB_EVEN_ODD_EVEN_SGL);   
+ state s_SUB_EVEN_ODD_ODD_SGL    	(SUB_EVEN_ODD_ODD_SGL);    
+ state s_SUB_EVEN_EVEN_EVEN_SGL  	(SUB_EVEN_EVEN_EVEN_SGL);  
+ state s_SUB_EVEN_EVEN_ODD_SGL   	(SUB_EVEN_EVEN_ODD_SGL);   
+ state s_SUB_ODD_EVEN_EVEN_SGL   	(SUB_ODD_EVEN_EVEN_SGL);   
+ state s_SUB_ODD_EVEN_ODD_SGL    	(SUB_ODD_EVEN_ODD_SGL);    
+ state s_SUB_ODD_ODD_EVEN_SGL    	(SUB_ODD_ODD_EVEN_SGL);    
+ state s_SUB_ODD_ODD_ODD_SGL     	(SUB_ODD_ODD_ODD_SGL);     
+
+ wildcard  bad_state s_ILLEGAL_ADD_RS_SGL      	(ILLEGAL_ADD_RS_SGL);      
+ wildcard  bad_state s_ILLEGAL_ADD_RD_SGL      	(ILLEGAL_ADD_RD_SGL);      
+ wildcard  bad_state s_ILLEGAL_SUB_RS_SGL      	(ILLEGAL_SUB_RS_SGL);      
+ wildcard  bad_state s_ILLEGAL_SUB_RD_SGL      	(ILLEGAL_SUB_RD_SGL);      
+
+// }
+

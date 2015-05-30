@@ -1,0 +1,68 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_specinst_async_trpevt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// Coverage for all the special ifu to tlu instructions: done/retry, hwint, swint
+// rstint, sir and asynchronous trap events spill, fpu, lsu-defrd, pic-ovfl and
+// and TLZ happening at same time
+//***************************************************************************
+
+
+// coverage_def TLU_SPECINST_ASYNC_TRPEVT (bit [9:0] tlu_specinst_async_trpevt)
+// {
+
+  /////////
+  // States
+  wildcard state s_DONE_INST_SPILL_TRAP		(DONE_INST_SPILL_TRAP	);
+  wildcard state s_DONE_INST_FPU_TRAP		(DONE_INST_FPU_TRAP	);
+  wildcard state s_DONE_INST_PIC_OVFL		(DONE_INST_PIC_OVFL	);
+  wildcard state s_RETRY_INST_SPILL_TRAP	(RETRY_INST_SPILL_TRAP	);
+  wildcard state s_RETRY_INST_FPU_TRAP		(RETRY_INST_FPU_TRAP	);
+  wildcard state s_RETRY_INST_PIC_OVFL		(RETRY_INST_PIC_OVFL	);
+  wildcard state s_HWINT_INST_SPILL_TRAP	(HWINT_INST_SPILL_TRAP	);
+  wildcard state s_HWINT_INST_FPU_TRAP		(HWINT_INST_FPU_TRAP	);
+  wildcard state s_HWINT_INST_PIC_OVFL		(HWINT_INST_PIC_OVFL	);
+  wildcard state s_HWINT_INST_TLZ_TRAP		(HWINT_INST_TLZ_TRAP	);
+  wildcard state s_SWINT_INST_SPILL_TRAP	(SWINT_INST_SPILL_TRAP	);
+  wildcard state s_SWINT_INST_FPU_TRAP		(SWINT_INST_FPU_TRAP	);
+  wildcard state s_SWINT_INST_PIC_OVFL		(SWINT_INST_PIC_OVFL	);
+  wildcard state s_SWINT_INST_TLZ_TRAP		(SWINT_INST_TLZ_TRAP	);
+  wildcard state s_RSTINT_INST_SPILL_TRAP	(RSTINT_INST_SPILL_TRAP	);
+  wildcard state s_RSTINT_INST_FPU_TRAP		(RSTINT_INST_FPU_TRAP	);
+  wildcard state s_RSTINT_INST_PIC_OVFL		(RSTINT_INST_PIC_OVFL	);
+  wildcard state s_RSTINT_INST_TLZ_TRAP		(RSTINT_INST_TLZ_TRAP	);
+  wildcard state s_SIRINST_INST_SPILL_TRAP	(SIRINST_INST_SPILL_TRAP);
+  wildcard state s_SIRINST_INST_FPU_TRAP	(SIRINST_INST_FPU_TRAP	);
+  wildcard state s_SIRINST_INST_PIC_OVFL	(SIRINST_INST_PIC_OVFL	);
+  wildcard state s_SIRINST_INST_TLZ_TRAP	(SIRINST_INST_TLZ_TRAP	);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_DONE_INST_TLZ_TRAP		(DONE_INST_TLZ_TRAP	);
+  wildcard bad_state s_RETRY_INST_TLZ_TRAP		(RETRY_INST_TLZ_TRAP	);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

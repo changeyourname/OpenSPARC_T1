@@ -1,0 +1,38 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_vld_rst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Checks for store buffer entry vld being set and then flushed right away
+// VLD is stb_state_vld_din which is a stage w signal
+// RST is stb_state_rst which is a stage w2 signal
+//***********************************************************************
+
+  // state declarations
+
+  state s_STB_STATE_INVLD_NOTRST	(2'b00);
+  state s_STB_STATE_INVLD_RST		(2'b01);
+  state s_STB_STATE_VLD_NOTRST		(2'b10);
+  bad_state s_STB_STATE_VLD_RST		(2'b11);
+
+  // transitions 
+
+  trans t_STB_STATE_INVLD_NOTRST_TO_STB_STATE_VLD_NOTRST_STB_STATE_INVLD_RST_TO_STB_STATE_INVLD_NORST (2'b00 -> 2'b10 -> 2'b01 -> 2'b00);
+
+  // bad transitions

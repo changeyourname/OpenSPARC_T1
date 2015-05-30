@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_prefcntr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// prefetch counter
+//***********************************************************************
+
+  wildcard state s_PREFCNTR_ST00	( 25'b1000_1000_xxxx_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST01	( 25'b0100_0100_xxxx_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST02	( 25'b0010_0010_xxxx_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST03	( 25'b0001_0001_xxxx_xxxx_xxxx_xxxx_x );
+
+  wildcard state s_PREFCNTR_ST04	( 25'bxxxx_xxxx_0000_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST05	( 25'bxxxx_xxxx_0001_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST06	( 25'bxxxx_xxxx_0010_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST07	( 25'bxxxx_xxxx_0011_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST08	( 25'bxxxx_xxxx_0100_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST09	( 25'bxxxx_xxxx_0101_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST10	( 25'bxxxx_xxxx_0110_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST11	( 25'bxxxx_xxxx_0111_xxxx_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST12	( 25'bxxxx_xxxx_1000_xxxx_xxxx_xxxx_0 );
+  wildcard bad_state s_PREFCNTR_ST13	( 25'bxxxx_xxxx_1111_xxxx_xxxx_xxxx_x );
+
+  wildcard state s_PREFCNTR_ST14	( 25'bxxxx_xxxx_xxxx_0000_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST15	( 25'bxxxx_xxxx_xxxx_0001_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST16	( 25'bxxxx_xxxx_xxxx_0010_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST17	( 25'bxxxx_xxxx_xxxx_0011_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST18	( 25'bxxxx_xxxx_xxxx_0100_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST19	( 25'bxxxx_xxxx_xxxx_0101_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST20	( 25'bxxxx_xxxx_xxxx_0110_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST21	( 25'bxxxx_xxxx_xxxx_0111_xxxx_xxxx_x );
+  wildcard state s_PREFCNTR_ST22	( 25'bxxxx_xxxx_xxxx_1000_xxxx_xxxx_0 );
+  wildcard bad_state s_PREFCNTR_ST23	( 25'bxxxx_xxxx_xxxx_1111_xxxx_xxxx_x );
+
+  wildcard state s_PREFCNTR_ST24	( 25'bxxxx_xxxx_xxxx_xxxx_0000_xxxx_x );
+  wildcard state s_PREFCNTR_ST25	( 25'bxxxx_xxxx_xxxx_xxxx_0001_xxxx_x );
+  wildcard state s_PREFCNTR_ST26	( 25'bxxxx_xxxx_xxxx_xxxx_0010_xxxx_x );
+  wildcard state s_PREFCNTR_ST27	( 25'bxxxx_xxxx_xxxx_xxxx_0011_xxxx_x );
+  wildcard state s_PREFCNTR_ST28	( 25'bxxxx_xxxx_xxxx_xxxx_0100_xxxx_x );
+  wildcard state s_PREFCNTR_ST29	( 25'bxxxx_xxxx_xxxx_xxxx_0101_xxxx_x );
+  wildcard state s_PREFCNTR_ST30	( 25'bxxxx_xxxx_xxxx_xxxx_0110_xxxx_x );
+  wildcard state s_PREFCNTR_ST31	( 25'bxxxx_xxxx_xxxx_xxxx_0111_xxxx_x );
+  wildcard state s_PREFCNTR_ST32	( 25'bxxxx_xxxx_xxxx_xxxx_1000_xxxx_0 );
+  wildcard bad_state s_PREFCNTR_ST33	( 25'bxxxx_xxxx_xxxx_xxxx_1111_xxxx_x );
+
+  wildcard state s_PREFCNTR_ST34	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0000_x );
+  wildcard state s_PREFCNTR_ST35	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0001_x );
+  wildcard state s_PREFCNTR_ST36	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0010_x );
+  wildcard state s_PREFCNTR_ST37	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0011_x );
+  wildcard state s_PREFCNTR_ST38	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0100_x );
+  wildcard state s_PREFCNTR_ST39	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0101_x );
+  wildcard state s_PREFCNTR_ST40	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0110_x );
+  wildcard state s_PREFCNTR_ST41	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_0111_x );
+  wildcard state s_PREFCNTR_ST42	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_1000_0 );
+  wildcard bad_state s_PREFCNTR_ST43	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_1111_x );
+
+  wildcard state s_PREFCNTR_ST44	( 25'bxxxx_xxxx_1000_xxxx_xxxx_xxxx_1 );
+  wildcard state s_PREFCNTR_ST45	( 25'bxxxx_xxxx_xxxx_1000_xxxx_xxxx_1 );
+  wildcard state s_PREFCNTR_ST46	( 25'bxxxx_xxxx_xxxx_xxxx_1000_xxxx_1 );
+  wildcard state s_PREFCNTR_ST47	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_1000_1 );
+
+  wildcard bad_state s_PREFCNTR_ST48	( 25'bxxxx_xxxx_1001_xxxx_xxxx_xxxx_x );
+  wildcard bad_state s_PREFCNTR_ST49	( 25'bxxxx_xxxx_xxxx_1001_xxxx_xxxx_x );
+  wildcard bad_state s_PREFCNTR_ST50	( 25'bxxxx_xxxx_xxxx_xxxx_1001_xxxx_x );
+  wildcard bad_state s_PREFCNTR_ST51	( 25'bxxxx_xxxx_xxxx_xxxx_xxxx_1001_x );

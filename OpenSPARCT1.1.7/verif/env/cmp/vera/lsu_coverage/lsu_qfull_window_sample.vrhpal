@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_qfull_window_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+// capture/counter
+
+// coverage_def LSU_QFULL_WINDOW_COV (bit [10:0] qfull_window)
+// {
+  // state declarations
+
+  state s_q_full_window0	(10'b1000000000);
+  state s_q_full_window1	(10'b1000000001);
+  state s_q_full_window2	(10'b1000000010);
+  state s_q_full_window3	(10'b1000000011);
+  state s_q_full_window4	(10'b1000000100);
+
+  wildcard state s_q_full_windowd1	(10'b1xxxxxx1xx);
+  wildcard state s_q_full_windowd2	(10'b1xxxxx1xxx);
+  wildcard state s_q_full_windowd3	(10'b1xxxx1xxxx);
+  wildcard state s_q_full_windowd4	(10'b1xxx1xxxxx);
+  wildcard state s_q_full_windowd5	(10'b1xx1xxxxxx);
+  wildcard state s_q_full_windowd6	(10'b1x1xxxxxxx);
+  wildcard state s_q_full_windowd7	(10'b11xxxxxxxx);
+
+// }
+
+

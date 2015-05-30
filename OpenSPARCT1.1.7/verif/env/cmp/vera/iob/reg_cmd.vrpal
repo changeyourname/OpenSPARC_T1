@@ -1,0 +1,256 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: reg_cmd.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Description:	Class and Method definitions for register read
+//                      command.  
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+//#include "jbi_rtl.h"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class REG_CMD
+{
+ string                        info_msg ;
+ bit [39:0]                    address;
+ bit [PCX_CP_HI-PCX_CP_LO:0]   coreid;
+ bit [PCX_TH_HI-PCX_TH_LO:0]   threadid;
+ bit [63:0]                    data;
+ bit [63:0]                    dataqw;
+ bit                           cor_err;
+ bit                           uncor_err;
+ bit                           valid;
+ bit                           rd;
+ bit                           block;
+
+
+  task new((bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+           (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+           (bit [39:0]                  address = 'h0),
+           (bit [63:0]                  data = 'h0));
+
+  task generate_address((bit [39:0] address = 'h0),
+                        (bit [63:0] data = 'h0));
+
+  task generate_iobint_address((bit [5:0]  count = 'h0),
+                               (bit [31:0] base_address = 'h0),
+                               (bit [63:0] data = 'h0));
+
+  task generate_iobman_address((bit [5:0]  count = 'h0),
+                               (bit [31:0] base_address = 'h0),
+                               (bit [63:0] data = 'h0));
+
+  task generate_randgen_address((bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+                                (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+                                (bit [63:0]                  data = 'h0));
+
+//  task generate_jbus_address((bit [23:0] base_address = 'h0),
+//                             (bit [63:0] data = 'h0));
+
+  task print();
+}
+
+MakeVeraList(REG_CMD)
+
+////////////////////////////////////////////////////////////////////////
+// class constructor
+// initializes this cmd upon creation
+////////////////////////////////////////////////////////////////////////
+task REG_CMD::new ((bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+                   (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+                   (bit [39:0]                  address = 'h0),
+                   (bit [63:0]                  data = 'h0))
+{     
+  this.info_msg  = "REG_CMD" ;
+  this.coreid    = coreid;
+  this.threadid  = threadid;
+  this.address   = address;
+  this.data      = data;
+  this.dataqw    = 64'hx;
+  this.cor_err   = 1'b0;
+  this.uncor_err = 1'b0;
+  this.valid     = 1'b0;
+  this.rd        = 1'bx;
+  this.block     = 1'bx;
+}
+
+////////////////////////////////////////////////////////////////////////
+// generate address
+////////////////////////////////////////////////////////////////////////
+task REG_CMD::generate_address((bit [39:0] address = 'h0),
+                               (bit [63:0] data = 'h0))
+{
+  this.data = data;
+  this.address = address;
+}
+
+////////////////////////////////////////////////////////////////////////
+// generate iob int address
+////////////////////////////////////////////////////////////////////////
+task REG_CMD::generate_iobint_address((bit [5:0]  count = 'h0),
+                                      (bit [31:0] base_address = 'h0),
+                                      (bit [63:0] data = 'h0))
+{
+  this.data = data;
+  this.address = {IOB_INT_CSR, 32'h0} + count * 40'h0000000008;
+}
+
+////////////////////////////////////////////////////////////////////////
+// generate iob man address
+////////////////////////////////////////////////////////////////////////
+task REG_CMD::generate_iobman_address((bit [5:0]  count = 'h0),
+                                      (bit [31:0] base_address = 'h0),
+                                      (bit [63:0] data = 'h0))
+{
+  this.data = data;
+  case(base_address)
+  {
+      IOB_CREG_INTMAN :
+          this.address = {IOB_MAN_CSR, 32'h0} + {8'h00, IOB_CREG_INTMAN} +
+                         count * 40'h0000000008;
+
+      IOB_CREG_INTCTL :
+          this.address = {IOB_MAN_CSR, 32'h0} + {8'h00, IOB_CREG_INTCTL} +
+                         count * 40'h0000000008;
+
+      IOB_CREG_INTVECDISP,
+      IOB_CREG_RESETSTAT,
+      IOB_CREG_SERNUM,
+      IOB_CREG_TMSTATCTRL,
+      IOB_CREG_COREAVAIL,
+      IOB_CREG_SSYSRESET,
+      IOB_CREG_JINTV,
+      IOB_CREG_DBG_L2VIS_CTRL,
+      IOB_CREG_DBG_L2VIS_MASKA,
+      IOB_CREG_DBG_L2VIS_MASKB,
+      IOB_CREG_DBG_L2VIS_CMPA,
+      IOB_CREG_DBG_L2VIS_CMPB,
+      IOB_CREG_DBG_L2VIS_TRIG,
+      IOB_CREG_DBG_IOBVIS_CTRL,
+      IOB_CREG_DBG_ENET_CTRL,
+      IOB_CREG_DBG_ENET_IDLEVAL,
+      IOB_CREG_DBG_JBUS_CTRL,
+      IOB_CREG_DBG_JBUS_LO_MASK0,
+      IOB_CREG_DBG_JBUS_LO_MASK1,
+      IOB_CREG_DBG_JBUS_LO_CMP0,
+      IOB_CREG_DBG_JBUS_LO_CMP1,
+      IOB_CREG_DBG_JBUS_LO_CNT0,
+      IOB_CREG_DBG_JBUS_LO_CNT1,
+      IOB_CREG_DBG_JBUS_HI_MASK0,
+      IOB_CREG_DBG_JBUS_HI_MASK1,
+      IOB_CREG_DBG_JBUS_HI_CMP0,
+      IOB_CREG_DBG_JBUS_HI_CMP1,
+      IOB_CREG_DBG_JBUS_HI_CNT0,
+      IOB_CREG_DBG_JBUS_HI_CNT1,
+      IOB_CREG_TESTSTUB :
+          this.address = {IOB_MAN_CSR, 32'h0} + {8'h00, base_address};
+
+      default :
+      {
+          this.address = {IOB_MAN_CSR, 32'h0} + {8'h00, base_address};
+          printf("Invalid iob base_address: %8H ",base_address); 
+       }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// generate address
+////////////////////////////////////////////////////////////////////////
+task REG_CMD::generate_randgen_address ((bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+                                        (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+                                        (bit [63:0]                  data = 'h0))
+{
+  this.coreid = coreid;
+  this.threadid = threadid;
+  this.data = data;
+  
+//  this.address = {RAND_GEN_CSR,32'h0}  // 40'hd500000000
+//                 +  {8'h00 , RAND_GEN} // 40'h0000000000
+//                 + this.coreid * 40'h0000000008;
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Generate jbus addresses.
+/////////////////////////////////////////////////////////////////////////////////
+//task REG_CMD::generate_jbus_address (
+//            (bit [23:0]                    base_address = 'h0),
+//            (bit [63:0]                    data = 'h0))
+//{
+//  this.data = data;
+  
+//  case (base_address)
+//  {
+//    JBI_CSR_ADDR_CONFIG,
+//    JBI_CSR_ADDR_CONFIG2,
+//    JBI_CSR_ADDR_DEBUG,
+//    JBI_CSR_ADDR_DEBUG_ARB,
+//    JBI_CSR_ADDR_TEST_REG,
+//    JBI_CSR_ADDR_ERR_INJECT,
+//    JBI_CSR_ADDR_ERROR_CONFIG,
+//    JBI_CSR_ADDR_ERROR_LOG,
+//    JBI_CSR_ADDR_ERROR_OVF,
+//    JBI_CSR_ADDR_LOG_ENB,
+//    JBI_CSR_ADDR_SIG_ENB,
+//    JBI_CSR_ADDR_LOG_ADDR,
+//    JBI_CSR_ADDR_LOG_CTRL,
+//    JBI_CSR_ADDR_LOG_DATA0,
+//    JBI_CSR_ADDR_LOG_DATA1,
+//    JBI_CSR_ADDR_LOG_PAR,
+//    JBI_CSR_ADDR_LOG_NACK,
+//    JBI_CSR_ADDR_LOG_ARB,
+//    JBI_CSR_ADDR_L2_TIMEOUT,
+//    JBI_CSR_ADDR_ARB_TIMEOUT,
+//    JBI_CSR_ADDR_TRANS_TIMEOUT,
+//    JBI_CSR_ADDR_INTR_TIMEOUT,
+//    JBI_CSR_ADDR_MEMSIZE,
+//    JBI_CSR_ADDR_PERF_CTL,
+//    JBI_CSR_ADDR_PERF_COUNT:
+//      this.address = {JBUS1,  32'h0} + {16'h00, base_address} ;
+
+//    default :
+//    {
+//      this.address = {JBUS1, 32'h0} + {16'h00, base_address};
+//      printf("Invalid jbus base_address: %8H ", base_address); 
+//    }
+//  }
+//}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Print reg command.
+/////////////////////////////////////////////////////////////////////////////////
+task REG_CMD::print ()
+{
+   printf ("%10d : %s : ", get_time (LO), this.info_msg) ;
+   printf ("address %H : ", this.address) ;
+   printf ("data %H : ", this.data) ;   
+   printf ("coreid %H\n", this.coreid) ;
+   printf ("%10d : %s : ", get_time (LO), this.info_msg) ;   
+   printf ("threadid %H : ", this.threadid) ;
+   printf ("valid %H\n", this.valid);
+
+}

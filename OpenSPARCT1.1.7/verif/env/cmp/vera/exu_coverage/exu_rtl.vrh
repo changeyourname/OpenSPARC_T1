@@ -1,0 +1,52 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_rtl.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+#ifndef __EXU_RTL_H__
+#define __EXU_RTL_H__
+
+
+#define EXU_ECC_CE_WIDTH 	6
+#define EXU_ECC_UE_WIDTH 	8
+#define EXU_TAG_WIDTH 		7
+#define EXU_LOGIC_WIDTH 	9
+#define EXU_DIV_FSM_WIDTH 	6
+#define EXU_DIV_FSM_XX_WIDTH 	10
+#define EXU_SWAP_GLOBAL_WIDTH 	7
+#define EXU_SWAP_LOCAL_WIDTH 	9
+#define EXU_SWAP_EVEN_WIDTH 	9
+#define EXU_SWAP_ODD_WIDTH 	9
+#define EXU_WMG_WIDTH 		23
+#define EXU_SINGLE_BYPASS_WIDTH 28
+#define EXU_RCC_BYPASS_WIDTH 	12
+#define EXU_RS1_BYPASS_WIDTH 	12
+#define EXU_RS2_BYPASS_WIDTH 	12
+#define EXU_RS3_BYPASS_WIDTH 	12
+#define EXU_RS3H_BYPASS_WIDTH 	12
+#define EXU_CWP_SWAP_ST0_WIDTH 	2
+#define EXU_CWP_SWAP_ST1_WIDTH 	2
+#define EXU_CWP_SWAP_ST2_WIDTH 	2
+#define EXU_CWP_SWAP_ST3_WIDTH 	2
+#define EXU_CWP_SWAP_COMBOS_WIDTH 	12
+#define EXU_IRF_WB_WIDTH 	6
+#define EXU_IRF_CASE1_WIDTH 	8
+#define EXU_IRF_CASE2_WIDTH 	8
+#define EXU_IRF_CASE3_WIDTH 	7
+#endif

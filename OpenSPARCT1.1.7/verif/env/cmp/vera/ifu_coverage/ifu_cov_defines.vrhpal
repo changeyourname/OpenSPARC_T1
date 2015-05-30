@@ -1,0 +1,260 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_cov_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef IFU_COV_DEFINES
+#define IFU_COV_DEFINES
+// ***************************************************************************
+//
+// File:	ifu_cov_defines.vrh
+// Description: The defines for IFU coverage objects
+//
+// ***************************************************************************
+
+#include "ifu_rtl.vrh"
+
+////////////////////////////////////////////////////////////
+// Encoding assignment for various instruction types
+////////////////////////////////////////////////////////////
+
+. %insts = ("BPr" => 	      "000000",
+.	    "BPcc_Bicc" =>    "000001",
+.	    "FBfcc_FBPfcc" => "000010",
+.	    "Call" =>         "000011",
+.	    "Mul" =>          "000100",
+.	    "Div" =>          "000101",
+.	    "Rdpr" =>         "000110",
+.	    "Flushw" =>       "000111",
+.	    "Rdy" =>          "001000",
+.	    "Rdccr" =>        "001001",
+.	    "Rdasi" =>        "001010",
+.	    "Rdtick" =>       "001011",
+.	    "Rdpc" =>         "001100",
+.	    "Rdfprs" =>       "001101",
+.	    "Membar" =>       "001110",
+.	    "Stbar" =>        "001111",
+.	    "Rdasr" =>        "010000",
+.	    "Wry" =>          "010001",
+.	    "Wrccr" =>        "010010",
+.	    "Wrasi" =>        "010011",
+.	    "Wrfprs" =>       "010100",
+.	    "Sir" =>          "010101",
+.	    "Wrasr" =>        "010110",
+.	    "Saved" =>        "010111",
+.	    "Restored" =>     "011000",
+.	    "Wrpr" =>         "011001",
+.	    "Fpop1" =>        "011010",
+.	    "Fpop2" =>        "011011",
+.	    "Jmpl" =>         "011100",
+.	    "Return" =>       "011101",
+.	    "Tcc" =>          "011110",
+.	    "Flush" =>        "011111",
+.	    "Save" =>         "100000",
+.	    "Restore" =>      "100001",
+.	    "Done" =>         "100010",
+.	    "Retry" =>        "100011",
+.	    "Ld" =>           "100100",
+.	    "Ldasi" =>        "100101",
+.	    "Stasi" =>        "100110",
+.	    "Ldstub" =>       "100111",
+.	    "Swap" =>         "101000",
+.	    "Ldfp" =>         "101001",
+.	    "Stfp" =>         "101010",
+.	    "Cas" =>          "101011",
+.	    "Pref" =>         "101100",
+.	    "Halt" => 	      "101101",
+.#The non lops below
+.	    "St" =>    	      "101110",
+.           "Others" =>       "101111",
+.	   );
+.
+.foreach $lop (keys %insts) {
+.  print "#define $lop\t\t$insts{$lop}\n";
+.}
+.
+.foreach $lop (keys %insts) {
+.  $def = "6'b"."$insts{$lop}";
+.  $lop = uc $lop;$lop = $lop."_INST";
+.  print "#define $lop\t\t$def\n";
+.}
+.
+////////////////////////////////////////////////////////////
+// Defines for ifu_imiss_lop_cov.vr
+// State: 8'b: imss,swcd,lop_instr(6)
+////////////////////////////////////////////////////////////
+
+.foreach $lop (keys %insts) {
+.  $state = uc $lop;
+.  $state = "IMISS_WITH_"."$state";
+.  print "#define $state\t\t8'b11$insts{$lop}\n";
+.}
+
+////////////////////////////////////////////////////////////////////
+// Defines for ifu_stb_cov.vr
+// State: 13'b: stb7,stb8,stb9,fpbusy,internal_asi,imiss,ldmiss,st_inst(6)
+////////////////////////////////////////////////////////////////////
+
+.print "#define STB7_INT_ST     	13'b100x000$insts{St}\n";
+.print "#define STB7_STASI_INT       	13'b100x100$insts{Stasi}\n";
+.print "#define STB7_STASI_EXT       	13'b100x000$insts{Stasi}\n";
+.print "#define STB7_STFP_BUSY       	13'b1001000$insts{Stfp}\n";
+.print "#define STB7_STFP            	13'b1000000$insts{Stfp}\n";
+.print "#define STB7_LDSTUB          	13'b100x000$insts{Ldstub}\n";
+.print "#define STB7_SWAP            	13'b100x000$insts{Swap}\n";
+.print "#define STB7_CAS             	13'b100x000$insts{Cas}\n";
+.print "#define STB7_INT_ST_IMISS      	13'b100x010$insts{St}\n";
+.print "#define STB7_STASI_INT_IMISS    13'b100x110$insts{Stasi}\n";
+.print "#define STB7_STASI_EXT_IMISS   	13'b100x010$insts{Stasi}\n";
+.print "#define STB7_STFP_BUSY_IMISS   	13'b1001010$insts{Stfp}\n";
+.print "#define STB7_STFP_IMISS         13'b1000010$insts{Stfp}\n";
+.print "#define STB7_LDSTUB_IMISS       13'b100x010$insts{Ldstub}\n";
+.print "#define STB7_SWAP_IMISS         13'b100x010$insts{Swap}\n";
+.print "#define STB7_CAS_IMISS          13'b100x010$insts{Cas}\n";
+
+.print "#define STB8_INT_ST    		      	 13'b010x000$insts{St}\n";
+.print "#define STB8_STASI_INT       		 13'b010x100$insts{Stasi}\n";
+.print "#define STB8_STASI_EXT       		 13'b010x000$insts{Stasi}\n";
+.print "#define STB8_STFP_BUSY       		 13'b0101000$insts{Stfp}\n";
+.print "#define STB8_STFP            		 13'b0100000$insts{Stfp}\n";
+.print "#define STB8_LDSTUB          		 13'b010x000$insts{Ldstub}\n";
+.print "#define STB8_SWAP            		 13'b010x000$insts{Swap}\n";
+.print "#define STB8_CAS             		 13'b010x000$insts{Cas}\n";
+.print "#define STB8_INT_ST_IMISS      		 13'b010x010$insts{St}\n";
+.print "#define STB8_STASI_INT_IMISS   		 13'b010x110$insts{Stasi}\n";
+.print "#define STB8_STASI_EXT_IMISS   		 13'b010x010$insts{Stasi}\n";
+.print "#define STB8_STFP_BUSY_IMISS   		 13'b0101010$insts{Stfp}\n";
+.print "#define STB8_STFP_IMISS        		 13'b0100010$insts{Stfp}\n";
+.print "#define STB8_LDSTUB_IMISS      		 13'b010x010$insts{Ldstub}\n";
+.print "#define STB8_SWAP_IMISS        		 13'b010x010$insts{Swap}\n";
+.print "#define STB8_CAS_IMISS         		 13'b010x010$insts{Cas}\n";
+.print "#define STB8_INT_ST_LDMISS      	 13'b010x001$insts{St}\n";
+.print "#define STB8_STASI_INT_LDMISS   	 13'b010x101$insts{Stasi}\n";
+.print "#define STB8_STASI_EXT_LDMISS   	 13'b010x001$insts{Stasi}\n";
+.print "#define STB8_STFP_BUSY_LDMISS   	 13'b0101001$insts{Stfp}\n";
+.print "#define STB8_STFP_LDMISS        	 13'b0100001$insts{Stfp}\n";
+.print "#define STB8_LDSTUB_LDMISS      	 13'b010x001$insts{Ldstub}\n";
+.print "#define STB8_SWAP_LDMISS        	 13'b010x001$insts{Swap}\n";
+.print "#define STB8_CAS_LDMISS         	 13'b010x001$insts{Cas}\n";
+.print "#define STB8_INT_ST_IMISS_LDMISS      	 13'b010x011$insts{St}\n";
+.print "#define STB8_STASI_INT_IMISS_LDMISS   	 13'b010x111$insts{Stasi}\n";
+.print "#define STB8_STASI_EXT_IMISS_LDMISS   	 13'b010x011$insts{Stasi}\n";
+.print "#define STB8_STFP_BUSY_IMISS_LDMISS    	 13'b0101011$insts{Stfp}\n";
+.print "#define STB8_STFP_IMISS_LDMISS         	 13'b0100011$insts{Stfp}\n";
+.print "#define STB8_LDSTUB_IMISS_LDMISS       	 13'b010x011$insts{Ldstub}\n";
+.print "#define STB8_SWAP_IMISS_LDMISS           13'b010x011$insts{Swap}\n";
+.print "#define STB8_CAS_IMISS_LDMISS            13'b010x011$insts{Cas}\n";
+
+.print "#define STB9_INT_ST          	13'b001x000$insts{St}\n";
+.print "#define STB9_STASI_INT       	13'b001x100$insts{Stasi}\n";
+.print "#define STB9_STASI_EXT       	13'b001x000$insts{Stasi}\n";
+.print "#define STB9_STFP_BUSY       	13'b0011000$insts{Stfp}\n";
+.print "#define STB9_STFP            	13'b0010000$insts{Stfp}\n";
+.print "#define STB9_LDSTUB          	13'b001x000$insts{Ldstub}\n";
+.print "#define STB9_SWAP            	13'b001x000$insts{Swap}\n";
+.print "#define STB9_CAS             	13'b001x000$insts{Cas}\n";
+.print "#define STB9_INT_ST_IMISS       13'b001x010$insts{St}\n";
+.print "#define STB9_STASI_INT_IMISS    13'b001x110$insts{Stasi}\n";
+.print "#define STB9_STASI_EXT_IMISS    13'b001x010$insts{Stasi}\n";
+.print "#define STB9_STFP_BUSY_IMISS    13'b0011010$insts{Stfp}\n";
+.print "#define STB9_STFP_IMISS         13'b0010010$insts{Stfp}\n";
+.print "#define STB9_LDSTUB_IMISS       13'b001x010$insts{Ldstub}\n";
+.print "#define STB9_SWAP_IMISS         13'b001x010$insts{Swap}\n";
+.print "#define STB9_CAS_IMISS          13'b001x010$insts{Cas}\n";
+.print "#define STB9_INT_ST_LDMISS       13'b001x001$insts{St}\n";
+.print "#define STB9_STASI_INT_LDMISS    13'b001x101$insts{Stasi}\n";
+.print "#define STB9_STASI_EXT_LDMISS    13'b001x001$insts{Stasi}\n";
+.print "#define STB9_STFP_BUSY_LDMISS    13'b0011001$insts{Stfp}\n";
+.print "#define STB9_STFP_LDMISS         13'b0010001$insts{Stfp}\n";
+.print "#define STB9_LDSTUB_LDMISS       13'b001x001$insts{Ldstub}\n";
+.print "#define STB9_SWAP_LDMISS         13'b001x001$insts{Swap}\n";
+.print "#define STB9_CAS_LDMISS          13'b001x001$insts{Cas}\n";
+.print "#define STB9_INT_ST_IMISS_LDMISS       13'b001x011$insts{St}\n";
+.print "#define STB9_STASI_INT_IMISS_LDMISS    13'b001x111$insts{Stasi}\n";
+.print "#define STB9_STASI_EXT_IMISS_LDMISS    13'b001x011$insts{Stasi}\n";
+.print "#define STB9_STFP_BUSY_IMISS_LDMISS    13'b0011011$insts{Stfp}\n";
+.print "#define STB9_STFP_IMISS_LDMISS         13'b0010011$insts{Stfp}\n";
+.print "#define STB9_LDSTUB_IMISS_LDMISS       13'b001x011$insts{Ldstub}\n";
+.print "#define STB9_SWAP_IMISS_LDMISS         13'b001x011$insts{Swap}\n";
+.print "#define STB9_CAS_IMISS_LDMISS          13'b001x011$insts{Cas}\n";
+
+////////////////////////////////////////////////////////////
+// Defines for ifu_d_w_rb_cov.vr
+// State: 9'b: thr_vld_d,inst,ldmw,rbw
+////////////////////////////////////////////////////////////
+
+.foreach $inst (keys %insts) {
+.  $state = uc $inst;
+.  print "#define $state\_WITH_LDMISS\t\t9'b1$insts{$inst}10\n";
+.  print "#define RBW_AFTER_$state 9'b1$insts{$inst}00 -> 9'bxxxxxxx00\[.2.\] -> 9'bxxxxxxx01\n";
+.}
+
+////////////////////////////////////////////////////////////
+// Defines for ifu_stb_lop_cov.vr
+// State: 8'b: stb8,swcd,lop_instr(6)
+////////////////////////////////////////////////////////////
+
+.print "#define STB8\t\t8'b10xxxxxx\n";
+.foreach $lop (keys %insts) {
+.  $state = uc $lop;
+.  $state = "$state"."_AFTER_STB8";
+.  print "#define $state\t\t8'bx1$insts{$lop}\n";
+.}
+
+////////////////////////////////////////////////////////////
+// Defines for ifu_br_dlyslt_inst_cov.vr
+// State: 9'b: thr_vld_d, inst_d(6), annul_e, stb8
+////////////////////////////////////////////////////////////
+
+.print "#define BR_INST [9'b1$insts{BPr}x0,9'b1$insts{BPcc_Bicc}x0,9'b1$insts{Call}x0,9'b1$insts{Jmpl}x0]\n";
+.print "#define NULL_STATE_BR 9'b0xxxxxxxx\n";
+.print "#define ANNUL 9'bxxxxxxx1x\n";
+.foreach $inst (keys %insts) {
+.  $state = uc $inst;
+.  $state = "DLYSLT_INST_"."$state";
+.  print "#define $state\t\t9'b1$insts{$inst}00\n";
+.}
+.foreach $st_inst ("Stasi","Stfp","St","Ldstub", "Swap", "Cas") {
+.  $state = uc $st_inst;
+.  $state = "DLYSLT_INST_STB8_"."$state";
+.  print "#define $state\t\t9'b1$insts{$st_inst}01\n";
+.} 
+
+////////////////////////////////////////////////////////////
+// Defines for ifu_tr_flsh_inst_cov.vr
+// State: 8'b: thr_vld_d, inst_d(6), flush_w
+////////////////////////////////////////////////////////////
+
+.print "#define NULL_STATE_FLUSH_W 8'bxxxxxxx0\n";
+.print "#define FLUSH_W 8'bxxxxxxx1\n";
+.foreach $inst (keys %insts) {
+.  $state = uc $inst;
+.  print "#define $state\_D_FLUSH_W\t\t8'b1$insts{$inst}1\n";
+.  print "#define $state\_D\t\t8'b1$insts{$inst}0\n";
+.}
+
+////////////////////////////////////////////////////////////
+// Defines for ifu_diff_thr_rb_cov.vr
+////////////////////////////////////////////////////////////
+
+.print "#define T0 0001\n";
+.print "#define T1 0010\n";
+.print "#define T2 0100\n";
+.print "#define T3 1000\n";
+
+#endif /*IFU_COV_DEFINES*/

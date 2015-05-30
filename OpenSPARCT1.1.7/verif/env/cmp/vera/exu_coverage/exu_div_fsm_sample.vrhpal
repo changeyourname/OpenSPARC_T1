@@ -1,0 +1,61 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_div_fsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+  
+
+
+
+
+// coverage_def EXU_DIV_FSM_COV (bit[`EXU_DIV_FSM_WIDTH-1:0] exu_div_fsm_state) {
+  //state declarations
+
+  state s_IDLE     	(IDLE     );
+  state s_RUN           (RUN      );
+  state s_LAST_CALC	(LAST_CALC);
+  state s_CHK_OVFL 	(CHK_OVFL );
+  state s_FIX_OVFL 	(FIX_OVFL );
+  state s_DONE     	(DONE     );
+  wildcard state s_IGNORE_1 	(IGNORE_1 );
+
+bad_state s_not_DIV_FSM_STATE (not state);
+
+  // transitions
+
+  trans t_IDLE_2_IDLE			(IDLE -> IDLE);
+  trans t_IDLE_2_RUN			(IDLE -> RUN );
+  trans t_RUN_2_IDLE			(RUN -> IDLE);
+  trans t_RUN_2_RUN			(RUN -> RUN);
+  wildcard trans t_RUN_2_IGNORE_1		(RUN -> IGNORE_1);
+  trans t_RUN_2_LAST_CALC		(RUN -> LAST_CALC);
+  trans t_LAST_CALC_2_CHK_OVFL		(LAST_CALC -> CHK_OVFL);
+  trans t_LAST_CALC_2_IDLE		(LAST_CALC -> IDLE );
+  trans t_CHK_OVFL_2_FIX_OVFL		(CHK_OVFL -> FIX_OVFL);
+  trans t_CHK_OVFL_2_IDLE		(CHK_OVFL -> IDLE);
+  trans t_RUN_2_FIX_OVFL		(RUN -> FIX_OVFL);
+  trans t_FIX_OVFL_2_DONE		(FIX_OVFL -> DONE);
+  trans t_FIX_OVFL_2_IDLE		(FIX_OVFL -> IDLE);
+  trans t_DONE_2_DONE			(DONE -> DONE);
+  trans t_DONE_2_IDLE			(DONE -> IDLE);
+  wildcard trans t_IGNORE_1_2_IDLE			(IGNORE_1 -> IDLE);
+
+  bad_trans t_not_DIV_FSM_TRANS (not trans);
+// }
+ 

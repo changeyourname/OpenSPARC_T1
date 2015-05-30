@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_sync_asi_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU Sync ASI Ops
+//
+//
+// ***************************************************************************
+
+
+
+// coverage_def MMU_SYNC_ASI_COV (bit [30:0] mmu_sync_asi_state)
+// {
+  // state declarations
+
+wildcard state s_DMMU_PS1_PTR_EN_M	 (DMMU_PS1_PTR_EN_M);
+wildcard state s_DMMU_PS0_PTR_EN_M	 (DMMU_PS0_PTR_EN_M);
+wildcard state s_DMMU_CTXT_CFG_EN_M	 (DMMU_CTXT_CFG_EN_M);
+wildcard state s_DMMU_DIRECT_PTR_EN_M	 (DMMU_DIRECT_PTR_EN_M);
+wildcard state s_DMMU_NZCTXT_CFG_EN_M	 (DMMU_NZCTXT_CFG_EN_M);
+wildcard state s_DMMU_NZCTXT_PS0_TSB_EN_M	 (DMMU_NZCTXT_PS0_TSB_EN_M);
+wildcard state s_DMMU_NZCTXT_PS1_TSB_EN_M	 (DMMU_NZCTXT_PS1_TSB_EN_M);
+wildcard state s_DMMU_SFSR_WR_EN_L	 (DMMU_SFSR_WR_EN_L);
+wildcard state s_DMMU_SYNC_FAR_EN_M	 (DMMU_SYNC_FAR_EN_M);
+wildcard state s_DMMU_SYNC_FSR_EN_M	 (DMMU_SYNC_FSR_EN_M);
+wildcard state s_DMMU_TAG_ACCESS_EN_M	 (DMMU_TAG_ACCESS_EN_M);
+wildcard state s_DMMU_TAG_TARGET_EN_M	 (DMMU_TAG_TARGET_EN_M);
+wildcard state s_DMMU_TSB_EN_M	 (DMMU_TSB_EN_M);
+wildcard state s_DMMU_ZCTXT_CFG_EN_M	 (DMMU_ZCTXT_CFG_EN_M);
+wildcard state s_DMMU_ZCTXT_PS0_TSB_EN_M	 (DMMU_ZCTXT_PS0_TSB_EN_M);
+wildcard state s_DMMU_ZCTXT_PS1_TSB_EN_M	 (DMMU_ZCTXT_PS1_TSB_EN_M);
+wildcard state s_IMMU_64K_PTR_EN_M	 (IMMU_64K_PTR_EN_M);
+wildcard state s_IMMU_8K_PTR_EN_M	 (IMMU_8K_PTR_EN_M);
+wildcard state s_IMMU_CTXT_CFG_EN_M	 (IMMU_CTXT_CFG_EN_M);
+wildcard state s_IMMU_NZCTXT_CFG_EN_M	 (IMMU_NZCTXT_CFG_EN_M);
+wildcard state s_IMMU_NZCTXT_PS0_TSB_EN_M	 (IMMU_NZCTXT_PS0_TSB_EN_M);
+wildcard state s_IMMU_NZCTXT_PS1_TSB_EN_M	 (IMMU_NZCTXT_PS1_TSB_EN_M);
+wildcard state s_IMMU_SFSR_WR_EN_L	 (IMMU_SFSR_WR_EN_L);
+wildcard state s_IMMU_SYNC_FSR_EN_M	 (IMMU_SYNC_FSR_EN_M);
+wildcard state s_IMMU_TAG_ACCESS_EN_M	 (IMMU_TAG_ACCESS_EN_M);
+wildcard state s_IMMU_TAG_TARGET_EN_M	 (IMMU_TAG_TARGET_EN_M);
+wildcard state s_IMMU_TSB_EN_M	 (IMMU_TSB_EN_M);
+wildcard state s_IMMU_ZCTXT_CFG_EN_M	 (IMMU_ZCTXT_CFG_EN_M);
+wildcard state s_IMMU_ZCTXT_PS0_TSB_EN_M	 (IMMU_ZCTXT_PS0_TSB_EN_M);
+wildcard state s_IMMU_ZCTXT_PS1_TSB_EN_M	 (IMMU_ZCTXT_PS1_TSB_EN_M);
+wildcard state s_TLB_ACCESS_EN_L	 (TLB_ACCESS_EN_L);
+wildcard state s_DMMU_ANY_SYNC_OP		(DMMU_ANY_SYNC_OP);
+wildcard state s_IMMU_ANY_SYNC_OP		(IMMU_ANY_SYNC_OP);
+
+
+  // transitions(combinations)
+
+wildcard trans t_DMMU_SYNC_TO_SYNC		([DMMU_ANY_SYNC_OP] -> [DMMU_ANY_SYNC_OP]);
+wildcard trans t_IMMU_SYNC_TO_SYNC		([IMMU_ANY_SYNC_OP] -> [IMMU_ANY_SYNC_OP]);
+wildcard trans t_DMMU_SFSR_TO_SYNC	([DMMU_SYNC_FSR_EN_M] -> [DMMU_ANY_SYNC_OP]);
+wildcard trans t_IMMU_SFSR_TO_SYNC	([IMMU_SYNC_FSR_EN_M] -> [IMMU_ANY_SYNC_OP]);
+
+wildcard trans t_DMMU_SYNC_TO_SYNC_TO_SYNC		([DMMU_ANY_SYNC_OP] -> [DMMU_ANY_SYNC_OP] -> [DMMU_ANY_SYNC_OP]);
+wildcard trans t_IMMU_SYNC_TO_SYNC_TO_SYNC		([IMMU_ANY_SYNC_OP] -> [IMMU_ANY_SYNC_OP] -> [IMMU_ANY_SYNC_OP]);
+  // bad states
+
+  // bad transitions
+
+// }

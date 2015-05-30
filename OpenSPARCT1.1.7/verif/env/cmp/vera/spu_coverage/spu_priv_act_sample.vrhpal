@@ -1,0 +1,79 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_priv_act_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_priv_act_sample_COV_VRH
+#define INC__TMP_spu_priv_act_sample_COV_VRH
+#define PRIV_ACT_SAMPLE_STATE_1 3'b001
+#define PRIV_ACT_SAMPLE_STATE_2 3'b010
+#define PRIV_ACT_SAMPLE_STATE_3 3'b011
+#define PRIV_ACT_SAMPLE_STATE_4 3'b100
+#define PRIV_ACT_SAMPLE_STATE_5 3'b101
+#define PRIV_ACT_SAMPLE_STATE_6 3'b110
+#define PRIV_ACT_SAMPLE_STATE_7 3'b111
+
+/* TODO:
+ * + Need to understand the interface better. I probably need to qualify
+ *   the flush signals with something indicating that we're doing an
+ *   access to the ASI regs.
+ * + Questions: it looks like only spu_mactl is using flush, and it's only
+ *   using it for the ctl register. Why? How do I detect non-hyperprivileged
+ *   accesses to the other registers?
+ */
+
+/*
+ * Order of the signals in priv_act_state:
+ * lsu_spu_early_flush_g, tlu_spu_flush_w, ifu_spu_flush_w
+ */
+
+/*
+ * spu_priv_act_sample_cov
+ *
+ * This coverage object covers the IFU: Privileged Action Traps table
+ * in the SPU testplan.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+/*
+ * It looks like the spu considers the OR of all three signals to
+ * indicate a flush. So we have a state defined for all the cases in
+ * which at least one of the flush signals is asserted.
+ */
+
+#endif
+sample spu_priv_act_sample_bind_C${c}.\$priv_act_state {
+  // Declare states to be covered 
+  state s_PRIV_ACT_SAMPLE_STATE_1 (PRIV_ACT_SAMPLE_STATE_1);
+  state s_PRIV_ACT_SAMPLE_STATE_2 (PRIV_ACT_SAMPLE_STATE_2);
+  state s_PRIV_ACT_SAMPLE_STATE_3 (PRIV_ACT_SAMPLE_STATE_3);
+  state s_PRIV_ACT_SAMPLE_STATE_4 (PRIV_ACT_SAMPLE_STATE_4);
+  state s_PRIV_ACT_SAMPLE_STATE_5 (PRIV_ACT_SAMPLE_STATE_5);
+  state s_PRIV_ACT_SAMPLE_STATE_6 (PRIV_ACT_SAMPLE_STATE_6);
+  state s_PRIV_ACT_SAMPLE_STATE_7 (PRIV_ACT_SAMPLE_STATE_7);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

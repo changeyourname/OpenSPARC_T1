@@ -1,0 +1,39 @@
+.##########################################################################
+.#
+.# File:	dram_cov_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file that uses a map of the sys(tem) being
+.#	simulated and decides on:
+.#		number of cores
+.#		instance path for each core (for dram)
+.# $Id: dram_cov_inc.pal,v 1.6 2003/03/13 00:03:32 rmehta Exp $
+.#
+.##########################################################################
+. $cores	= 1;		# default settings
+. $drc  	= 4;		# default settings, # of channel 4 (02 & 13 are grouped)
+. $sys		= "CMP";	# default system being simulated
+.# END_INIT
+. $THREADS_PER_CORE	= 4;	# a frequently used constant
+.
+. $prefix	= "cmp";	# prefix for sample names and cov class
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+. if ( $sys eq "DRAM" ) { $prefix = ""; }
+// sys = $sys, cores = $cores
+.
+//.	$DRAM_SCTAG02_PATH	= "cmp_top.iop.cmp.dram02";
+//.	$DRAM_SCTAG13_PATH	= "cmp_top.iop.cmp.dram13";
+.	$DRAM_SCTAG02_PATH	= "`TOP_MOD_INST.dram02";
+.	$DRAM_SCTAG13_PATH	= "`TOP_MOD_INST.dram13";
+// This is the dram monitor path where all signals are brought in
+//.	$DRAM_MON_PATH 		= "cmp_top.cmp_dram.cmp_dram_mon.dram_mon0";
+.	$DRAM_MON_PATH 		= "`TOP_MOD.cmp_dram.cmp_dram_mon.dram_mon0";
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]		= $i;
+//.	$SPARC_COV_PATHS[$i]	= "cmp_top.iop.cmp.sparc${i}";
+.	$SPARC_COV_PATHS[$i]	= "`TOP_MOD_INST.cmp.sparc${i}";
+. }
+. for ( $i = 0; $i < $drc; $i++ ) {
+.	$DRC_STR[$i]		= $i;
+. }

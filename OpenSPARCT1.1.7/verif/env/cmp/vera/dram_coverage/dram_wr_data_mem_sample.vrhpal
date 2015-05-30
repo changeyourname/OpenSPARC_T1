@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_wr_data_mem_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_wr_data_mem_sample.vrh
+// Description:
+// Coverage object for the write memory. Here trying to hit
+// all the address for mem write. 
+// Also the cases when more than 1 enables are active(low) are invalid
+//
+// ***************************************************************************
+
+
+// coverage_def dram_wr_data_mem_sample (bit [7:0] en_n_addr)
+// {
+
+  // state declarations
+       m_state s_en0_all_n_addr  (224:239); // 1110_0000 - 1110_1111
+       m_state s_en1_all_n_addr  (208:223); // 1101_0000 - 1101_1111
+       m_state s_en2_all_n_addr  (176:191); // 1011_0000 - 1011_1111
+       m_state s_en3_all_n_addr  (112:127); // 0111_0000 - 0111_1111
+    
+       state s_no_en_n_addr      (8'b1111_0000:8'b1111_1111); // none enabled
+
+
+  // bad states
+  //bad_state s_not_addr_n_en (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_q_full_n_req_trans (not trans);
+
+//}
+

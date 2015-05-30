@@ -1,0 +1,253 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "dram_cov_inc.pal";
+#ifndef __DRAM_IF_VRH__
+#define __DRAM_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface dram_coverage_ifc_dram_clk
+{
+  // Common & Clock Signals
+  input dram_gclk               CLOCK ;
+  input dram_rst_l              PSAMPLE ;
+  //input dram_Ch0_pt_selfrsh     PSAMPLE; 
+  //input dram_Ch1_pt_selfrsh     PSAMPLE; 
+  input dram_Ch0_pt_blk_new_openbank_d1     PSAMPLE; 
+  input dram_Ch1_pt_blk_new_openbank_d1     PSAMPLE; 
+
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+  input [4:0] dram_Ch${c}_que_pos               PSAMPLE; 
+
+  input       dram_Ch${c}_rd_req                PSAMPLE; 
+  input [7:0] dram_Ch${c}_rd_que_wr_ptr         PSAMPLE; 
+  input [7:0] dram_Ch${c}_rd_que_rd_ptr         PSAMPLE; 
+  input [3:0] dram_Ch${c}_rd_q_cnt              PSAMPLE; 
+  input       dram_Ch${c}_rd_q_full             PSAMPLE; 
+  input [3:0] dram_Ch${c}_rd_colps_q_cnt        PSAMPLE; 
+  input       dram_Ch${c}_rd_colps_q_full       PSAMPLE; 
+  input       dram_Ch${c}_rd_q_empty            PSAMPLE; 
+  input       dram_Ch${c}_rd_colps_q_empty      PSAMPLE; 
+
+  input       dram_Ch${c}_wr_req                PSAMPLE; 
+  input [7:0] dram_Ch${c}_wr_que_wr_ptr         PSAMPLE; 
+  input [7:0] dram_Ch${c}_wr_que_rd_ptr         PSAMPLE; 
+  input [7:0] dram_Ch${c}_wr_que_rd_ptr_arb     PSAMPLE; 
+  input [3:0] dram_Ch${c}_wr_q_cnt              PSAMPLE; 
+  input       dram_Ch${c}_wr_q_full             PSAMPLE; 
+  input [3:0] dram_Ch${c}_wr_colps_q_cnt        PSAMPLE; 
+  input       dram_Ch${c}_wr_colps_q_full       PSAMPLE; 
+  input       dram_Ch${c}_wr_q_empty            PSAMPLE; 
+  input       dram_Ch${c}_wr_colps_q_empty      PSAMPLE; 
+  input [1:0] dram_Ch${c}_refresh_all_clr_mon_state     PSAMPLE; 
+
+  input [7:0] dram_Ch${c}_que_cas_valid         PSAMPLE; 
+  input [4:0] dram_Ch${c}_que_mem_addr          PSAMPLE; 
+
+  input       dram_Ch${c}_que_pick_wr_first     PSAMPLE; 
+
+  input       dram_Ch${c}_rd_req_2a_addr_vld    PSAMPLE; 
+  input       dram_Ch${c}_wr_req_2a_addr_vld    PSAMPLE; 
+  input       dram_Ch${c}_scrb_req_2a_addr_vld  PSAMPLE; 
+  input       dram_Ch${c}_que_rd_wr_hit		PSAMPLE; 
+
+  input [3:0] dram_Ch${c}_ras_pend_cnt		PSAMPLE; 
+  input [7:0] dram_Ch${c}_que_ras_picked	PSAMPLE; 
+  input [3:0] dram_Ch${c}_cas_pend_cnt		PSAMPLE; 
+  input [7:0] dram_Ch${c}_que_cas_picked	PSAMPLE; 
+  input [7:0] dram_Ch${c}_que_l2req_valid       PSAMPLE;
+  input [7:0] dram_Ch${c}_scrb_indx_val         PSAMPLE;
+
+
+  input [8:0] dram_Ch${c}_chip_config_reg           PSAMPLE; 
+  input [2:0] dram_Ch${c}_mode_reg                  PSAMPLE;
+  input [3:0] dram_Ch${c}_rrd_reg                   PSAMPLE;
+  input [4:0] dram_Ch${c}_rc_reg                    PSAMPLE;
+  input [3:0] dram_Ch${c}_rcd_reg                   PSAMPLE;
+  input [3:0] dram_Ch${c}_wtr_dly_reg               PSAMPLE;
+  input [3:0] dram_Ch${c}_rtw_dly_reg               PSAMPLE;
+  input [3:0] dram_Ch${c}_rtp_reg                   PSAMPLE;
+  input [3:0] dram_Ch${c}_ras_reg                   PSAMPLE;
+  input [3:0] dram_Ch${c}_rp_reg                    PSAMPLE;
+  input [3:0] dram_Ch${c}_wr_reg                    PSAMPLE;
+  input [1:0] dram_Ch${c}_mrd_reg                   PSAMPLE;
+  input [1:0] dram_Ch${c}_iwtr_reg                  PSAMPLE;
+  input [14:0]dram_Ch${c}_ext_mode_reg2             PSAMPLE;
+  input [14:0]dram_Ch${c}_ext_mode_reg1             PSAMPLE;
+  input [14:0]dram_Ch${c}_ext_mode_reg3             PSAMPLE;
+  input       dram_Ch${c}_que_eight_bank_mode       PSAMPLE;
+  input       dram_Ch${c}_que_rank1_present         PSAMPLE;
+  input       dram_Ch${c}_que_channel_disabled      PSAMPLE;
+  input       dram_Ch${c}_que_addr_bank_low_sel     PSAMPLE;
+  input       dram_Ch${c}_que_init                  PSAMPLE;
+  input [3:0] dram_Ch${c}_que_data_del_cnt          PSAMPLE;
+  input       dram_Ch${c}_dram_io_pad_clk_inv       PSAMPLE;
+  input [1:0] dram_Ch${c}_dram_io_ptr_clk_inv       PSAMPLE;
+  input       dram_Ch${c}_que_wr_mode_reg_done      PSAMPLE;
+  input       dram_Ch${c}_que_init_status_reg       PSAMPLE;
+  input [3:0] dram_Ch${c}_que_dimms_present         PSAMPLE;
+  input       dram_Ch${c}_dram_fail_over_mode       PSAMPLE;
+  input [31:0]dram_Ch${c}_dram_fail_over_mask       PSAMPLE;
+  input       dram_Ch${c}_que_dbg_trig_en           PSAMPLE;
+  input [22:0]dram_Ch${c}_que_err_sts_reg           PSAMPLE;
+  input [35:0]dram_Ch${c}_que_err_addr_reg          PSAMPLE;
+  input       dram_Ch${c}_err_inj_reg               PSAMPLE;
+  input       dram_Ch${c}_sshot_err_reg             PSAMPLE;
+  input [1:0] dram_Ch${c}_que_err_cnt               PSAMPLE;
+  input [35:0]dram_Ch${c}_que_err_loc               PSAMPLE;
+  input       dram_Ch${c}_que_l2if_ack_vld          PSAMPLE;
+  input       dram_Ch${c}_que_l2if_nack_vld         PSAMPLE;
+  input [8:0] dram_Ch${c}_rd_adr_info_hi            PSAMPLE;
+  input [8:0] dram_Ch${c}_wr_adr_info_hi            PSAMPLE;
+  input [8:0] dram_Ch${c}_rd_adr_info_lo            PSAMPLE;
+  input [8:0] dram_Ch${c}_wr_adr_info_lo            PSAMPLE;
+
+  input [7:0] dram_Ch${c}_perf_cntl                 PSAMPLE; 
+  input       dram_Ch${c}_cnt0_sticky_bit           PSAMPLE;
+  input       dram_Ch${c}_cnt1_sticky_bit           PSAMPLE;
+
+
+  input [3:0] dram_Ch${c}_dp_pioson_l2_data         PSAMPLE;
+  input [1:0] dram_Ch${c}_dp_pioson_l2_chunk        PSAMPLE;
+
+//  input [2:0] dram_Ch${c}_que_wl_addr_cnt0          PSAMPLE; 
+//  input [2:0] dram_Ch${c}_que_wl_addr_cnt1          PSAMPLE; 
+//  input       dram_Ch${c}_que_wl_data_addr0_load_cas2 PSAMPLE;
+//  input       dram_Ch${c}_que_wl_data_addr0_load    PSAMPLE;
+//  input       dram_Ch${c}_que_wl_data_addr1_load    PSAMPLE;
+
+
+. for ( $i = 0; $i < 8; $i++ ) {
+  input [10:0] dram_Ch${c}_rd_q_cntr_${i}           PSAMPLE;
+  input [10:0] dram_Ch${c}_wr_q_cntr_${i}           PSAMPLE;
+  input [13:0] dram_Ch${c}_rd_req_ack_cntr_${i}     PSAMPLE;
+
+.}
+  input [10:0] dram_Ch${c}_wr_req_ack_cntr          PSAMPLE;
+
+. for ( $ch = 0; $ch < 4; $ch++ ) {
+. for ( $i = 0; $i < 8; $i++ ) {
+  input [10:0] dram_Ch${c}_cs${ch}_bank_req_cntr_${i}  PSAMPLE;
+.}
+.}
+
+
+.}
+
+. foreach $drc ( @DRC_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR channel_$drc
+// ***********************************************************
+.	&coreSignals( $drc );
+. }
+}
+
+interface dram_coverage_ifc_core_clk
+{
+  // Common & Clock Signals
+  input cmp_clk                 CLOCK ;
+  input cmp_diag_done           PSAMPLE ;
+  input cmp_grst_l              PSAMPLE ;
+. sub coreSignals_l2 {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+  input       dram_Ch${c}_sctag_dram_rd_req         PSAMPLE;
+  input       dram_Ch${c}_sctag_dram_rd_dummy_req   PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_rd_ack         PSAMPLE;
+  input       dram_Ch${c}_sctag_dram_wr_req         PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_wr_ack         PSAMPLE;
+  input       dram_Ch${c}_sctag_dram_data_vld       PSAMPLE;
+  input [3:0] dram_Ch${c}_l2if_b0_rd_val            PSAMPLE;
+  input [3:0] dram_Ch${c}_l2if_b1_rd_val            PSAMPLE;
+  input [3:0] dram_Ch${c}_l2if_b0_wr_val            PSAMPLE;
+  input [3:0] dram_Ch${c}_l2if_b1_wr_val            PSAMPLE;
+  input [5:0] dram_Ch${c}_l2if_wr_b0_data_addr      PSAMPLE;
+
+  input       dram_Ch${c}_dram_sctag_secc_err       PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_pa_err         PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_mecc_err       PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_scb_secc_err   PSAMPLE;
+  input       dram_Ch${c}_dram_sctag_scb_mecc_err   PSAMPLE;
+
+
+  input       dram_Ch${c}_l2if_scrb_val_d2          PSAMPLE;
+  input       dram_Ch${c}_l2if_secc_err             PSAMPLE;
+  input       dram_Ch${c}_l2if_mecc_err_partial     PSAMPLE;
+  input       dram_Ch${c}_l2if_pa_err               PSAMPLE;
+  input [6:0] dram_Ch${c}_err_sts_reg               PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en6      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en5      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en4      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en3      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en2      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en1      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en0      PSAMPLE;
+  input       dram_Ch${c}_l2if_err_sts_reg_en       PSAMPLE;
+  input       dram_Ch${c}_l2if_err_addr_reg_en      PSAMPLE;
+  input       dram_Ch${c}_l2if_secc_loc_en          PSAMPLE;
+
+  input [7:0] dram_Ch${c}_l2if_data_ret_fifo_en     PSAMPLE;
+  input [3:0] dram_Ch${c}_cpu_wr_addr               PSAMPLE; 
+  input [3:0] dram_Ch${c}_cpu_wr_en                 PSAMPLE; 
+
+  input       dram_Ch${c}_clspine_dram_tx_sync      PSAMPLE;
+  input [1:0] dram_rd_req_q_full_Ch${c}_rd_taken_state  PSAMPLE; 
+  input [1:0] dram_wr_req_q_full_Ch${c}_wr_taken_state  PSAMPLE; 
+
+  input       dram_Ch${c}_l2if_err_intr         PSAMPLE;
+  input       dram_Ch${c}_l2if_ucb_trig         PSAMPLE;
+.}
+
+. foreach $drc ( @DRC_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR channel_$drc
+// ***********************************************************
+.	&coreSignals_l2( $drc );
+. }
+
+}
+
+
+
+interface dram_coverage_ifc_jbus_clk
+{
+  // Common & Clock Signals
+  input jbus_gclk                 CLOCK ;
+  input       dram_Ch0_rd_req_vld               PSAMPLE;
+  input       dram_Ch0_ucb_req_pend             PSAMPLE;
+  input       dram_Ch0_ucb_dram_ack_busy        PSAMPLE;
+  input       dram_Ch0_ucb_dram_int_busy        PSAMPLE;
+  input       dram_Ch1_rd_req_vld               PSAMPLE;
+  input       dram_Ch1_ucb_req_pend             PSAMPLE;
+  input       dram_Ch1_ucb_dram_ack_busy        PSAMPLE;
+  input       dram_Ch1_ucb_dram_int_busy        PSAMPLE;
+
+}
+
+#endif
+
+
+

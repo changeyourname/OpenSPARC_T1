@@ -1,0 +1,127 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l1_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "l1_inc.pal";
+#ifndef __L1_PORTS_VRH__
+#define __L1_PORTS_VRH__
+
+#include <vera_defines.vrh>
+
+////////////////////////////////////////////////////////////////////////////////
+// define l1 cache tag, l1 cache valid and pcx and cpx ports
+////////////////////////////////////////////////////////////////////////////////
+port ctag_port
+{
+  ctag_dec_wrway_y;
+  ctag_wrreq_y;
+  ctag_index_y;
+  ctag_wrtag_w0_y;
+  ctag_wrtag_w1_y;
+  ctag_wrtag_w2_y;
+  ctag_wrtag_w3_y;
+  spc_grst_l;
+}
+
+port cvld_port
+{
+  cvld_wr_adr;
+  cvld_wr_en;
+  cvld_bit_wen;
+  cvld_din;     
+  dfq_tid;     
+  spc_grst_l;
+}
+
+port int_port
+{
+  lsu_tlu_cpx_vld;
+  lsu_tlu_cpx_req;
+  lsu_tlu_intpkt;
+  spc_grst_l;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// define l1 cache tag, l1 cache valid and pcx and cpx bindings
+////////////////////////////////////////////////////////////////////////////////
+. sub coreBindings {
+.	my($core_num) = @_;
+.	my $c	      = $core_num;
+bind ctag_port ictag_bind_${c}
+{
+  ctag_dec_wrway_y              l1_top.spc${c}_ictag_dec_wrway_y;
+  ctag_wrreq_y                  l1_top.spc${c}_ictag_wrreq_y;
+  ctag_index_y                  l1_top.spc${c}_ictag_index_y;
+  ctag_wrtag_w0_y               l1_top.spc${c}_ictag_wrtag_w0_y;
+  ctag_wrtag_w1_y               l1_top.spc${c}_ictag_wrtag_w1_y;
+  ctag_wrtag_w2_y               l1_top.spc${c}_ictag_wrtag_w2_y;
+  ctag_wrtag_w3_y               l1_top.spc${c}_ictag_wrtag_w3_y;
+  spc_grst_l			l1_top.spc_grst_l;
+}
+
+bind ctag_port dctag_bind_${c}
+{
+  ctag_dec_wrway_y              l1_top.spc${c}_dctag_dec_wrway_y;
+  ctag_wrreq_y                  l1_top.spc${c}_dctag_wrreq_y;
+  ctag_index_y                  l1_top.spc${c}_dctag_index_y;
+  ctag_wrtag_w0_y               l1_top.spc${c}_dctag_wrtag_w0_y;
+  ctag_wrtag_w1_y               l1_top.spc${c}_dctag_wrtag_w1_y;
+  ctag_wrtag_w2_y               l1_top.spc${c}_dctag_wrtag_w2_y;
+  ctag_wrtag_w3_y               l1_top.spc${c}_dctag_wrtag_w3_y;
+  spc_grst_l			l1_top.spc_grst_l;
+}
+
+bind cvld_port icvld_bind_${c}
+{
+  cvld_wr_adr                   l1_top.spc${c}_icvld_wr_adr;
+  cvld_wr_en                    l1_top.spc${c}_icvld_wr_en;
+  cvld_bit_wen                  l1_top.spc${c}_icvld_bit_wen;
+  cvld_din                      l1_top.spc${c}_icvld_din;     
+  dfq_tid			l1_top.spc${c}_dfq_tid;
+  spc_grst_l			l1_top.spc_grst_l;
+}
+
+bind cvld_port dcvld_bind_${c}
+{
+  cvld_wr_adr                   l1_top.spc${c}_dcvld_wr_adr;
+  cvld_wr_en                    l1_top.spc${c}_dcvld_wr_en;
+  cvld_bit_wen                  l1_top.spc${c}_dcvld_bit_wen;
+  cvld_din                      l1_top.spc${c}_dcvld_din;     
+  dfq_tid			l1_top.spc${c}_dfq_tid;
+  spc_grst_l			l1_top.spc_grst_l;
+}
+
+bind int_port int_bind_${c}
+{
+  lsu_tlu_cpx_vld		l1_top.spc${c}_lsu_tlu_cpx_vld;
+  lsu_tlu_cpx_req		l1_top.spc${c}_lsu_tlu_cpx_req;
+  lsu_tlu_intpkt		l1_top.spc${c}_lsu_tlu_intpkt;
+  spc_grst_l			l1_top.spc_grst_l;
+}
+. } # coreBindings
+
+// ***********************************************************
+// Declare bindings for each core
+// ***********************************************************
+. foreach $core (@CORE_STR) {
+.	&coreBindings( $core );
+. }
+
+
+#endif

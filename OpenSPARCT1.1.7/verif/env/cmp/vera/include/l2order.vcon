@@ -1,0 +1,113 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2order.vcon
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef GATE_SIM
+
+connect input l2order.rclk = "cmp_top.iop.sctag0.rclk"
+connect input l2order.dbginit_l = "cmp_top.iop.sctag0.dbginit_l" iskew -1
+connect input l2order.cmp_diag_done = "cmp_top.diag_done" iskew -1 
+
+connect input l2order.arbctl_inst_vld_c2_0 = "cmp_top.iop.sctag0.arbctl.arbctl_inst_vld_c2" iskew -1
+connect input l2order.arbdp_inst_mb_c2_0 = "cmp_top.iop.sctag0.arbdecdp.arbdp_inst_mb_c2" iskew -1
+connect input l2order.arbdp_inst_fb_c2_0 = "cmp_top.iop.sctag0.arbdecdp.arbdp_inst_fb_c2" iskew -1
+connect input l2order.arbctl_inst_diag_c2_0 = "cmp_top.iop.sctag0.arbctl.arbctl_inst_diag_c2" iskew -1
+connect input l2order.arbdp_inst_c2_0 = "cmp_top.iop.sctag0.arbdecdp.arbdp_inst_c2[19:0]" iskew -1
+connect input l2order.arbdp_addr_c2_0 = "cmp_top.iop.sctag0.arbaddrdp.arbdp_addr_c2" iskew -1
+connect input l2order.arbdp_inst_data_c2_0 = "cmp_top.iop.sctag0.arbdatadp.arbdp_inst_data_c2" iskew -1
+connect input l2order.tagctl_hit_l2orfb_c2_0 = "cmp_top.iop.sctag0.tagctl.tagctl_hit_l2orfb_c2" iskew -1
+connect input l2order.mbctl_hit_c2_0 = "cmp_top.iop.sctag0.mbctl.mbctl_hit_c2" iskew -1
+
+connect input l2order.arbctl_inst_vld_c2_1 = "cmp_top.iop.sctag1.arbctl.arbctl_inst_vld_c2" iskew -1
+connect input l2order.arbdp_inst_mb_c2_1 = "cmp_top.iop.sctag1.arbdecdp.arbdp_inst_mb_c2" iskew -1
+connect input l2order.arbdp_inst_fb_c2_1 = "cmp_top.iop.sctag1.arbdecdp.arbdp_inst_fb_c2" iskew -1
+connect input l2order.arbctl_inst_diag_c2_1 = "cmp_top.iop.sctag1.arbctl.arbctl_inst_diag_c2" iskew -1
+connect input l2order.arbdp_inst_c2_1 = "cmp_top.iop.sctag1.arbdecdp.arbdp_inst_c2[19:0]" iskew -1
+connect input l2order.arbdp_addr_c2_1 = "cmp_top.iop.sctag1.arbaddrdp.arbdp_addr_c2" iskew -1
+connect input l2order.arbdp_inst_data_c2_1 = "cmp_top.iop.sctag1.arbdatadp.arbdp_inst_data_c2" iskew -1
+connect input l2order.tagctl_hit_l2orfb_c2_1 = "cmp_top.iop.sctag1.tagctl.tagctl_hit_l2orfb_c2" iskew -1
+connect input l2order.mbctl_hit_c2_1 = "cmp_top.iop.sctag1.mbctl.mbctl_hit_c2" iskew -1
+
+connect input l2order.arbctl_inst_vld_c2_2 = "cmp_top.iop.sctag2.arbctl.arbctl_inst_vld_c2" iskew -1
+connect input l2order.arbdp_inst_mb_c2_2 = "cmp_top.iop.sctag2.arbdecdp.arbdp_inst_mb_c2" iskew -1
+connect input l2order.arbdp_inst_fb_c2_2 = "cmp_top.iop.sctag2.arbdecdp.arbdp_inst_fb_c2" iskew -1
+connect input l2order.arbctl_inst_diag_c2_2 = "cmp_top.iop.sctag2.arbctl.arbctl_inst_diag_c2" iskew -1
+connect input l2order.arbdp_inst_c2_2 = "cmp_top.iop.sctag2.arbdecdp.arbdp_inst_c2[19:0]" iskew -1
+connect input l2order.arbdp_addr_c2_2 = "cmp_top.iop.sctag2.arbaddrdp.arbdp_addr_c2" iskew -1
+connect input l2order.arbdp_inst_data_c2_2 = "cmp_top.iop.sctag2.arbdatadp.arbdp_inst_data_c2" iskew -1
+connect input l2order.tagctl_hit_l2orfb_c2_2 = "cmp_top.iop.sctag2.tagctl.tagctl_hit_l2orfb_c2" iskew -1
+connect input l2order.mbctl_hit_c2_2 = "cmp_top.iop.sctag2.mbctl.mbctl_hit_c2" iskew -1
+
+connect input l2order.arbctl_inst_vld_c2_3 = "cmp_top.iop.sctag3.arbctl.arbctl_inst_vld_c2" iskew -1
+connect input l2order.arbdp_inst_mb_c2_3 = "cmp_top.iop.sctag3.arbdecdp.arbdp_inst_mb_c2" iskew -1
+connect input l2order.arbdp_inst_fb_c2_3 = "cmp_top.iop.sctag3.arbdecdp.arbdp_inst_fb_c2" iskew -1
+connect input l2order.arbctl_inst_diag_c2_3 = "cmp_top.iop.sctag3.arbctl.arbctl_inst_diag_c2" iskew -1
+connect input l2order.arbdp_inst_c2_3 = "cmp_top.iop.sctag3.arbdecdp.arbdp_inst_c2[19:0]" iskew -1
+connect input l2order.arbdp_addr_c2_3 = "cmp_top.iop.sctag3.arbaddrdp.arbdp_addr_c2" iskew -1
+connect input l2order.arbdp_inst_data_c2_3 = "cmp_top.iop.sctag3.arbdatadp.arbdp_inst_data_c2" iskew -1
+connect input l2order.tagctl_hit_l2orfb_c2_3 = "cmp_top.iop.sctag3.tagctl.tagctl_hit_l2orfb_c2" iskew -1
+connect input l2order.mbctl_hit_c2_3 = "cmp_top.iop.sctag3.mbctl.mbctl_hit_c2" iskew -1
+
+
+connect input l2order.dc_lkup_panel_dec_c4_0 = "cmp_top.iop.sctag0.dirrep.dc_lkup_panel_dec_c4" iskew -1
+connect input l2order.dc_lkup_row_dec_c4_0 = "cmp_top.iop.sctag0.dirrep.dc_lkup_row_dec_c4" iskew -1
+connect input l2order.ic_lkup_panel_dec_c4_0 = "cmp_top.iop.sctag0.dirrep.ic_lkup_panel_dec_c4" iskew -1
+connect input l2order.ic_lkup_row_dec_c4_0 = "cmp_top.iop.sctag0.dirrep.ic_lkup_row_dec_c4" iskew -1
+connect input l2order.arbdp_addr_c4_0 = "cmp_top.iop.sctag0.arbaddrdp.arbdp_addr_c4" iskew -1
+connect input l2order.dc_cam_hit_c6_0 = "cmp_top.iop.sctag0.dirvec_dp.dc_cam_hit_c6" iskew -1
+connect input l2order.ic_cam_hit_c6_0 = "cmp_top.iop.sctag0.dirvec_dp.ic_cam_hit_c6" iskew -1
+
+connect input l2order.dc_lkup_panel_dec_c4_1 = "cmp_top.iop.sctag1.dirrep.dc_lkup_panel_dec_c4" iskew -1
+connect input l2order.dc_lkup_row_dec_c4_1 = "cmp_top.iop.sctag1.dirrep.dc_lkup_row_dec_c4" iskew -1
+connect input l2order.ic_lkup_panel_dec_c4_1 = "cmp_top.iop.sctag1.dirrep.ic_lkup_panel_dec_c4" iskew -1
+connect input l2order.ic_lkup_row_dec_c4_1 = "cmp_top.iop.sctag1.dirrep.ic_lkup_row_dec_c4" iskew -1
+connect input l2order.arbdp_addr_c4_1 = "cmp_top.iop.sctag1.arbaddrdp.arbdp_addr_c4" iskew -1
+connect input l2order.dc_cam_hit_c6_1 = "cmp_top.iop.sctag1.dirvec_dp.dc_cam_hit_c6" iskew -1
+connect input l2order.ic_cam_hit_c6_1 = "cmp_top.iop.sctag1.dirvec_dp.ic_cam_hit_c6" iskew -1
+
+connect input l2order.dc_lkup_panel_dec_c4_2 = "cmp_top.iop.sctag2.dirrep.dc_lkup_panel_dec_c4" iskew -1
+connect input l2order.dc_lkup_row_dec_c4_2 = "cmp_top.iop.sctag2.dirrep.dc_lkup_row_dec_c4" iskew -1
+connect input l2order.ic_lkup_panel_dec_c4_2 = "cmp_top.iop.sctag2.dirrep.ic_lkup_panel_dec_c4" iskew -1
+connect input l2order.ic_lkup_row_dec_c4_2 = "cmp_top.iop.sctag2.dirrep.ic_lkup_row_dec_c4" iskew -1
+connect input l2order.arbdp_addr_c4_2 = "cmp_top.iop.sctag2.arbaddrdp.arbdp_addr_c4" iskew -1
+connect input l2order.dc_cam_hit_c6_2 = "cmp_top.iop.sctag2.dirvec_dp.dc_cam_hit_c6" iskew -1
+connect input l2order.ic_cam_hit_c6_2 = "cmp_top.iop.sctag2.dirvec_dp.ic_cam_hit_c6" iskew -1
+
+connect input l2order.dc_lkup_panel_dec_c4_3 = "cmp_top.iop.sctag3.dirrep.dc_lkup_panel_dec_c4" iskew -1
+connect input l2order.dc_lkup_row_dec_c4_3 = "cmp_top.iop.sctag3.dirrep.dc_lkup_row_dec_c4" iskew -1
+connect input l2order.ic_lkup_panel_dec_c4_3 = "cmp_top.iop.sctag3.dirrep.ic_lkup_panel_dec_c4" iskew -1
+connect input l2order.ic_lkup_row_dec_c4_3 = "cmp_top.iop.sctag3.dirrep.ic_lkup_row_dec_c4" iskew -1
+connect input l2order.arbdp_addr_c4_3 = "cmp_top.iop.sctag3.arbaddrdp.arbdp_addr_c4" iskew -1
+connect input l2order.dc_cam_hit_c6_3 = "cmp_top.iop.sctag3.dirvec_dp.dc_cam_hit_c6" iskew -1
+connect input l2order.ic_cam_hit_c6_3 = "cmp_top.iop.sctag3.dirvec_dp.ic_cam_hit_c6" iskew -1
+
+
+connect input l2order.vuad_evict_c3_0 = "cmp_top.iop.sctag0.vuaddp_ctl.vuad_evict_c3" iskew -1
+connect input l2order.lru_way_c3_0 = "cmp_top.iop.sctag0.vuaddp_ctl.lru_way_c3" iskew -1
+
+connect input l2order.vuad_evict_c3_1 = "cmp_top.iop.sctag1.vuaddp_ctl.vuad_evict_c3" iskew -1
+connect input l2order.lru_way_c3_1 = "cmp_top.iop.sctag1.vuaddp_ctl.lru_way_c3" iskew -1
+
+connect input l2order.vuad_evict_c3_2 = "cmp_top.iop.sctag2.vuaddp_ctl.vuad_evict_c3" iskew -1
+connect input l2order.lru_way_c3_2 = "cmp_top.iop.sctag2.vuaddp_ctl.lru_way_c3" iskew -1
+
+connect input l2order.vuad_evict_c3_3 = "cmp_top.iop.sctag3.vuaddp_ctl.vuad_evict_c3" iskew -1
+connect input l2order.lru_way_c3_3 = "cmp_top.iop.sctag3.vuaddp_ctl.lru_way_c3" iskew -1
+
+#endif

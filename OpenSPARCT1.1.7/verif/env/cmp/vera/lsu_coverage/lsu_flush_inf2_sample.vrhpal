@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_flush_inf2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Flush/signaling interface coverage object
+//***********************************************************************
+
+  #define FLUSHIF2_ST0		10'b0_1000_XXXX_X
+  #define FLUSHIF2_ST1		10'b0_0100_XXXX_X
+  #define FLUSHIF2_ST2		10'b0_0010_XXXX_X
+  #define FLUSHIF2_ST3		10'b0_0001_XXXX_X
+  #define FLUSHIF2_ST4		10'bX_XXXX_1110_X
+  #define FLUSHIF2_ST5		10'bX_XXXX_1101_X
+  #define FLUSHIF2_ST6		10'bX_XXXX_XXXX_1
+
+  // wildcard state s_FLUSHIF2_ST0	( FLUSHIF2_ST0 );
+  // wildcard state s_FLUSHIF2_ST1	( FLUSHIF2_ST1 );
+  // wildcard state s_FLUSHIF2_ST2	( FLUSHIF2_ST2 );
+  // wildcard state s_FLUSHIF2_ST3	( FLUSHIF2_ST3 );
+  // wildcard state s_FLUSHIF2_ST4	( FLUSHIF2_ST4 );
+  // wildcard state s_FLUSHIF2_ST5	( FLUSHIF2_ST5 );
+  // wildcard state s_FLUSHIF2_ST6	( FLUSHIF2_ST6 );
+
+  wildcard trans t_FLUSHIF2_0	( FLUSHIF2_ST0 -> FLUSHIF2_ST4 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_1	( FLUSHIF2_ST0 -> FLUSHIF2_ST5 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_2	( FLUSHIF2_ST1 -> FLUSHIF2_ST4 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_3	( FLUSHIF2_ST1 -> FLUSHIF2_ST5 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_4	( FLUSHIF2_ST2 -> FLUSHIF2_ST4 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_5	( FLUSHIF2_ST2 -> FLUSHIF2_ST5 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_6	( FLUSHIF2_ST3 -> FLUSHIF2_ST4 -> FLUSHIF2_ST6 );
+  wildcard trans t_FLUSHIF2_7	( FLUSHIF2_ST3 -> FLUSHIF2_ST5 -> FLUSHIF2_ST6 );

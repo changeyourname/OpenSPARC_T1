@@ -1,0 +1,53 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.iobdg
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+iobdg.v
+bw_clk_cl_iobdg_jbus.v
+bw_clk_cl_iobdg_cmp.v
+
+../../common/rtl/dbl_buf.v
+../common/rtl/iobdg_1r1w_rf16x160.v
+../common/rtl/iobdg_1r1w_rf4.v
+../common/rtl/iobdg_1r1w_rf32.v
+../common/rtl/iobdg_1r2w_vec.v
+../common/rtl/iobdg_efuse_reg.v
+../common/rtl/iobdg_findfirst.v
+../common/rtl/iobdg_jbus_mondo_buf.v
+../common/rtl/iobdg_int_mondo_addr_dec.v
+../common/rtl/iobdg_asi_dec.v
+../c2i/rtl/c2i.v
+../c2i/rtl/c2i_fdp.v
+../c2i/rtl/c2i_sctrl.v
+../c2i/rtl/c2i_sdp.v
+../c2i/rtl/c2i_fctrl.v
+../c2i/rtl/c2i_buf.v
+../iobdg_ctrl/rtl/iobdg_ctrl.v
+../iobdg_dbg/rtl/iobdg_dbg.v
+../iobdg_dbg/rtl/iobdg_dbg_iob.v
+../iobdg_dbg/rtl/iobdg_dbg_l2.v
+../iobdg_dbg/rtl/iobdg_dbg_porta.v
+../iobdg_dbg/rtl/iobdg_dbg_portb.v
+../i2c/rtl/i2c.v
+../i2c/rtl/i2c_fctrl.v
+../i2c/rtl/i2c_sctrl.v
+../i2c/rtl/i2c_buf.v
+../i2c/rtl/i2c_fdp.v
+../i2c/rtl/i2c_sdp.v
+../i2c/rtl/i2c_cpx_cnt.v

@@ -1,0 +1,246 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: iob.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "iob_inc.pal";
+#ifndef __IOB_IF_VRH__
+#define __IOB_IF_VRH__
+
+#include <vera_defines.vrh>
+#include "cmp_defines.vri"
+#include "sys_rtl.h"
+#include "iop_rtl.h"
+
+// iob interface in cmp_gclk domain.
+interface iob_top_cmp {
+  input                                 	clk      			CLOCK;
+  input                                 	rst_l           		PSAMPLE;
+  input                                 	diag_done 			PSAMPLE;
+    
+  // iob to cpu signals 
+  inout  [PCX_WIDTH-1:0]                        pcx_io_data_px2                 PHOLD PSAMPLE;  
+  inout                                         pcx_io_data_rdy_px2             PHOLD PSAMPLE;  
+  input                                         io_pcx_stall_pq                 PSAMPLE depth 6;  
+  input  [CPX_WIDTH-1:0]                        io_cpx_data_ca                  PSAMPLE;
+  input  [7:0]                                  io_cpx_req_cq                   PSAMPLE depth 2;
+  input                                         io_cpx_atom_cq                  PSAMPLE depth 2;
+  inout  [7:0]                                  cpx_io_grant_ca                 PHOLD PSAMPLE;
+    
+}
+  
+// iob interface in jbus_gclk domain.
+interface iob_top_jbus {
+  input                                 	clk       			CLOCK;
+  input                                 	rst_l     			PSAMPLE;
+  input                                 	diag_done 			PSAMPLE;
+    
+//  // tap interface
+//  inout                                         tap_ucb_iob_vld                 PHOLD PSAMPLE;
+//  inout                                         tap_ucb_iob_stall               PHOLD PSAMPLE;
+//  inout [TAP_IOB_WIDTH-1:0]                     tap_ucb_iob_data                PHOLD PSAMPLE;
+
+//  input                                         iob_tap_ucb_vld                 PSAMPLE;
+//  input                                         iob_tap_ucb_stall               PSAMPLE;
+//  input [IOB_TAP_WIDTH-1:0]                     iob_tap_ucb_data                PSAMPLE;
+  
+//  // ctu interface
+//  inout                                         ctu_ucb_iob_vld                 PHOLD PSAMPLE;
+//  inout                                         ctu_ucb_iob_stall               PHOLD PSAMPLE;
+//  inout [CLK_IOB_WIDTH-1:0]                     ctu_ucb_iob_data                PHOLD PSAMPLE;
+
+//  input                                         iob_ctu_ucb_vld                 PSAMPLE;
+//  input                                         iob_ctu_ucb_stall               PSAMPLE;
+//  input [IOB_CLK_WIDTH-1:0]                     iob_ctu_ucb_data                PSAMPLE;
+  
+//  // dram0 interface
+//  inout                                         dram0_ucb_iob_vld               PHOLD PSAMPLE;
+//  inout                                         dram0_ucb_iob_stall             PHOLD PSAMPLE;
+//  inout [TAP_IOB_WIDTH-1:0]                     dram0_ucb_iob_data              PHOLD PSAMPLE;
+
+//  input                                         iob_dram0_ucb_vld               PSAMPLE;
+//  input                                         iob_dram0_ucb_stall             PSAMPLE;
+//  input [IOB_TAP_WIDTH-1:0]                     iob_dram0_ucb_data              PSAMPLE;
+  
+//  // dram1 interface
+//  inout                                         dram1_ucb_iob_vld               PHOLD PSAMPLE;
+//  inout                                         dram1_ucb_iob_stall             PHOLD PSAMPLE;
+//  inout [TAP_IOB_WIDTH-1:0]                     dram1_ucb_iob_data              PHOLD PSAMPLE;
+
+//  input                                         iob_dram1_ucb_vld               PSAMPLE;
+//  input                                         iob_dram1_ucb_stall             PSAMPLE;
+//  input [IOB_TAP_WIDTH-1:0]                     iob_dram1_ucb_data              PSAMPLE;
+  
+  // serial interface to boot rom
+  input                                         jbi_iob_spi_vld                 PSAMPLE;
+  input                                         jbi_iob_spi_stall               PSAMPLE;
+  input [SPI_IOB_WIDTH-1:0]                     jbi_iob_spi_data                PSAMPLE;
+
+  input                                         iob_jbi_spi_vld                 PSAMPLE;
+  input                                         iob_jbi_spi_stall               PSAMPLE;
+  input [IOB_SPI_WIDTH-1:0]                     iob_jbi_spi_data                PSAMPLE;
+
+  // temperature trigger
+  inout                                         iob_temp_trig                   PHOLD PSAMPLE;
+  
+  // iobbrige interrupt signals.
+  input                                         intvecdisp_int_vld              PSAMPLE;
+  input [IOB_INT_VEC_WIDTH-1:0]                 intvecdisp_int_vec              PSAMPLE;
+  input [IOB_CPU_INDEX+IOB_THR_INDEX-1:0]       intvecdisp_int_thr              PSAMPLE;
+  input [UCB_PKT_WIDTH-1:0]                     intvecdisp_int_type             PSAMPLE;
+  input                                         creg_intctrl_wr                 PSAMPLE;
+  input                                         int_srvcd_d1                    PSAMPLE;
+  input [IOB_INT_TAB_DEPTH-1:0]                 intctrl_addr_dec                PSAMPLE;
+
+  // iob ucb signals
+  // TAP
+  input                                         iob_tap_rd                      PSAMPLE;
+  input                                         iob_tap_wr                      PSAMPLE;
+  input                                         iob_tap_ifill                   PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_tap_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_tap_buf_id                  PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_tap_addr                    PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_tap_data                    PSAMPLE;
+  input                                         iob_tap_req_ok                  PSAMPLE; // tie to high - noflow control
+  input                                         tap_iob_rd_ack                  PSAMPLE;
+  input                                         tap_iob_rd_nak                  PSAMPLE;
+  input                                         tap_iob_wr_ack                  PSAMPLE; // tie to low
+  input                                         tap_iob_ifill                   PSAMPLE; // tie to low
+  input                                         tap_iob_busy                    PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              tap_iob_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              tap_iob_buf_id                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            tap_iob_data                    PSAMPLE;
+  input                                         tap_iob_int                     PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              tap_iob_itype                   PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              tap_iob_ithr_id                 PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    tap_iob_istat                   PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      tap_iob_dev_id                  PSAMPLE;    
+  // JBI
+  input                                         iob_jbi_rd                      PSAMPLE;
+  input                                         iob_jbi_wr                      PSAMPLE;
+  input                                         iob_jbi_ifill                   PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_jbi_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_jbi_buf_id                  PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_jbi_addr                    PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_jbi_data                    PSAMPLE;
+  input                                         iob_jbi_req_ok                  PSAMPLE; // tie to high - noflow control
+  input                                         jbi_iob_rd_ack                  PSAMPLE;
+  input                                         jbi_iob_rd_nak                  PSAMPLE;
+  input                                         jbi_iob_wr_ack                  PSAMPLE; // tie to low
+  input                                         jbi_iob_ifill                   PSAMPLE; // tie to low
+  input                                         jbi_iob_busy                    PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              jbi_iob_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              jbi_iob_buf_id                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            jbi_iob_data                    PSAMPLE;
+  input                                         jbi_iob_int                     PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              jbi_iob_itype                   PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              jbi_iob_ithr_id                 PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    jbi_iob_istat                   PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      jbi_iob_dev_id                  PSAMPLE;    
+  // CTU
+  input                                         iob_ctu_rd                      PSAMPLE;
+  input                                         iob_ctu_wr                      PSAMPLE;
+  input                                         iob_ctu_ifill                   PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_ctu_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_ctu_buf_id                  PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_ctu_addr                    PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_ctu_data                    PSAMPLE;
+  input                                         iob_ctu_req_ok                  PSAMPLE; // tie to high - noflow control
+  input                                         ctu_iob_rd_ack                  PSAMPLE;
+  input                                         ctu_iob_rd_nak                  PSAMPLE;
+  input                                         ctu_iob_wr_ack                  PSAMPLE; // tie to low
+  input                                         ctu_iob_ifill                   PSAMPLE; // tie to low
+  input                                         ctu_iob_busy                    PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              ctu_iob_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              ctu_iob_buf_id                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            ctu_iob_data                    PSAMPLE;
+  input                                         ctu_iob_int                     PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              ctu_iob_itype                   PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              ctu_iob_ithr_id                 PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    ctu_iob_istat                   PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      ctu_iob_dev_id                  PSAMPLE;    
+  // DRAM0
+  input                                         iob_dram0_rd                    PSAMPLE;
+  input                                         iob_dram0_wr                    PSAMPLE;
+  input                                         iob_dram0_ifill                 PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_dram0_thr_id                PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_dram0_buf_id                PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_dram0_addr                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_dram0_data                  PSAMPLE;
+  input                                         iob_dram0_req_ok                PSAMPLE; // tie to high - noflow control
+  input                                         dram0_iob_rd_ack                PSAMPLE;
+  input                                         dram0_iob_rd_nak                PSAMPLE;
+  input                                         dram0_iob_wr_ack                PSAMPLE; // tie to low
+  input                                         dram0_iob_ifill                 PSAMPLE; // tie to low
+  input                                         dram0_iob_busy                  PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              dram0_iob_thr_id                PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              dram0_iob_buf_id                PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            dram0_iob_data                  PSAMPLE;
+  input                                         dram0_iob_int                   PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              dram0_iob_itype                 PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              dram0_iob_ithr_id               PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    dram0_iob_istat                 PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      dram0_iob_dev_id                PSAMPLE;    
+  // DRAM1
+  input                                         iob_dram1_rd                    PSAMPLE;
+  input                                         iob_dram1_wr                    PSAMPLE;
+  input                                         iob_dram1_ifill                 PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_dram1_thr_id                PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_dram1_buf_id                PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_dram1_addr                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_dram1_data                  PSAMPLE;
+  input                                         iob_dram1_req_ok                PSAMPLE; // tie to high - noflow control
+  input                                         dram1_iob_rd_ack                PSAMPLE;
+  input                                         dram1_iob_rd_nak                PSAMPLE;
+  input                                         dram1_iob_wr_ack                PSAMPLE; // tie to low
+  input                                         dram1_iob_ifill                 PSAMPLE; // tie to low
+  input                                         dram1_iob_busy                  PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              dram1_iob_thr_id                PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              dram1_iob_buf_id                PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            dram1_iob_data                  PSAMPLE;
+  input                                         dram1_iob_int                   PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              dram1_iob_itype                 PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              dram1_iob_ithr_id               PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    dram1_iob_istat                 PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      dram1_iob_dev_id                PSAMPLE;    
+  // SPI
+  input                                         iob_spi_rd                      PSAMPLE;
+  input                                         iob_spi_wr                      PSAMPLE;
+  input                                         iob_spi_ifill                   PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              iob_spi_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              iob_spi_buf_id                  PSAMPLE;
+  input  [UCB_ADDR_HI-UCB_ADDR_LO:0]            iob_spi_addr                    PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            iob_spi_data                    PSAMPLE;
+  input                                         iob_spi_req_ok                  PSAMPLE; // tie to high - noflow control
+  input                                         spi_iob_rd_ack                  PSAMPLE;
+  input                                         spi_iob_rd_nak                  PSAMPLE;
+  input                                         spi_iob_wr_ack                  PSAMPLE; // tie to low
+  input                                         spi_iob_ifill                   PSAMPLE; // tie to low
+  input                                         spi_iob_busy                    PSAMPLE; // tie to low
+  input  [UCB_THR_HI-UCB_THR_LO:0]              spi_iob_thr_id                  PSAMPLE;
+  input  [UCB_BUF_HI-UCB_BUF_LO:0]              spi_iob_buf_id                  PSAMPLE;
+  input  [UCB_DATA_HI-UCB_DATA_LO:0]            spi_iob_data                    PSAMPLE;
+  input                                         spi_iob_int                     PSAMPLE;
+  input  [UCB_PKT_HI-UCB_PKT_LO:0]              spi_iob_itype                   PSAMPLE;    
+  input  [UCB_THR_HI-UCB_THR_LO:0]              spi_iob_ithr_id                 PSAMPLE;    
+  input  [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0]    spi_iob_istat                   PSAMPLE;    
+  input  [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0]      spi_iob_dev_id                  PSAMPLE;    
+
+}
+
+#endif

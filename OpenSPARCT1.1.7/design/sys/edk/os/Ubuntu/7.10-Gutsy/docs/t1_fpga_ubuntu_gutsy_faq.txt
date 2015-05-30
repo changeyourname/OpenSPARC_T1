@@ -1,0 +1,351 @@
+
+1.0) Which version of Ubuntu distribution was used to create the ramdisk image.
+
+    Ubuntu 7.10 Gutsy Gibbon binaries were used to create the ramdisk image.
+
+    Use the following URL for more information about this release.
+    http://releases.ubuntu.com/7.10/
+
+    Ubuntu was installed on a UltraSPARC-T1 system using the following network boot image.
+    http://archive.ubuntu.com/ubuntu/dists/gutsy/main/installer-sparc/current/images/sparc64/netboot/2.6/boot.img
+
+1.1) What is the root password.
+
+     root
+
+1.2) What is the guest account password.
+
+     guest
+
+1.3) How do I specify the root device in the boot command
+
+     ok boot Linux root=/dev/sunhv_disk
+
+1.4) How do I connect the t1_fpga system to the network
+
+   The default IP address and the network configuration may not be appropriate
+   to the network to which the t1_fpga system is to be connected.
+
+   There are two ways of changing the IP address and the network configuration of 
+   the t1_fpga system.
+
+   1) Permanently change the IP address and the network configuration in the ramdisk image.
+   
+       Modify the following files in the ramdisk image appropriately
+
+       /etc/network/interfaces
+       /etc/hosts
+       /etc/resolv.conf
+       /etc/networks
+
+   2) Temporarily change the IP address and the network configuration after booting 
+      the t1_fpga system with the default IP address and the network configuration.
+
+       Disconnect the t1_fpga system from the network (from the ethernet switch)
+       but keep the ethernet cable connected to the t1_fpga system.
+
+       After booting the system to console login prompt, login as root.
+
+       Example network configuration:
+       -----------------------------
+
+	 new_ip_address:         192.10.10.100
+	 new_broadcast_address:  192.10.10.255
+	 new_gateway_address:    192.10.10.1
+	 new_netmask:            255.255.255.0
+
+       # ifconfig eth0 down
+       # ifconfig eth0 inet <new_ip_address> broadcast <new_broadcast_address> netmask <new_netmask>
+       # ifconfig eth0 up
+       # route add default gw <new_gateway_address>
+
+       Connect the ethernet cable to the network (ethernet switch)
+
+1.5) How do I modify the ramdisk image
+
+   On a (Ubuntu) Linux system, login to an account with root privileges.
+   Make sure that the ramdisk file has write permissions so that root can modify the file.
+
+   # mkdir <ramdisk_mnt_dir>
+   # mount -o /dev/loop0 <ramdisk_image_pathname> <ramdisk_mnt_dir>
+   # cd <ramdisk_mnt_dir>
+   #
+   # make changes. be careful not to modify the host system files.
+   #
+   # cd ..
+   # sync
+   # umount <ramdisk_mnt_dir> 
+
+
+1.6) How do I add new commands to the ramdisk image
+
+   Mount the ramdisk image and copy the files to the appropriate directory. Since the
+   ramdisk image doesn't have all the libraries and files that come with Ubuntu Gutsy
+   distribution, you may have to add any missing dependent files. You can use "ldd" 
+   command to find the library dependencies of the new command.
+
+
+1.7) How do I create a new ramdisk image with files from the existing ramdisk image
+
+    On a Ubuntu Linux system, login to an account with root privileges.
+
+    mkdir new_dir
+    cd new_dir
+    
+    # copy ramdisk.ubuntu-7.10-gutsy.gz to the current directory
+    gzip -d ramdisk.ubuntu-7.10-gutsy.gz
+    
+    dd if=ramdisk.ubuntu-7.10-gutsy of=vtoc count=1
+    dd if=ramdisk.ubuntu-7.10-gutsy of=first.b skip=1 count=1
+    
+    mkdir old_mnt
+    mount -o loop=/dev/loop0 ramdisk.ubuntu-7.10-gutsy  old_mnt
+    cd old_mnt
+    tar cf ../old_files.tar .
+    cd ..
+    sync; umount old_mnt
+    
+    dd if=/dev/zero of=new_ramdisk count=163840     # 80MB
+    /sbin/mkfs -t ext3 -q new_ramdisk
+    
+    mkdir new_mnt
+    mount -o loop=/dev/loop0 new_ramdisk  new_mnt
+    cd new_mnt
+    tar xf ../old_files.tar
+    cd boot
+    update_first_second ../../first.b ./second.b
+    cd ../..
+    dd if=first.b of=/dev/loop0 seek=1 count=1
+    dd if=vtoc of=/dev/loop0 count=1
+    sync
+    umount new_mnt
+
+
+1.8) How do I create a new ramdisk image from a SPARC system running Ubuntu Linux
+     
+    On a SPARC Ubuntu Linux system, login to an account with root privileges.
+    This example uses "/dev/sdc" to represent the root device. Use a device path
+    that is appropriate for your system.
+
+
+    mkdir new_dir
+    cd new_dir
+    
+    # copy ramdisk.ubuntu-7.10-gutsy.gz to the current directory
+
+    gzip -d ramdisk.ubuntu-7.10-gutsy.gz
+    dd if=ramdisk.ubuntu-7.10-gutsy of=vtoc count=1
+    dd if=/dev/sdc of=first.b skip=1 count=1
+    
+    # create a tar file containing the files to be copied from the harddisk
+    # to the ramdisk image. Use the list of files in the ramdisk image 
+    # ramdisk.ubuntu-7.10-gutsy.gz to get an idea of the minimum required files.
+    # Add sunhv_disk to initrd.img file.
+    
+    dd if=/dev/zero of=new_ramdisk count=163840     # 80MB
+    /sbin/mkfs -t ext3 -q new_ramdisk
+    
+    mkdir new_mnt
+    mount -o loop=/dev/loop0 new_ramdisk  new_mnt
+    cd new_mnt
+    tar xf ../old_files.tar
+    #
+    # Add the "sunhv_net" device driver to the new_ramdisk image in the same location
+    # as in the file "ramdisk.ubuntu-7.10-gutsy.gz". Also add the device
+    # driver module to /etc/modules.
+    #
+    cd boot
+    update_first_second ../../first.b ./second.b
+    cd ../..
+    dd if=first.b of=/dev/loop0 seek=1 count=1
+    dd if=vtoc of=/dev/loop0 count=1
+    sync
+    umount new_mnt
+
+
+1.9) What changes have been made to the Ubuntu Linux kernel.
+
+    The following two files have been modified in the kernel source code
+    and the compiled kernel binary copied to the ramdisk image. The original 
+    files, the new files and the diffs are available in the directory
+    "niagara/design/sys/edk/os/Ubuntu/7.10-Gutsy/src/changes".
+
+    drivers/serial/sunhv.c
+    arch/sparc64/kernel/hvapi.c
+
+    1)  sun4v console device used in the t1_fpga system doesn't support interrupts.
+	Therefore the sun4v console driver in the kernel is modified to poll
+	the console device periodically for input.
+
+	drivers/serial/sunhv.c
+
+    2)  The following file has been modified to specify the sun4v interrupt API
+	version to be used.
+
+	arch/sparc64/kernel/hvapi.c
+
+1.10) What changes have been made to initrd.img
+
+      initrd.img file in the ramdisk image is in uncompressed format. This is done to save
+      time uncompressing the file in the t1_fpga system.
+
+      The following three files have been modified in the initrd.img file so that the kernel
+      uses "sunhv_disk" device driver for accessing the disk.
+
+      conf/conf.d/resume
+      conf/modules
+      etc/udev/rules.d/65-persistent-storage.rules
+
+1.11)  What are the files
+
+      Ubuntu/7.10-Gutsy/src/utils/update_first_second.c
+      Ubuntu/7.10-Gutsy/src/utils/create_vtoc.c
+
+
+      update_first_second.c
+
+	  This file is compiled and run on a Linux system.
+
+	  update_first_second  <first.b_filename>  <second.b_filename>
+
+	  The address of the first sector of the file /boot/second.b is hardcoded in the
+	  last word of the second sector in the ramdisk image.
+
+	  The addresses of the disk sectors used by the file /boot/second.b are stored at
+	  the beginning of the file /boot/second.b
+
+	  When a new ramdisk image is created, these disk sector numbers are likely to be
+	  invalid and the utility updates these sector numbers to the correct values.
+
+
+      create_vtoc.c
+
+	  This file is compiled and run on a Solaris system.
+
+	  create_vtoc -f <new_ramdisk_image_file>
+
+	  This utility creates and writes the VTOC in the first sector of the ramdisk image.
+
+
+1.12) What are the directories
+
+      Ubuntu/7.10-Gutsy/src/drivers/sunhv_disk
+      Ubuntu/7.10-Gutsy/src/drivers/sunhv_net
+
+
+      These two directories contain the source code of the device drivers for disk and network 
+      devices supported in the t1_fpga system respectively. The device drivers communicate with
+      the virtual disk device and virtual network device which are then mapped to DRAM and real 
+      network device on the fpga board respectively.
+
+1.13) What messages appear on the console during Ubuntu Linux boot
+
+-----------------------------------------------------------------------------------
+
+    MBFW_INFO: Uncompressing ram_disk .....
+    MBFW_INFO: Uncompressed ram_disk 
+    MBFW_INFO: Initializing OpenSPARC T1 DRAM from 0x80100000 to 0x8AF00000 
+    MBFW_INFO: Initialized OpenSPARC T1 DRAM 
+    MBFW_INFO: XIntc interrupt controller initialized. 
+    MBFW_INFO: Setting Temac operating speed to 100 Mbit/sec
+    MBFW_INFO: Ethernet controller initialization completed. 
+    MBFW_INFO: Network controller initialized. 
+    MBFW_INFO: Microblaze firmware initialization completed. 
+
+    MBFW_INFO: Powering on OpenSPARC T1 
+    ``Alive and well ...
+    Strand start set = 0xf
+    Total physical mem = 0xac00000
+    Scrubbing the rest of memory
+    Number of strands = 0x4
+    membase = 0x0
+    memsize = 0x1000000
+    physmem = 0xac00000
+     done
+    returned status 0x0
+    setup everything else
+    Setting remaining details
+    Start heart beat for control domain
+    
+    WARNING: Unable to connect to Domain Service providers
+
+    WARNING: Unable to get LDOM Variable Updates
+
+    WARNING: Unable to update LDOM Variable
+
+
+    Sun Fire T1000, No Keyboard
+    Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+    OpenBoot 4.x.build_122***PROTOTYPE BUILD***, 156 MB memory available, Serial #66711024.
+    [greddy obp #0]
+    Ethernet address 0:e0:81:5f:2c:ab, Host ID: 83f9edf0.
+
+
+
+    {0} ok boot 
+    Boot device: vdisk  File and args: 
+    SILO Version 1.4.13
+    boot: 
+    Allocated 8 Megs of memory at 0x40000000 for kernel
+    Uncompressing image...
+    Loaded kernel version 2.6.22
+    Loading initial ramdisk (8161280 bytes at 0x2000000 phys, 0x40C00000 virt)...
+    Remapping the kernel... done.
+    OF stdout device is: /virtual-devices@100/console@1
+    Booting Linux...
+    [  189.258923] rtc_init: no PC rtc found
+    Loading, please wait...
+     * Setting preliminary keymap...       [ OK ]
+     * Preparing restricted drivers...       [ OK ]
+     * Starting basic networking...       [ OK ]
+     * Starting kernel event manager...       [ OK ]
+     * Loading hardware drivers...       [ OK ]
+     * Loading kernel modules...       
+     * Loading manual drivers...       [ OK ]
+     * Activating swap...       [ OK ]
+     * Checking root file system...       fsck 1.40.2 (12-Jul-2007)
+    /dev/sunhv_disk: Superblock last mount time is in the future.  FIXED.
+    /dev/sunhv_disk: Superblock last write time is in the future.  FIXED.
+    /dev/sunhv_disk: Superblock last check time is in the future.  FIXED.
+    /dev/sunhv_disk: clean, 6554/20480 files, 61763/81920 blocks
+    [ OK ]
+     * Checking file systems...       fsck 1.40.2 (12-Jul-2007)
+    [ OK ]
+     * Mounting local filesystems...       [ OK ]
+     * Activating swapfile swap...       [ OK ]
+     * Checking minimum space in /tmp...       [ OK ]
+     * Configuring network interfaces...       [ OK ]
+     * Starting system log daemon...      
+    Ubuntu 7.10 t1-fpga-00 ttyS0
+
+    t1-fpga-00 login: [ OK ]
+     * Starting kernel log daemon...       [ OK ]
+     * Starting OpenBSD Secure Shell server sshd       [ OK ]
+     * Starting deferred execution scheduler atd       [ OK ]
+     * Starting periodic command scheduler crond       [ OK ]
+     * Running local boot scripts (/etc/rc.local)      [ OK ]
+
+    Ubuntu 7.10 t1-fpga-00 ttyS0
+
+    t1-fpga-00 login: root
+    Password: 
+    Linux t1-fpga-00 2.6.22-15-sparc64-smp #110 SMP Wed Mar 18 16:53:44 PDT 2009 sparc64
+
+    The programs included with the Ubuntu system are free software;
+    the exact distribution terms for each program are described in the
+    individual files in /usr/share/doc/*/copyright.
+
+    Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+    applicable law.
+    root@t1-fpga-00:~#
+
+-----------------------------------------------------------------------------------
+
+
+1.14) Why is the CPU clock frequency as reported to the Operating System set to 1GHz
+
+      See the answer to the question 7.0 in OpenSolaris/docs/t1_fpga_opensolaris_faq.txt
+
+1.15) Is the dual-core system supported
+
+      Not yet.

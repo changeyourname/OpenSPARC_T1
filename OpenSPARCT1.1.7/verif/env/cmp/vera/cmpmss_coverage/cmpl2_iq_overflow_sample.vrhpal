@@ -1,0 +1,25 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_iq_overflow_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// bit [10:0] = { pcx_sctag_data_rdy_px2, pcx_sctag_data_px2[122:118], que_cnt[4:0] };
+
+wildcard trans cas1_iq_entry15( {1'b1, CAS1_RQ, 5'bx} -> 11'bx -> {1'bx, 5'bx, 5'hf} );
+wildcard trans cas1_iq_entry16( {1'b1, CAS1_RQ, 5'bx} -> 11'bx -> {1'bx, 5'bx, 5'h10} );

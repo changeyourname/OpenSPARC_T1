@@ -1,0 +1,153 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: user_cfg.scr
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+
+source -echo -verbose $dv_root/design/sys/synopsys/script/project_io_cfg.scr
+
+set rtl_files {\
+lib/u1/u1.behV \
+lib/m1/m1.behV \
+design/sys/iop/common/rtl/swrvr_clib.v \
+
+design/sys/iop/common/rtl/ucb_flow_spi.v \
+design/sys/iop/common/rtl/ucb_bus_in.v \
+design/sys/iop/common/rtl/ucb_bus_out.v \
+
+design/sys/iop/jbi/rtl/bw_clk_cl_jbi_cmp.v \
+design/sys/iop/jbi/rtl/bw_clk_cl_jbi_jbus.v \
+design/sys/iop/jbi/common/rtl/jbi_1r1w_16x10.v \
+design/sys/iop/jbi/common/rtl/jbi_1r1w_16x160.v \
+design/sys/iop/common/rtl/ucb_flow_jbi.v \
+design/sys/iop/jbi/jbi_csr/rtl/jbi_csr.v \
+design/sys/iop/jbi/jbi_dbg/rtl/jbi_dbg_buf.v \
+design/sys/iop/jbi/jbi_dbg/rtl/jbi_dbg_ctl_qctl.v \
+design/sys/iop/jbi/jbi_dbg/rtl/jbi_dbg_ctl.v \
+design/sys/iop/jbi/jbi_dbg/rtl/jbi_dbg.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_parse.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_issue.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_rdq_buf.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_rdq_ctl.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_rhq_buf.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_rhq_ctl.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_tag_slice.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq_tag.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_rq.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_wdq_buf.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_wdq_ctl.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_wdq.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_wrtrk_ptag_sum.v \
+design/sys/iop/jbi/jbi_min/rtl/jbi_min_wrtrk.v \
+design/sys/iop/jbi/jbi_mout/rtl/dffsle_ns.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_aok_dok_tracking.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_int_arb.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_jbus_arb.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_jid_to_yid_pool.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_jid_to_yid_table.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_jid_to_yid.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_j_pack_out_gen.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_j_par_chk.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_mout_csr.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_mout.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_ncrd_timeout.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_pktout_asm.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_pktout_ctlr.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_pktout_mux.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_sct_out_queues.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_sctrdq_fifo.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_sctrdq.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_snoop_out_queue.v \
+design/sys/iop/jbi/jbi_mout/rtl/jbi_timer.v \
+design/sys/iop/jbi/jbi_mout/rtl/srffrl_ns.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_makq_ctl.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_mrqq_buf.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_mrqq_ctl.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_mto_ctl.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_mto_slice.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_prqq_buf.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_prqq_ctl.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_prtq_buf.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_prtq_ctl.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio_tag.v \
+design/sys/iop/jbi/jbi_ncio/rtl/jbi_ncio.v \
+design/sys/iop/jbi/jbi_ssi/rtl/jbi_ssi_ucbif.v \
+design/sys/iop/jbi/jbi_ssi/rtl/jbi_ssi.v \
+design/sys/iop/common/rtl/test_stub_scan.v \
+design/sys/iop/jbi/jbi_ssi/rtl/jbi_ssi_sif.v \
+
+design/sys/iop/common/rtl/synchronizer_asr.v \
+design/sys/iop/common/rtl/sync_pulse_synchronizer.v \
+design/sys/iop/srams/rtl/bw_rf_16x81.v \
+design/sys/iop/srams/rtl/bw_rf_16x65.v \
+
+design/sys/iop/common/rtl/cluster_header.v \
+design/sys/iop/srams/rtl/bw_r_rf16x160.v \
+design/sys/iop/common/rtl/cluster_header_sync.v \
+
+design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_sync.v \
+
+design/sys/iop/jbi/rtl/jbi.v \
+} 
+
+set mix_files {}
+set top_module jbi
+
+set include_paths {\
+design/sys/iop/include \
+design/sys/iop/jbi/include \
+design/sys/iop/jbi/jbi_mout/rtl \
+}
+
+set black_box_libs {}
+set black_box_designs {}
+set mem_libs {}
+set dont_touch_modules {}
+set compile_effort   "medium"
+
+set compile_flatten_all 1
+
+set compile_no_new_cells_at_top_level false
+
+set default_clk jbus_gclk
+set default_clk_freq  1200
+set default_setup_skew  0.1
+set default_hold_skew  0.1
+set default_clk_transition  0.04
+set clk_list {                        \
+                {jbus_gclk 1200.0   0.100   0.100   0.040}        \
+}
+
+set ideal_net_list {}
+set false_path_list {}
+set enforce_input_fanout_one     0
+set allow_outport_drive_innodes  1
+set skip_scan            0
+set add_lockup_latch     false
+set chain_count          1
+set scanin_port_list     {}
+set scanout_port_list    {}
+set scanenable_port      global_shift_enable
+set has_test_stub        1
+set scanenable_pin       test_stub_no_bist/se
+set long_chain_so_0_net  long_chain_so_0
+set short_chain_so_0_net short_chain_so_0
+set so_0_net             so_0
+set insert_extra_lockup_latch 0
+set extra_lockup_latch_clk_list {}

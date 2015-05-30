@@ -1,0 +1,68 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_tag_sub_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+
+
+
+
+
+// coverage_def EXU_TAG_SUB_COV (bit[`EXU_TAG_WIDTH-1:0] exu_tag_sub_state) {
+  //state declarations
+
+
+state s_TAG_SUB_00_00  			(TAG_SUB_00_00  );
+state s_TAG_SUB_00_01  			(TAG_SUB_00_01  );
+state s_TAG_SUB_00_10  			(TAG_SUB_00_10  );
+state s_TAG_SUB_00_11  			(TAG_SUB_00_11  );
+state s_TAG_SUB_01_00  			(TAG_SUB_01_00  );
+state s_TAG_SUB_01_01  			(TAG_SUB_01_01  );
+state s_TAG_SUB_01_10  			(TAG_SUB_01_10  );
+state s_TAG_SUB_01_11  			(TAG_SUB_01_11  );
+state s_TAG_SUB_10_00  			(TAG_SUB_10_00  );
+state s_TAG_SUB_10_01  			(TAG_SUB_10_01  );
+state s_TAG_SUB_10_10  			(TAG_SUB_10_10  );
+state s_TAG_SUB_10_11  			(TAG_SUB_10_11  );
+state s_TAG_SUB_11_00  			(TAG_SUB_11_00  );
+state s_TAG_SUB_11_01  			(TAG_SUB_11_01  );
+state s_TAG_SUB_11_10  			(TAG_SUB_11_10  );
+state s_TAG_SUB_11_11  			(TAG_SUB_11_11  );
+state s_TAGTV_SUB_00_00			(TAGTV_SUB_00_00);
+state s_TAGTV_SUB_00_01			(TAGTV_SUB_00_01);
+state s_TAGTV_SUB_00_10			(TAGTV_SUB_00_10);
+state s_TAGTV_SUB_00_11			(TAGTV_SUB_00_11);
+state s_TAGTV_SUB_01_00			(TAGTV_SUB_01_00);
+state s_TAGTV_SUB_01_01			(TAGTV_SUB_01_01);
+state s_TAGTV_SUB_01_10			(TAGTV_SUB_01_10);
+state s_TAGTV_SUB_01_11			(TAGTV_SUB_01_11);
+state s_TAGTV_SUB_10_00			(TAGTV_SUB_10_00);
+state s_TAGTV_SUB_10_01			(TAGTV_SUB_10_01);
+state s_TAGTV_SUB_10_10			(TAGTV_SUB_10_10);
+state s_TAGTV_SUB_10_11			(TAGTV_SUB_10_11);
+state s_TAGTV_SUB_11_00			(TAGTV_SUB_11_00);
+state s_TAGTV_SUB_11_01			(TAGTV_SUB_11_01);
+state s_TAGTV_SUB_11_10			(TAGTV_SUB_11_10);
+state s_TAGTV_SUB_11_11			(TAGTV_SUB_11_11);
+
+
+// }
+

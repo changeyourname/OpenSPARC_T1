@@ -1,0 +1,42 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_asi_accesses_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU s_asi_accesses	(asi_accesses);
+//
+//
+// ***************************************************************************
+
+
+wildcard state  s_ASI_NUCLEUS                             	(ASI_NUCLEUS                             );
+wildcard state  s_ASI_NUCLEUS_LITTLE                      	(ASI_NUCLEUS_LITTLE                      );
+wildcard state  s_ASI_ASIF_USER_PRIMARY                   	(ASI_ASIF_USER_PRIMARY                   );
+wildcard state  s_ASI_ASIF_USER_SECONDARY                 	(ASI_ASIF_USER_SECONDARY                 );
+wildcard state  s_ASI_ASIF_USER_PRIMARY_LITTLE            	(ASI_ASIF_USER_PRIMARY_LITTLE            );
+wildcard state  s_ASI_ASIF_USER_SECONDARY_LITTLE          	(ASI_ASIF_USER_SECONDARY_LITTLE          );
+wildcard state  s_ASI_PRIMARY                             	(ASI_PRIMARY                             );
+wildcard state  s_ASI_SECONDARY                           	(ASI_SECONDARY                           );
+wildcard state  s_ASI_PRIMARY_NO_FAULT                    	(ASI_PRIMARY_NO_FAULT                    );
+wildcard state  s_ASI_SECONDARY_NO_FAULT                  	(ASI_SECONDARY_NO_FAULT                  );
+wildcard state  s_ASI_PRIMARY_LITTLE                      	(ASI_PRIMARY_LITTLE                      );
+wildcard state  s_ASI_SECONDARY_LITTLE                    	(ASI_SECONDARY_LITTLE                    );
+wildcard state  s_ASI_PRIMARY_NO_FAULT_LITTLE             	(ASI_PRIMARY_NO_FAULT_LITTLE             );
+wildcard state  s_ASI_SECONDARY_NO_FAULT_LITTLE           	(ASI_SECONDARY_NO_FAULT_LITTLE           );

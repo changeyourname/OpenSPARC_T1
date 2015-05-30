@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_logic_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// coverage_def EXU_LOGIC_COV (bit[`EXU_LOGIC_WIDTH-1:0] exu_logic_state) {
+  //state declarations
+
+wildcard state s_AND        			(AND      );
+wildcard state s_ANDN       			(ANDN     );
+wildcard state s_OR         			(OR       );
+wildcard state s_ORN        			(ORN      );
+wildcard state s_XOR        			(XOR      );
+wildcard state s_XORN       			(XORN     );
+wildcard state s_ANDCC_XN   			(ANDCC_XN );
+wildcard state s_ANDCC_XZ   			(ANDCC_XZ );
+wildcard state s_ANDCC_iN   			(ANDCC_iN );
+wildcard state s_ANDCC_iZ   			(ANDCC_iZ );
+wildcard state s_ANDNCC_XN  			(ANDNCC_XN);
+wildcard state s_ANDNCC_XZ  			(ANDNCC_XZ);
+wildcard state s_ANDNCC_iN  			(ANDNCC_iN);
+wildcard state s_ANDNCC_iZ  			(ANDNCC_iZ);
+wildcard state s_ORCC_XN    			(ORCC_XN  );
+wildcard state s_ORCC_XZ    			(ORCC_XZ  );
+wildcard state s_ORCC_iN    			(ORCC_iN  );
+wildcard state s_ORCC_iZ    			(ORCC_iZ  );
+wildcard state s_ORNCC_XN   			(ORNCC_XN );
+wildcard state s_ORNCC_XZ   			(ORNCC_XZ );
+wildcard state s_ORNCC_iN   			(ORNCC_iN );
+wildcard state s_ORNCC_iZ   			(ORNCC_iZ );
+wildcard state s_XORCC_XN   			(XORCC_XN );
+wildcard state s_XORCC_XZ   			(XORCC_XZ );
+wildcard state s_XORCC_iN   			(XORCC_iN );
+wildcard state s_XORCC_iZ   			(XORCC_iZ );
+wildcard state s_XNORCC_XN  			(XNORCC_XN);
+wildcard state s_XNORCC_XZ  			(XNORCC_XZ);
+wildcard state s_XNORCC_iN  			(XNORCC_iN);
+wildcard state s_XNORCC_iZ  			(XNORCC_iZ);
+
+
+// }
+

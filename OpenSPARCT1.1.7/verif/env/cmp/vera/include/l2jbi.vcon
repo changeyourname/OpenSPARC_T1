@@ -1,0 +1,72 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2jbi.vcon
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef GATE_SIM
+connect input l2jbi.ccx_rclk = "cmp_top.iop.ccx.rclk"
+
+connect input l2jbi.arbctl_inst_vld_c3_0 = "cmp_top.iop.sctag0.arbctl.arbctl_inst_vld_c3" iskew -1
+connect input l2jbi.arbdp_inst_c3_0 = "cmp_top.iop.sctag0.arbdecdp.arbdp_inst_c3[19:0]" iskew -1
+connect input l2jbi.arbdp_addr_c3_0 = "cmp_top.iop.sctag0.arbaddrdp.arbdp_addr_c3" iskew -1
+connect input l2jbi.tagctl_rdma_wr_comp_c3_0 = "cmp_top.iop.sctag0.tagctl.tagctl_rdma_wr_comp_c3" iskew -1
+connect input l2jbi.oqctl_st_complete_c6_0 = "cmp_top.iop.sctag0.oqctl.oqctl_st_complete_c6" iskew -1
+connect input l2jbi.req_out_c6_0 = "cmp_top.iop.sctag0.oqctl.req_out_c6" iskew -1
+connect input l2jbi.ext_inval_data_c7_0 = "cmp_top.iop.sctag0.oqdp.ext_inval_data_c7" iskew -1
+connect input l2jbi.sctag_cpx_req_cq_0 = "cmp_top.iop.sctag0.sctag_cpx_req_cq" iskew -1
+connect input l2jbi.sctag_cpx_data_ca_0 = "cmp_top.iop.sctag0.sctag_cpx_data_ca" iskew -1
+connect input l2jbi.scbuf_jbi_ctag_vld_0 = "cmp_top.iop.scbuf0.scbuf_jbi_ctag_vld" iskew -1
+connect input l2jbi.scbuf_jbi_data_0 = "cmp_top.iop.scbuf0.scbuf_jbi_data" iskew -1
+
+connect input l2jbi.arbctl_inst_vld_c3_1 = "cmp_top.iop.sctag1.arbctl.arbctl_inst_vld_c3" iskew -1
+connect input l2jbi.arbdp_inst_c3_1 = "cmp_top.iop.sctag1.arbdecdp.arbdp_inst_c3[19:0]" iskew -1
+connect input l2jbi.arbdp_addr_c3_1 = "cmp_top.iop.sctag1.arbaddrdp.arbdp_addr_c3" iskew -1
+connect input l2jbi.tagctl_rdma_wr_comp_c3_1 = "cmp_top.iop.sctag1.tagctl.tagctl_rdma_wr_comp_c3" iskew -1
+connect input l2jbi.oqctl_st_complete_c6_1 = "cmp_top.iop.sctag1.oqctl.oqctl_st_complete_c6" iskew -1
+connect input l2jbi.req_out_c6_1 = "cmp_top.iop.sctag1.oqctl.req_out_c6" iskew -1
+connect input l2jbi.ext_inval_data_c7_1 = "cmp_top.iop.sctag1.oqdp.ext_inval_data_c7" iskew -1
+connect input l2jbi.sctag_cpx_req_cq_1 = "cmp_top.iop.sctag1.sctag_cpx_req_cq" iskew -1
+connect input l2jbi.sctag_cpx_data_ca_1 = "cmp_top.iop.sctag1.sctag_cpx_data_ca" iskew -1
+connect input l2jbi.scbuf_jbi_ctag_vld_1 = "cmp_top.iop.scbuf1.scbuf_jbi_ctag_vld" iskew -1
+connect input l2jbi.scbuf_jbi_data_1 = "cmp_top.iop.scbuf1.scbuf_jbi_data" iskew -1
+
+connect input l2jbi.arbctl_inst_vld_c3_2 = "cmp_top.iop.sctag2.arbctl.arbctl_inst_vld_c3" iskew -1
+connect input l2jbi.arbdp_inst_c3_2 = "cmp_top.iop.sctag2.arbdecdp.arbdp_inst_c3[19:0]" iskew -1
+connect input l2jbi.arbdp_addr_c3_2 = "cmp_top.iop.sctag2.arbaddrdp.arbdp_addr_c3" iskew -1
+connect input l2jbi.tagctl_rdma_wr_comp_c3_2 = "cmp_top.iop.sctag2.tagctl.tagctl_rdma_wr_comp_c3" iskew -1
+connect input l2jbi.oqctl_st_complete_c6_2 = "cmp_top.iop.sctag2.oqctl.oqctl_st_complete_c6" iskew -1
+connect input l2jbi.req_out_c6_2 = "cmp_top.iop.sctag2.oqctl.req_out_c6" iskew -1
+connect input l2jbi.ext_inval_data_c7_2 = "cmp_top.iop.sctag2.oqdp.ext_inval_data_c7" iskew -1
+connect input l2jbi.sctag_cpx_req_cq_2 = "cmp_top.iop.sctag2.sctag_cpx_req_cq" iskew -1
+connect input l2jbi.sctag_cpx_data_ca_2 = "cmp_top.iop.sctag2.sctag_cpx_data_ca" iskew -1
+connect input l2jbi.scbuf_jbi_ctag_vld_2 = "cmp_top.iop.scbuf2.scbuf_jbi_ctag_vld" iskew -1
+connect input l2jbi.scbuf_jbi_data_2 = "cmp_top.iop.scbuf2.scbuf_jbi_data" iskew -1
+
+connect input l2jbi.arbctl_inst_vld_c3_3 = "cmp_top.iop.sctag3.arbctl.arbctl_inst_vld_c3" iskew -1
+connect input l2jbi.arbdp_inst_c3_3 = "cmp_top.iop.sctag3.arbdecdp.arbdp_inst_c3[19:0]" iskew -1
+connect input l2jbi.arbdp_addr_c3_3 = "cmp_top.iop.sctag3.arbaddrdp.arbdp_addr_c3" iskew -1
+connect input l2jbi.tagctl_rdma_wr_comp_c3_3 = "cmp_top.iop.sctag3.tagctl.tagctl_rdma_wr_comp_c3" iskew -1
+connect input l2jbi.oqctl_st_complete_c6_3 = "cmp_top.iop.sctag3.oqctl.oqctl_st_complete_c6" iskew -1
+connect input l2jbi.req_out_c6_3 = "cmp_top.iop.sctag3.oqctl.req_out_c6" iskew -1
+connect input l2jbi.ext_inval_data_c7_3 = "cmp_top.iop.sctag3.oqdp.ext_inval_data_c7" iskew -1
+connect input l2jbi.sctag_cpx_req_cq_3 = "cmp_top.iop.sctag3.sctag_cpx_req_cq" iskew -1
+connect input l2jbi.sctag_cpx_data_ca_3 = "cmp_top.iop.sctag3.sctag_cpx_data_ca" iskew -1
+connect input l2jbi.scbuf_jbi_ctag_vld_3 = "cmp_top.iop.scbuf3.scbuf_jbi_ctag_vld" iskew -1
+connect input l2jbi.scbuf_jbi_data_3 = "cmp_top.iop.scbuf3.scbuf_jbi_data" iskew -1
+
+#endif

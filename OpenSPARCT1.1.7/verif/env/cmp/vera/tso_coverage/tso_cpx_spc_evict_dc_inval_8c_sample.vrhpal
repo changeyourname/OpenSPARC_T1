@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_cpx_spc_evict_dc_inval_8c_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// How many lines does the invalidation invalidate.
+// A dc invalidation can invalidate up to 32 lines - 4 per core.
+// some prime and odd number of invalidations are next to impossible
+// to hit.
+//***********************************************************************
+
+state s_TSO_8CEVICT1    (TSO_INVAL1);
+state s_TSO_8CEVICT2    (TSO_INVAL2);
+state s_TSO_8CEVICT3    (TSO_INVAL3);
+state s_TSO_8CEVICT4    (TSO_INVAL4);
+state s_TSO_8CEVICT5    (TSO_INVAL5);
+state s_TSO_8CEVICT6    (TSO_INVAL6);
+state s_TSO_8CEVICT7    (TSO_INVAL7);
+state s_TSO_8CEVICT8    (TSO_INVAL8);
+state s_TSO_8CEVICT9    (TSO_INVAL9);
+state s_TSO_8CEVICT10   (TSO_INVAL10);
+state s_TSO_8CEVICT11   (TSO_INVAL11);
+state s_TSO_8CEVICT12   (TSO_INVAL12);
+
+state s_TSO_8CEVICT14    (TSO_INVAL14);
+state s_TSO_8CEVICT15    (TSO_INVAL15);
+state s_TSO_8CEVICT16    (TSO_INVAL16);
+
+state s_TSO_8CEVICT18    (TSO_INVAL18);
+
+state s_TSO_8CEVICT20    (TSO_INVAL20);
+
+state s_TSO_8CEVICT24    (TSO_INVAL24);
+
+state s_TSO_8CEVICT32    (TSO_INVAL32);

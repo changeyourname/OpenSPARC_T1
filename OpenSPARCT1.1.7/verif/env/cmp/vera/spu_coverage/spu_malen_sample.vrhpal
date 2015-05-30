@@ -1,0 +1,61 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_malen_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_malen_COV_VRH
+#define INC__TMP_spu_malen_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in malen_sample_state:
+ * spu_mald.start_ldop, spu_mast.start_stop,
+ * spu_maaddr.spu_maaddr_len_cntr[6:0]
+ */
+
+/*
+ * spu_malen_cov
+ *
+ * This coverage object checks that we have exercised all MAMEM memory
+ * load and store sizes (transaction lengths). It also checks for illegal
+ * values for the length ( > 64).
+ *
+ * This coverage object does not declare any transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ *
+ */
+
+#endif
+
+sample maldst_sample_monitor_C${c}.malen_sample_state {
+  // Declare states to be covered 
+  m_state s_MALEN_ST_ADDR (9'h080:9'h0c0);
+  m_state s_MALEN_LD_ADDR (9'h100:9'h140);
+
+  // Declare bad states
+  m_bad_state s_MALEN_ST_ILL_LEN_STATE (9'h0c1:9'h0ff);
+  m_bad_state s_MALEN_LD_ILL_LEN_STATE (9'h141:9'h17f);
+
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

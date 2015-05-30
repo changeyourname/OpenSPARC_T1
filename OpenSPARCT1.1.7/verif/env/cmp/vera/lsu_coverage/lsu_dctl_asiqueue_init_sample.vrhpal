@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_asiqueue_init_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// tlb asi queue - initiating action
+//***********************************************************************
+
+  #define TLB_ACCESS_EN0         4'b1000 
+  #define TLB_ACCESS_EN1         4'b0100 
+  #define TLB_ACCESS_EN2         4'b0010 
+  #define TLB_ACCESS_EN3         4'b0001 
+
+  state s_ASIQUEUE_INIT0         ( TLB_ACCESS_EN0 );
+  state s_ASIQUEUE_INIT1         ( TLB_ACCESS_EN1 );
+  state s_ASIQUEUE_INIT2         ( TLB_ACCESS_EN2 );
+  state s_ASIQUEUE_INIT3         ( TLB_ACCESS_EN3 );
+
+  trans trans_t_ASIQUEUE_INIT_00 ( TLB_ACCESS_EN0 -> TLB_ACCESS_EN1 );
+  trans trans_t_ASIQUEUE_INIT_01 ( TLB_ACCESS_EN0 -> TLB_ACCESS_EN2 );
+  trans trans_t_ASIQUEUE_INIT_02 ( TLB_ACCESS_EN0 -> TLB_ACCESS_EN3 );
+
+  trans trans_t_ASIQUEUE_INIT_03 ( TLB_ACCESS_EN1 -> TLB_ACCESS_EN0 );
+  trans trans_t_ASIQUEUE_INIT_04 ( TLB_ACCESS_EN1 -> TLB_ACCESS_EN2 );
+  trans trans_t_ASIQUEUE_INIT_05 ( TLB_ACCESS_EN1 -> TLB_ACCESS_EN3 );
+
+  trans trans_t_ASIQUEUE_INIT_06 ( TLB_ACCESS_EN2 -> TLB_ACCESS_EN0 );
+  trans trans_t_ASIQUEUE_INIT_07 ( TLB_ACCESS_EN2 -> TLB_ACCESS_EN1 );
+  trans trans_t_ASIQUEUE_INIT_08 ( TLB_ACCESS_EN2 -> TLB_ACCESS_EN3 );
+
+  trans trans_t_ASIQUEUE_INIT_09 ( TLB_ACCESS_EN3 -> TLB_ACCESS_EN0 );
+  trans trans_t_ASIQUEUE_INIT_10 ( TLB_ACCESS_EN3 -> TLB_ACCESS_EN1 );
+  trans trans_t_ASIQUEUE_INIT_11 ( TLB_ACCESS_EN3 -> TLB_ACCESS_EN2 );

@@ -1,0 +1,32 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_defr_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu deferred trap, taken next cycle vs. not taken next cycle
+
+state s_DEFR_TRAP_IMMEDIATE_T0     (6'b011000);
+state s_DEFR_TRAP_IMMEDIATE_T1     (6'b010100);
+state s_DEFR_TRAP_IMMEDIATE_T2     (6'b010010);
+state s_DEFR_TRAP_IMMEDIATE_T3     (6'b010001);
+state s_DEFR_TRAP_NOT_IMMEDIATE_T0 (6'b101000);
+state s_DEFR_TRAP_NOT_IMMEDIATE_T1 (6'b100100);
+state s_DEFR_TRAP_NOT_IMMEDIATE_T2 (6'b100010);
+state s_DEFR_TRAP_NOT_IMMEDIATE_T3 (6'b100001);
+
+

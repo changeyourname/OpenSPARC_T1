@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_mout_ncrd_timer.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	jbi_mout_ncrd_0_timer.vrhpal
+// Description: Coverage object for the jbi_mout jbi_ncrd_0_timer state machine.
+//
+// ***************************************************************************
+
+// Group:      jbi_mout
+// FSM:        ncrd_[15-0]_timer
+// Interfaces:
+//    Acronym	RTL signal w/ scope								Interface
+//    -------   -------------------------------------------------------------------------	---------
+//    state	"${JBUS_COV_PATH}.jbi.u_mout.mout_csr.ncrd_timeout.ncrd_[15-00].state[1:0]"	jbi_jbuscov_ifc
+
+
+
+  // State declarations.
+  state s_UNUSED	(JBI_NCRD_TIMER_STATE_UNUSED);
+  state s_COUNT_0	(JBI_NCRD_TIMER_STATE_COUNT_0);
+  state s_COUNT_1	(JBI_NCRD_TIMER_STATE_COUNT_1);
+  state s_OVERFLOW	(JBI_NCRD_TIMER_STATE_OVERFLOW);
+
+
+  // Transitions.
+  trans t_s_UNUSED_s_UNUSED		(JBI_NCRD_TIMER_STATE_UNUSED   -> JBI_NCRD_TIMER_STATE_UNUSED);
+  trans t_s_UNUSED_s_COUNT_0		(JBI_NCRD_TIMER_STATE_UNUSED   -> JBI_NCRD_TIMER_STATE_COUNT_0);
+
+  trans t_s_COUNT_0_s_COUNT_0		(JBI_NCRD_TIMER_STATE_COUNT_0  -> JBI_NCRD_TIMER_STATE_COUNT_0);
+  trans t_s_COUNT_0_s_UNUSED		(JBI_NCRD_TIMER_STATE_COUNT_0  -> JBI_NCRD_TIMER_STATE_UNUSED);
+  trans t_s_COUNT_0_s_COUNT_1		(JBI_NCRD_TIMER_STATE_COUNT_0  -> JBI_NCRD_TIMER_STATE_COUNT_1);
+
+  trans t_s_COUNT_1_s_COUNT_1		(JBI_NCRD_TIMER_STATE_COUNT_1  -> JBI_NCRD_TIMER_STATE_COUNT_1);
+  trans t_s_COUNT_1_s_UNUSED		(JBI_NCRD_TIMER_STATE_COUNT_1  -> JBI_NCRD_TIMER_STATE_UNUSED);
+  trans t_s_COUNT_1_s_OVERFLOW		(JBI_NCRD_TIMER_STATE_COUNT_1  -> JBI_NCRD_TIMER_STATE_OVERFLOW);
+
+  trans t_s_OVERFLOW_s_OVERFLOW		(JBI_NCRD_TIMER_STATE_OVERFLOW -> JBI_NCRD_TIMER_STATE_OVERFLOW);
+  trans t_s_OVERFLOW_s_UNUSED		(JBI_NCRD_TIMER_STATE_OVERFLOW -> JBI_NCRD_TIMER_STATE_UNUSED);
+
+
+  // Bad states.
+  bad_state s_not_NCRD_0_TIMER_STATE (not state);
+
+  // Bad transitions. 
+  //bad_trans t_not_NCRD_0_TIMER_TRANS (not trans);

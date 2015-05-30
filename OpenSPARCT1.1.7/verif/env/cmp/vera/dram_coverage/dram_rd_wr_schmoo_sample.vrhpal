@@ -1,0 +1,89 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rd_wr_schmoo_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_rd_wr_schmoo.vrh
+// Description:
+// Schmoo the wr around rd and vice versa. This is for the Entries 
+// in the queues which have same address. They should hit and the
+// write should be given priority.
+// Also added the scrub happening to the same address while
+//  rd/wr Q has that address in the q
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rd_wr_schmoo (bit [2:0] rd_wr_scrb_vld)
+// {
+
+  // state declarations
+     wildcard state s_rd_wr_vld0                 ({2'b00, 1'bx});
+     wildcard state s_rd_wr_vld1                 ({2'b01, 1'bx});
+     wildcard state s_rd_wr_vld2                 ({2'b10, 1'bx});
+     wildcard state s_rd_wr_vld3                 ({2'b11, 1'bx});
+     wildcard state s_rd_wr_scrb_vld_011         ({2'b01, 1'b1});
+     state s_rd_wr_scrb_vld_101                  ({2'b10, 1'b1});
+     state s_rd_wr_scrb_vld_111                  ({2'b11, 1'b1});
+
+
+  // transitions(to same)
+     wildcard trans t_rd_wr_vld0_0                 ({2'b00, 1'bx} -> {2'b00, 1'bx});
+     wildcard trans t_rd_wr_vld1_1                 ({2'b01, 1'bx} -> {2'b01, 1'bx});
+     wildcard trans t_rd_wr_vld2_2                 ({2'b10, 1'bx} -> {2'b10, 1'bx});
+     wildcard trans t_rd_wr_vld3_3                 ({2'b11, 1'bx} -> {2'b11, 1'bx});
+
+  // transitions(to different)
+     wildcard trans t_rd_wr_vld0_1                 ({2'b00, 1'bx} -> {2'b01, 1'bx});
+     wildcard trans t_rd_wr_vld1_2                 ({2'b01, 1'bx} -> {2'b10, 1'bx});
+     wildcard trans t_rd_wr_vld0_3                 ({2'b00, 1'bx} -> {2'b11, 1'bx});
+     wildcard trans t_rd_wr_vld1_3                 ({2'b01, 1'bx} -> {2'b11, 1'bx});
+     wildcard trans t_rd_wr_vld2_3                 ({2'b10, 1'bx} -> {2'b11, 1'bx});
+     wildcard trans t_rd_wr_vld3_2  		   ({2'b11, 1'bx} -> {2'b10, 1'bx});
+     trans t_rd_wr_scrb_010_011  		   ({2'b01, 1'b0} -> {2'b01, 1'b1});
+     trans t_rd_wr_scrb_100_101  		   ({2'b10, 1'b0} -> {2'b10, 1'b1});
+     trans t_rd_wr_scrb_110_111  		   ({2'b11, 1'b0} -> {2'b11, 1'b1});
+     trans t_rd_wr_scrb_101_100  		   ({2'b10, 1'b1} -> {2'b10, 1'b0});
+     trans t_rd_wr_scrb_111_110  		   ({2'b11, 1'b1} -> {2'b11, 1'b0});
+     //trans t_rd_wr_scrb_011_110  		   ({2'b01, 1'b1} -> {2'b11, 1'b0});
+     trans t_bad_rd_wr_scrb_011_111       	   ({2'b01, 1'b1} -> {2'b11, 1'b1});
+
+
+  // transitions(combinations)
+
+  // bad states
+  //bad_state s_not_WR_Q_STATE (not state);
+
+  // bad transitions 
+  //bad_trans t_not_WR_Q_TRANS (not trans);
+  bad_trans t_bad_rd_wr_vld3_1 		  ({2'b11, 1'bx} -> {2'b01, 1'bx});
+  bad_trans t_bad_rd_wr_vld3_0 		  ({2'b11, 1'bx} -> {2'b00, 1'bx});
+  bad_trans t_bad_rd_wr_scrb_101_001  	  ({2'b10, 1'b1} -> {2'b00, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_101_011  	  ({2'b10, 1'b1} -> {2'b01, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_111_001  	  ({2'b11, 1'b1} -> {2'b00, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_111_011  	  ({2'b11, 1'b1} -> {2'b01, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_111_101  	  ({2'b11, 1'b1} -> {2'b10, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_011_001  	  ({2'b01, 1'b1} -> {2'b00, 1'b1});
+  bad_trans t_bad_rd_wr_scrb_011_101  	  ({2'b01, 1'b1} -> {2'b10, 1'b1});
+  // a new write cant be issued to same address if a read is pending
+  bad_trans t_bad_rd_wr_scrb_101_111	  ({2'b10, 1'b1} -> {2'b11, 1'b1});
+
+// }
+

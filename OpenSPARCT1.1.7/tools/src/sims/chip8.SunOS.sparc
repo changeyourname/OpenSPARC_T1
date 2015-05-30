@@ -1,0 +1,4 @@
+    -vcs_build_args=-V -lC -lm -lw -lcx -lc -lthread -lposix4
+    -vcs_build_args=-ld $CC_BIN/CC
+    -vcs_build_args=-L$CC_BIN/../lib/CC4
+    -vcs_build_args=-lX11 -lsocket -lnsl -lintl

@@ -1,0 +1,61 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.pad_ddr_common
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+bw_clk_cl_ddr_ddr.v
+ddr_ch.v
+bw_io_ddr_sig_top.v
+bw_io_ddr_sig_bot.v
+bw_io_ddr_4sig_clk.v
+bw_io_ddr_4sig_clk_x2.v
+bw_io_ddr_6sig.v
+bw_io_ddr_6sig_x2.v
+bw_io_ddr_6sig_x4.v
+bw_io_ddr_pad_txrx.v
+bw_io_ddr_pad_txrx_zctl.v
+dram_clk_pad.v
+dram_clk_edgelogic.v
+dram_ctl_pad.v
+dram_ctl_edgelogic.v
+dram_dq_pad.v
+dram_dq_edgelogic.v
+dram_dqs_pad.v
+dram_dqs_edgelogic.v
+dram_sstl_pad.v
+dram_sstl_dq_pad.v
+dram_pad_logic.v
+bw_io_ddr_rptr_a.v
+bw_io_ddr_rptr_b.v
+bw_io_ddr_vref_logic.v
+bw_io_ddr_pvt_enable.v
+ddr_ch_b.v
+bw_io_ddr_vref_logic_high.v
+bw_io_ddr_sig_top_b.v
+bw_io_ddr_sig_bot_b.v
+bw_io_ddr_rptr_c.v
+bw_io_ddr_rptr_d.v
+bw_io_ddr_rptr_vddcom.v
+bw_io_ddr_vref_rptr.v
+bw_io_ddr_testmux.v
+bw_io_ddr_6sig_async.v
+bw_io_ddr_6sig_x2_async.v
+dram_async_pad.v
+dram_async_edgelogic.v
+bw_io_ddr_mclk_txrx.v
+dram_mclk_pad.v

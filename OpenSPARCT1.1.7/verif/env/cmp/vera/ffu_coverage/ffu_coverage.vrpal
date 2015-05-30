@@ -1,0 +1,193 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ffu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	ffu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level FFU coverage class.
+ *	Contains the new() task which instantiates all the FFU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ * $Id: ifu_coverage.vrpal,v 1.1 2002/12/02 08:19:21 vmadan Exp $
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "ffu_defines.vrh"
+#include "ffu.if.vrh"
+#include "ffu_ports_binds.vrh"
+
+
+class ffu_coverage {
+    event cov_sample_event;
+
+. foreach $c ( @CORE_STR ) {
+   bit		C${c}_ffu_any_ce;
+   bit [6:0]	ffu_ecc_sample_C${c}_ffu_ecc_ce_state;
+   bit [8:0]	ffu_ecc_sample_C${c}_ffu_ecc_ue_state;
+   bit [4:0]	ffu_block_store_sample_C${c}_ffu_blkst_ce_state;
+.}
+
+    coverage_group ffu_coverage_group
+    {
+	const_sample_reference	= 1;
+	sample_event		= sync(ALL,cov_sample_event);
+	// Default contribution for this group unless diag_done is true.
+	cov_weight		= 0;
+
+. foreach $c ( @CORE_STR ) {
+
+ // FFU sample declarations for core $c
+ 
+    sample ffu_block_store_sample_C${c}_ffu_blkst_ce_state {
+#inc "ffu_ce_blkst_sample.vrhpal"
+    }
+
+    sample ffu_ecc_sample_C${c}_ffu_ecc_ce_state {
+#inc "ffu_ecc_ce_sample.vrhpal"
+    }
+
+    sample ffu_ecc_sample_C${c}_ffu_ecc_ue_state {
+#inc "ffu_ecc_ue_sample.vrhpal"
+    }
+
+    sample ffu_flush_stage_sample_C${c}_ffu_flush_stage_bind.\$flush_stage_state {
+#inc "ffu_flush_stage_sample.vrhpal"
+    }
+
+    sample ffu_ieee_754_trap_sample_C${c}_ffu_ieee_754_trap_bind.\$ieee_754_trap_DIS_state {
+#inc "ffu_ieee_754_trap_dis_sample.vrhpal"
+    }
+
+    sample ffu_ieee_754_trap_sample_C${c}_ffu_ieee_754_trap_bind.\$ieee_754_trap_en_state {
+#inc "ffu_ieee_754_trap_en_sample.vrhpal"
+    }
+
+    sample ffu_ieee_754_trap_sample_C${c}_ffu_ieee_754_trap_bind.\$ieee_754_trap_ful_state {
+#inc "ffu_ieee_754_trap_ful_sample.vrhpal"
+    }
+
+    sample ffu_lsu_sample_C${c}_ffu_lsu_fsm_bind.\$lsu_fsm_state {
+#inc "ffu_lsu_fsm_sample.vrhpal"
+    }
+
+    sample ffu_mov_abs_neg_sample_C${c}_ffu_mov_abs_neg_bind.\$mov_abs_neg_state {
+#inc "ffu_mov_abs_neg_sample.vrhpal"
+    }
+
+    sample  ffu_rnd_sample_C${c}_ffu_rnd_bind.\$rnd_state {
+#inc "ffu_rnd_sample.vrhpal"
+    }
+
+    sample ffu_block_store_sample_C${c}_ffu_block_store_bind.\$blkst_stall_state {
+#inc "ffu_stall_blkst_sample.vrhpal"
+    }
+
+    sample ffu_block_store_sample_C${c}_ffu_block_store_bind.\$blkst_ue_state {
+#inc "ffu_ue_blkst_sample.vrhpal"
+    }
+
+    sample ffu_vis_math_sample_C${c}_ffu_vis_add_sub_bind.\$vis_add_sub_state {
+#inc "ffu_vis_add_sub_sample.vrhpal"
+    }
+
+    sample ffu_vis_logic_sample_C${c}_ffu_vis_log_bind.\$vis_log_state {
+#inc "ffu_vis_log_sample.vrhpal"
+    }
+
+. } # for $c
+
+    } // coverage_group
+
+ task                  new();
+ task		       set_pseudo_wires();
+}
+
+
+task ffu_coverage::new() {
+
+    bit coverage_on;
+
+    // check coverage option
+    if ( get_plus_arg( CHECK, "ffu_coverage" ) ||
+	 get_plus_arg( CHECK, "coverage_on" )
+	) {
+
+	coverage_on	= 1;
+
+	// check if coverage to be disabled for everyone
+	if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+	    coverage_on	= 0;
+	}
+
+    } else {
+	coverage_on	= 0;
+    }
+.
+    if(coverage_on){
+
+	ffu_coverage_group	= new();
+	printf("%d : Coverage turned on for FFU objects!\n", get_time(LO));
+	set_pseudo_wires();
+
+	fork {
+	     @(posedge ffu_cov_top.cmp_diag_done);
+	     ffu_coverage_group.set_cov_weight(1);	// since default is 0
+	     coverage_save_database(1); // since default is 0
+	     printf("%d : Coverage report for FFU generated\n", get_time(LO));
+	} join none
+
+    } // if(coverage_on)
+
+} // task ffu_coverage::new()
+
+task ffu_coverage::set_pseudo_wires()
+{
+   fork {
+      while(1) {
+         @(posedge ffu_cov_top.cmp_clk);
+.foreach $c (@CORE_STR) {
+   C${c}_ffu_any_ce = | (ffu_cov_top.C${c}_ffu_ce);
+
+   ffu_ecc_sample_C${c}_ffu_ecc_ce_state = {
+	C${c}_ffu_any_ce,
+	ffu_ecc_sample_C${c}_ffu_ecc_bind.\$ecc_ce_state_partial
+	};
+
+   ffu_ecc_sample_C${c}_ffu_ecc_ue_state = {
+	C${c}_ffu_any_ce,
+	ffu_ecc_sample_C${c}_ffu_ecc_bind.\$ecc_ue_state_partial
+	};
+
+   ffu_block_store_sample_C${c}_ffu_blkst_ce_state = {
+	C${c}_ffu_any_ce,
+	ffu_block_store_sample_C${c}_ffu_block_store_bind.\$blkst_ce_state_partial
+	};
+
+
+.} #foreach
+         trigger(cov_sample_event);
+      } // while(1)
+   } join none
+} // ffu_coverage::set_pseudo_wires()

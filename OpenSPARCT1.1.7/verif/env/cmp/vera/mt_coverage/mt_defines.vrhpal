@@ -1,0 +1,114 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef	__mt_define
+#define __mt_define
+
+#define nop 	00000
+#define alu 	00001
+#define ld  	00010
+#define st  	00011
+#define at  	00100
+#define fp  	00101
+#define br  	00110
+#define mbr 	00111
+#define sav 	01000
+#define rtr 	01001
+#define rpr 	01010
+#define wpr 	01011
+#define prf 	01100
+#define rst 	01101
+#define md  	01110
+#define bld 	01111
+#define bst	10000
+#define qld     10001 
+#define asi     11110
+#define xxx     11111
+#define emp     10010
+
+#define th0  00
+#define th1  01
+#define th2  10
+#define th3  11
+
+// here are the traps
+#define POWERON_RESET_TT                0_0000_0001  // 0x001
+#define WATCHDOG_RESET_TT               0_0000_0010  // 0x002
+#define EXTERNAL_RESET_TT               0_0000_0011  // 0x003
+#define SOFTWARE_RESET_TT               0_0000_0100  // 0x004
+#define REDMODE_TT                      0_0000_0101  // 0x005
+#define INSTRUCTION_ACCESS_EXCEPTION_TT 0_0000_1000  // 0x008
+#define IA_MMU_MISS_TT                  0_0000_1001  // 0x009
+#define INSTRUCTION_ACCESS_ERROR_TT     0_0000_1010  // 0x00A
+#define ILLEGAL_TT                      0_0001_0000  // 0x010
+#define PRIVILEGED_OPCODE_TT            0_0001_0001  // 0x011
+#define UNIMPLEMENTED_LDD_TT            0_0001_0010  // 0x012
+#define UNIMPLEMENTED_STD_TT            0_0001_0011  // 0x013
+#define FP_DISABLED_TT                  0_0010_0000  // 0x020
+#define FP_IEEE_754_TT                  0_0010_0001  // 0x021
+#define FP_EXCP_OTHER_TT                0_0010_0010  // 0x022
+#define TAG_OVERFLOW_TT                 0_0010_0011  // 0x023
+#define CLEAN_WIN_TT                    0_0010_0100  // 0x024
+#define DIV_ZERO_TT                     0_0010_1000  // 0x028
+#define INT_PROC_ERROR_TT               0_0010_1001  // 0x029
+#define DATA_ACCESS_EXCEPTION_TT        0_0011_0000  // 0x030
+#define DA_MMU_MISS_TT                  0_0011_0001  // 0x031
+#define DATA_ACCESS_ERROR_TT            0_0011_0010  // 0x032
+#define DATA_PROT_TT                    0_0011_0011  // 0x033
+#define MEM_NONALIGNED_TT               0_0011_0100  // 0x034
+#define LDDF_MEM_NONALIGNED_TT          0_0011_0101  // 0x035
+#define STDF_MEM_NONALIGNED_TT          0_0011_0110  // 0x036
+#define PRIVILEGED_ACTION_TT            0_0011_0111  // 0x037
+#define LDQF_MEM_NONALIGNED_TT          0_0011_1000  // 0x038
+#define STQF_MEM_NONALIGNED_TT          0_0011_1001  // 0x039
+#define ASYNC_DATA_ERROR_TT             0_0100_0000  // 0x040
+#define INTERRUPT_LEVEL_1_TT            0_0100_0001  // 0x041
+#define INTERRUPT_LEVEL_2_TT            0_0100_0010  // 0x042
+#define INTERRUPT_LEVEL_3_TT            0_0100_0011  // 0x043
+#define INTERRUPT_LEVEL_4_TT            0_0100_0100  // 0x044
+#define INTERRUPT_LEVEL_5_TT            0_0100_0101  // 0x045
+#define INTERRUPT_LEVEL_6_TT            0_0100_0110  // 0x046
+#define INTERRUPT_LEVEL_7_TT            0_0100_0111  // 0x047
+#define INTERRUPT_LEVEL_8_TT            0_0100_1000  // 0x048
+#define INTERRUPT_LEVEL_9_TT            0_0100_1001  // 0x049
+#define INTERRUPT_LEVEL_10_TT           0_0100_1010  // 0x04A
+#define INTERRUPT_LEVEL_11_TT           0_0100_1011  // 0x04B
+#define INTERRUPT_LEVEL_12_TT           0_0100_1100  // 0x04C
+#define INTERRUPT_LEVEL_13_TT           0_0100_1101  // 0x04D
+#define INTERRUPT_LEVEL_14_TT           0_0100_1110  // 0x04E
+#define INTERRUPT_LEVEL_15_TT           0_0100_1111  // 0x04F
+#define IMPL_DEP_XCPN_0_TT              0_0110_0000  // 0x060
+#define PA_WATCHPOINT_TT                0_0110_0001  // 0x061
+#define VA_WATCHPOINT_TT                0_0110_0010  // 0x062
+#define IA_FAST_MMU_MISS_TT             0_0110_0100  // 0x064
+#define DA_FAST_MMU_MISS_TT             0_0110_1000  // 0x068
+#define FAST_DATA_PROT_TT               0_0110_1100  // 0x06C
+#define FAST_CORRECTABLE_ECC_ERROR_TT   0_0111_0000  // 0x070
+
+// defines for mt_fsm_cover[0-3]
+#define THRFSM_DEAD      5'b00000
+#define THRFSM_HALT      5'b00010
+#define THRFSM_RDY       5'b11001
+#define THRFSM_SPEC_RDY  5'b10011
+#define THRFSM_RUN       5'b00101
+#define THRFSM_SPEC_RUN  5'b00111
+#define THRFSM_WAIT      5'b00001
+
+#endif

@@ -1,0 +1,95 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_asi_stxa_ma_busy_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_asi_stxa_ma_busy_COV_VRH
+#define INC__TMP_spu_asi_stxa_ma_busy_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in asi_stxa_busy_state:
+ * spu_maaeqb.cur_idle_state,
+ * spu_maexp.cur_idle_state,
+ * spu_mald.cur_idle_state,
+ * spu_mamul.cur_idle_state,
+ * spu_mared.cur_idle_state,
+ * spu_mast.cur_idle_state,
+ * spu_mactl.spu_mactl_mpa_wen, spu_mactl.spu_mactl_maaddr_wen,
+ * spu_mactl.spu_mactl_manp_wen
+ */
+
+/*
+ * spu_asi_stxa_ma_busy_cov
+ *
+ * This coverage object checks that we have written all non-CTL registers while
+ * the MA state machine is busy. We do not use the BUSY bit from the
+ * CTL register to determine busy. We check that the state machines are
+ * not idle. This is because there is a period of time at the end of the
+ * op when the state machines are idle, and we're waiting for st acks to
+ * return. Then either the completion interrupt is issued or the ldxa of
+ * the sync register returns before the BUSY bit is cleared.
+ *
+ * Note that more than one of the following wildcard states could match
+ * if more than one state machines is active at one time. I think this
+ * will just cause two bins to be incremented, but that should be ok.
+ *
+ * TODO:
+ * + For now, just detect stxas when we are not in the idle state. Later,
+ *   it would be more complete to detect that we've done stxas in every
+ *   non-idle state.
+ * + We need to also detect that we've written ALL non-CTL registers in
+ *   each state.
+ */
+
+#endif
+
+sample spu_asi_stxa_ma_busy_sample_bind_C${c}.\$asi_stxa_ma_busy_state {
+  // Declare states to be covered 
+  wildcard state s_ASI_STXA_MA_BUSY_MAAEQB_MPA    (9'b0xxxxx100);
+  wildcard state s_ASI_STXA_MA_BUSY_MAAEQB_MAADDR (9'b0xxxxx010);
+  wildcard state s_ASI_STXA_MA_BUSY_MAAEQB_MANP   (9'b0xxxxx001);
+
+  wildcard state s_ASI_STXA_MA_BUSY_MAEXP_MPA     (9'bx0xxxx100);
+  wildcard state s_ASI_STXA_MA_BUSY_MAEXP_MAADDR  (9'bx0xxxx010);
+  wildcard state s_ASI_STXA_MA_BUSY_MAEXP_MANP    (9'bx0xxxx001);
+
+  wildcard state s_ASI_STXA_MA_BUSY_MALD_MPA      (9'bxx0xxx100);
+  wildcard state s_ASI_STXA_MA_BUSY_MALD_MAADDR   (9'bxx0xxx010);
+  wildcard state s_ASI_STXA_MA_BUSY_MALD_MANP     (9'bxx0xxx001);
+
+  wildcard state s_ASI_STXA_MA_BUSY_MAMUL_MPA     (9'bxxx0xx100);
+  wildcard state s_ASI_STXA_MA_BUSY_MAMUL_MAADDR  (9'bxxx0xx010);
+  wildcard state s_ASI_STXA_MA_BUSY_MAMUL_MANP    (9'bxxx0xx001);
+
+  wildcard state s_ASI_STXA_MA_BUSY_MARED_MPA     (9'bxxxx0x100);
+  wildcard state s_ASI_STXA_MA_BUSY_MARED_MAADDR  (9'bxxxx0x010);
+  wildcard state s_ASI_STXA_MA_BUSY_MARED_MANP    (9'bxxxx0x001);
+
+  wildcard state s_ASI_STXA_MA_BUSY_MAST_MPA      (9'bxxxxx0100);
+  wildcard state s_ASI_STXA_MA_BUSY_MAST_MAADDR   (9'bxxxxx0010);
+  wildcard state s_ASI_STXA_MA_BUSY_MAST_MANP     (9'bxxxxx0001);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

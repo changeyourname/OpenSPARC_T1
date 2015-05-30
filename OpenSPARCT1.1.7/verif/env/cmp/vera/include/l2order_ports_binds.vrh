@@ -1,0 +1,166 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2order_ports_binds.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC__L2ORDER_PORTS_BINDS_VRH
+#define INC__L2ORDER_PORTS_BINDS_VRH
+
+#include "l2order.if.vrh"
+
+port l2order_port {
+    arbctl_inst_vld_c2 ;
+    arbdp_inst_mb_c2 ;
+    arbdp_inst_fb_c2 ;
+    arbctl_inst_diag_c2 ;
+    arbdp_inst_c2 ;
+    arbdp_addr_c2 ;
+    arbdp_inst_data_c2 ;
+    tagctl_hit_l2orfb_c2 ;
+    mbctl_hit_c2 ;
+}
+
+port camhit_port {
+    dc_lkup_panel_dec_c4;
+    dc_lkup_row_dec_c4;
+    ic_lkup_panel_dec_c4;
+    ic_lkup_row_dec_c4;
+    arbdp_addr_c4;
+    dc_cam_hit_c6;
+    ic_cam_hit_c6;
+}
+
+port evictstat_port {
+    vuad_evict_c3;
+    lru_way_c3;
+}
+
+
+// 4 L2 Banks
+
+bind l2order_port l2order_bind_0 {
+    arbctl_inst_vld_c2           l2order.arbctl_inst_vld_c2_0;
+    arbdp_inst_mb_c2             l2order.arbdp_inst_mb_c2_0;
+    arbdp_inst_fb_c2             l2order.arbdp_inst_fb_c2_0;
+    arbctl_inst_diag_c2          l2order.arbctl_inst_diag_c2_0;
+    arbdp_inst_c2                l2order.arbdp_inst_c2_0;
+    arbdp_addr_c2                l2order.arbdp_addr_c2_0;
+    arbdp_inst_data_c2           l2order.arbdp_inst_data_c2_0;
+    tagctl_hit_l2orfb_c2         l2order.tagctl_hit_l2orfb_c2_0;
+    mbctl_hit_c2                 l2order.mbctl_hit_c2_0;
+}
+
+bind l2order_port l2order_bind_1 {
+    arbctl_inst_vld_c2           l2order.arbctl_inst_vld_c2_1;
+    arbdp_inst_mb_c2             l2order.arbdp_inst_mb_c2_1;
+    arbdp_inst_fb_c2             l2order.arbdp_inst_fb_c2_1;
+    arbctl_inst_diag_c2          l2order.arbctl_inst_diag_c2_1;
+    arbdp_inst_c2                l2order.arbdp_inst_c2_1;
+    arbdp_addr_c2                l2order.arbdp_addr_c2_1;
+    arbdp_inst_data_c2           l2order.arbdp_inst_data_c2_1;
+    tagctl_hit_l2orfb_c2         l2order.tagctl_hit_l2orfb_c2_1;
+    mbctl_hit_c2                 l2order.mbctl_hit_c2_1;
+}
+
+bind l2order_port l2order_bind_2 {
+    arbctl_inst_vld_c2           l2order.arbctl_inst_vld_c2_2;
+    arbdp_inst_mb_c2             l2order.arbdp_inst_mb_c2_2;
+    arbdp_inst_fb_c2             l2order.arbdp_inst_fb_c2_2;
+    arbctl_inst_diag_c2          l2order.arbctl_inst_diag_c2_2;
+    arbdp_inst_c2                l2order.arbdp_inst_c2_2;
+    arbdp_addr_c2                l2order.arbdp_addr_c2_2;
+    arbdp_inst_data_c2           l2order.arbdp_inst_data_c2_2;
+    tagctl_hit_l2orfb_c2         l2order.tagctl_hit_l2orfb_c2_2;
+    mbctl_hit_c2                 l2order.mbctl_hit_c2_2;
+}
+
+bind l2order_port l2order_bind_3 {
+    arbctl_inst_vld_c2           l2order.arbctl_inst_vld_c2_3;
+    arbdp_inst_mb_c2             l2order.arbdp_inst_mb_c2_3;
+    arbdp_inst_fb_c2             l2order.arbdp_inst_fb_c2_3;
+    arbctl_inst_diag_c2          l2order.arbctl_inst_diag_c2_3;
+    arbdp_inst_c2                l2order.arbdp_inst_c2_3;
+    arbdp_addr_c2                l2order.arbdp_addr_c2_3;
+    arbdp_inst_data_c2           l2order.arbdp_inst_data_c2_3;
+    tagctl_hit_l2orfb_c2         l2order.tagctl_hit_l2orfb_c2_3;
+    mbctl_hit_c2                 l2order.mbctl_hit_c2_3;
+}
+
+
+bind camhit_port camhit_bind_0 {
+    dc_lkup_panel_dec_c4         l2order.dc_lkup_panel_dec_c4_0;
+    dc_lkup_row_dec_c4           l2order.dc_lkup_row_dec_c4_0;
+    ic_lkup_panel_dec_c4         l2order.ic_lkup_panel_dec_c4_0;
+    ic_lkup_row_dec_c4           l2order.ic_lkup_row_dec_c4_0;
+    arbdp_addr_c4                l2order.arbdp_addr_c4_0;
+    dc_cam_hit_c6                l2order.dc_cam_hit_c6_0;
+    ic_cam_hit_c6                l2order.ic_cam_hit_c6_0;
+}
+
+bind camhit_port camhit_bind_1 {
+    dc_lkup_panel_dec_c4         l2order.dc_lkup_panel_dec_c4_1;
+    dc_lkup_row_dec_c4           l2order.dc_lkup_row_dec_c4_1;
+    ic_lkup_panel_dec_c4         l2order.ic_lkup_panel_dec_c4_1;
+    ic_lkup_row_dec_c4           l2order.ic_lkup_row_dec_c4_1;
+    arbdp_addr_c4                l2order.arbdp_addr_c4_1;
+    dc_cam_hit_c6                l2order.dc_cam_hit_c6_1;
+    ic_cam_hit_c6                l2order.ic_cam_hit_c6_1;
+}
+
+bind camhit_port camhit_bind_2 {
+    dc_lkup_panel_dec_c4         l2order.dc_lkup_panel_dec_c4_2;
+    dc_lkup_row_dec_c4           l2order.dc_lkup_row_dec_c4_2;
+    ic_lkup_panel_dec_c4         l2order.ic_lkup_panel_dec_c4_2;
+    ic_lkup_row_dec_c4           l2order.ic_lkup_row_dec_c4_2;
+    arbdp_addr_c4                l2order.arbdp_addr_c4_2;
+    dc_cam_hit_c6                l2order.dc_cam_hit_c6_2;
+    ic_cam_hit_c6                l2order.ic_cam_hit_c6_2;
+}
+
+bind camhit_port camhit_bind_3 {
+    dc_lkup_panel_dec_c4         l2order.dc_lkup_panel_dec_c4_3;
+    dc_lkup_row_dec_c4           l2order.dc_lkup_row_dec_c4_3;
+    ic_lkup_panel_dec_c4         l2order.ic_lkup_panel_dec_c4_3;
+    ic_lkup_row_dec_c4           l2order.ic_lkup_row_dec_c4_3;
+    arbdp_addr_c4                l2order.arbdp_addr_c4_3;
+    dc_cam_hit_c6                l2order.dc_cam_hit_c6_3;
+    ic_cam_hit_c6                l2order.ic_cam_hit_c6_3;
+}
+
+
+bind evictstat_port evictstat_bind_0 {
+    vuad_evict_c3                l2order.vuad_evict_c3_0;
+    lru_way_c3                   l2order.lru_way_c3_0;
+}
+
+bind evictstat_port evictstat_bind_1 {
+    vuad_evict_c3                l2order.vuad_evict_c3_1;
+    lru_way_c3                   l2order.lru_way_c3_1;
+}
+
+bind evictstat_port evictstat_bind_2 {
+    vuad_evict_c3                l2order.vuad_evict_c3_2;
+    lru_way_c3                   l2order.lru_way_c3_2;
+}
+
+bind evictstat_port evictstat_bind_3 {
+    vuad_evict_c3                l2order.vuad_evict_c3_3;
+    lru_way_c3                   l2order.lru_way_c3_3;
+}
+
+#endif

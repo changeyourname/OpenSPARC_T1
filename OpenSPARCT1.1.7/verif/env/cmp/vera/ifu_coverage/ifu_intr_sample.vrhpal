@@ -1,0 +1,57 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_intr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_intr_cov.vr
+// Description:
+// This coverage object covers two pending interrupts at the same time
+// except the rstthr,nuke,resum interrupts which are covered in a separate
+// object and these interrupts skewed wrt to spu inetrrupts
+//
+// State: hwint,sftint,rerr,hintp,spu
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_INTR_COV (bit [4:0] cov_vector)
+// {
+  wildcard state s_hwint         (5'b1xxxx);
+  wildcard state s_sftint        (5'bx1xxx);
+  wildcard state s_rerr          (5'bxx1xx);
+  wildcard state s_hintp         (5'bxxx1x);
+  wildcard state s_spu           (5'bxxxx1);
+  wildcard state s_hw_sft        (5'b11xxx);
+  wildcard state s_hw_rerr       (5'b1x1xx);
+  wildcard state s_hw_hintp      (5'b1xx1x);
+  wildcard state s_hw_spu        (5'b1xxx1);
+  wildcard state s_sft_rerr      (5'bx11xx);
+  wildcard state s_sft_hintp     (5'bx1x1x);
+  wildcard state s_sft_spu       (5'bx1xx1);
+  wildcard state s_rerr_hintp    (5'bxx11x);
+  wildcard state s_rerr_spu      (5'bxx1x1);
+  wildcard state s_hintp_spu     (5'bxxx11);
+
+  wildcard trans t_spu_hw       (5'bxxxx1 -> 5'b0xxx0[.0:5.] -> 5'b1xxxx);
+  wildcard trans t_spu_sft      (5'bxxxx1 -> 5'bx0xx0[.0:5.] -> 5'bx1xxx);
+  wildcard trans t_spu_rerr     (5'bxxxx1 -> 5'bxx0x0[.0:5.] -> 5'bxx1xx);
+  wildcard trans t_spu_hintp    (5'bxxxx1 -> 5'bxxx00[.0:5.] -> 5'bxxx1x);
+  wildcard trans t_spu_spu      (5'bxxxx1 -> 5'bxxxx0[.0:5.] -> 5'bxxxx1);        
+// }

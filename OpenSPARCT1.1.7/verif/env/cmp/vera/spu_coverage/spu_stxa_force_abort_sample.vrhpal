@@ -1,0 +1,46 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_stxa_force_abort_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_stxa_force_abort_COV_VRH
+#define INC__TMP_spu_stxa_force_abort_COV_VRH
+
+/*
+ * spu_stxa_force_abort_cov
+ *
+ * This coverage object covers the signal spu_mactl_stxa_force_abort
+ * that is asserted to abort some of the ma fsms when a control
+ * reg overwrite happens. This cov obj is crossed with some of the fsm
+ * cov objs.
+ *
+ */
+
+#endif
+
+sample spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort {
+  // Declare states to be covered 
+  state s_STXA_FORCE_ABORT_STATE_1 (1'b1);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

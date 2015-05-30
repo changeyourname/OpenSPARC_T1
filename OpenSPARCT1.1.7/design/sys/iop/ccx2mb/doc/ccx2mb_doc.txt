@@ -1,0 +1,103 @@
+
+
+
+		Interface between SPARC Core and Microblaze
+		-------------------------------------------
+
+I.  Introduction
+
+In the first implementation of an OpenSPARC system on a Xilinx FPGA, the plan
+is to use a MicroBlaze Core as the memory subsystem.  The SPARC core will
+send out requests for Memory locations, or for I/O, and the MicroBlaze Core
+will route and handle these requests.  This is being done because there is an
+existing infrastructure with the MicroBlaze core, which would allow us to
+implement a system without writing a lot of complicated interfaces.
+
+II. CCX to MicroBlaze interface.
+
+The Original SPARC core was designed with an interface to a crossbar that
+routed memory or I/O requests either to the correct L2 bank, or to the system
+interface unit (SIU), which handled all the I/O.  The crossbar was bi-
+directional.  Requests going from the core traveled on the processor-to-cache
+(PCX) interface, while responses from L2 and I/O returned to the core on the
+cache-to-processor (CPX) interface.
+
+In this initial FPGA interface, the PCX requests will be put into the MicroBlaze
+Fast Simplex Link (FSL) FIFO.  This FIFO is 32 bits wide.  This means that the
+124-bit wide PCX packet must be broken down into several chunks for the FIFO.
+The MicroBlaze core will then read the packets out of the FIFO, perform the
+requested operation, and return the results through another 32-bit FSL FIFO
+to the CPX interface.  There, the 32-bit chunks will be re-assembled into a
+145-bit CPX packet and sent back to the core.
+
+III.  PCX Interface
+
+On the PCX side, the processor uses a credit-based flow control.  It will
+request up to 2 transactions at a time.  It will then wait until it receives an
+acknowledge from the crossbar before sending another transaction.  Atomic
+requests involve two transactions that must be sent together.  The processor
+will wait until both transaction slots are free before sending the atomic
+transaction.  Five request lines are used to indicate a request is ready.  Four
+of the request lines indicate that the target of the request is one of the four
+L2 banks.  The fifth line is used for the system interface unit (SIU).
+
+The PCX interface block stores up to two requests while they are broken up and
+sent to the FIFO.  The block will then write one chunk of the request at a time
+into the FIFO, beginning with the most-significant chunk.  The control bit of
+the FSL FIFO is used to indicate the first chunk of a transaction.  If the FIFO
+responds with a FIFO full signal, the process will pause until there is more
+space in the FIFO.  When all chunks of the transaction have been written to the
+FIFO, an acknowledge will be sent back to the processor so that it may send
+another transaction.
+
+A few bits are appended to the PCX Packet.  First a bit is used to indicate the
+first packet of an atomic pair of transactions.  Second, the request bits are
+appended.  Either two or five request bits are used depending on a compile
+define in the code.  By default, only two request bits are passed along.  The
+four bits that request to send to different cache ways are ORed together to
+form one bit.  However, if desired, all five bits can be passed on unchanged.
+This does result in one extra chunk being needed in the FIFO.  Here is the
+structure of the packets with added bits:
+
+    If PCX2MB_5_BIT_REQ is NOT defined, the packet structure looks like this:
+	Bit	Function
+	---	--------
+	127	Not Used
+	126	PCX Req[4]
+	125	PCX Req[3] | PCX Req[2] | PCX Req[1] | PCX Req[0]
+	124	Atomic Request.  Requires two packets
+	123--0	PCX Packet, as defined in the OpenSPARCT1 Micro Arch Spec
+
+    If PCX2MB_5_BIT_REQ IS defined, the packet structure looks like this:
+	Bit	Function
+	---	--------
+	159--130	Not Used
+	129	PCX Req[4]
+	128	PCX Req[3]
+	127	PCX Req[2]
+	126	PCX Req[1]
+	125	PCX Req[0]
+	124	Atomic Request.  Requires two packets
+	123--0	PCX Packet, as defined in the OpenSPARCT1 Micro Arch Spec
+
+
+IV.  CPX interface
+
+The CPX interface block will simply read 32-bit chunks out of a FIFO,
+re-assemble them, and forward them back to the SPARC core.  The SPARC core is
+fully buffered, so no flow control is necessary.  The only complexity is that
+atomic transaction responses must be sent together.  So enough space is needed
+to store the first response packet while the second is being re-assembled.  Then
+both packets are sent back-to-back.
+
+One bit is assumed to be added to the 145-bit CPX packet.  This bit indicates
+that a packet is the first packet of an atomic response.  The interface block
+uses this bit to identify atomic packets so they can be sent back to the core
+together.
+
+This block also reads the control bit from the FSL FIFO.  This bit is assumed to
+indicate the beginning of a new packet.  The interface block will search for
+a FIFO entry with the control bit set to one before it starts re-constructing
+packets.  Also, if a packet has too few chunks (if the control bit was set
+incorrectly), the packet will be discarded.
+

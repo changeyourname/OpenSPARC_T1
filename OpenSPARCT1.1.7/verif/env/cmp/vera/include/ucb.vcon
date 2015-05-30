@@ -1,0 +1,41 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ucb.vcon
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////////////
+// ucb top
+////////////////////////////////////////////////////////////////////////////////
+
+connect input ucb_top.jbus_gclk = "cmp_top.jbus_gclk"
+
+connect inout ucb_top.iob_ucb_vld0 = "cmp_top.iop.iob_dram02_vld" iskew -1 oskew 0
+connect inout ucb_top.iob_ucb_data0 = "cmp_top.iop.iob_dram02_data" iskew -1 oskew 0
+connect inout ucb_top.iob_ucb_stall0 = "cmp_top.iop.iob_dram02_stall" iskew -1 oskew 0
+
+connect inout ucb_top.iob_ucb_vld1 = "cmp_top.iop.iob_dram13_vld" iskew -1 oskew 0
+connect inout ucb_top.iob_ucb_data1 = "cmp_top.iop.iob_dram13_data" iskew -1 oskew 0
+connect inout ucb_top.iob_ucb_stall1 = "cmp_top.iop.iob_dram13_stall" iskew -1 oskew 0
+
+connect inout ucb_top.ucb_iob_vld0 = "cmp_top.iop.dram02_iob_vld" iskew -1 oskew 0
+connect inout ucb_top.ucb_iob_data0 = "cmp_top.iop.dram02_iob_data" iskew -1 oskew 0
+connect inout ucb_top.ucb_iob_stall0 = "cmp_top.iop.dram02_iob_stall" iskew -1 oskew 0
+
+connect inout ucb_top.ucb_iob_vld1 = "cmp_top.iop.dram13_iob_vld" iskew -1 oskew 0
+connect inout ucb_top.ucb_iob_data1 = "cmp_top.iop.dram13_iob_data" iskew -1 oskew 0
+connect inout ucb_top.ucb_iob_stall1 = "cmp_top.iop.dram13_iob_stall" iskew -1 oskew 0

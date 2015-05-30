@@ -1,0 +1,39 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_b2b_st_flush_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Check for b2b stores which first store being flushed
+// b2b stores can be from the same thread or different threads
+//***********************************************************************
+
+  wildcard  state s_T0_ST	(7'b111000x);
+  wildcard  state s_T1_ST	(7'b110100x);
+  wildcard  state s_T2_ST	(7'b110010x);
+  wildcard  state s_T3_ST	(7'b110001x);
+
+  trans t_T0_ST_TO_T0_ST_FLUSH (7'b1110000 -> 7'b1110001);
+  trans t_T1_ST_TO_T1_ST_FLUSH (7'b1101000 -> 7'b1101001);
+  trans t_T2_ST_TO_T2_ST_FLUSH (7'b1100100 -> 7'b1100101);
+  trans t_T3_ST_TO_T3_ST_FLUSH (7'b1100010 -> 7'b1100011);
+
+  wildcard trans t_T0_ST_TO_TX_ST_FLUSH (7'b1110000 -> 7'b110xxx1);
+  wildcard trans t_T1_ST_TO_TX_ST_FLUSH (7'b1101000 -> 7'b11x0xx1);
+  wildcard trans t_T2_ST_TO_TX_ST_FLUSH (7'b1100100 -> 7'b11xx0x1);
+  wildcard trans t_T3_ST_TO_TX_ST_FLUSH (7'b1100010 -> 7'b11xxx01);

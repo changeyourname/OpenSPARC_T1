@@ -1,0 +1,36 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_ieee_754_trap_en_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+// coverage_def IEEE_754_TRAP_EN_COV (bit[`IEEE_754_TRAP_EN_WIDTH-1:0] ieee_754_trap_en_state) {
+  //state declarations
+
+
+wildcard state s_NVM_nvc				(NVM_nvc);
+wildcard state s_OFM_ofc				(OFM_ofc);
+wildcard state s_UFM_ufc				(UFM_ufc);
+wildcard state s_DZM_dzc				(DZM_dzc);
+wildcard state s_NZM_nxc				(NZM_nxc);
+
+
+// }
+

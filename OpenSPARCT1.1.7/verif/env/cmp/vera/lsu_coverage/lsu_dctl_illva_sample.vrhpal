@@ -1,0 +1,39 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_illva_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// coverage of illegal-va detection
+//***********************************************************************
+
+  wildcard state	s_ILLEGAL_VA_ST01	( 15'b1xxx_00xxxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST02	( 15'b1xxx_01xxxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST03	( 15'b1xxx_10xxxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST04	( 15'bx1xx_xx0xxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST05	( 15'bx1xx_xx1xxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST06	( 15'bxx1x_xx0xxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST07	( 15'bxx1x_xx1xxxx_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST08	( 15'bxxx1_xxxx000_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST09	( 15'bxxx1_xxxx100_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST10	( 15'bxxx1_xxxx010_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST11	( 15'bxxx1_xxxx001_xxxx );
+  wildcard state	s_ILLEGAL_VA_ST12	( 15'bxxxx_xxxxxxx_1xxx );
+  wildcard state	s_ILLEGAL_VA_ST13	( 15'bxxxx_xxxxxxx_x1xx );
+  wildcard state	s_ILLEGAL_VA_ST14	( 15'bxxxx_xxxxxxx_xx1x );
+  wildcard state	s_ILLEGAL_VA_ST15	( 15'bxxxx_xxxxxxx_xxx1 );

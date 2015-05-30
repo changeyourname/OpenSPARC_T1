@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_async_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the asynchronous trap types reported lsu/exu/ffu.
+//***************************************************************************
+
+
+// coverage_def TLU_ASYNC_TTYPE (bit [15:0] tlu_async_ttype_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_LSU_TT_ASYNC_DATA_ACC_ERR	(LSU_TT_ASYNC_DATA_ACC_ERR);
+  wildcard state s_EXU_SPILL_NORMAL		(EXU_SPILL_NORMAL);
+  wildcard state s_EXU_SPILL_OTHER		(EXU_SPILL_OTHER);
+  wildcard state s_FFU_IILEGAL_INST		(FFU_IILEGAL_INST);
+  wildcard state s_FFU_FP_TRAP_IEEE754		(FFU_FP_TRAP_IEEE754);
+  wildcard state s_FFU_FP_TRAP_OTHER		(FFU_FP_TRAP_OTHER);
+  wildcard state s_FFU_FP_TRAP_UE		(FFU_FP_TRAP_UE);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

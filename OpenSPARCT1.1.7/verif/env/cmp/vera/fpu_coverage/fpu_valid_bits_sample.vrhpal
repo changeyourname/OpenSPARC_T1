@@ -1,0 +1,46 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_valid_bits_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+// coverage_def FPU_VALID_BITS_COV (bit [17:0] fpu_valid_state)
+// {
+
+
+// state declarations
+  state s_FPU_IDLE        ( FPU_IDLE    );
+  state s_FPU_ADD_ONE     ( FPU_ADD_ONE );
+  state s_FPU_MUL_ONE     ( FPU_MUL_ONE );
+  state s_FPU_DIV_ONE     ( FPU_DIV_ONE );
+  state s_FPU_ADD_MUL     ( FPU_ADD_MUL );
+  state s_FPU_ADD_DIV     ( FPU_ADD_DIV );
+  state s_FPU_MUL_DIV     ( FPU_MUL_DIV );
+  state s_FPU_ADD_MUL_DIV ( FPU_ADD_MUL_DIV );
+  state s_FPU_ADD_FULL    ( FPU_ADD_FULL);
+  bad_state s_FPU_MUL_FULL   ( FPU_MUL_FULL);
+  bad_state s_FPU_DIV_FULL   ( FPU_DIV_FULL);
+
+
+// }

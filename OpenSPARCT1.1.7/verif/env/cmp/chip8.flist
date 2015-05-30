@@ -1,0 +1,803 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: chip8.flist
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
++define+SYSTEM_DV_MATCH
+$DV_ROOT/verif/env/cmp/chip8_config.v
+$DV_ROOT/verif/env/iss/pli/jbus_mon/rtl/jbus_mon_wrapper.v
+$DV_ROOT/verif/env/iss/pli/sjm/rtl/sjm.v
++incdir+$DV_ROOT/verif/env/cmp/../../../design/sys/iop/include
++incdir+$DV_ROOT/verif/env/cmp/./
+$DV_ROOT/verif/env/cmp/cross_module.h
+-v $DV_ROOT/verif/env/cmp/tap_stub.v
+-v $DV_ROOT/verif/env/cmp/one_hot_mux_mon.v
+-v $DV_ROOT/verif/env/cmp/dbg_port_chk.v
+-v $DV_ROOT/verif/env/cmp/sas_intf.v
+-v $DV_ROOT/verif/env/cmp/monitor.v
+-v $DV_ROOT/verif/env/cmp/trig_event.v
+-v $DV_ROOT/verif/env/cmp/cmp_mem.v
+-v $DV_ROOT/verif/env/cmp/sas_tasks.v
+-v $DV_ROOT/verif/env/cmp/pc_cmp.v
+-v $DV_ROOT/verif/env/cmp/sas_task.v
+-v $DV_ROOT/verif/env/cmp/l_cache_mon.v
+-v $DV_ROOT/verif/env/cmp/thrfsm_mon.v
+-v $DV_ROOT/verif/env/cmp/spu_ma_mon.v
+-v $DV_ROOT/verif/env/cmp/ch_mem.v
+-v $DV_ROOT/verif/env/cmp/cmp_dram.v
+-v $DV_ROOT/verif/env/cmp/cmp_dram_mon.v
+-v $DV_ROOT/verif/env/cmp/dimm_if_mon.v
+-v $DV_ROOT/verif/env/cmp/sparc_pipe_flow.v
+-v $DV_ROOT/verif/env/cmp/multicycle_mon.v
+-v $DV_ROOT/verif/env/cmp/cmp_clk.v
+-v $DV_ROOT/verif/env/cmp/cmp_pcxandcpx.v
+-v $DV_ROOT/verif/env/cmp/tso_mon.v
+-v $DV_ROOT/verif/env/cmp/lsu_mon.v
+-v $DV_ROOT/verif/env/cmp/lsu_mon2.v
+-v $DV_ROOT/verif/env/cmp/exu_mon.v
+-v $DV_ROOT/verif/env/cmp/dram_mon.v
+-v $DV_ROOT/verif/env/cmp/ctu_level_mon.v
+-v $DV_ROOT/verif/env/cmp/err_inject.v
+-v $DV_ROOT/verif/env/cmp/pcx_stall.v
+-v $DV_ROOT/verif/env/cmp/cpx_stall.v
+-v $DV_ROOT/verif/env/cmp/mask_mon.v
+-v $DV_ROOT/verif/env/cmp/pc_muxsel_mon.v
+-v $DV_ROOT/verif/env/cmp/nukeint_mon.v
+-v $DV_ROOT/verif/env/cmp/stb_ovfl_mon.v
+-v $DV_ROOT/verif/env/cmp/icache_mutex_mon.v
+-v $DV_ROOT/verif/env/cmp/nc_inv_chk.v
+-v $DV_ROOT/verif/env/cmp/tlu_mon.v
+-v $DV_ROOT/verif/env/cmp/softint_mon.v
+-v $DV_ROOT/verif/env/cmp/../../../verif/model/verilog/mem/dram/DIMMx4.v
+-v $DV_ROOT/verif/env/cmp/../../../verif/model/verilog/mem/dram/HYB18D512400AC.v
+-v $DV_ROOT/verif/env/cmp/bw_sys.v
+-v $DV_ROOT/verif/env/cmp/slam_init.v
+-v $DV_ROOT/verif/env/cmp/l2warm.v
+-v $DV_ROOT/verif/env/cmp/l1warm.v
+-v $DV_ROOT/verif/env/cmp/ciop_iob.v
+-v $DV_ROOT/verif/env/cmp/ctu_mon.v
+-v $DV_ROOT/verif/env/cmp/dbginit_inst.v
+-v $DV_ROOT/verif/env/cmp/dbginit_mon.v
+$DV_ROOT/verif/env/cmp/cmp_top.v
+$DV_ROOT/design/sys/iop/pads/pad_efc/rtl/pad_efc.v
+$DV_ROOT/design/sys/iop/efc/rtl/efc.v
+$DV_ROOT/design/sys/iop/efc/rtl/efc_stdc.v
+$DV_ROOT/design/sys/iop/efc/rtl/efc_saed.v
+$DV_ROOT/design/sys/iop/efc/rtl/efc_tck.v
+-v $DV_ROOT/design/sys/iop/efc/rtl/efc_lib.v
+$DV_ROOT/design/sys/iop/efc/rtl/../../srams/rtl/bw_r_efa.v
+$DV_ROOT/design/sys/iop/efc/rtl/bw_clk_cl_efc_jbus.v
+$DV_ROOT/design/sys/iop/pads/pad_ctu/rtl/../../../analog/bw_ctu_pad_cluster/rtl/bw_ctu_pad_cluster.v
++incdir+$DV_ROOT/design/sys/iop/ctu/rtl/.
++incdir+$DV_ROOT/design/sys/iop/ctu/rtl/../include
++incdir+$DV_ROOT/design/sys/iop/ctu/rtl/../../include
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_1div.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_syncp.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_shadreg.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_ddiv.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_fstlog.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_clksel.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_clksw.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_nstep_cnt.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_nstep.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn_ssiclk.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkgn.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_dramgif.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_jbusgif.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_cmpgif.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_creg.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_clkctrl.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_ctrl.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_pllcnt.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_synch_cljl.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_synch_jlcl.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_synch_jldl.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp_synch_dldg.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_clsp.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_dft_jtag_tap.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_dft_jtag.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_dft_bist.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_dft_creg.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_dft.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_test_stub_scan.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_revision.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_mask_id.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu_jtag_id.v
+$DV_ROOT/design/sys/iop/ctu/rtl/ctu.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_clk_cl_ctu_jbus.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_clk_cl_ctu_cmp.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_ctu_clk_sync_mux.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_clk_cl_ctu_2xcmp.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_clk_cl_ctu_2xcmp_b.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/ctu_sync_header.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/bw_zzctu_sync.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../../analog/bw_rng/rtl/bw_rng.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../../analog/bw_pll/rtl/bw_pll.v
+$DV_ROOT/design/sys/iop/ctu/rtl/../../analog/bw_tsr/rtl/bw_tsr.v
+-v $DV_ROOT/design/sys/iop/ctu/rtl/../common/rtl/ctu_lib.v
+-v $DV_ROOT/design/sys/iop/analog/bw_iodll/rtl/bw_iodll.v
+-v $DV_ROOT/design/sys/iop/analog/bw_iodll/rtl/bw_ioslave_dl.v
+-v $DV_ROOT/design/sys/iop/analog/bw_iodll/rtl/bw_iodll_code_adjust.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gl_rstce_rtl.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gl.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gl_fdbk.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gl_hz.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gl_vrt_all.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_192x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_224x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_288x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_r90_192x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_r90_224x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_inv_r90_256x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_center_3inv.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_inv_64x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_inv_128x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_inv_48x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_gclk_sctag_3inv.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_hdr_64x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_inv_96x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_hdr_48x.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xa0.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xa1.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xb0.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xb1.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xb2.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xb3.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc0.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc1.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc2.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc3.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc4.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc5.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc6.v
+-v $DV_ROOT/design/sys/iop/analog/bw_clk/rtl/flop_rptrs_xc7.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_frf.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_irf.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_scm.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_dcd.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf32x152b.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/../../common/rtl/cmp_sram_redhdr.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf16x32.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_idct.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf32x80.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf16x160.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_dcm.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_l2t.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf16x128d.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_rf32x108.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_cm16x40.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_cm16x40b.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_l2d.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_l2d_rep_bot.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_l2d_rep_top.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_r_l2d_32k.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_rf_16x65.v
+-v $DV_ROOT/design/sys/iop/srams/rtl/bw_rf_16x81.v
+-v $DV_ROOT/design/sys/iop/common/rtl/ucb_bus_in.v
+-v $DV_ROOT/design/sys/iop/common/rtl/ucb_bus_out.v
+-v $DV_ROOT/design/sys/iop/common/rtl/ucb_flow_2buf.v
+-v $DV_ROOT/design/sys/iop/common/rtl/ucb_flow_spi.v
+-v $DV_ROOT/design/sys/iop/common/rtl/ucb_noflow.v
+-v $DV_ROOT/design/sys/iop/common/rtl/cluster_header.v
+-v $DV_ROOT/design/sys/iop/common/rtl/cluster_header_sync.v
+-v $DV_ROOT/design/sys/iop/common/rtl/cluster_header_dup.v
+-v $DV_ROOT/design/sys/iop/common/rtl/cluster_header_ctu.v
+-v $DV_ROOT/design/sys/iop/common/rtl/../../analog/bw_clk/rtl/bw_clk_cclk_sync.v
+-v $DV_ROOT/design/sys/iop/common/rtl/../../analog/bw_clk/rtl/bw_clk_cclk_scanlasr_2x.v
+-v $DV_ROOT/design/sys/iop/common/rtl/test_stub_bist.v
+-v $DV_ROOT/design/sys/iop/common/rtl/test_stub_scan.v
+-v $DV_ROOT/design/sys/iop/common/rtl/synchronizer_asr.v
+-v $DV_ROOT/design/sys/iop/common/rtl/synchronizer_asr_dup.v
+-v $DV_ROOT/design/sys/iop/common/rtl/sync_pulse_synchronizer.v
+-v $DV_ROOT/design/sys/iop/common/rtl/swrvr_dlib.v
+-v $DV_ROOT/design/sys/iop/common/rtl/../../pr_macro/rtl/mul64.v
+-v $DV_ROOT/design/sys/iop/common/rtl/swrvr_clib.v
+-v $DV_ROOT/design/sys/iop/common/rtl/../../../../../lib/u1/u1.behV
+-v $DV_ROOT/design/sys/iop/common/rtl/../../../../../lib/m1/m1.behV
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/pad_misc.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_chunk1.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_chunk2.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_chunk3.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_chunk5.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_chunk6.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_clk_cl_misc_jbus.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_schmitt.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_hstl_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos2_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_hstl_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_hstl_drv.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_misc_rpt.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos2_pad_up.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos2_term_up.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos2_pad_dn.v
+$DV_ROOT/design/sys/iop/pads/pad_misc/rtl/bw_io_cmos2_term_dn.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtlhstl_rcv.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_dq_pscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_jp_bs_baseblk.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_bscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_dq_bscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_oebscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_sstl_bscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_sstl_dq_bscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_odt_oebscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_dtl_bscan.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_dtl_bscl1.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_dtl_bscl2.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_dtl_flps.v
+$DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_bs_fsdq_2x.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_impctl_pulldown.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_impctl_pullup.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_sclk.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_upclk.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_ddr_dnrcn.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_ddr_uprcn.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_clkgen.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_clk_cl_ddr_ddr.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/ddr_ch.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_top.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_bot.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_4sig_clk.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_4sig_clk_x2.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x2.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x4.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pad_txrx.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pad_txrx_zctl.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_clk_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_clk_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_ctl_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_ctl_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_dq_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_dq_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_dqs_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_dqs_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_sstl_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_sstl_dq_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_pad_logic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_a.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_b.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_logic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pvt_enable.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/ddr_ch_b.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_logic_high.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_top_b.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_bot_b.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_c.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_d.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_vddcom.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_rptr.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_testmux.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_async.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x2_async.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_async_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_async_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_mclk_txrx.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr_common/rtl/dram_mclk_pad.v
+-v $DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_impctl_smachine_new.v
+-v $DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_impctl_clsm.v
+-v $DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_impctl_avgcnt.v
+-v $DV_ROOT/design/sys/iop/pads/pad_common/rtl/bw_io_impctl_clnew.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_padx12.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_pad.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_drv.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_edgelogic.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_rcv_dc.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_rpt.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_io_dtl_drv_zctl.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/terminator.v
+$DV_ROOT/design/sys/iop/pads/pad_jbus_common/rtl/bw_zckgatedcap_h.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/pad_jbusr.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/bw_clk_cl_jbusr_jbus.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_dtl_impctl_pulldown.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_dtl_impctl_pullup.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_dtl_pad_adp.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_dtl_pad_pack12.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_dtl_padx8.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_dtl_pad_r3.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_impctl_dtl_dnrcn.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_impctl_dtl_uprcn.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_impctl_dtl_clkgen.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_impctl_dtl_sclk.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_impctl_dtl_upclk.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_dtl_vref.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusr/rtl/../../pad_jbus_common/rtl/bw_io_ic_filter.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusl/rtl/pad_jbusl.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusl/rtl/bw_clk_cl_jbusl_jbus.v
+$DV_ROOT/design/sys/iop/pads/pad_jbusl/rtl/../../pad_jbus_common/rtl/bw_io_dtl_padx11.v
++incdir+$DV_ROOT/design/sys/iop/jbi/rtl/../include
++incdir+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl
+$DV_ROOT/design/sys/iop/jbi/rtl/jbi.v
+$DV_ROOT/design/sys/iop/jbi/rtl/bw_clk_cl_jbi_cmp.v
+$DV_ROOT/design/sys/iop/jbi/rtl/bw_clk_cl_jbi_jbus.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../../common/rtl/ucb_flow_jbi.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../common/rtl/jbi_1r1w_16x10.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../common/rtl/jbi_1r1w_16x160.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_csr/rtl/jbi_csr.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_dbg/rtl/jbi_dbg.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_dbg/rtl/jbi_dbg_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_dbg/rtl/jbi_dbg_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_dbg/rtl/jbi_dbg_ctl_qctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_parse.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_issue.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_rhq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_rhq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_rdq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_rdq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_tag.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_rq_tag_slice.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_wdq.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_wdq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_wdq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_wrtrk.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_min/rtl/jbi_min_wrtrk_ptag_sum.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_mout.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_aok_dok_tracking.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_int_arb.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_j_pack_out_gen.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_jbus_arb.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_jid_to_yid.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_jid_to_yid_pool.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_jid_to_yid_table.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_pktout_asm.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_pktout_ctlr.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_pktout_mux.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_sct_out_queues.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_sctrdq.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_sctrdq_fifo.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_snoop_out_queue.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_j_par_chk.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_mout_csr.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_ncrd_timeout.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/jbi_timer.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/dffsle_ns.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_mout/rtl/srffrl_ns.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_makq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_mrqq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_mrqq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_prqq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_prqq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_prtq_buf.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_prtq_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_tag.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_mto_ctl.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ncio/rtl/jbi_ncio_mto_slice.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ssi/rtl/jbi_ssi.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ssi/rtl/jbi_ssi_sif.v
+$DV_ROOT/design/sys/iop/jbi/rtl/../jbi_ssi/rtl/jbi_ssi_ucbif.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr3/rtl/pad_ddr3.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr2/rtl/pad_ddr2.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr1/rtl/pad_ddr1.v
+$DV_ROOT/design/sys/iop/pads/pad_ddr0/rtl/pad_ddr0.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata_subbank.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata_ctr_io.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata_periph_io.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata_efuse_hdr.v
+$DV_ROOT/design/sys/iop/scdata/rtl/scdata_rep.v
+$DV_ROOT/design/sys/iop/scdata/rtl/bw_clk_cl_scdata_cmp.v
++incdir+$DV_ROOT/design/sys/iop/sctag/rtl/.
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_stdatarep.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_arbaddrdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_arbdatadp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_arbctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_arbdecdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_csr.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_csr_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dbgdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_deccdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_decc_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dirvec_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_evicttag_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_fbctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_iqctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_iqdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_mbctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_oqdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_oqctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_rdmatctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_retdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_snpctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_mbist.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_tagctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_tagdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_tagdp_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_tagl_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_snpdp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_wbctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_scbufrep.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dirrep.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_retbuf.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_tagctlrep.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vuad_io.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vuadcol_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vuad_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/bw_clk_cl_sctag_cmp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dirl_buf.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dirg_buf.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dir_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dir_in.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_dir_out.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vuaddp_ctl.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vuad_dpm.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_vd_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_ua_dp.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_sig_rptr.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_slow_rptr.v
+$DV_ROOT/design/sys/iop/sctag/rtl/sctag_min_rptr.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf_evict.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf_fbd.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf_rdmard.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf_sig_buf.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/scbuf_slowsig_buf.v
+$DV_ROOT/design/sys/iop/scbuf/rtl/bw_clk_cl_scbuf_cmp.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_ucb.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram.v
+$DV_ROOT/design/sys/iop/dram/rtl/dramctl.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_addr_gen.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_addr_gen_lo.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_dctl.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_dp.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_ecc_cor.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_ecc_gen.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_l2if.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_mem.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_pt.v
+$DV_ROOT/design/sys/iop/dram/rtl/dram_que.v
+$DV_ROOT/design/sys/iop/dram/rtl/bw_clk_cl_dram_ddr.v
+$DV_ROOT/design/sys/iop/dram/rtl/bw_clk_cl_dram_cmp.v
+$DV_ROOT/design/sys/iop/dram/rtl/bw_clk_cl_dram_jbus.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx.v
+$DV_ROOT/design/sys/iop/ccx/rtl/bw_clk_cl_ccx_cmp.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_global_int_buf.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arb.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arbc.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arbctl.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arbdp.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arb_atomq.v
+$DV_ROOT/design/sys/iop/ccx/rtl/ccx_arb_srcq.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_io.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_pdl_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_pdr_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_pm_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p0_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p4_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p0.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p1.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p3.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_p4.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_pm.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_pt.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_fpbuf_p0.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_fpbuf_p1.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_databuf_ca.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_databuf_ca2.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_buf_top.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_datacx2_ff.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp0.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp2.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp4.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp6.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_maca_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_maca_r.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_macb_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_macb_r.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_macc_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_macc_r.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_array.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_dp_halfarray.v
+$DV_ROOT/design/sys/iop/ccx/rtl/cpx_io_grant_ff.v
+$DV_ROOT/design/sys/iop/ccx/rtl/io_cpx_reqdata_ff.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdl_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdl_odd.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pm_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pm_odd.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdr_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdr_odd.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p0_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p0_odd.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p4_even.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p4_odd.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p0.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p1.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p3.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_p4.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pm.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pt.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pt1.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_top.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_scache.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_fpio.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdl.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_buf_pdr.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_databuf_pa.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_data_px2.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp0.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp1.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp2.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp3.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp4.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_array.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_array02.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_array134.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_maca_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_maca_r.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_macb_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_macb_r.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_macc_l.v
+$DV_ROOT/design/sys/iop/ccx/rtl/pcx_dp_macc_r.v
+-v $DV_ROOT/design/sys/iop/sparc/rtl/../../srams/rtl/bw_r_tlb.v
+-v $DV_ROOT/design/sys/iop/sparc/rtl/../ifu/rtl/sparc_ifu_rndrob.v
+-v $DV_ROOT/design/sys/iop/sparc/rtl/../lsu/rtl/lsu_dc_parity_gen.v
+$DV_ROOT/design/sys/iop/sparc/mul/rtl/sparc_mul_top.v
+$DV_ROOT/design/sys/iop/sparc/mul/rtl/sparc_mul_cntl.v
+$DV_ROOT/design/sys/iop/sparc/mul/rtl/sparc_mul_dp.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_alu.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_aluadder64.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_aluaddsub.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_alulogic.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_aluor32.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_aluspr.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_aluzcmp64.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_alu_16eql.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_byp.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_byp_eccgen.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_div.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_div_yreg.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_div_32eql.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecc.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecc_dec.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_eclbyplog.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_eclbyplog_rs1.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_eclccr.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_eclcomp7.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_cnt6.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_divcntl.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_eccctl.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_mdqctl.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_ecl_wb.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_reg.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_rml.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_rml_cwp.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_rml_inc3.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_rndrob.v
+$DV_ROOT/design/sys/iop/sparc/exu/rtl/sparc_exu_shft.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu_ctl.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu_ctl_visctl.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu_dp.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu_part_add32.v
+$DV_ROOT/design/sys/iop/sparc/ffu/rtl/sparc_ffu_vis.v
++incdir+$DV_ROOT/design/sys/iop/sparc/spu/rtl/../../../include
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_ctl.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_wen.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_madp.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_mactl.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_maaddr.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_mald.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_mamul.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_maaeqb.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_mared.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_maexp.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_mast.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_lsurpt1.v
+$DV_ROOT/design/sys/iop/sparc/spu/rtl/spu_lsurpt.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_incr64.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_mmu_ctl.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_mmu_dp.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_pib.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_addern_32.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_prencoder16.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_rrobin_picker.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_tcl.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_tdp.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_hyperv.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/tlu_misctl.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/sparc_tlu_dec64.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/sparc_tlu_intctl.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/sparc_tlu_intdp.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/sparc_tlu_penc64.v
+$DV_ROOT/design/sys/iop/sparc/tlu/rtl/sparc_tlu_zcmp64.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_asi_decode.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_dcdp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_excpctl.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_dctl.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_dctldp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_tagdp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_tlbdp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_pcx_qmon.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_rrobin_picker2.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_stb_ctl.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_stb_ctldp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_stb_rwctl.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_stb_rwdp.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_qctl1.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_qctl2.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_qdp1.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_qdp2.v
+$DV_ROOT/design/sys/iop/sparc/lsu/rtl/lsu_dcache_lfsr.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/../../../srams/rtl/bw_r_icd.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_cmp35.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_ctr5.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_dcl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_dec.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_errctl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_errdp.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_fcl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_fdp.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_wseldp.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_mbist.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_sscan.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_ifqctl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_ifqdp.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_imd.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_incr46.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_invctl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_lfsr5.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_lru4.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_milfsm.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_par16.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_par32.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_par34.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_swl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_swpla.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_thrcmpl.v
+$DV_ROOT/design/sys/iop/sparc/ifu/rtl/sparc_ifu_thrfsm.v
+$DV_ROOT/design/sys/iop/sparc/rtl/sparc.v
+$DV_ROOT/design/sys/iop/sparc/rtl/bw_clk_cl_sparc_cmp.v
+$DV_ROOT/design/sys/iop/sparc/rtl/cpx_spc_rpt.v
+$DV_ROOT/design/sys/iop/sparc/rtl/cpx_spc_buf.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/iobdg.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/bw_clk_cl_iobdg_jbus.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/bw_clk_cl_iobdg_cmp.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../../common/rtl/dbl_buf.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_1r1w_rf16x160.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_1r1w_rf4.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_1r1w_rf32.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_1r2w_vec.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_efuse_reg.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_findfirst.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_jbus_mondo_buf.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_int_mondo_addr_dec.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../common/rtl/iobdg_asi_dec.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i_fdp.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i_sctrl.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i_sdp.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i_fctrl.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../c2i/rtl/c2i_buf.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_ctrl/rtl/iobdg_ctrl.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_dbg/rtl/iobdg_dbg.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_dbg/rtl/iobdg_dbg_iob.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_dbg/rtl/iobdg_dbg_l2.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_dbg/rtl/iobdg_dbg_porta.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../iobdg_dbg/rtl/iobdg_dbg_portb.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_fctrl.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_sctrl.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_buf.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_fdp.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_sdp.v
+$DV_ROOT/design/sys/iop/iobdg/rtl/../i2c/rtl/i2c_cpx_cnt.v
++define+RTL
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_add.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_add_ctl.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_add_exp_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_add_frac_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_53b.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_64b.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_lvl1.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_lvl2.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_lvl3.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_cnt_lead0_lvl4.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_denorm_3b.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_denorm_3to1.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_denorm_frac.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_div.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_div_ctl.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_div_exp_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_div_frac_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in_ctl.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in2_gt_in1_2b.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in2_gt_in1_3b.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in2_gt_in1_3to1.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_in2_gt_in1_frac.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_mul.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_mul_ctl.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_mul_exp_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_mul_frac_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_out.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_out_ctl.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_out_dp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/bw_clk_cl_fpu_cmp.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_rptr_macros.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_rptr_groups.v
+$DV_ROOT/design/sys/iop/fpu/rtl/fpu_rptr_min_global.v
+$DV_ROOT/design/sys/iop/rtl/iop.v
+$DV_ROOT/design/sys/iop/rtl/../analog/bw_temp_diode/rtl/bw_temp_diode.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/jbi_l2_buf2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_l2_buf2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_ddr_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_ddr_pad_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram0_ddr0_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram1_ddr1_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram2_ddr2_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram3_ddr3_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_ddr_rptr_south.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_ddr_pad_rptr_south.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ccx_spc_rpt.v
+$DV_ROOT/design/sys/iop/rtl/../sparc/rtl/spc_pcx_buf.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc0_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc1_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc2_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc3_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc0_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc1_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc2_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_jbi_sc3_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/rep_jbi_sc0_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/rep_jbi_sc1_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/rep_jbi_sc2_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/rep_jbi_sc3_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_dram_sc_bank0.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_dram_sc_bank1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_dram_sc_bank2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ff_dram_sc_bank3.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_scbuf_rptr0.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_scbuf_rptr1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_scbuf_rptr2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_scbuf_rptr3.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ctu_bottom_rptr2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ctu_top_rptr2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sc_0_1_dbg_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sc_2_3_dbg_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ctu_top_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ctu_bottom_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_sc_0_rep2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_sc_1_rep2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_sc_2_rep2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/dram_sc_3_rep2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_pcx_rptr_0.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_pcx_rptr_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_pcx_rptr_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_pcx_rptr_3.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_cpx_rptr_0.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_cpx_rptr_1.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_cpx_rptr_2.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/sctag_cpx_rptr_3.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/ccx_iob_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/iob_ccx_rptr.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/iob_jbi_rptr_0.v
+$DV_ROOT/design/sys/iop/rtl/../cmp/rtl/iob_jbi_rptr_1.v

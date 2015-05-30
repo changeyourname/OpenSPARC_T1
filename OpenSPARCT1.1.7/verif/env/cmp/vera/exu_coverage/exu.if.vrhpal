@@ -1,0 +1,229 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "exu_cov_inc.pal";
+#ifndef __EXU_IF_VRH__
+#define __EXU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface exu_cov_top
+ {
+  // common signals
+  input cmp_clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+.
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+  //signals for TAG
+  input         C${c}_exu_rs1_data_1		PSAMPLE;
+  input         C${c}_exu_rs1_data_0		PSAMPLE;
+  input         C${c}_exu_rs2_data_1		PSAMPLE;
+  input         C${c}_exu_rs2_data_0		PSAMPLE;
+  input         C${c}_exu_tagop     		PSAMPLE;
+  input         C${c}_exu_tv        		PSAMPLE;
+  input         C${c}_exu_alu_sub   		PSAMPLE;
+  
+  //signals for LOGIC
+  input		C${c}_exu_isand 		PSAMPLE;
+  input		C${c}_exu_isor  		PSAMPLE;
+  input		C${c}_exu_isxor 		PSAMPLE;
+  input		C${c}_exu_inv   		PSAMPLE;
+  input	[1:0]	C${c}_exu_xcc_nz		PSAMPLE;
+  input	[1:0]	C${c}_exu_icc_nz		PSAMPLE;
+  input		C${c}_exu_setcc 		PSAMPLE;
+
+// signals for div fsm
+  input [5:0]   C${c}_exu_div_state		PSAMPLE;
+  input		C${c}_exu_isdiv_e_vld		PSAMPLE;
+  input		C${c}_exu_isdiv_m_vld		PSAMPLE;
+  input		C${c}_ifu_running_e		PSAMPLE;
+  input		C${c}_ifu_tlu_inst_vld_m	PSAMPLE;
+
+
+// signals for global swap
+  input		C${c}_exu_swap_global		PSAMPLE;
+  input [1:0]	C${c}_exu_global_tid 		PSAMPLE;
+  input	[1:0]	C${c}_exu_old_agp    		PSAMPLE;
+  input	[1:0]	C${c}_exu_new_agp    		PSAMPLE;
+
+// signals for swap locals
+  input		C${c}_exu_swap_local		PSAMPLE;
+  input [1:0]	C${c}_exu_cwpswap_tid 		PSAMPLE;
+  input	[2:0]	C${c}_exu_old_lo_cwp    	PSAMPLE;
+  input	[2:0]	C${c}_exu_new_lo_cwp    	PSAMPLE;
+
+// signals for swap ins/outs
+  input		C${c}_exu_swap_even		PSAMPLE;
+  input		C${c}_exu_swap_odd		PSAMPLE;
+  input	[1:0]	C${c}_exu_old_e_cwp	    	PSAMPLE;
+  input	[1:0]	C${c}_exu_new_e_cwp	   	PSAMPLE;
+
+// signals for WMG
+  input	[2:0]	C${c}_exu_cwp        		PSAMPLE;
+  input		C${c}_exu_cwp_wen      		PSAMPLE;
+  input	[2:0]	C${c}_exu_cansave    		PSAMPLE;
+  input	[2:0]	C${c}_exu_canrestore 		PSAMPLE;
+  input	[2:0]	C${c}_exu_otherwin   		PSAMPLE;
+  input	[2:0]	C${c}_exu_cleanwin   		PSAMPLE;
+  input		C${c}_exu_saved  		PSAMPLE;
+  input		C${c}_exu_restored		PSAMPLE;
+  input		C${c}_exu_flushw 		PSAMPLE;
+  input		C${c}_exu_save	 		PSAMPLE;
+  input		C${c}_exu_restore 		PSAMPLE;
+  input		C${c}_exu_spill 		PSAMPLE;
+  input		C${c}_exu_fill	 		PSAMPLE;
+  input		C${c}_exu_clean_window 		PSAMPLE;
+
+// signals for ECC
+  input		C${c}_exu_detect_ce		PSAMPLE;
+  input		C${c}_exu_detect_ue		PSAMPLE;
+  input		C${c}_exu_rs1_ce   		PSAMPLE;
+  input		C${c}_exu_rs1_ue   		PSAMPLE;
+  input		C${c}_exu_rs2_ce   		PSAMPLE;
+  input		C${c}_exu_rs2_ue   		PSAMPLE;
+  input		C${c}_exu_rs3_ce   		PSAMPLE;
+  input		C${c}_exu_rs3_ue   		PSAMPLE;
+  input		C${c}_exu_ce2ue   		PSAMPLE;
+
+// signal for bypass
+  input		C${c}_exu_rs1_mux1_sel_m      	PSAMPLE;
+  input		C${c}_exu_rs1_mux1_sel_w      	PSAMPLE;
+  input		C${c}_exu_rs1_mux1_sel_w2     	PSAMPLE;
+  input		C${c}_exu_rs1_mux2_sel_e      	PSAMPLE;
+  input		C${c}_exu_rs1_mux2_sel_ld     	PSAMPLE;
+  input		C${c}_exu_rs1_mux2_sel_usemux1	PSAMPLE;
+  input		C${c}_exu_rs2_mux1_sel_m      	PSAMPLE;
+  input		C${c}_exu_rs2_mux1_sel_w      	PSAMPLE;
+  input		C${c}_exu_rs2_mux1_sel_w2     	PSAMPLE;
+  input		C${c}_exu_rs2_mux2_sel_e      	PSAMPLE;
+  input		C${c}_exu_rs2_mux2_sel_ld     	PSAMPLE;
+  input		C${c}_exu_rs2_mux2_sel_usemux1	PSAMPLE;
+  input		C${c}_exu_rs3_mux1_sel_m      	PSAMPLE;
+  input		C${c}_exu_rs3_mux1_sel_w      	PSAMPLE;
+  input		C${c}_exu_rs3_mux1_sel_w2     	PSAMPLE;
+  input		C${c}_exu_rs3_mux2_sel_e      	PSAMPLE;
+  input		C${c}_exu_rs3_mux2_sel_ld     	PSAMPLE;
+  input		C${c}_exu_rs3_mux2_sel_usemux1	PSAMPLE;
+  input		C${c}_exu_rs3h_mux1_sel_m      	PSAMPLE;
+  input		C${c}_exu_rs3h_mux1_sel_w      	PSAMPLE;
+  input		C${c}_exu_rs3h_mux1_sel_w2     	PSAMPLE;
+  input		C${c}_exu_rs3h_mux2_sel_e      	PSAMPLE;
+  input		C${c}_exu_rs3h_mux2_sel_ld     	PSAMPLE;
+  input		C${c}_exu_rs3h_mux2_sel_usemux1	PSAMPLE;
+
+  input		C${c}_exu_valid_e     		PSAMPLE;
+  input		C${c}_exu_valid_m     		PSAMPLE;
+  input		C${c}_exu_bypass_w    		PSAMPLE;
+  input		C${c}_exu_wen_w2      		PSAMPLE;
+
+  input 	C${c}_ifu_rcc_mvbr_d		PSAMPLE;
+  input		C${c}_exu_rs1_byp_g2      	PSAMPLE;
+  input		C${c}_exu_rs2_byp_g2      	PSAMPLE;
+  input		C${c}_exu_rs3_byp_g2      	PSAMPLE;
+  input		C${c}_exu_rs3h_byp_g2      	PSAMPLE;
+  input		C${c}_exu_ld_vld      		PSAMPLE;
+
+  input		C${c}_exu_rs1_ifu_vld		PSAMPLE;
+  input		C${c}_exu_rs1_match_e 		PSAMPLE;
+  input		C${c}_exu_rs1_match_m 		PSAMPLE;
+  input		C${c}_exu_rs1_match_w 		PSAMPLE;
+  input		C${c}_exu_rs1_match_ld		PSAMPLE;
+  input		C${c}_exu_rs1_match_w2		PSAMPLE;
+  input		C${c}_exu_rs1_byp		PSAMPLE;
+  input		C${c}_exu_rcc_byp		PSAMPLE;
+
+  input		C${c}_exu_rs2_ifu_vld		PSAMPLE;
+  input		C${c}_exu_rs2_match_e 		PSAMPLE;
+  input		C${c}_exu_rs2_match_m 		PSAMPLE;
+  input		C${c}_exu_rs2_match_w 		PSAMPLE;
+  input		C${c}_exu_rs2_match_ld		PSAMPLE;
+  input		C${c}_exu_rs2_match_w2		PSAMPLE;
+  input		C${c}_exu_rs2_byp		PSAMPLE;
+
+  input		C${c}_exu_rs3e_ifu_vld		PSAMPLE;
+  input		C${c}_exu_rs3o_ifu_vld		PSAMPLE;
+
+  input		C${c}_exu_rs3_match_e 		PSAMPLE;
+  input		C${c}_exu_rs3_match_m 		PSAMPLE;
+  input		C${c}_exu_rs3_match_w 		PSAMPLE;
+  input		C${c}_exu_rs3_match_ld		PSAMPLE;
+  input		C${c}_exu_rs3_match_w2		PSAMPLE;
+  input		C${c}_exu_rs3_byp		PSAMPLE;
+
+
+  input		C${c}_exu_rs3h_match_e 		PSAMPLE;
+  input		C${c}_exu_rs3h_match_m 		PSAMPLE;
+  input		C${c}_exu_rs3h_match_w 		PSAMPLE;
+  input		C${c}_exu_rs3h_match_ld		PSAMPLE;
+  input		C${c}_exu_rs3h_match_w2		PSAMPLE;
+  input		C${c}_exu_rs3h_byp		PSAMPLE;
+
+//CWP SWAP
+  input [1:0]   C${c}_exu_swap_slot0_st		PSAMPLE;
+  input [1:0]   C${c}_exu_swap_slot1_st		PSAMPLE;
+  input [1:0]   C${c}_exu_swap_slot2_st		PSAMPLE;
+  input [1:0]   C${c}_exu_swap_slot3_st		PSAMPLE;
+
+//WB
+  input 	C${c}_exu_alu_wb 		PSAMPLE;
+  input 	C${c}_exu_ecc_wb 		PSAMPLE;
+  input 	C${c}_exu_load_wb 		PSAMPLE;
+  input 	C${c}_exu_restore_wb 		PSAMPLE;
+  input 	C${c}_exu_muldiv_wb 		PSAMPLE;
+  input 	C${c}_exu_mul_done 		PSAMPLE;
+  input 	C${c}_exu_div_done 		PSAMPLE;
+
+
+//IRF
+  input [1:0]	C${c}_exu_rd_tid_d 		PSAMPLE;
+  input 	C${c}_exu_rd_ren1_d		PSAMPLE;
+  input 	C${c}_exu_rd_ren2_d		PSAMPLE;
+  input 	C${c}_exu_rd_ren3_d		PSAMPLE;
+  input [1:0] 	C${c}_exu_wr_tid_w 		PSAMPLE;
+  input 	C${c}_exu_wr_wen_w 		PSAMPLE;
+  input [1:0]	C${c}_exu_wr_tid_w2		PSAMPLE;
+  input 	C${c}_exu_wr_wen_w2		PSAMPLE;
+  input [1:0] 	C${c}_exu_sw_tid_m 		PSAMPLE;
+  input 	C${c}_exu_sw_lcl_m 		PSAMPLE;
+  input 	C${c}_exu_sw_eve_m 		PSAMPLE;
+  input 	C${c}_exu_sw_odd_m 		PSAMPLE;
+  input [1:0] 	C${c}_exu_sw_tid_w 		PSAMPLE;
+  input 	C${c}_exu_sw_lcl_w 		PSAMPLE;
+  input 	C${c}_exu_kil_rt_w 		PSAMPLE;
+
+.
+. } # coreSignals
+.
+. foreach $core ( @CORE_STR ) {
+
+// **********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+
+ }
+
+#endif
+

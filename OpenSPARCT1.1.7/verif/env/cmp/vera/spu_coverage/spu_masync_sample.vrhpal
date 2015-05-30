@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_masync_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_masync_COV_VRH
+#define INC__TMP_spu_masync_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in masync_state:
+ * masync_sample_monitor.ldxa_from_ma_sync_before_first_op,
+ * masync_sample_monitor.ldxa_from_ma_sync_while_ma_idle
+ */
+
+/*
+ * spu_masync_sample
+ *
+ * This coverage object checks that we have done an ldxa from
+ * the MA Sync register when the MA is idle. We check during the idle
+ * state before the very first MA op, and during an idle state between
+ * MA ops. The signals which are sample come from SPU_LDSTXA_MON, where
+ * it boils the condition down to the above two events.
+ * 
+ */
+
+#endif
+
+sample masync_sample_monitor_C${c}.masync_state {
+  // Declare states to be covered
+  state s_MASYNC_LDXA_FROM_MA_SYNC_BEFORE_FIRST_OP (2'b11);
+  state s_MASYNC_LDXA_FROM_MA_SYNC_WHILE_MA_IDLE   (2'b01);
+  
+  // Declare bad states
+  bad_state s_MASYNC_BOGUS_STATE                   (2'b10);
+  
+  // Declare transitions to be covered
+  // Declare bad transitions
+}
+

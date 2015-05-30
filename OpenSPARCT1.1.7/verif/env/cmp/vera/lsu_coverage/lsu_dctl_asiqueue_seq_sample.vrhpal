@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_asiqueue_seq_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// tlb asi queue - sequencing events 
+//***********************************************************************
+
+  #define TLB_ACCESS_RST_ST0	8'b1000_xxxx
+  #define TLB_ACCESS_RST_ST1	8'b0100_xxxx
+  #define TLB_ACCESS_RST_ST2	8'b0010_xxxx
+  #define TLB_ACCESS_RST_ST3	8'b0001_xxxx
+				
+  #define TLB_ACCESS_SEL_ST0	8'bxxxx_1000
+  #define TLB_ACCESS_SEL_ST1	8'bxxxx_0100
+  #define TLB_ACCESS_SEL_ST2	8'bxxxx_0010
+  #define TLB_ACCESS_SEL_ST3	8'bxxxx_0001
+
+  wildcard trans trans_t_ASIQUEUE_SEQ_00 ( TLB_ACCESS_RST_ST0 -> TLB_ACCESS_SEL_ST1 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_01 ( TLB_ACCESS_RST_ST0 -> TLB_ACCESS_SEL_ST2 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_02 ( TLB_ACCESS_RST_ST0 -> TLB_ACCESS_SEL_ST3 );
+
+  wildcard trans trans_t_ASIQUEUE_SEQ_03 ( TLB_ACCESS_RST_ST1 -> TLB_ACCESS_SEL_ST0 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_04 ( TLB_ACCESS_RST_ST1 -> TLB_ACCESS_SEL_ST2 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_05 ( TLB_ACCESS_RST_ST1 -> TLB_ACCESS_SEL_ST3 );
+
+  wildcard trans trans_t_ASIQUEUE_SEQ_06 ( TLB_ACCESS_RST_ST2 -> TLB_ACCESS_SEL_ST0 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_07 ( TLB_ACCESS_RST_ST2 -> TLB_ACCESS_SEL_ST1 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_08 ( TLB_ACCESS_RST_ST2 -> TLB_ACCESS_SEL_ST3 );
+
+  wildcard trans trans_t_ASIQUEUE_SEQ_09 ( TLB_ACCESS_RST_ST3 -> TLB_ACCESS_SEL_ST0 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_10 ( TLB_ACCESS_RST_ST3 -> TLB_ACCESS_SEL_ST1 );
+  wildcard trans trans_t_ASIQUEUE_SEQ_11 ( TLB_ACCESS_RST_ST3 -> TLB_ACCESS_SEL_ST2 );
+
+

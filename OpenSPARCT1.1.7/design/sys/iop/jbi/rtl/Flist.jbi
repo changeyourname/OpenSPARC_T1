@@ -1,0 +1,86 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.jbi
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
++incdir+../include
++incdir+../jbi_mout/rtl
+
+jbi.v
+
+bw_clk_cl_jbi_cmp.v
+bw_clk_cl_jbi_jbus.v 
+../../common/rtl/ucb_flow_jbi.v
+../common/rtl/jbi_1r1w_16x10.v
+../common/rtl/jbi_1r1w_16x160.v
+../jbi_csr/rtl/jbi_csr.v
+../jbi_dbg/rtl/jbi_dbg.v
+../jbi_dbg/rtl/jbi_dbg_buf.v
+../jbi_dbg/rtl/jbi_dbg_ctl.v
+../jbi_dbg/rtl/jbi_dbg_ctl_qctl.v
+../jbi_min/rtl/jbi_min.v
+../jbi_min/rtl/jbi_min_parse.v
+../jbi_min/rtl/jbi_min_rq.v
+../jbi_min/rtl/jbi_min_rq_issue.v
+../jbi_min/rtl/jbi_min_rq_rhq_ctl.v
+../jbi_min/rtl/jbi_min_rq_rhq_buf.v
+../jbi_min/rtl/jbi_min_rq_rdq_buf.v
+../jbi_min/rtl/jbi_min_rq_rdq_ctl.v
+../jbi_min/rtl/jbi_min_rq_tag.v
+../jbi_min/rtl/jbi_min_rq_tag_slice.v
+../jbi_min/rtl/jbi_min_wdq.v
+../jbi_min/rtl/jbi_min_wdq_buf.v
+../jbi_min/rtl/jbi_min_wdq_ctl.v
+../jbi_min/rtl/jbi_min_wrtrk.v
+../jbi_min/rtl/jbi_min_wrtrk_ptag_sum.v
+../jbi_mout/rtl/jbi_mout.v
+../jbi_mout/rtl/jbi_aok_dok_tracking.v
+../jbi_mout/rtl/jbi_int_arb.v
+../jbi_mout/rtl/jbi_j_pack_out_gen.v
+../jbi_mout/rtl/jbi_jbus_arb.v
+../jbi_mout/rtl/jbi_jid_to_yid.v
+../jbi_mout/rtl/jbi_jid_to_yid_pool.v
+../jbi_mout/rtl/jbi_jid_to_yid_table.v
+../jbi_mout/rtl/jbi_pktout_asm.v
+../jbi_mout/rtl/jbi_pktout_ctlr.v
+../jbi_mout/rtl/jbi_pktout_mux.v
+../jbi_mout/rtl/jbi_sct_out_queues.v
+../jbi_mout/rtl/jbi_sctrdq.v
+../jbi_mout/rtl/jbi_sctrdq_fifo.v
+../jbi_mout/rtl/jbi_snoop_out_queue.v
+../jbi_mout/rtl/jbi_j_par_chk.v
+../jbi_mout/rtl/jbi_mout_csr.v
+../jbi_mout/rtl/jbi_ncrd_timeout.v
+../jbi_mout/rtl/jbi_timer.v
+../jbi_mout/rtl/dffsle_ns.v
+../jbi_mout/rtl/srffrl_ns.v
+../jbi_ncio/rtl/jbi_ncio.v
+../jbi_ncio/rtl/jbi_ncio_makq_ctl.v
+../jbi_ncio/rtl/jbi_ncio_mrqq_buf.v
+../jbi_ncio/rtl/jbi_ncio_mrqq_ctl.v
+../jbi_ncio/rtl/jbi_ncio_prqq_buf.v
+../jbi_ncio/rtl/jbi_ncio_prqq_ctl.v
+../jbi_ncio/rtl/jbi_ncio_prtq_buf.v
+../jbi_ncio/rtl/jbi_ncio_prtq_ctl.v
+../jbi_ncio/rtl/jbi_ncio_tag.v
+../jbi_ncio/rtl/jbi_ncio_mto_ctl.v
+../jbi_ncio/rtl/jbi_ncio_mto_slice.v
+../jbi_ssi/rtl/jbi_ssi.v
+../jbi_ssi/rtl/jbi_ssi_sif.v
+../jbi_ssi/rtl/jbi_ssi_ucbif.v
+

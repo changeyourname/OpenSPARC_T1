@@ -1,0 +1,274 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tlu_cov_inc.pal";
+#ifndef __TLU_IF_VRH__
+#define __TLU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface tlu_cov_top
+{
+  // Common & Clock Signals
+  input clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+  input	[1:0]	C${c}_tid_d		PSAMPLE depth 5;
+  input	[1:0]	C${c}_tid_e		PSAMPLE depth 5;
+  input	[1:0]	C${c}_tid_m		PSAMPLE depth 5;
+  input	[1:0]	C${c}_tid_g		PSAMPLE depth 5;
+  input	[1:0]	C${c}_tid_w1		PSAMPLE depth 5;
+  input		C${c}_ifu_inst_vld_m	PSAMPLE depth 5;
+  input		C${c}_inst_vld_m	PSAMPLE depth 5;
+  input		C${c}_inst_vld_g	PSAMPLE depth 5;
+  input		C${c}_inst_vld_w2	PSAMPLE depth 5;
+  input	[1:0]	C${c}_tick_tid		PSAMPLE depth 5;
+
+  input	[3:0]	C${c}_pstate_priv	PSAMPLE depth 5;
+  input	[3:0]	C${c}_pstate_ie		PSAMPLE depth 5;
+  input	[3:0]	C${c}_hpstate_ibe	PSAMPLE depth 5;
+  input	[3:0]	C${c}_hpstate_enb	PSAMPLE depth 5;
+  input	[3:0]	C${c}_hpstate_red	PSAMPLE depth 5;
+  input	[3:0]	C${c}_hpstate_priv	PSAMPLE depth 5;
+  input	[3:0]	C${c}_hpstate_tlz	PSAMPLE depth 5;
+  input	[11:0]	C${c}_true_pstate0	PSAMPLE depth 5;
+  input	[11:0]	C${c}_true_pstate1	PSAMPLE depth 5;
+  input	[11:0]	C${c}_true_pstate2	PSAMPLE depth 5;
+  input	[11:0]	C${c}_true_pstate3	PSAMPLE depth 5;
+  input	[4:0]	C${c}_true_hpstate0	PSAMPLE depth 5;
+  input	[4:0]	C${c}_true_hpstate1	PSAMPLE depth 5;
+  input	[4:0]	C${c}_true_hpstate2	PSAMPLE depth 5;
+  input	[4:0]	C${c}_true_hpstate3	PSAMPLE depth 5;
+
+  input		C${c}_alt_space_e	PSAMPLE depth 5;
+  input		C${c}_ld_inst_e		PSAMPLE depth 5;
+  input		C${c}_st_inst_e		PSAMPLE depth 5;
+  input  [7:0]	C${c}_asi_state_e	PSAMPLE depth 5;
+  input [47:0]	C${c}_ldst_va_e		PSAMPLE depth 5;
+  input [63:0]	C${c}_st_rs3_data_g	PSAMPLE depth 5;
+  input  [7:0]  C${c}_int_asi_state	PSAMPLE depth 5;
+
+  input [6:0]	C${c}_sraddr_d		PSAMPLE depth 5;
+  input		C${c}_rsr_inst_d	PSAMPLE depth 5;
+  input		C${c}_wsr_inst_d	PSAMPLE depth 5;
+  input		C${c}_wsr_inst_m	PSAMPLE depth 5;
+  input		C${c}_wsr_inst_g	PSAMPLE depth 5;
+  input		C${c}_wsr_inst_w2	PSAMPLE depth 5;
+  input [63:0]	C${c}_wsr_data_m	PSAMPLE depth 5;
+  input [63:0]	C${c}_wsr_data_g	PSAMPLE depth 5;
+  input		C${c}_tl_rw_g		PSAMPLE depth 5;
+  input		C${c}_gl_rw_g		PSAMPLE depth 5;
+  input		C${c}_set_sftint_m	PSAMPLE depth 5;
+  input		C${c}_set_sftint_g	PSAMPLE depth 5;
+  input		C${c}_sftint_rw_m	PSAMPLE depth 5;
+  input		C${c}_sftint_rw_g	PSAMPLE depth 5;
+  input	[16:0]	C${c}_softint0		PSAMPLE depth 5;
+  input	[16:0]	C${c}_softint1		PSAMPLE depth 5;
+  input	[16:0]	C${c}_softint2		PSAMPLE depth 5;
+  input	[16:0]	C${c}_softint3		PSAMPLE depth 5;
+  input	[3:0]	C${c}_hintp		PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl0		PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl1		PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl2		PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl3		PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl0		PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl1		PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl2		PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl3		PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl0_new	PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl1_new	PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl2_new	PSAMPLE depth 5;
+  input [1:0]	C${c}_gl_lvl3_new	PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl0_new	PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl1_new	PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl2_new	PSAMPLE depth 5;
+  input [2:0]	C${c}_trap_lvl3_new	PSAMPLE depth 5;
+  input [63:0]	C${c}_tickcmp0		PSAMPLE depth 5;
+  input [63:0]	C${c}_tickcmp1		PSAMPLE depth 5;
+  input [63:0]	C${c}_tickcmp2		PSAMPLE depth 5;
+  input [63:0]	C${c}_tickcmp3		PSAMPLE depth 5;
+  input [63:0]	C${c}_stickcmp0		PSAMPLE depth 5;
+  input [63:0]	C${c}_stickcmp1		PSAMPLE depth 5;
+  input [63:0]	C${c}_stickcmp2		PSAMPLE depth 5;
+  input [63:0]	C${c}_stickcmp3		PSAMPLE depth 5;
+  input       	C${c}_htick_intdis0	PSAMPLE depth 5;
+  input       	C${c}_htick_intdis1	PSAMPLE depth 5;
+  input       	C${c}_htick_intdis2	PSAMPLE depth 5;
+  input       	C${c}_htick_intdis3	PSAMPLE depth 5;
+  input [3:0]	C${c}_pil0		PSAMPLE depth 5;
+  input [3:0]	C${c}_pil1		PSAMPLE depth 5;
+  input [3:0]	C${c}_pil2		PSAMPLE depth 5;
+  input [3:0]	C${c}_pil3		PSAMPLE depth 5;
+  input      	C${c}_tick_npt0		PSAMPLE depth 5;
+  input      	C${c}_tick_npt1		PSAMPLE depth 5;
+  input      	C${c}_tick_npt2		PSAMPLE depth 5;
+  input      	C${c}_tick_npt3		PSAMPLE depth 5;
+  input      	C${c}_tl0_gt_0		PSAMPLE depth 5;
+  input      	C${c}_tl1_gt_0		PSAMPLE depth 5;
+  input      	C${c}_tl2_gt_0		PSAMPLE depth 5;
+  input      	C${c}_tl3_gt_0		PSAMPLE depth 5;
+  input [3:0]	C${c}_tl_at_maxstl	PSAMPLE depth 5;
+  input      	C${c}_tl0_at_maxtlless1	PSAMPLE depth 5;
+  input      	C${c}_tl1_at_maxtlless1	PSAMPLE depth 5;
+  input      	C${c}_tl2_at_maxtlless1	PSAMPLE depth 5;
+  input      	C${c}_tl3_at_maxtlless1	PSAMPLE depth 5;
+  input      	C${c}_tl0_at_maxtl	PSAMPLE depth 5;
+  input      	C${c}_tl1_at_maxtl	PSAMPLE depth 5;
+  input      	C${c}_tl2_at_maxtl	PSAMPLE depth 5;
+  input      	C${c}_tl3_at_maxtl	PSAMPLE depth 5;
+
+  input [5:0]	C${c}_pcr0		PSAMPLE depth 5;
+  input [5:0]	C${c}_pcr1		PSAMPLE depth 5;
+  input [5:0]	C${c}_pcr2		PSAMPLE depth 5;
+  input [5:0]	C${c}_pcr3		PSAMPLE depth 5;
+  input	[3:0]	C${c}_curr_priv_st	PSAMPLE depth 5;
+  input	[3:0]	C${c}_curr_priv_ut	PSAMPLE depth 5;
+  input	[3:0]	C${c}_pcr_st		PSAMPLE depth 5;
+  input	[3:0]	C${c}_pcr_ut		PSAMPLE depth 5;
+  input	[3:0]	C${c}_inst_vld		PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_stb_full	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_fpu_inst	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_ica_miss	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_dca_miss	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_itlb_mis	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_dtlb_mis	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_l2_imiss	PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_l2_dmiss	PSAMPLE depth 5;
+
+  input	     	C${c}_tick_match	PSAMPLE depth 5;
+  input	     	C${c}_stick_match	PSAMPLE depth 5;
+  input	     	C${c}_htick_match	PSAMPLE depth 5;
+  input	[3:0]	C${c}_tlz_trap_m	PSAMPLE depth 5;
+  input	[3:0]	C${c}_tlz_thread	PSAMPLE depth 5;
+  input	[3:0]	C${c}_pib_wrap_m	PSAMPLE depth 5;
+  input	[3:0]	C${c}_pich_wrap		PSAMPLE depth 5;
+  input	[3:0]	C${c}_picl_wrap		PSAMPLE depth 5;
+  input	[3:0]	C${c}_set_hintp_g	PSAMPLE depth 5;
+  input	[3:0]	C${c}_tickcmp_int	PSAMPLE depth 5;
+  input	[3:0]	C${c}_stickcmp_int	PSAMPLE depth 5;
+  input	[3:0]	C${c}_cpu_mondo_cmp	PSAMPLE depth 5;
+  input	[3:0]	C${c}_dev_mondo_cmp	PSAMPLE depth 5;
+  input	[3:0]	C${c}_resum_err_cmp	PSAMPLE depth 5;
+  input	[3:0]	C${c}_sftint_vld	PSAMPLE depth 5;
+  input	[3:0]	C${c}_hintp_vld		PSAMPLE depth 5;
+  input	[3:0]	C${c}_hwint_i3		PSAMPLE depth 5;
+  input		C${c}_nukeint_i2	PSAMPLE depth 5;
+  input		C${c}_resumint_i2	PSAMPLE depth 5;
+  input		C${c}_rstint_i2		PSAMPLE depth 5;
+  input	[3:0]	C${c}_rstthr_i2		PSAMPLE depth 5;
+
+  input	[63:0]	C${c}_t0_inrr		PSAMPLE depth 5;
+  input	[63:0]	C${c}_t1_inrr		PSAMPLE depth 5;
+  input	[63:0]	C${c}_t2_inrr		PSAMPLE depth 5;
+  input	[63:0]	C${c}_t3_inrr		PSAMPLE depth 5;
+  input	[3:0]	C${c}_inc_ind_ld_int	PSAMPLE depth 5;
+  input	[3:0]	C${c}_ind_inc_thrid	PSAMPLE depth 5;
+  input	[5:0]	C${c}_int_id		PSAMPLE depth 5;
+   
+  input		C${c}_done_inst_m	PSAMPLE depth 5;
+  input		C${c}_retry_inst_m	PSAMPLE depth 5;
+  input [8:0]	C${c}_ifu_ttype_m	PSAMPLE depth 5;
+  input		C${c}_ifu_ttype_vld_m	PSAMPLE depth 5;
+  input		C${c}_priv_violtn_m	PSAMPLE depth 5;
+  input [8:0]	C${c}_exu_ttype_m	PSAMPLE depth 5;
+  input		C${c}_exu_ttype_vld_m	PSAMPLE depth 5;
+  input		C${c}_exu_misalign_addr_jmpl_rtn_m	PSAMPLE depth 5;
+  input		C${c}_exu_ue_trap_m			PSAMPLE depth 5;
+  input		C${c}_exu_va_oor_jl_ret_m		PSAMPLE depth 5;
+  input		C${c}_exu_va_oor_m			PSAMPLE depth 5;
+  input [8:0]	C${c}_lsu_ttype_m2	PSAMPLE depth 5;
+  input		C${c}_lsu_ttype_vld_m2	PSAMPLE depth 5;
+  input		C${c}_ifu_ttype_vld_g	PSAMPLE depth 5;
+  input		C${c}_iside_ttype_vld_g	PSAMPLE depth 5;
+  input		C${c}_exu_ttype_vld_g	PSAMPLE depth 5;
+  input		C${c}_spu_rsrv_illgl_m	PSAMPLE depth 5;
+  input		C${c}_lsu_async_ttype_vld_w2	PSAMPLE depth 5;
+  input	[6:0]	C${c}_lsu_async_ttype_w2	PSAMPLE depth 5;
+  input	[1:0]	C${c}_lsu_async_tid_w2	PSAMPLE depth 5;
+  input		C${c}_fp_ill_inst_m	PSAMPLE depth 5;
+  input		C${c}_fp_trap_ieee754	PSAMPLE depth 5;
+  input		C${c}_fp_trap_other	PSAMPLE depth 5;
+  input		C${c}_fp_trap_ue	PSAMPLE depth 5;
+  input		C${c}_spill_trap	PSAMPLE depth 5;
+  input		C${c}_spill_other	PSAMPLE depth 5;
+  input		C${c}_cwp_cmplt		PSAMPLE depth 5;
+  input	[1:0]	C${c}_cwp_cmplt_tid	PSAMPLE depth 5;
+  input       	C${c}_trap_taken_g	PSAMPLE depth 5;
+  input       	C${c}_trap_taken_w2	PSAMPLE depth 5;
+  input       	C${c}_priv_traps_w2	PSAMPLE depth 5;
+  input       	C${c}_dnrtry_g		PSAMPLE depth 5;
+  input [3:0] 	C${c}_dnrtry_w2		PSAMPLE depth 5;
+  input       	C${c}_restore_pc_sel_w1	PSAMPLE depth 5;
+  input       	C${c}_cwp_fastcmplt_g	PSAMPLE depth 5;
+  input       	C${c}_cwp_fastcmplt_m	PSAMPLE depth 5;
+  input		C${c}_hwint_m		PSAMPLE depth 5;
+  input		C${c}_swint_m		PSAMPLE depth 5;
+  input		C${c}_rstint_m		PSAMPLE depth 5;
+  input		C${c}_sir_inst_m	PSAMPLE depth 5;
+  input		C${c}_hyper_wdr_trap_w2	PSAMPLE depth 5;
+  input		C${c}_internal_wdr_g	PSAMPLE depth 5;
+  input		C${c}_sir_rst_g		PSAMPLE depth 5;
+  input		C${c}_reset_sel_g	PSAMPLE depth 5;
+  input	[3:0]	C${c}_reset_id_g	PSAMPLE depth 5;
+  input		C${c}_tick_priv_act_g	PSAMPLE depth 5;
+  input		C${c}_pib_priv_act_g	PSAMPLE depth 5;
+  input		C${c}_htrap_ill_inst_g	PSAMPLE depth 5;
+  input		C${c}_local_dside_trap_g	PSAMPLE depth 5;
+  input		C${c}_sync_trap_m	PSAMPLE depth 5;
+  input		C${c}_sync_trap_g	PSAMPLE depth 5;
+  input		C${c}_trappc_vld_w1	PSAMPLE depth 5;
+  input	[47:0]	C${c}_trap_pc_w1	PSAMPLE depth 5;
+  input	[47:0]	C${c}_trap_pc_w2	PSAMPLE depth 5;
+  input	[1:0]	C${c}_trap_tid_g	PSAMPLE depth 5;
+  input	[1:0]	C${c}_trap_tid_w1	PSAMPLE depth 5;
+  input	[1:0]	C${c}_fp_trap_tid	PSAMPLE depth 5;
+  input	[1:0]	C${c}_spill_trap_tid	PSAMPLE depth 5;
+
+  input		C${c}_lsu_misalign_ldst_atm_m	PSAMPLE depth 5;
+  input		C${c}_lsu_squash_va_oor_m	PSAMPLE depth 5;
+  input		C${c}_lsu_priv_action_g		PSAMPLE depth 5;
+  input		C${c}_lsu_daccess_excptn_g	PSAMPLE depth 5;
+  input		C${c}_lsu_daccess_prot_g	PSAMPLE depth 5;
+  input		C${c}_lsu_wtchpt_trp_g		PSAMPLE depth 5;
+  input		C${c}_lsu_defr_trp_taken_g	PSAMPLE depth 5;
+  input		C${c}_lsu_early_flush2_w	PSAMPLE depth 5;
+  input		C${c}_lsu_early_flush_w		PSAMPLE depth 5;
+
+  input		C${c}_ifu_tlu_flush_fd_w	PSAMPLE depth 5;
+  input		C${c}_ifu_tlu_flush_m		PSAMPLE depth 5;
+
+
+.}
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+
+}
+
+#endif

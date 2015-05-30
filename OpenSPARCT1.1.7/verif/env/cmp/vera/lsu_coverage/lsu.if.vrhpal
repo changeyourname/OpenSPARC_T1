@@ -1,0 +1,880 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "lsu_cov_inc.pal";
+#ifndef __LSU_IF_VRH__
+#define __LSU_IF_VRH__
+
+interface lsu_cov_top {
+  // interface signals for lsu
+  input lsu_gclk		CLOCK ;
+  input cmp_diag_done		PSAMPLE ;
+.
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  // LSU qctl load coverage signals for core $c Thread ${t}
+  input	C${c}T${t}_ld_pkt_vld_unmasked  	PSAMPLE ;
+  input	C${c}T${t}_ld_pkt_vld_tmp_d	  	PSAMPLE ;
+  input	C${c}T${t}_ld_rawp_disabled  		PSAMPLE ;
+  input	C${c}T${t}_ld_is_sec_w2	  	PSAMPLE ;
+  input	C${c}T${t}_ldbyp_vld	  		PSAMPLE ;
+. } # for $t
+.
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+
+  // LSU stb coverage signals for core $c thread ${t}
+  input [7:0]   C${c}T${t}_stb_state_vld  	PSAMPLE ;
+  input [7:0]   C${c}T${t}_stb_state_ack  	PSAMPLE ;
+  input [7:0]   C${c}T${t}_stb_state_ced  	PSAMPLE ;
+. } # for $t
+
+  // signals for LSU ld/stxa tlb long latency
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input         C${c}T${t}_tlb_ld_inst	PSAMPLE ;
+.}
+
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input         C${c}T${t}_tlb_st_inst	PSAMPLE ;
+.}
+
+  input 	C${c}_tlb_access_pending	PSAMPLE;
+  input [1:0]	C${c}_ifu_tlu_thrid_e	PSAMPLE;
+//  input 	C${c}_ld0_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_ld1_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_ld2_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_ld3_pcx_rq_vld	PSAMPLE;
+
+//  input 	C${c}_st0_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_st1_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_st2_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_st3_pcx_rq_vld	PSAMPLE;
+
+//  input 	C${c}_strm_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_fpop_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_intrpt_pcx_rq_vld	PSAMPLE;
+//  input 	C${c}_fwdpkt_rq_vld	PSAMPLE;
+	      
+//  input 	C${c}_misc_pcx_rq_all	PSAMPLE;
+//  input 	C${c}_st_pcx_rq_all	PSAMPLE;
+//  input 	C${c}_ld_pcx_rq_all	PSAMPLE;
+//  input 	C${c}_imiss_pcx_rq_vld	PSAMPLE;
+
+//  input [3:0]	C${c}_all_pcx_rq_pick	PSAMPLE;
+  input    	C${c}_ld_raw_g		PSAMPLE ;
+
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input     C${c}_ld${t}_inst_vld_g	    PSAMPLE ;
+  input    	C${c}_ld${t}_sec_hit_w2		PSAMPLE ;
+.}
+
+  input [7:0]  	C${c}_stb_ld_full_raw		PSAMPLE ;
+  input [7:0]  	C${c}_stb_ld_partial_raw	PSAMPLE ;
+  input    	C${c}_stb_mhit			PSAMPLE ;
+  
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input         C${c}T${t}_ack_capture		PSAMPLE ;
+  input [8:0]   C${c}T${t}_ack_cntr		PSAMPLE ;
+.}
+
+  input         C${c}_dfq_full             	PSAMPLE ;
+  input         C${c}_dfq_full_capture		PSAMPLE ;
+  input [8:0]   C${c}_dfq_full_cntr		PSAMPLE ;
+.   for ( $t = 1; $t < 8; $t++ ) {
+  input         C${c}_dfq_full_capture${t}	PSAMPLE ;
+  input [8:0]   C${c}_dfq_full_cntr${t}		PSAMPLE ;
+.}
+  input         C${c}_vld2inv_capture		PSAMPLE ;
+  input [8:0]   C${c}_vld2inv_cntr		PSAMPLE ;
+		      
+  input         C${c}_inv2vld_capture		PSAMPLE ;
+  input [8:0]   C${c}_inv2vld_cntr		PSAMPLE ;
+		      
+  input         C${c}_vld2lkup_capture		PSAMPLE ;
+  input [8:0]   C${c}_vld2lkup_cntr		PSAMPLE ;
+		      
+  input         C${c}_invld2lkup_capture	PSAMPLE ;
+  input         C${c}_invlderr			PSAMPLE ;
+  input [8:0]   C${c}_invld2lkup_cntr		PSAMPLE ;
+  input [1:0]   C${c}_l1_way			PSAMPLE ;  
+  input         C${c}_ld_miss			PSAMPLE ;  
+  input         C${c}_bld_vld			PSAMPLE ;  
+  input         C${c}_bld_hit			PSAMPLE ;  
+  input         C${c}_bld_raw			PSAMPLE ;  
+  input [11:0]  C${c}_ldooo			PSAMPLE ;
+  input [11:0]  C${c}_stooo			PSAMPLE ;
+  input [3:0]   C${c}_ldstcmplt            PSAMPLE ;    
+  input [4:0]   C${c}_exp            PSAMPLE ;    
+  input [4:0]   C${c}_exu            PSAMPLE ;    
+
+  input         C${c}_ireq            PSAMPLE ;    
+  input         C${c}_iack            PSAMPLE ;    
+
+  input         C${c}_freq            PSAMPLE ;    
+  input         C${c}_fack            PSAMPLE ;    
+  input         C${c}_fstreq            PSAMPLE ;    
+  input [2:0]   C${c}_fwdsel            PSAMPLE ;    
+  
+  input         C${c}_inreq            PSAMPLE ;    
+  input         C${c}_inack            PSAMPLE ;    
+  input         C${c}_inclr            PSAMPLE ;    
+
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input         C${c}T${t}_stb_full                     PSAMPLE ;  
+  input         C${c}T${t}_stb_full_capture		PSAMPLE ;
+  input [8:0]   C${c}T${t}_stb_full_cntr		PSAMPLE ;
+  input         C${c}T${t}_lmq_full                     PSAMPLE ;    
+  input         C${c}T${t}_lmq_full_capture		PSAMPLE ;
+  input [8:0]   C${c}T${t}_lmq_full_cntr		PSAMPLE ;  
+  input         C${c}T${t}_stb_ced_capture		PSAMPLE ;
+  input [8:0]   C${c}T${t}_stb_ced_cntr			PSAMPLE ;  
+  input         C${c}T${t}_mbar_capture			PSAMPLE ;
+  input [8:0]   C${c}T${t}_mbar_cntr			PSAMPLE ;  
+  input         C${c}T${t}_flsh_capture			PSAMPLE ;
+  input [8:0]   C${c}T${t}_flsh_cntr			PSAMPLE ;  
+  input         C${c}T${t}_ldeqi_vld                    PSAMPLE ;  
+  input [8:0]   C${c}T${t}_atomic_cntr			PSAMPLE ;  
+  input         C${c}T${t}_atm_intr_capture		PSAMPLE ;
+  input         C${c}T${t}_atm_b4intr_capture		PSAMPLE ;
+  input         C${c}T${t}_atm_ldmiss_capture		PSAMPLE ;
+  input         C${c}T${t}_atm_imiss_capture		PSAMPLE ;
+  input         C${c}T${t}_atm_inv_capture		PSAMPLE ;
+  input         C${c}T${t}_bld_capture			PSAMPLE ;
+  input [8:0]   C${c}T${t}_bld_cntr			PSAMPLE ;
+.}
+
+
+  // load interface signals
+  input		C${c}_fp_ldst_g			PSAMPLE;
+  input		C${c}_ldst_miss_w		PSAMPLE;
+  input		C${c}_stb_cam_hit		PSAMPLE;
+
+  input		C${c}_fp_ldst_w2		PSAMPLE;
+  input		C${c}_ldst_miss_w2		PSAMPLE;
+  input		C${c}_dc_parity_error_w2	PSAMPLE;
+
+
+  // store interface signals
+  input 	C${c}_inst_vld_e	PSAMPLE;
+  input 	C${c}_st_inst_e		PSAMPLE;
+  input 	C${c}_ldst_dbl_e	PSAMPLE;
+  input 	C${c}_ldst_fp_e		PSAMPLE;
+  input [1:0]	C${c}_thrid_e		PSAMPLE;
+
+
+  // store buffer signals
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  input [7:0]	C${c}T${t}_stb_state_vld_din	PSAMPLE;
+  input [7:0]	C${c}T${t}_stb_state_rst	PSAMPLE;
+. }
+
+
+  // b2b stores flush signals
+  input		C${c}_excpctl_st_inst_m	PSAMPLE;
+  input		C${c}_thread0_m		PSAMPLE;
+  input		C${c}_thread1_m		PSAMPLE;
+  input		C${c}_thread2_m		PSAMPLE;
+  input		C${c}_thread3_m		PSAMPLE;
+  input		C${c}_excpctl_flush_pipe_w	PSAMPLE;
+
+
+  // flush signaling interface
+  input		C${c}_flush_pipe_w		PSAMPLE;
+  input		C${c}_ld_inst_e			PSAMPLE;
+  input		C${c}_flush_m			PSAMPLE;
+  input         C${c}_ld_stb_full_raw_w3	PSAMPLE; 
+  input         C${c}_pref_inst_m		PSAMPLE;
+  input         C${c}_blk_asi_m			PSAMPLE;
+
+
+  // block store interface
+  input		C${c}_blk_st_m		PSAMPLE;
+  input [1:0]	C${c}_blk_st_tid_m	PSAMPLE;
+  input		C${c}_inst_vld_m	PSAMPLE;
+  input	[1:0]	C${c}_thrid_m		PSAMPLE;
+  input		C${c}_ld_inst_m		PSAMPLE;
+  input		C${c}_st_inst_m		PSAMPLE;
+  input		C${c}_casa_m		PSAMPLE;
+  input		C${c}_ldstub_m		PSAMPLE;
+  input		C${c}_swap_m		PSAMPLE;
+  input		C${c}_flsh_inst_m	PSAMPLE;
+
+  // exu_lsu_ldst_va_e
+  input [47:0]  C${c}_ldst_va_e 	PSAMPLE;
+  input         C${c}_flsh_inst_e    	PSAMPLE;
+
+// lsu_ifu_ldst_miss_w fanin
+  input		C${c}_common_ldst_miss_w	PSAMPLE;
+  input		C${c}_ldxa_internal_swo_g	PSAMPLE;
+  input		C${c}_lsu_inst_vld_w		PSAMPLE;
+  input		C${c}_ld_inst_vld_unflushed	PSAMPLE;
+
+
+// lsu_exu_ldst_miss_w2 fanin
+  input		C${c}_endian_mispred_g		PSAMPLE;
+  input		C${c}_atomic_g			PSAMPLE;
+  input		C${c}_dcache_rd_parity_error	PSAMPLE;
+  input		C${c}_dtag_perror_g		PSAMPLE;
+  input		C${c}_tte_data_perror_unc_en	PSAMPLE;
+  input		C${c}_pref_inst_g		PSAMPLE;
+
+
+// lsu_ifu_dc_parity_error_w2 fanin
+  input		C${c}_dctl_flush_pipe_w		PSAMPLE;
+
+
+// *********************************************************************
+// begin qctl objects 
+// *********************************************************************
+input C${c}_memref_e		PSAMPLE;
+
+input C${c}_cpx_spc_data_rdy_cx2 PSAMPLE;
+input [144:0] C${c}_cpx_spc_data_cx2 PSAMPLE;
+
+input C${c}_cpx_spc_data_cx2_local PSAMPLE;
+input C${c}_cpx_spc_data_cx2_Dinv PSAMPLE;
+input C${c}_cpx_spc_data_cx2_Iinv PSAMPLE;
+
+input C${c}_ifu_lsu_ibuf_busy PSAMPLE;
+input C${c}_lsu_ifu_cpxpkt_vld_i1 PSAMPLE;
+input C${c}_dfq_byp_mx_data_local PSAMPLE;
+input C${c}_dfq_byp_mx_data_Dinv PSAMPLE;
+input C${c}_dfq_byp_mx_data_Iinv PSAMPLE;
+input [151:0] C${c}_dfq_byp_mx_data PSAMPLE;
+
+input C${c}_dfq_rd_advance PSAMPLE;
+input C${c}_dfq_rd_vld_d1 PSAMPLE;
+input C${c}_dfq_byp_ff_en PSAMPLE;
+
+input C${c}_dfq_wr_en PSAMPLE;
+input C${c}_dfq_cpx_raw_wdata_local PSAMPLE;
+input C${c}_dfq_cpx_raw_wdata_Dinv PSAMPLE;
+input C${c}_dfq_cpx_raw_wdata_Iinv PSAMPLE;
+input [151:0] C${c}_dfq_cpx_raw_wdata PSAMPLE;
+
+input C${c}_dfq_2ormore_vld_entries PSAMPLE;
+
+input C${c}_inv_clear_d1 PSAMPLE;
+input C${c}_dfq_rd_advance_d1 PSAMPLE;
+input C${c}_dfq_stall_d1 PSAMPLE;
+
+input C${c}_lmq_ldd_vld PSAMPLE;
+input C${c}_ldd_in_dfq_out PSAMPLE;
+input C${c}_dfq_ld_vld PSAMPLE;
+input C${c}_lsu_cpx_pkt_prefetch PSAMPLE;
+input C${c}_lsu_l2fill_fpld_e PSAMPLE;
+
+input [1:0] C${c}_lsu_spu_strm_ack_cmplt PSAMPLE;
+input C${c}_strmack_cmplt1_d1 PSAMPLE;
+input C${c}_strmack_cmplt2_d1 PSAMPLE;
+input C${c}_strmack_cmplt3_d1 PSAMPLE;
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_ld${t}_l2cache_rq_g PSAMPLE;
+input C${c}_ld${t}_inst_vld_w2 PSAMPLE;
+input C${c}_ld${t}_ldbl_rq_w2 PSAMPLE;
+input C${c}_ld${t}_l2cache_rq_kill PSAMPLE;
+. }
+input C${c}_lsu_ld_miss_g PSAMPLE;
+input C${c}_ld_stb_full_raw_w2 PSAMPLE;
+input C${c}_ld_stb_partial_raw_w2 PSAMPLE;
+input C${c}_perr_ld_rq_kill_w2 PSAMPLE;
+
+input C${c}_ifu_lsu_ld_inst_m PSAMPLE;
+input C${c}_lsu_dtagv_wr_vld_e_d2 PSAMPLE;
+input C${c}_lsu_dtagv_wr_vld_e_d1 PSAMPLE;
+input C${c}_lsu_dtagv_wr_vld_e PSAMPLE;
+input C${c}_dva_rdwr_sameline_diffvalue PSAMPLE;
+input C${c}_dva_rd_wr_sameline_diffvalue PSAMPLE;
+input C${c}_dva_wr_rd_sameline_diffvalue PSAMPLE;
+input C${c}_dfq_byp_ff_data_local_d2 PSAMPLE;
+input C${c}_dfq_byp_ff_data_Dinv_d2 PSAMPLE;
+input C${c}_dfq_byp_ff_data_Iinv_d2 PSAMPLE;
+input [144:0] C${c}_dfq_byp_ff_data_d2 PSAMPLE;
+input C${c}_dfq_byp_ff_data_local_d1 PSAMPLE;
+input C${c}_dfq_byp_ff_data_Dinv_d1 PSAMPLE;
+input C${c}_dfq_byp_ff_data_Iinv_d1 PSAMPLE;
+input [144:0] C${c}_dfq_byp_ff_data_d1 PSAMPLE;
+input C${c}_dfq_byp_ff_data_local PSAMPLE;
+input C${c}_dfq_byp_ff_data_Dinv PSAMPLE;
+input C${c}_dfq_byp_ff_data_Iinv PSAMPLE;
+input [151:0] C${c}_dfq_byp_ff_data PSAMPLE;
+
+input C${c}_ifu_tlu_inst_vld_w PSAMPLE;
+input C${c}_ifu_lsu_ld_inst_w PSAMPLE;
+input C${c}_ifu_lsu_st_inst_w PSAMPLE;
+input C${c}_ifu_tlu_flush_w PSAMPLE;
+input C${c}_ifu_mmu_trap_w PSAMPLE;
+//input C${c}_spu_tlu_rsrv_illgl_w PSAMPLE;
+input C${c}_exu_lsu_priority_trap_w PSAMPLE;
+input C${c}_ffu_tlu_ill_inst_w PSAMPLE;
+input C${c}_lsu_tlu_wtchpt_trp_g PSAMPLE;
+input C${c}_lsu_tlu_dmmu_miss_g PSAMPLE;
+input C${c}_early_trap_vld_g PSAMPLE;
+input C${c}_lsu_tlu_daccess_excptn_g PSAMPLE;
+input C${c}_lsu_tlu_daccess_prot_g PSAMPLE;
+input C${c}_lsu_tlu_priv_action_g PSAMPLE;
+input C${c}_ifu_tlu_immu_miss_w PSAMPLE;
+input C${c}_ifu_tlu_priv_violtn_w PSAMPLE;
+input C${c}_exu_ifu_va_oor_w PSAMPLE;
+
+input C${c}_lsu_way_hit_or_w2 PSAMPLE;
+input C${c}_ncache_pcx_rq_w2 PSAMPLE;
+
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_t${t}_ld_st_partialraw_hit PSAMPLE;
+input C${c}_t${t}_ld_st_fullraw_hit PSAMPLE;
+input C${c}_t${t}_st_ld_partialraw_hit PSAMPLE;
+input C${c}_t${t}_st_ld_fullraw_hit PSAMPLE;
+input C${c}_ld${t}_inst_vld_w4 PSAMPLE;
+input C${c}_st${t}_pcx_rq_sel_d1 PSAMPLE;
+.}
+input C${c}_io_ld_w4 PSAMPLE;
+input C${c}_io_ld_w2 PSAMPLE;
+input C${c}_stb_cam_mhit_w4 PSAMPLE;
+input C${c}_stb_cam_mhit_w2 PSAMPLE;
+input C${c}_pcx_req_squash PSAMPLE;
+
+input [11:0] C${c}_pick_status PSAMPLE;
+
+input [11:0] C${c}_pick_presented PSAMPLE;
+input [11:0] C${c}_pick_destbusy PSAMPLE;
+input [11:0] C${c}_pick_atompend PSAMPLE;
+
+input [2:0] C${c}_pick_presented_count PSAMPLE;
+input [2:0] C${c}_pick_destbusy_count PSAMPLE;
+input [2:0] C${c}_pick_atompend_count PSAMPLE;
+
+input C${c}_filladdrw_eq_ldaddrm PSAMPLE;
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_ld${t}_fill_reset_w PSAMPLE;
+input C${c}_ld${t}_inst_vld_m PSAMPLE;
+.}
+
+input C${c}_st_inst_vld_g PSAMPLE;
+input C${c}_stxa_stall_asi_g PSAMPLE;
+input [1:0] C${c}_thrid_g PSAMPLE;
+input [3:0] C${c}_lsu_spu_stb_empty PSAMPLE;
+
+// *********************************************************************
+// end qctl objects 
+// *********************************************************************
+
+.
+. } # coreSignals
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+} // lsu_cov_top
+
+interface lsu_cov_top2 {
+  // second set of interface signals for lsu
+.
+. sub coreSignals2 {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+
+// *********************************************************************
+// begin dctl objects 
+// *********************************************************************
+
+// tlb cam
+input C${c}_memref_e		PSAMPLE;
+input C${c}_ld_inst_e		PSAMPLE;
+input C${c}_st_inst_e		PSAMPLE;
+input C${c}_casa_e		PSAMPLE;
+input C${c}_ldstub_e		PSAMPLE;
+input C${c}_swap_e		PSAMPLE;
+input C${c}_pref_e		PSAMPLE;
+input C${c}_dtlb_bypass_e	PSAMPLE;
+input C${c}_asi_internal_e	PSAMPLE;
+input C${c}_alt_space_e		PSAMPLE;
+
+// tlb r->p translation
+input C${c}_lsuctl_dtlb_byp_e      PSAMPLE;
+input C${c}_hpv_priv_e             PSAMPLE;
+input C${c}_hpstate_en_e           PSAMPLE;
+input C${c}_altspace_ldst_e        PSAMPLE;
+input C${c}_phy_byp_ec_asi_e       PSAMPLE;
+input C${c}_phy_use_ec_asi_e       PSAMPLE;
+input C${c}_quad_ldd_real_e        PSAMPLE;
+input C${c}_quad_ldd_real_little_e PSAMPLE;
+
+// address masking enabled
+input C${c}_lsu_dtlb_addr_mask_l_e	PSAMPLE;
+input C${c}_tlb_ldst_cam_vld		PSAMPLE;
+input C${c}_lsu_dtlb_cam_real_e		PSAMPLE;
+
+// tlb access
+input C${c}_local_dtlb_wr_vld_g PSAMPLE;
+input C${c}_dtlb_tag_rd_g       PSAMPLE;
+input C${c}_dtlb_data_rd_g      PSAMPLE;
+input C${c}_dtlb_dmp_vld_g      PSAMPLE;
+input C${c}_dtlb_rw_index_vld_g PSAMPLE;
+input C${c}_dtlb_wr_init_d1     PSAMPLE;
+input C${c}_dtlb_wr_init_d2     PSAMPLE;
+input C${c}_dtlb_done_d1        PSAMPLE;
+input C${c}_dtlb_done_d2        PSAMPLE;
+
+// update of asi register by done/retry instruction
+input C${c}_asi_state_wr_en	PSAMPLE;
+input C${c}_lsu_inst_vld_w	PSAMPLE;
+input C${c}_dctl_early_flush_w	PSAMPLE;
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_thread${t}_g	PSAMPLE;
+input C${c}_tsa_update_asi${t}	PSAMPLE;
+. }
+
+// coverage of illegal-va detection
+input       C${c}_pscxt_ldxa_illgl_va_decode PSAMPLE;
+input       C${c}_lsuctl_illgl_va_decode     PSAMPLE;
+input       C${c}_mrgnctl_illgl_va_decode    PSAMPLE;
+input       C${c}_asi42_illgl_va_decode      PSAMPLE;
+input       C${c}_pctxt_va_vld               PSAMPLE;
+input       C${c}_sctxt_va_vld               PSAMPLE;
+input       C${c}_lsuctl_va_vld              PSAMPLE;
+input       C${c}_mrgnctl_va_vld             PSAMPLE;
+input       C${c}_ldiagctl_va_vld            PSAMPLE;
+input       C${c}_bistctl_va_vld             PSAMPLE;
+input       C${c}_instmsk_va_vld             PSAMPLE;
+input [3:0] C${c}_ldxa_illgl_va_cmplt_d1     PSAMPLE;
+
+// setting of lsu_ctl_reg thru various events
+input [3:0] C${c}_lsu_ctl_state_wr_en	PSAMPLE;
+input [3:0] C${c}_dfture_tap_wr_en	PSAMPLE;
+input [3:0] C${c}_redmode_rst		PSAMPLE;
+
+// disabling the dcache
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_thread${t}_e	PSAMPLE;
+input C${c}_lsu_ctl_reg${t}_b1	PSAMPLE;
+. }
+
+// crossproduct of dcache enable/disable and dtlb enable/disable
+input C${c}_inst_vld_e      PSAMPLE;
+input C${c}_dcache_enable_e PSAMPLE;
+
+// ignore cache hit when cache disabled
+input       C${c}_ifu_lsu_flush_w     PSAMPLE;
+input [3:0] C${c}_cache_way_hit_buf1  PSAMPLE;
+input       C${c}_dcache_enable_g     PSAMPLE;
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input       C${c}_ld${t}_l2cache_rq_g PSAMPLE;
+input       C${c}_ld${t}_ldbl_rq_w2   PSAMPLE;
+. }
+
+// detect tte-data parity errors
+input C${c}_ld_inst_vld_unflushed PSAMPLE;
+input C${c}_st_inst_vld_unflushed PSAMPLE;
+input C${c}_tte_data_perror_unc   PSAMPLE;
+input C${c}_nceen_pipe_g          PSAMPLE;
+
+// elaborate cases for writes to dcache
+input C${c}_l2fill_vld_e       PSAMPLE;
+input C${c}_ignore_fill        PSAMPLE;
+input C${c}_atomic_ld_squash_e PSAMPLE;
+input C${c}_ld_sec_active      PSAMPLE;
+input C${c}_lsu_ncache_ld_e    PSAMPLE;
+
+// selective writes to dcache on stores
+input        C${c}_dva_svld_e            PSAMPLE;
+input [15:0] C${c}_dva_snp_bit_wr_en_e   PSAMPLE;
+input        C${c}_lsu_dtag_wr_vld_e_tmp PSAMPLE;
+input [15:0] C${c}_dva_fill_bit_wr_en_e  PSAMPLE;
+
+// elaborate writes to dva
+input        C${c}_lsu_dtagv_wr_vld_e PSAMPLE;
+input [15:0] C${c}_dva_bit_wr_en_e    PSAMPLE;
+
+// completing a stxa wr to thread
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_stxa_stall_wr_cmplt${t} PSAMPLE;
+. }
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_spu_stxa_thread${t}     PSAMPLE;
+. }
+input C${c}_spu_lsu_stxa_ack        PSAMPLE;
+
+// tlb asi queue - initiating action
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_tlb_access_en${t}_g PSAMPLE;
+. }
+
+// tlb asi queue - sequencing events
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input C${c}_tlb_access_rst${t}      PSAMPLE;
+input C${c}_tlb_access_sel_thrd${t} PSAMPLE;
+. }
+
+// bus sharing between tlu and mmu
+input C${c}_st_sqsh_m PSAMPLE;
+
+// diagnostic write conflicts with pipeline ld/st, dfq op
+input       C${c}_diag_wr_src_d2 PSAMPLE;
+input [1:0] C${c}_thrid_e        PSAMPLE;
+input       C${c}_lsu_dfq_vld    PSAMPLE;
+
+// membar/flush reset
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input       C${c}_mbar_vld${t}  PSAMPLE;
+. }
+input [3:0] C${c}_lsu_stb_empty PSAMPLE;
+input [3:0] C${c}_no_spc_rmo_st PSAMPLE;
+
+// rmo store ack count
+input [3:0] C${c}_lsu_stb_rmo_st_issue PSAMPLE;
+input [3:0] C${c}_lsu_cpx_rmo_st_ack   PSAMPLE;
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input [3:0] C${c}_ackcnt${t}           PSAMPLE;
+. }
+
+// dcache data parity error
+input C${c}_dcache_rparity_err_wb  PSAMPLE;
+input C${c}_dcache_rd_parity_error PSAMPLE;
+input C${c}_dtag_perror_g          PSAMPLE;
+input C${c}_asi_internal_g         PSAMPLE;
+input C${c}_lsu_alt_space_g        PSAMPLE;
+input C${c}_atomic_g               PSAMPLE;
+input C${c}_lsu_exu_flush_pipe_w   PSAMPLE;
+
+// bypass queues - test for simultaneous vld entries
+input C${c}_ldbyp0_vld PSAMPLE;
+input C${c}_ldbyp1_vld PSAMPLE;
+input C${c}_ldbyp2_vld PSAMPLE;
+input C${c}_ldbyp3_vld PSAMPLE;
+
+// bypass queues - test for b2b reset
+input C${c}_ldbyp0_vld_rst PSAMPLE;
+input C${c}_ldbyp1_vld_rst PSAMPLE;
+input C${c}_ldbyp2_vld_rst PSAMPLE;
+input C${c}_ldbyp3_vld_rst PSAMPLE;
+
+// bypass queues - squashing bypass/cmplt to irf/ifu
+input [3:0] C${c}_ld_thrd_byp_sel_e PSAMPLE;
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input       C${c}_ldbyp${t}_fpld    PSAMPLE;
+input       C${c}_spubyp${t}_trap   PSAMPLE;
+input       C${c}_cam_perr_unc${t}  PSAMPLE;
+input       C${c}_asi_data_perr${t} PSAMPLE;
+input       C${c}_asi_tag_perr${t}  PSAMPLE;
+input       C${c}_ifu_unc_err${t}   PSAMPLE;
+. }
+
+// deferred trap
+input C${c}_excpctl_tte_data_parity_error  PSAMPLE;
+input C${c}_excpctl_tlb_tte_vld_g          PSAMPLE;
+input C${c}_excpctl_lsu_inst_vld_w         PSAMPLE;
+input C${c}_excpctl_ld_inst_vld_unflushed  PSAMPLE;
+input C${c}_excpctl_st_inst_vld_unflushed  PSAMPLE;
+input C${c}_excpctl_lsu_flush_pipe_w       PSAMPLE;
+
+// completing stxa with fixed delay
+input C${c}_stxa_internal       PSAMPLE;
+input C${c}_intrpt_disp_asi_g   PSAMPLE;
+input C${c}_stxa_stall_asi_g    PSAMPLE;
+input C${c}_ifu_nontlb_asi_g    PSAMPLE;
+input C${c}_ifu_asi42_flush_g   PSAMPLE;
+input C${c}_tlb_lng_ltncy_asi_g PSAMPLE;
+
+// direct map mode
+input C${c}_dc_direct_map PSAMPLE;
+
+// writes to cache
+input [15:0] C${c}_dcache_byte_wr_en_e PSAMPLE;
+
+// prefetch counter
+input [3:0] C${c}_lsu_pcx_pref_issue PSAMPLE;
+input [3:0] C${c}_lsu_cpx_pref_ack   PSAMPLE;
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input [3:0] C${c}_pref_ackcnt${t}    PSAMPLE;
+. }
+
+// tlb asiqueue
+input C${c}_asi_fifo0_vld PSAMPLE;
+input C${c}_asi_fifo1_vld PSAMPLE;
+input C${c}_asi_fifo2_vld PSAMPLE;
+input C${c}_asi_fifo3_vld PSAMPLE;
+input C${c}_fifo_wr       PSAMPLE;
+input C${c}_fifo_shift    PSAMPLE;
+input C${c}_dctl_reset    PSAMPLE;
+
+// *********************************************************************
+// end of dctl objects
+// *********************************************************************
+
+// *********************************************************************
+// begin stb_ctl objects 
+// *********************************************************************
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+input [7:0] C${c}T${t}_stb_ctl_inflight_vld_g     PSAMPLE;
+input       C${c}T${t}_stb_ctl_tlb_hit_g          PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_0  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_1  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_2  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_3  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_4  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_5  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_6  PSAMPLE;
+input [1:0] C${c}T${t}_stb_ctl_stb_state_rtype_7  PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_dec_rptr_pcx       PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_inflight_issue_g   PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_dec_rptr_dfq       PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_stb_state_vld      PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_stb_state_ack      PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_stb_state_ced_spec PSAMPLE;
+
+input       C${c}T${t}_stb_ctl_rmo_st_sat         PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_stb_state_rmo      PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_dec_rptr_pcx_noced PSAMPLE;
+
+input       C${c}T${t}_stb_ctl_full_flush_st_g    PSAMPLE;
+input       C${c}T${t}_stb_ctl_st_dtlb_perr_g     PSAMPLE;
+
+input       C${c}T${t}_stb_ctl_stb_dq_rmo         PSAMPLE;
+
+input [7:0] C${c}T${t}_stb_ctl_st_dq1_ld_hit      PSAMPLE;
+input [7:0] C${c}T${t}_stb_ctl_st_dq2_ld_hit      PSAMPLE;
+
+input [7:0] C${c}T${t}_stb_ctl_stb_dq_rmo_dfq_ptr PSAMPLE;
+
+
+input [7:0] C${c}T${t}_stb_ctl_dec_ackptr        PSAMPLE;
+input       C${c}T${t}_stb_ctl_pcx_rq_for_stb_d2 PSAMPLE;
+input       C${c}T${t}_stb_ctl_pcx_req_squash_d2 PSAMPLE;
+. } # for $t
+
+input       C${c}_stb_rwctl_st_atm_blkst_vld      PSAMPLE;
+input       C${c}_stb_rwctl_flush_st_g            PSAMPLE;
+input       C${c}_stb_rwctl_b2b_st_detect         PSAMPLE;
+input       C${c}_stb_rwctl_thread0_m             PSAMPLE;
+input       C${c}_stb_rwctl_thread1_m             PSAMPLE;
+input       C${c}_stb_rwctl_thread2_m             PSAMPLE;
+input       C${c}_stb_rwctl_thread3_m             PSAMPLE;
+
+input       C${c}_stb_rwctl_lsu_st_pcx_rq_vld     PSAMPLE;
+input       C${c}_stb_rwctl_stb_cam_hit_w2        PSAMPLE;
+input [1:0] C${c}_stb_rwctl_thrid_w2              PSAMPLE;
+input [2:0] C${c}_stb_rwctl_stb_cam_hit_ptr_w2    PSAMPLE;
+
+input       C${c}_stb_rwctl_stb_cam_vld           PSAMPLE;
+input [7:0] C${c}_stb_rwctl_ldst_byte_mask        PSAMPLE;
+
+input       C${c}_stb_rwctl_ldquad_inst_g         PSAMPLE;
+input [1:0] C${c}_stb_rwctl_thrid_g               PSAMPLE;
+input       C${c}_stb_rwctl_stb_cam_mhit          PSAMPLE;
+input [7:0] C${c}_stb_rwctl_stb_ld_full_raw       PSAMPLE;
+input [7:0] C${c}_stb_rwctl_stb_ld_partial_raw    PSAMPLE;
+
+input       C${c}_lsu_ld_inst_vld_g               PSAMPLE;
+input       C${c}_dctl_blk_asi_g                  PSAMPLE;
+
+input       C${c}_qctl1_lsu_inst_vld_w            PSAMPLE;
+input       C${c}_qctl1_atomic_g                  PSAMPLE;
+
+input       C${c}_stb_rwctl_ld_rawp_st_ced_w2     PSAMPLE;
+input       C${c}_qctl1_casa_w2                   PSAMPLE;
+input       C${c}_qctl1_stb_cam_mhit_w2           PSAMPLE;
+input       C${c}_qctl1_io_ld_w2                  PSAMPLE;
+input       C${c}_qctl1_stb_not_empty_w2          PSAMPLE;
+input       C${c}_qctl1_ld_stb_partial_raw_w2     PSAMPLE;
+input       C${c}_qctl1_partial_raw_w2            PSAMPLE;
+input       C${c}_qctl1_ldq_hit_w2                PSAMPLE;
+
+// *********************************************************************
+// end stb_ctl objects 
+// *********************************************************************
+
+
+// *********************************************************************
+// begin errors objects 
+// *********************************************************************
+input       C${c}_excpctl_tte_data_perror_unc     PSAMPLE;
+input       C${c}_dctl_ld_inst_vld_g              PSAMPLE;
+input       C${c}_dctl_st_inst_vld_g              PSAMPLE;
+input       C${c}_dctl_casa_g                     PSAMPLE;
+input       C${c}_dctl_swap_g                     PSAMPLE;
+input       C${c}_dctl_ldstub_g                   PSAMPLE;
+input       C${c}_qctl1_bld_g                     PSAMPLE;
+input       C${c}_dctl_blkst_g                    PSAMPLE;
+input       C${c}_qctl1_ldquad_inst_g             PSAMPLE;
+input       C${c}_dctl_pref_inst_g                PSAMPLE;
+
+input       C${c}_excpctl_tte_data_perror_unc_wo_vld  PSAMPLE;
+input       C${c}_excpctl_tte_data_perror_unc_w_flush PSAMPLE;
+
+input       C${c}_excpctl_asi_tte_data_perror     PSAMPLE;
+input       C${c}_excpctl_asi_tte_tag_perror      PSAMPLE;
+
+input       C${c}_dctl_lsu_dcache_tag_perror_g    PSAMPLE;
+input [3:0] C${c}_dctl_dtag_parity_error          PSAMPLE;
+input       C${c}_dctl_lsu_dcache_tag_perror_g_w_blkasi            PSAMPLE;
+input       C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_w_bypass  PSAMPLE;
+input       C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_wo_bypass PSAMPLE;
+input       C${c}_dctl_lsu_dcache_tag_perror_g_w_atomic            PSAMPLE;
+
+input       C${c}_dctl_lsu_dcache_data_perror_g                PSAMPLE;
+input       C${c}_dctl_lsu_dcache_data_perror_g_wo_cacheenable PSAMPLE;
+input       C${c}_dctl_lsu_dcache_data_perror_g_dtag_perror    PSAMPLE;
+input       C${c}_dctl_lsu_dcache_data_perror_g_w_altspace     PSAMPLE;
+input       C${c}_dctl_lsu_dcache_data_perror_g_w_atomic       PSAMPLE;
+
+input       C${c}_dctl_async_ttype_vld_g      PSAMPLE;
+input       C${c}_dctl_cam_perr_unc_g         PSAMPLE;
+input       C${c}_dctl_asi_data_perr_g        PSAMPLE;
+input       C${c}_dctl_asi_tag_perr_g         PSAMPLE;
+input       C${c}_dctl_ifu_unc_err_g          PSAMPLE;
+input       C${c}_dctl_nceen_g                PSAMPLE;
+input       C${c}_dctl_pmem_unc_error_g       PSAMPLE;
+input       C${c}_dctl_pmem_unc_error_tmp     PSAMPLE;
+input       C${c}_dctl_bld_unc_err_pend_g     PSAMPLE;
+input       C${c}_dctl_bld_squash_err_g       PSAMPLE;
+input       C${c}_dctl_nceen_dfq_g            PSAMPLE;
+input       C${c}_dctl_atm_st_unc_err_g       PSAMPLE;
+input       C${c}_dctl_spubyp_trap_active_g   PSAMPLE;
+
+input [1:0] C${c}_dctl_async_tid_g            PSAMPLE;
+
+input       C${c}_excpctl_defr_trp_taken_m     PSAMPLE;
+input       C${c}_excpctl_defr_trp_taken_byp   PSAMPLE;
+input       C${c}_excpctl_thread0_m            PSAMPLE;
+input       C${c}_excpctl_thread1_m            PSAMPLE;
+input       C${c}_excpctl_thread2_m            PSAMPLE;
+input       C${c}_excpctl_thread3_m            PSAMPLE;
+
+input       C${c}_excpctl_lsu_defr_trp_taken_g PSAMPLE;
+input       C${c}_excpctl_thread0_g            PSAMPLE;
+input       C${c}_excpctl_thread1_g            PSAMPLE;
+input       C${c}_excpctl_thread2_g            PSAMPLE;
+input       C${c}_excpctl_thread3_g            PSAMPLE;
+
+input       C${c}_dctl_ldbyp0_vld_en          PSAMPLE;
+input       C${c}_dctl_fp_ldst_thrd0_w5       PSAMPLE;
+input       C${c}_dctl_ldbyp1_vld_en          PSAMPLE;
+input       C${c}_dctl_fp_ldst_thrd1_w5       PSAMPLE;
+input       C${c}_dctl_ldbyp2_vld_en          PSAMPLE;
+input       C${c}_dctl_fp_ldst_thrd2_w5       PSAMPLE;
+input       C${c}_dctl_ldbyp3_vld_en          PSAMPLE;
+input       C${c}_dctl_fp_ldst_thrd3_w5       PSAMPLE;
+input       C${c}_dctl_spu_trap               PSAMPLE;
+input       C${c}_dctl_tte_data_perror_unc_w2 PSAMPLE;
+input       C${c}_dctl_atm_ld_w_uerr          PSAMPLE;
+input       C${c}_dctl_asi_tte_data_perror_w2 PSAMPLE;
+input       C${c}_dctl_asi_tte_tag_perror_w2  PSAMPLE;
+input       C${c}_dctl_ifu_lsu_asi_rd_unc     PSAMPLE;
+
+input       C${c}_dctl_l2_unc_error_e         PSAMPLE;
+input       C${c}_dctl_l2_corr_error_e        PSAMPLE;
+input [1:0] C${c}_dctl_lsu_cpx_pkt_ld_err     PSAMPLE;
+input       C${c}_dctl_l2fill_vld_e           PSAMPLE;
+input       C${c}_dctl_ignore_fill            PSAMPLE;
+
+input       C${c}_dctl_lsu_ifu_l2_unc_error   PSAMPLE;
+input       C${c}_dctl_l2_unc_error_w2        PSAMPLE;
+input       C${c}_dctl_bld_unc_err_pend_w2    PSAMPLE;
+input       C${c}_dctl_lsu_ifu_err_addr_b39   PSAMPLE;
+input       C${c}_dctl_bld_squash_err_w2      PSAMPLE;
+
+input       C${c}_dctl_lsu_ifu_l2_corr_error  PSAMPLE;
+input       C${c}_dctl_l2_corr_error_w2       PSAMPLE;
+input       C${c}_dctl_bld_corr_err_pend_w2   PSAMPLE;
+
+input       C${c}_dctl_lsu_ifu_io_error       PSAMPLE;
+
+
+// *********************************************************************
+// end errors objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin cmplt extended objects
+// *********************************************************************
+
+input           C${c}_stxa_internal_d2            PSAMPLE;
+input           C${c}_thread0_w3                  PSAMPLE;
+input           C${c}_thread1_w3                  PSAMPLE;
+input           C${c}_thread2_w3                  PSAMPLE;
+input           C${c}_thread3_w3                  PSAMPLE;
+input           C${c}_stxa_stall_wr_cmplt0_d1     PSAMPLE;
+input           C${c}_stxa_stall_wr_cmplt1_d1     PSAMPLE;
+input           C${c}_stxa_stall_wr_cmplt2_d1     PSAMPLE;
+input           C${c}_stxa_stall_wr_cmplt3_d1     PSAMPLE;
+
+//input           C${c}_l2fill_vld_e                PSAMPLE;
+//input           C${c}_ignore_fill                 PSAMPLE;
+input           C${c}_l2fill_fpld_e               PSAMPLE;
+input           C${c}_lsu_cpx_pkt_atm_st_cmplt    PSAMPLE;
+
+input           C${c}_lsu_cpx_pkt_ld_err          PSAMPLE;
+input  [3:0]    C${c}_lsu_nceen_d1                PSAMPLE;
+
+input           C${c}_dfill_thread0               PSAMPLE;
+input           C${c}_dfill_thread1               PSAMPLE;
+input           C${c}_dfill_thread2               PSAMPLE;
+input           C${c}_dfill_thread3               PSAMPLE;
+
+input  [3:0]    C${c}_intld_byp_cmplt             PSAMPLE;
+
+input           C${c}_atm_st_cmplt0               PSAMPLE;
+input           C${c}_atm_st_cmplt1               PSAMPLE;
+input           C${c}_atm_st_cmplt2               PSAMPLE;
+input           C${c}_atm_st_cmplt3               PSAMPLE;
+input  [3:0]    C${c}_pend_atm_ld_ue              PSAMPLE;
+input           C${c}_bsync0_reset                PSAMPLE;
+input           C${c}_bsync1_reset                PSAMPLE;
+input           C${c}_bsync2_reset                PSAMPLE;
+input           C${c}_bsync3_reset                PSAMPLE;
+input  [3:0]    C${c}_lsu_intrpt_cmplt            PSAMPLE;
+
+input           C${c}_diag_wr_cmplt0              PSAMPLE;
+input           C${c}_diag_wr_cmplt1              PSAMPLE;
+input           C${c}_diag_wr_cmplt2              PSAMPLE;
+input           C${c}_diag_wr_cmplt3              PSAMPLE;
+
+//input  [3:0]    C${c}_ldxa_illgl_va_cmplt_d1      PSAMPLE;
+input  [3:0]    C${c}_pref_tlbmiss_cmplt_d2       PSAMPLE;
+//input  [3:0]    C${c}_lsu_pcx_pref_issue          PSAMPLE;
+
+// *********************************************************************
+// end cmplt extended objects
+// *********************************************************************
+
+
+
+.
+. } # coreSignals2
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core (lsu_cov_top2)
+// ***********************************************************
+.	&coreSignals2( $core );
+. }
+} // lsu_cov_top2
+
+#endif

@@ -1,0 +1,330 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "spu_cov_inc.pal";
+
+#ifndef __SPU_IF_VRH__
+#define __SPU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+// sys = $sys, cores = $cores
+
+interface spu_intf {
+  // commom cmp interface signals, total 2 signals
+  input cmp_clk			CLOCK ;
+  input cmp_diag_done		PSAMPLE ;
+  input cmp_grst_l		PSAMPLE ;
+.
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+  // Interface signals for spu_mared.v, total 14 signals
+  input	C${c}_mared_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_rdm_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_rdn_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_cmpsub_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_wr0tox_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_wrmtox_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_wrstox_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_saveptrs_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_submn_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_rdmdly_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_dly_saveptrs_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_twodly_saveptrs_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_red_done_dly1_state  	PSAMPLE depth 3 ;
+  input	C${c}_mared_red_done_dly2_state  	PSAMPLE depth 3 ;
+
+  // Interface signals for spu_mamul.v, total 19 signals
+  input	C${c}_mamul_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_tr2iloopa_frm_idle_dly PSAMPLE depth 3 ;
+  input	C${c}_mamul_iloopa_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_iloopb_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_iloopn_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_jloopa_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_jloopb_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_jloopm_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_jloopn_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_mwrite_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_nprime_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_accumshft_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_tr2jloopa_frm_accumshft_dly	PSAMPLE depth 3 ;
+  input	C${c}_mamul_result_c1_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_result_c2_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_result_c3_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_result_c4_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_result_c5_state  	PSAMPLE depth 3 ;
+  input	C${c}_mamul_tr2mwrite_frm_accumshft_state  	PSAMPLE depth 3 ;
+
+  // Interface signals for spu_maaeqb.v, total 23 signals
+  input	C${c}_maaeqb_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_idle_dly_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_iloopa_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_iloopa1_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_iloopn_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_ijloopa_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_jloopa_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_jloopm_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_jloopn_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_mwrite_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_nprime_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_accumshft_state  	PSAMPLE depth 3 ;
+  input C${c}_maaeqb_tr2jloopa_frm_accumshft_dly_state  PSAMPLE depth 3 ;
+  input C${c}_maaeqb_tr2iloopa1_frm_accumshft_dly_state PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_iloopa_dly_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_iloopa1_dly_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_ijloopa_dly_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_result_c1_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_result_c2_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_result_c3_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_result_c4_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_result_c5_state  	PSAMPLE depth 3 ;
+  input	C${c}_maaeqb_tr2mwrite_frm_accumshft_state  	PSAMPLE depth 3 		;
+
+  // Interface signals for spu_maexp.v, total 6 signals
+  input	C${c}_maexp_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_maexp_rde_state  	PSAMPLE depth 3 ;
+  input	C${c}_maexp_gotomulred1_state  	PSAMPLE depth 3 ;
+  input	C${c}_maexp_gotomulred2_state  	PSAMPLE depth 3 ;
+  input	C${c}_maexp_echk_state  	PSAMPLE depth 3 ;
+  input	C${c}_maexp_esmax_state  	PSAMPLE depth 3 ;
+
+  // Interface signals for spu_mald.v, total 6 signals
+  input	C${c}_mald_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_mald_ldreq_state  	PSAMPLE depth 3 ;
+  input	C${c}_mald_wait4ln_state  	PSAMPLE depth 3 ;
+  input	C${c}_mald_mamemwr_state  	PSAMPLE depth 3 ;
+  input	C${c}_mald_chk4mpa1maddr0_state  	PSAMPLE depth 3 ;
+  input	C${c}_mald_memwen_dly_state  	PSAMPLE depth 3 ;
+
+  // Interface signals for spu_mast.v, total 4 signals
+  input	C${c}_mast_idle_state  	PSAMPLE depth 3 ;
+  input	C${c}_mast_rdmem_state  	PSAMPLE depth 3 ;
+  input	C${c}_mast_wait4stdrain_state  	PSAMPLE depth 3 ;
+  input	C${c}_mast_laststreq_state  	PSAMPLE depth 3 ;
+  input	C${c}_mast_dly_tr2rdmem_frm_idle_state  	PSAMPLE depth 3 ;
+
+  // Interface signals for spu_shactl.v, total 20 signals
+  input C${c}_shactl_idle_state	PSAMPLE  ;
+  input C${c}_shactl_shadatrdy_state	PSAMPLE  ;
+  input C${c}_shactl_shareqdat_state	PSAMPLE  ;
+  input C${c}_shactl_wait4ln_state	PSAMPLE  ;
+  input C${c}_shactl_wait4datareg_state	PSAMPLE  ;
+  input C${c}_shactl_desshadec_state	PSAMPLE  ;
+  input C${c}_shactl_wrdbuffull_state	PSAMPLE  ;
+  input C${c}_shactl_shainprog_state	PSAMPLE  ;
+  input C${c}_shactl_shainprog_dly_state	PSAMPLE  ;
+  input C${c}_shactl_noshainprog_state	PSAMPLE  ;
+  input C${c}_shactl_noshainprog2_state	PSAMPLE  ;
+  input C${c}_shactl_h0update_state	PSAMPLE  ;
+  input C${c}_shactl_h0update_dly_state	PSAMPLE  ;
+  input C${c}_shactl_h1update_state	PSAMPLE  ;
+  input C${c}_shactl_h1update_dly_state	PSAMPLE  ;
+  input C${c}_shactl_h2update_state	PSAMPLE  ;
+  input C${c}_shactl_h2update_dly_state	PSAMPLE  ;
+  input C${c}_shactl_h3update_state	PSAMPLE  ;
+  input C${c}_shactl_h3update_dly_state	PSAMPLE  ;
+  input C${c}_shactl_h4update_state	PSAMPLE  ;
+
+  // Interface signals for spu req/ack to mul unit, total 2 signals
+  input C${c}_spu_mul_req_vld         PSAMPLE depth 1 ;
+  input C${c}_mul_spu_ack             PSAMPLE depth 1 ;
+
+  // Interface signals for spu_rc4ctl.v, total of 16 signals
+  input C${c}_rc4ctl_idle_state		PSAMPLE  ;
+  input C${c}_rc4ctl_rc4datrdy_state	PSAMPLE  ;
+  input C${c}_rc4ctl_rc4reqdat_state	PSAMPLE  ;
+  input C${c}_rc4ctl_wait4ln_state	PSAMPLE  ;
+  input C${c}_rc4ctl_wait4datareg_state	PSAMPLE  ;
+  input C${c}_rc4ctl_prerdsx_state	PSAMPLE  ;
+  input C${c}_rc4ctl_rdsx_state		PSAMPLE  ;
+  input C${c}_rc4ctl_ygen_state		PSAMPLE  ;
+  input C${c}_rc4ctl_rdsy_state		PSAMPLE  ;
+  input C${c}_rc4ctl_wrx_state		PSAMPLE  ;
+  input C${c}_rc4ctl_wry_state		PSAMPLE  ;
+  input C${c}_rc4ctl_rdk_state		PSAMPLE  ;
+  input C${c}_rc4ctl_rdk_dly_state	PSAMPLE  ;
+  input C${c}_rc4ctl_streq_state	PSAMPLE  ;
+  input C${c}_rc4ctl_rc4shadec_state	PSAMPLE  ;
+  input C${c}_rc4ctl_wait4pfld_state	PSAMPLE  ;
+
+  // Interface signals for spu_rc4ld_cov, inside spu_rc4ldst.v, total of 6 signals
+  input C${c}_rc4ld_idleld_state	PSAMPLE  ;
+  input C${c}_rc4ld_ldreq_state		PSAMPLE  ;
+  input C${c}_rc4ld_wait4ln_state	PSAMPLE  ;
+  input C${c}_rc4ld_rc4memwr_state	PSAMPLE  ;
+  input C${c}_rc4ld_rc4wrx_state	PSAMPLE  ;
+  input C${c}_rc4ld_rc4wry_state	PSAMPLE  ;
+
+  // Interface signals for spu_rc4st_cov, inside spu_rc4ldst.v, total of 6 signals
+  input C${c}_rc4st_idlest_state	PSAMPLE  ;
+  input C${c}_rc4st_idlest_dly_state	PSAMPLE  ;
+  input C${c}_rc4st_rdmem_state		PSAMPLE  ;
+  input C${c}_rc4st_wait4stdrain_state	PSAMPLE  ;
+  input C${c}_rc4st_rc4rdx_state	PSAMPLE  ;
+  input C${c}_rc4st_rc4rdy_state	PSAMPLE  ;
+
+  // Interface signals for spu_simul_compl_cov, and for SPU_TRAP_MON
+  input		C${c}_spu_ifu_ttype_vld_w2	PSAMPLE depth 1 ;
+  input [1:0]	C${c}_spu_ifu_ttype_tid_w2	PSAMPLE depth 1 ;
+  input		C${c}_spu_ifu_ttype_w2		PSAMPLE depth 1 ;
+  input		C${c}_spu_ifu_unc_err_w1	PSAMPLE depth 1 ;
+  input		C${c}_spu_ifu_mamem_err_w1	PSAMPLE depth 1 ;
+  input 	C${c}_ifu_spu_trap_ack		PSAMPLE depth 1 ;
+  input [3:0]	C${c}_ifu_spu_nceen		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_rrld_cov, and for SPU_LDST_MON
+  // The depth of 1 is only required on spu_mald_ldreq,
+  // but all signals in a port bind have to have the same attribs.
+  input         C${c}_spu_mald_ldreq		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_rrst_cov
+  // The depth of 1 is only required on spu_mald_streq,
+  // but all signals in a port bind have to have the same attribs.
+  input		C${c}_spu_mactl_streq		PSAMPLE depth 1 ;
+
+  // Interface signals for SPU_LDST_MON that are not include above
+  // The depth of 1 is only required on spu_lsu_load_req,
+  // but all signals in a port bind have to have the same attribs.
+  input		C${c}_reset			PSAMPLE depth 1 ;
+  input		C${c}_spu_lsu_load_req		PSAMPLE depth 1 ;
+  input		C${c}_lsu_spu_ldst_ack		PSAMPLE depth 1 ;
+  input		C${c}_spu_wen_mald_ack		PSAMPLE depth 1 ;
+  input		C${c}_spu_wen_mast_ack		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_ill_instr_cov2
+  input		C${c}_spu_tlu_rsrv_illgl_m      PSAMPLE ;
+
+  // Interface signals for spu_ill_instr_cov3
+
+  // Interface signals for spu_priv_act_sample 
+  input		C${c}_lsu_spu_early_flush_g     PSAMPLE depth 1 ;
+  input		C${c}_tlu_spu_flush_w		PSAMPLE depth 1 ;
+  input		C${c}_ifu_spu_flush_w		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_data_acc_case_1
+  input		C${c}_spu_mactl_flush_g2	PSAMPLE ;
+  input		C${c}_spu_mactl_asi40_alt_st_vld_g2 PSAMPLE ;
+  input		C${c}_spu_mactl_masync_va_vld_g2    PSAMPLE ;
+
+  // Interface signals for spu_data_acc_case_2
+  input 	C${c}_spu_lsu_ldxa_data_vld_w2  PSAMPLE depth 2 ;
+  input		C${c}_spu_lsu_ldxa_illgl_va_w2  PSAMPLE depth 2;
+
+  // Interface signals for SPU_MUL_MON (also using some from above)
+  input		C${c}_exu_mul_input_vld		PSAMPLE depth 1 ;
+  input		C${c}_mul_exu_ack		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_mul_permut
+  input		C${c}_mamul_cur_idle_state  PSAMPLE ;
+  input		C${c}_maaeqb_cur_idle_state PSAMPLE ;
+
+  // Interface signals for spu_mared_a_vs_n
+  input		C${c}_mared_done_set		PSAMPLE ;
+  input		C${c}_m_gt_n_q			PSAMPLE ;
+  input		C${c}_m_lt_n_q			PSAMPLE ;
+
+  // Interface signals for SPU_MALDST_MON (also using some from above)
+  input [6:0]   C${c}_maaddr_len_cntr		PSAMPLE ;
+  input	[7:0]   C${c}_maaddr_memindx		PSAMPLE ;
+
+  // Interface signals for spu_mamul_op_len
+  input		C${c}_spu_mactl_mactl_wen	PSAMPLE ;
+  input [8:0]	C${c}_spu_mactl_mactl_reg	PSAMPLE ;
+
+  // Interface signals for spu_asi_stxa_ma_busy (plus some from above)
+  input		C${c}_maexp_cur_idle_state	PSAMPLE ;
+  input		C${c}_mald_cur_idle_state	PSAMPLE ;
+  input		C${c}_mared_cur_idle_state	PSAMPLE ;
+  input		C${c}_mast_cur_idle_state	PSAMPLE ;
+  input		C${c}_mactl_spu_mactl_mpa_wen   PSAMPLE ;
+  input		C${c}_mactl_spu_mactl_maaddr_wen PSAMPLE ;
+  input		C${c}_mactl_spu_mactl_manp_wen  PSAMPLE ;
+
+  // Interface signals for spu_ma_abort_fsm_sample
+  input 	C${c}_mactl_cur_state_00  PSAMPLE depth 1 ;
+  input 	C${c}_mactl_cur_state_01  PSAMPLE depth 1 ;
+  input 	C${c}_mactl_cur_state_10  PSAMPLE depth 1 ;
+  input 	C${c}_mactl_cur_state_11  PSAMPLE depth 1 ;
+  input		C${c}_mactl_stxa_2ctl_reg PSAMPLE depth 1 ;
+  input		C${c}_mactl_ma_op_complete_mask PSAMPLE depth 1 ;
+  input		C${c}_mactl_waiting_4stb_tobecome_empty PSAMPLE depth 1 ;
+  input		C${c}_mactl_wait_4stb_tobecome_empty PSAMPLE depth 1 ;
+  input		C${c}_mactl_wait4_trap_ack_set PSAMPLE depth 1 ;
+  input		C${c}_mactl_state_reset PSAMPLE depth 1 ;
+  input		C${c}_mactl_spu_mactl_done PSAMPLE depth 1 ;
+  input [5:0]	C${c}_wen_ma_stack_cntr_q PSAMPLE depth 1 ;
+
+  // Interface signals for SPU_LDSTXA_MON (plus above)
+  input		C${c}_all_flush			PSAMPLE depth 2 ;
+  input	[7:0]	C${c}_lsu_spu_asi_state_e	PSAMPLE depth 2 ;
+  input		C${c}_ifu_spu_inst_vld_w	PSAMPLE depth 2 ;
+  input		C${c}_ifu_lsu_ld_inst_e		PSAMPLE depth 2 ;
+  input		C${c}_ifu_lsu_st_inst_e		PSAMPLE depth 2 ;
+  input		C${c}_ifu_lsu_alt_space_e	PSAMPLE depth 2 ;
+  input	[1:0]	C${c}_ifu_tlu_thrid_e		PSAMPLE depth 2 ;
+  input	[7:0]	C${c}_exu_lsu_ldst_va_e		PSAMPLE depth 2 ;
+  input	[63:0]	C${c}_exu_lsu_rs3_data_e	PSAMPLE depth 2 ;
+  input	[63:0]	C${c}_spu_lsu_ldxa_data_w2	PSAMPLE depth 2 ;
+  input	[1:0]	C${c}_spu_lsu_ldxa_tid_w2	PSAMPLE depth 2 ;
+  input		C${c}_spu_lsu_stxa_ack		PSAMPLE depth 2 ;
+  input	[1:0]	C${c}_spu_lsu_stxa_ack_tid	PSAMPLE depth 2 ;
+
+  // Interface signals for spu_mamem_perr_sample (plus above)
+  // These are depth 1 because the spu_lsu_ldxa_data_vld_w2 that
+  // we're using from above is at depth 2.
+  input		C${c}_spu_mactl_perr_set	PSAMPLE depth 2 ;
+  input		C${c}_spu_lsu_unc_error_w2	PSAMPLE depth 2 ;
+  input		C${c}_spu_ifu_mamem_err_w2	PSAMPLE depth 2 ;
+
+  // Interface signals for SPU_MARED_MON
+  input		C${c}_spu_mared_idle		PSAMPLE depth 1 ;
+
+  // Interface signals for SPU_MAEXP_MON
+  input		C${c}_spu_maexp_idle		PSAMPLE depth 1 ;
+
+  // Interface signals for SPU_MAMUL_MON
+  input		C${c}_spu_mamul_idle		PSAMPLE depth 1 ;
+
+  // Interface signals for spu_ma_kill_op_sample
+  input		C${c}_spu_mactl_ma_kill_op	PSAMPLE depth 1 ;
+
+  // Interface signals for spu_stxa_force_abort_sample
+  input		C${c}_spu_mactl_stxa_force_abort PSAMPLE depth 1 ;
+
+  // Interface signals for spu_perr_set_sample
+  // Already defined above:
+  // input		C${c}_spu_mactl_perr_set	PSAMPLE depth 1 ;
+
+  // Interface signals for spu_wen_ma_unc_sample
+  input		C${c}_spu_wen_ma_unc_err	PSAMPLE depth 1 ;
+.
+. } # coreSignals
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+}
+
+#endif

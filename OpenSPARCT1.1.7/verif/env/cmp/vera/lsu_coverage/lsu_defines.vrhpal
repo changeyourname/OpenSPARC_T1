@@ -1,0 +1,231 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// defines for lsu_allpick
+#define AREQ0	4'b0000
+#define AREQ1	4'b0001
+#define AREQ2	4'b0010
+#define AREQ3	4'b0011
+#define AREQ4	4'b0100
+#define AREQ5	4'b0101
+#define AREQ6	4'b0110
+#define AREQ7	4'b0111
+#define AREQ8	4'b1000
+#define AREQ9	4'b1001
+#define AREQ10	4'b1010
+#define AREQ11	4'b1011
+#define AREQ12	4'b1100
+#define AREQ13	4'b1101
+#define AREQ14  4'b1110
+#define AREQ15	4'b1111
+
+// defines for lsu_bld
+#define BLDST0	7'b1000000
+#define BLDST1	7'b1000001
+#define BLDST2	7'b1000010
+#define BLDST3	7'b1000011
+#define BLDST4	7'b1000100
+#define BLDST5	7'b1000101
+#define BLDST6	7'b1000110
+#define BLDST7	7'b1000111
+#define BLDST8	7'b1001000
+#define BLDST9	7'b1001001
+#define BLDST10	7'b1001010
+#define BLDST11	7'b1001011
+#define BLDST12	7'b1001100
+#define BLDST13	7'b1001101
+#define BLDST14 7'b1001110
+#define BLDST15	7'b1001111
+#define HBLDST0	7'b1100000
+#define HBLDST1	7'b1100001
+#define HBLDST2	7'b1100010
+#define HBLDST3	7'b1100011
+#define HBLDST4	7'b1100100
+#define HBLDST5	7'b1100101
+#define HBLDST6	7'b1100110
+#define HBLDST7	7'b1100111
+#define HBLDST8	7'b1101000
+#define HBLDST9	7'b1101001
+#define HBLDST10	7'b1101010
+#define HBLDST11	7'b1101011
+#define HBLDST12	7'b1101100
+#define HBLDST13	7'b1101101
+#define HBLDST14 	7'b1101110
+#define HBLDST15	7'b1101111
+#define HRBLDST0	7'b1110000
+#define HRBLDST1	7'b1110001
+#define HRBLDST2	7'b1110010
+#define HRBLDST3	7'b1110011
+#define HRBLDST4	7'b1110100
+#define HRBLDST5	7'b1110101
+#define HRBLDST6	7'b1110110
+#define HRBLDST7	7'b1110111
+#define HRBLDST8	7'b1111000
+#define HRBLDST9	7'b1111001
+#define HRBLDST10	7'b1111010
+#define HRBLDST11	7'b1111011
+#define HRBLDST12	7'b1111100
+#define HRBLDST13	7'b1111101
+#define HRBLDST14 	7'b1111110
+#define HRBLDST15	7'b1111111
+
+// defines for lsu_fsm_raw
+#define LDRAW_IDLE	1'b0		/* idle state */
+#define LDRAW_FULLRAW	1'b1		/* full raw detected */
+
+// defines for lsu_ldeqi
+#define LDEQI0	4'b0000
+#define LDEQI1	4'b0001
+#define LDEQI2	4'b0010
+#define LDEQI3	4'b0011
+#define LDEQI4	4'b0100
+#define LDEQI5	4'b0101
+#define LDEQI6	4'b0110
+#define LDEQI7	4'b0111
+#define LDEQI8	4'b1000
+#define LDEQI9	4'b1001
+#define LDEQI10	4'b1010
+#define LDEQI11	4'b1011
+#define LDEQI12	4'b1100
+#define LDEQI13	4'b1101
+#define LDEQI14 4'b1110
+#define LDEQI15	4'b1111
+
+// defines for lsu_ldpick
+#define LDREQ0	4'b0000
+#define LDREQ1	4'b0001
+#define LDREQ2	4'b0010
+#define LDREQ3	4'b0011
+#define LDREQ4	4'b0100
+#define LDREQ5	4'b0101
+#define LDREQ6	4'b0110
+#define LDREQ7	4'b0111
+#define LDREQ8	4'b1000
+#define LDREQ9	4'b1001
+#define LDREQ10	4'b1010
+#define LDREQ11	4'b1011
+#define LDREQ12	4'b1100
+#define LDREQ13	4'b1101
+#define LDREQ14 4'b1110
+#define LDREQ15	4'b1111
+
+// defines for lsu_load
+#define LDSTATE_IDLE		4'b0000		/* idle state */
+#define LDSTATE_FULLRAW	4'b0001		/* full raw detected */
+#define LDSTATE_PRSFILLIRF	4'b0010		/* seconndary load wait for st exit store buffer */
+#define LDSTATE_SNDRYLD	4'b0110		/* secondary load dected */
+#define LDSTATE_TRANS1	4'b0100		/* transient state for 0000 --> 1100 */
+#define LDSTATE_PRAWVLD	4'b1100		/* partial raw detected 0000 --> 1100 */
+#define LDSTATE_REQ2L2	4'b1000		/* store exits store buffer, wait for ld issue to PCX */
+
+// defines for lsu_miscpick
+#define MREQ0	4'b0000
+#define MREQ1	4'b0001
+#define MREQ2	4'b0010
+#define MREQ3	4'b0011
+#define MREQ4	4'b0100
+#define MREQ5	4'b0101
+#define MREQ6	4'b0110
+#define MREQ7	4'b0111
+#define MREQ8	4'b1000
+#define MREQ9	4'b1001
+#define MREQ10	4'b1010
+#define MREQ11	4'b1011
+#define MREQ12	4'b1100
+#define MREQ13	4'b1101
+#define MREQ14  4'b1110
+#define MREQ15	4'b1111
+
+// defines for lsu_stb
+#define STB_STATE_INVLD	3'b000	 
+#define STB_STATE_VLD	3'b100	 
+#define STB_STATE_CED	3'b101	 
+#define STB_STATE_ACK	3'b111	 
+
+// defines for lsu_stpick
+#define STREQ0	4'b0000
+#define STREQ1	4'b0001
+#define STREQ2	4'b0010
+#define STREQ3	4'b0011
+#define STREQ4	4'b0100
+#define STREQ5	4'b0101
+#define STREQ6	4'b0110
+#define STREQ7	4'b0111
+#define STREQ8	4'b1000
+#define STREQ9	4'b1001
+#define STREQ10	4'b1010
+#define STREQ11	4'b1011
+#define STREQ12	4'b1100
+#define STREQ13	4'b1101
+#define STREQ14 4'b1110
+#define STREQ15	4'b1111
+
+// defines for lsu_tlbldst
+#define IDLE	2'b00
+#define REQ	2'b10
+#define GRANT	2'b11
+
+// defines for lsu_way
+#define WAY0	3'b100
+#define WAY1	3'b101
+#define WAY2	3'b110
+#define WAY3	3'b111
+
+// defines for ldstcmplt
+
+#define LDSTCMPLT0	4'b0000
+#define LDSTCMPLT1	4'b0001
+#define LDSTCMPLT2	4'b0010
+#define LDSTCMPLT3	4'b0011
+#define LDSTCMPLT4	4'b0100
+#define LDSTCMPLT5	4'b0101
+#define LDSTCMPLT6	4'b0110
+#define LDSTCMPLT7	4'b0111
+#define LDSTCMPLT8	4'b1000
+#define LDSTCMPLT9	4'b1001
+#define LDSTCMPLT10	4'b1010
+#define LDSTCMPLT11	4'b1011
+#define LDSTCMPLT12	4'b1100
+#define LDSTCMPLT13	4'b1101
+#define LDSTCMPLT14 	4'b1110
+#define LDSTCMPLT15	4'b1111
+
+// defines for excpn
+
+#define EXCPN0	5'b00000
+#define EXCPN1	5'b00001
+#define EXCPN2	5'b00010
+#define EXCPN3	5'b00011
+#define EXCPN4	5'b00100
+#define EXCPN5	5'b00101
+#define EXCPN6	5'b00110
+#define EXCPN7	5'b00111
+#define EXCPN8	5'b01000
+#define EXCPN9	5'b01001
+#define EXCPN10	5'b01010
+#define EXCPN11	5'b01011
+#define EXCPN12	5'b01100
+#define EXCPN13	5'b01101
+#define EXCPN14 5'b01110
+#define EXCPN15	5'b01111
+#define EXCPN16 5'b10000
+#define EXCPN17	5'b10001
+#define EXCPN18	5'b10010

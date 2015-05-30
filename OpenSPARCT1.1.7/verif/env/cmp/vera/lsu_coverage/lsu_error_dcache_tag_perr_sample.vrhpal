@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_dcache_tag_perr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// dcache tag parity error
+
+wildcard state s_DC_TAG_PERR              (18'b1_xxxx_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT0        (18'b1_0011_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT1        (18'b1_0110_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT2        (18'b1_1100_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT3        (18'b1_1001_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT4        (18'b1_1010_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT5        (18'b1_0101_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT6        (18'b1_0111_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT7        (18'b1_1011_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT8        (18'b1_1101_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT9        (18'b1_1110_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_MULT10       (18'b1_1111_xxxxxxxxx_0000);
+wildcard state s_DC_TAG_PERR_LD           (18'b1_xxxx_100000000_0000);
+wildcard bad_state s_DC_TAG_PERR_ST       (18'b1_xxxx_010000000_0000);
+wildcard bad_state s_DC_TAG_PERR_CASA     (18'b1_xxxx_111000000_0000);
+wildcard bad_state s_DC_TAG_PERR_SWAP     (18'b1_xxxx_110100000_0000);
+wildcard bad_state s_DC_TAG_PERR_LDSTUB   (18'b1_xxxx_100010000_0000);
+wildcard state s_DC_TAG_PERR_BLD          (18'b1_xxxx_100001000_0000);
+wildcard bad_state s_DC_TAG_PERR_BLKST    (18'b1_xxxx_010000100_0000);
+wildcard state s_DC_TAG_PERR_LDQUAD       (18'b1_xxxx_000000010_0000);
+wildcard bad_state s_DC_TAG_PERR_PREFETCH (18'b1_xxxx_000000001_0000);
+wildcard state s_DC_TAG_PERR_W_BLKASI     (18'b0_xxxx_xxxxxxxxx_1000);
+wildcard state s_DC_TAG_PERR_W_PN39_W_BP  (18'b0_xxxx_xxxxxxxxx_0100);
+wildcard state s_DC_TAG_PERR_W_PN39_WO_BP (18'b0_xxxx_xxxxxxxxx_0010);
+wildcard state s_DC_TAG_PERR_W_ATOMIC     (18'b0_xxxx_xxxxxxxxx_0001);
+
+

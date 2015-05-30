@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_bypassq_squash_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// bypass queues - squashing bypass/cmplt to irf/ifu
+//***********************************************************************
+
+  wildcard state     s_BYPASSQ_SQUASH_ST00 (36'b0001_XXXX_1X_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST01 (36'b0001_XXXX_X1_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST02 (36'b0001_0001_XX_1000_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST03 (36'b0001_0001_XX_0100_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST04 (36'b0001_0001_XX_0010_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST05 (36'b0001_0001_XX_0001_XX_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard bad_state s_BYPASSQ_SQUASH_ST06 (36'b0001_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_0001);
+
+  wildcard state     s_BYPASSQ_SQUASH_ST07 (36'b0010_XXXX_XX_XXXX_1X_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST08 (36'b0010_XXXX_XX_XXXX_X1_XXXX_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST09 (36'b0010_0010_XX_XXXX_XX_1000_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST10 (36'b0010_0010_XX_XXXX_XX_0100_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST11 (36'b0010_0010_XX_XXXX_XX_0010_XX_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST12 (36'b0010_0010_XX_XXXX_XX_0001_XX_XXXX_XX_XXXX_XXXX);
+  wildcard bad_state s_BYPASSQ_SQUASH_ST13 (36'b0010_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_0010);
+
+  wildcard state     s_BYPASSQ_SQUASH_ST14 (36'b0100_XXXX_XX_XXXX_XX_XXXX_1X_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST15 (36'b0100_XXXX_XX_XXXX_XX_XXXX_X1_XXXX_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST16 (36'b0100_0100_XX_XXXX_XX_XXXX_XX_1000_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST17 (36'b0100_0100_XX_XXXX_XX_XXXX_XX_0100_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST18 (36'b0100_0100_XX_XXXX_XX_XXXX_XX_0010_XX_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST19 (36'b0100_0100_XX_XXXX_XX_XXXX_XX_0001_XX_XXXX_XXXX);
+  wildcard bad_state s_BYPASSQ_SQUASH_ST20 (36'b0100_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_0100);
+
+  wildcard state     s_BYPASSQ_SQUASH_ST21 (36'b1000_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_1X_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST22 (36'b1000_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_X1_XXXX_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST23 (36'b1000_1000_XX_XXXX_XX_XXXX_XX_XXXX_XX_1000_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST24 (36'b1000_1000_XX_XXXX_XX_XXXX_XX_XXXX_XX_0100_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST25 (36'b1000_1000_XX_XXXX_XX_XXXX_XX_XXXX_XX_0010_XXXX);
+  wildcard state     s_BYPASSQ_SQUASH_ST26 (36'b1000_1000_XX_XXXX_XX_XXXX_XX_XXXX_XX_0001_XXXX);
+  wildcard bad_state s_BYPASSQ_SQUASH_ST27 (36'b1000_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_XX_XXXX_1000);

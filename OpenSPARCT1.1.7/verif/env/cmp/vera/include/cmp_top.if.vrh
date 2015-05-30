@@ -1,0 +1,398 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmp_top.if.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC_CMP_TOP_IF_VRH
+#define INC_CMP_TOP_IF_VRH
+
+#include <vera_defines.vrh>
+#include "cmp_defines.vri"
+#include "sys_rtl.h"
+#include "iop_rtl.h"
+
+////////////////////////////////////////////////////////////////////////////////
+// cmp interface
+////////////////////////////////////////////////////////////////////////////////
+
+interface cmp_top {
+    inout  [7:0]            cpx_io_grant_cx     PHOLD PSAMPLE ;
+    inout  [PCX_WIDTH-1:0]  pcx_io_data_px      PHOLD PSAMPLE ;
+    inout                   pcx_io_data_rdy_px  PHOLD PSAMPLE ;
+    inout  [7:0]            fp_cpx_req_cq       PHOLD PSAMPLE ;
+    inout                   fp_cpx_atom_cq      PHOLD PSAMPLE ;
+
+    inout  [CPX_WIDTH-1:0]  io_cpx_data_ca     PHOLD PSAMPLE ;
+    inout  [7:0]            io_cpx_req_cq      PHOLD PSAMPLE ;
+    inout                   io_pcx_stall_pq    PHOLD PSAMPLE ;
+    
+    inout [CPX_WIDTH-1:0]   cpx_spc0_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc1_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc2_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc3_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc4_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc5_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc6_data_cx     PHOLD PSAMPLE ;
+    inout [CPX_WIDTH-1:0]   cpx_spc7_data_cx     PHOLD PSAMPLE ;
+
+    inout                   cpx_spc0_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc1_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc2_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc3_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc4_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc5_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc6_data_rdy_cx PSAMPLE PR0 ;
+    inout                   cpx_spc7_data_rdy_cx PSAMPLE PR0 ;
+
+    inout  [PCX_WIDTH-1:0]   spc0_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc1_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc2_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc3_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc4_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc5_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc6_pcx_data_pa     PSAMPLE PHOLD ;
+    inout  [PCX_WIDTH-1:0]   spc7_pcx_data_pa     PSAMPLE PHOLD ;
+
+    inout  [4:0]             spc0_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc1_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc2_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc3_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc4_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc5_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc6_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+    inout  [4:0]             spc7_pcx_req_pq      PSAMPLE depth 2 PHOLD ;
+
+    inout                    spc0_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc1_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc2_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc3_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc4_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc5_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc6_pcx_atom_pq     PSAMPLE PHOLD ;
+    inout                    spc7_pcx_atom_pq     PSAMPLE PHOLD ;
+
+    inout  [4:0]             pcx_spc0_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc1_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc2_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc3_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc4_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc5_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc6_grant_pa    PSAMPLE PR0 ;
+    inout  [4:0]             pcx_spc7_grant_pa    PSAMPLE PR0 ;
+
+    input                   cmp_grst_l PSAMPLE ;
+    input                   jbus_gclk   PSAMPLE ;
+    input                   need_sas_sparc_intf_update PSAMPLE ;
+    inout                   rst_l  PHOLD PSAMPLE ;
+
+    input                   diag_done PSAMPLE ;
+    input                   cmp_gclk CLOCK ;
+    input                   sparc_rclk PSAMPLE;
+    
+    input [3:0]             thr_d PSAMPLE ;
+    input [3:0]             thr_e PSAMPLE ;    
+    input [3:0]             thr_f PSAMPLE ;
+    input [3:0]             thr_m PSAMPLE ;    
+    input [47:0]            pc_d PSAMPLE ;
+    input [47:0]            pc_e PSAMPLE ;    
+    input [47:0]            pc_f PSAMPLE ;
+    input [47:0]            pc_m PSAMPLE ;        
+    input                   fcl_dtu_inst_vld_d PSAMPLE;
+    input                   icd_rdreq_f PSAMPLE;
+    input                   icd_wrreq_f PSAMPLE;
+    input                   ict_wrreq_f PSAMPLE;        
+    input                   inst_vld_f  PSAMPLE;
+    input                   ctl_frf_ren PSAMPLE;
+    input                   dcd_rdreq_m PSAMPLE;
+    input                   dcd_wrreq_m PSAMPLE;    
+    input                   dct_rdreq_m PSAMPLE;
+    input                   dct_wrreq_m PSAMPLE;
+    input                   irf_wen_w PSAMPLE;
+    input                   irf_wen_w2 PSAMPLE;
+    input [1:0]             frf_wen PSAMPLE;
+    input                   ifu_tlu_inst_vld_m PSAMPLE;
+    input                   ecl_byp_sel_ecc_m PSAMPLE;
+    input                   ifu_ffu_fst_d PSAMPLE depth 1;
+    input                   rs1_ren_d PSAMPLE;
+    input                   rs2_ren_d PSAMPLE;
+    input                   rs3_ren_d PSAMPLE;
+    input                   ifu_tlu_ttype_vld_m PSAMPLE;
+    input                   inst_vld_e PSAMPLE;
+    input                   intr_vld_d PSAMPLE;
+    input                   fpop1_e PSAMPLE;
+    input                   fpop2_e PSAMPLE;
+    input                   visop_e PSAMPLE;
+    input                   cam_vld_f PSAMPLE;
+    input                   cam_vld_m PSAMPLE;
+    input [47:0]            exu_lsu_ldst_va_e PSAMPLE;
+        
+}  // end of interface cmp_top
+
+////////////////////////////////////////////////////////////////////////////////
+// dram interface
+////////////////////////////////////////////////////////////////////////////////
+
+interface dram_dimm_top
+{
+    input                   dram_gclk CLOCK ;
+
+    // i2c interface
+
+    input                   vld0_0 PSAMPLE ;
+    input                   vld1_0 PSAMPLE ;
+    input [7:0]             addr_0 PSAMPLE ;
+    input [7:0]             data_0 PSAMPLE ;
+
+    input                   vld0_1 PSAMPLE ;
+    input                   vld1_1 PSAMPLE ;
+    input [7:0]             addr_1 PSAMPLE ;
+    input [7:0]             data_1 PSAMPLE ;
+
+    // dram dimm interface
+
+    input  [7:0]             DRAM0_CK    PSAMPLE ;
+    input                    DRAM0_CKE   PSAMPLE ;
+    input                    DRAM0_RST_L PSAMPLE ;
+    input  [3:0]             DRAM0_CS_L  PSAMPLE ;
+    input  [2:0]             DRAM0_BA    PSAMPLE ;
+    input  [14:0]            DRAM0_ADDR  PSAMPLE ;
+    input                    DRAM0_RAS_L PSAMPLE ;
+    input                    DRAM0_CAS_L PSAMPLE ;
+    input                    DRAM0_WE_L  PSAMPLE ;
+    input  [35:0]            DRAM0_DQS   PSAMPLE ;
+    input  [127:0]           DRAM0_DQ    PSAMPLE ;
+    input  [15:0]            DRAM0_CB    PSAMPLE ;
+    output                   DRAM0_ENB_ERROR    PDRIVE ;
+    output                   DRAM0_FAIL_OVER    PDRIVE ;
+    output                   DRAM0_SYND_ECC_INJ PDRIVE;
+    output [3:0]             DRAM0_SYND_ERR_BITS PDRIVE;
+    output [31:0]            DRAM0_SYND_ERR_POS PDRIVE;
+    output [5:0]             DRAM0_FAIL_PART    PDRIVE ;
+
+    input  [7:0]             DRAM1_CK    PSAMPLE ;
+    input                    DRAM1_CKE   PSAMPLE ;
+    input                    DRAM1_RST_L PSAMPLE ;
+    input  [3:0]             DRAM1_CS_L  PSAMPLE ;
+    input  [2:0]             DRAM1_BA    PSAMPLE ;
+    input  [14:0]            DRAM1_ADDR  PSAMPLE ;
+    input                    DRAM1_RAS_L PSAMPLE ;
+    input                    DRAM1_CAS_L PSAMPLE ;
+    input                    DRAM1_WE_L  PSAMPLE ;
+    input  [35:0]            DRAM1_DQS   PSAMPLE ;
+    input  [127:0]           DRAM1_DQ    PSAMPLE ;
+    input  [15:0]            DRAM1_CB    PSAMPLE ;
+    output                   DRAM1_ENB_ERROR    PDRIVE ;
+    output                   DRAM1_SYND_ECC_INJ PDRIVE;
+    output [3:0]             DRAM1_SYND_ERR_BITS PDRIVE;
+    output [31:0]            DRAM1_SYND_ERR_POS PDRIVE;
+    output                   DRAM1_FAIL_OVER    PDRIVE ;
+    output [5:0]             DRAM1_FAIL_PART    PDRIVE ;
+
+    input  [7:0]             DRAM2_CK    PSAMPLE ;
+    input                    DRAM2_CKE   PSAMPLE ;
+    input                    DRAM2_RST_L PSAMPLE ;
+    input  [3:0]             DRAM2_CS_L  PSAMPLE ;
+    input  [2:0]             DRAM2_BA    PSAMPLE ;
+    input  [14:0]            DRAM2_ADDR  PSAMPLE ;
+    input                    DRAM2_RAS_L PSAMPLE ;
+    input                    DRAM2_CAS_L PSAMPLE ;
+    input                    DRAM2_WE_L  PSAMPLE ;
+    input  [35:0]            DRAM2_DQS   PSAMPLE ;
+    input  [127:0]           DRAM2_DQ    PSAMPLE ;
+    input  [15:0]            DRAM2_CB    PSAMPLE ;
+    output                   DRAM2_ENB_ERROR    PDRIVE ;
+    output                   DRAM2_SYND_ECC_INJ PDRIVE;
+    output [3:0]             DRAM2_SYND_ERR_BITS PDRIVE;
+    output [31:0]            DRAM2_SYND_ERR_POS PDRIVE;
+    output                   DRAM2_FAIL_OVER    PDRIVE ;
+    output [5:0]             DRAM2_FAIL_PART    PDRIVE ;
+
+    input  [7:0]             DRAM3_CK    PSAMPLE ;
+    input                    DRAM3_CKE   PSAMPLE ;
+    input                    DRAM3_RST_L PSAMPLE ;
+    input  [3:0]             DRAM3_CS_L  PSAMPLE ;
+    input  [2:0]             DRAM3_BA    PSAMPLE ;
+    input  [14:0]            DRAM3_ADDR  PSAMPLE ;
+    input                    DRAM3_RAS_L PSAMPLE ;
+    input                    DRAM3_CAS_L PSAMPLE ;
+    input                    DRAM3_WE_L  PSAMPLE ;
+    input  [35:0]            DRAM3_DQS   PSAMPLE ;
+    input  [127:0]           DRAM3_DQ    PSAMPLE ;
+    input  [15:0]            DRAM3_CB    PSAMPLE ;
+    output                   DRAM3_ENB_ERROR    PDRIVE ;
+    output                   DRAM3_SYND_ECC_INJ PDRIVE;
+    output [3:0]             DRAM3_SYND_ERR_BITS PDRIVE;
+    output [31:0]            DRAM3_SYND_ERR_POS PDRIVE;
+    output                   DRAM3_FAIL_OVER    PDRIVE ;
+    output [5:0]             DRAM3_FAIL_PART    PDRIVE ;
+}
+
+interface ucb_top
+{
+    input                    jbus_gclk CLOCK ;
+
+    // dram ucb interface
+    inout                    iob_ucb_vld0         PHOLD PSAMPLE ;
+    inout                    iob_ucb_vld1         PHOLD PSAMPLE ;
+
+    inout  [3:0]             iob_ucb_data0        PHOLD PSAMPLE ;
+    inout  [3:0]             iob_ucb_data1        PHOLD PSAMPLE ;
+
+    inout                    iob_ucb_stall0       PHOLD PSAMPLE ;
+    inout                    iob_ucb_stall1       PHOLD PSAMPLE ;
+
+    inout                    ucb_iob_vld0         PHOLD PSAMPLE ;
+    inout                    ucb_iob_vld1         PHOLD PSAMPLE ;
+
+    inout  [3:0]             ucb_iob_data0        PHOLD PSAMPLE ;
+    inout  [3:0]             ucb_iob_data1        PHOLD PSAMPLE ;
+
+    inout                    ucb_iob_stall0       PHOLD PSAMPLE ;
+    inout                    ucb_iob_stall1       PHOLD PSAMPLE ;
+}
+
+interface dram_top
+{
+    input                    cmp_gclk CLOCK ;
+    inout                    clk_ddr_slfrsh PSAMPLE PHOLD ;
+
+    // dram interface
+
+    output [34:0]            sctag0_dram_addr PHOLD ;
+    output                   sctag0_dram_data_mecc PHOLD ;
+    output                   sctag0_dram_data_vld PHOLD ;
+    output                   sctag0_dram_rd_req PHOLD ;
+    output                   sctag0_dram_rd_dummy_req PHOLD ;
+    output [2:0]             sctag0_dram_rd_req_id PHOLD ;
+    output [63:0]            sctag0_dram_wr_data PHOLD ;
+    output                   sctag0_dram_wr_req PHOLD ;
+    input  [127:0]           dram_sctag0_data PSAMPLE ;
+    input  [27:0]            dram_sctag0_ecc PSAMPLE ;
+    input                    dram_sctag0_mecc_err PSAMPLE ;
+    input                    dram_sctag0_rd_ack PSAMPLE ;
+    input  [2:0]             dram_sctag0_rd_req_id PSAMPLE ;
+    input                    dram_sctag0_secc_err PSAMPLE ;
+    input                    dram_sctag0_wr_ack PSAMPLE ;
+    input  [1:0]             dram_chunk_id0 PSAMPLE ;
+    input                    dram_data_vld0 PSAMPLE ;
+    input                    que_scrb_picked0 PSAMPLE ;
+    input                    que_scrb_rd_picked0 PSAMPLE ;
+    input                    que_ras_bank_picked_en0 PSAMPLE ;
+    input                    que_cas_picked0 PSAMPLE ;
+    input                    que_l2_send_id_4_0 PSAMPLE ;
+    input                    que_scrb_write_req0 PSAMPLE ;
+    input [10:0]             dram_rd_q_cnt_max0 PSAMPLE;
+    input  [2:0]             dram_rd_q_cnt_max_entry0 PSAMPLE;
+    input [31:0]             dram_rd_q_lat0     PSAMPLE;
+    input [31:0]             dram_wr_q_lat0     PSAMPLE;
+    input [33:0]             dram_rd_wr_q_lat0     PSAMPLE;
+
+
+    output [34:0]            sctag1_dram_addr PHOLD ;
+    output                   sctag1_dram_data_mecc PHOLD ;
+    output                   sctag1_dram_data_vld PHOLD ;
+    output                   sctag1_dram_rd_req PHOLD ;
+    output                   sctag1_dram_rd_dummy_req PHOLD ;
+    output [2:0]             sctag1_dram_rd_req_id PHOLD ;
+    output [63:0]            sctag1_dram_wr_data PHOLD ;
+    output                   sctag1_dram_wr_req PHOLD ;
+    input  [127:0]           dram_sctag1_data PSAMPLE ;
+    input  [27:0]            dram_sctag1_ecc PSAMPLE ;
+    input                    dram_sctag1_mecc_err PSAMPLE ;
+    input                    dram_sctag1_rd_ack PSAMPLE ;
+    input  [2:0]             dram_sctag1_rd_req_id PSAMPLE ;
+    input                    dram_sctag1_secc_err PSAMPLE ;
+    input                    dram_sctag1_wr_ack PSAMPLE ;
+    input  [1:0]             dram_chunk_id1 PSAMPLE ;
+    input                    dram_data_vld1 PSAMPLE ;
+    input                    que_scrb_picked1 PSAMPLE ;
+    input                    que_scrb_rd_picked1 PSAMPLE ;
+    input                    que_ras_bank_picked_en1 PSAMPLE ;
+    input                    que_cas_picked1 PSAMPLE ;
+    input                    que_l2_send_id_4_1 PSAMPLE ;
+    input                    que_scrb_write_req1 PSAMPLE ;
+    input  [10:0]            dram_rd_q_cnt_max1 PSAMPLE;
+    input   [2:0]            dram_rd_q_cnt_max_entry1 PSAMPLE;
+    input [31:0]             dram_rd_q_lat1     PSAMPLE;
+    input [31:0]             dram_wr_q_lat1     PSAMPLE;
+    input [33:0]             dram_rd_wr_q_lat1     PSAMPLE;
+
+    output [34:0]            sctag2_dram_addr PHOLD ;
+    output                   sctag2_dram_data_mecc PHOLD ;
+    output                   sctag2_dram_data_vld PHOLD ;
+    output                   sctag2_dram_rd_req PHOLD ;
+    output                   sctag2_dram_rd_dummy_req PHOLD ;
+    output [2:0]             sctag2_dram_rd_req_id PHOLD ;
+    output [63:0]            sctag2_dram_wr_data PHOLD ;
+    output                   sctag2_dram_wr_req PHOLD ;
+    input  [127:0]           dram_sctag2_data PSAMPLE ;
+    input  [27:0]            dram_sctag2_ecc PSAMPLE ;
+    input                    dram_sctag2_mecc_err PSAMPLE ;
+    input                    dram_sctag2_rd_ack PSAMPLE ;
+    input  [2:0]             dram_sctag2_rd_req_id PSAMPLE ;
+    input                    dram_sctag2_secc_err PSAMPLE ;
+    input                    dram_sctag2_wr_ack PSAMPLE ;
+    input  [1:0]             dram_chunk_id2 PSAMPLE ;
+    input                    dram_data_vld2 PSAMPLE ;
+    input                    que_scrb_picked2 PSAMPLE ;
+    input                    que_scrb_rd_picked2 PSAMPLE ;
+    input                    que_ras_bank_picked_en2 PSAMPLE ;
+    input                    que_cas_picked2 PSAMPLE ;
+    input                    que_l2_send_id_4_2 PSAMPLE ;
+    input                    que_scrb_write_req2 PSAMPLE ;
+    input  [10:0]            dram_rd_q_cnt_max2 PSAMPLE;
+    input   [2:0]            dram_rd_q_cnt_max_entry2 PSAMPLE;
+    input [31:0]             dram_rd_q_lat2     PSAMPLE;
+    input [31:0]             dram_wr_q_lat2     PSAMPLE;
+    input [33:0]             dram_rd_wr_q_lat2     PSAMPLE;
+
+    output [34:0]            sctag3_dram_addr PHOLD ;
+    output                   sctag3_dram_data_mecc PHOLD ;
+    output                   sctag3_dram_data_vld PHOLD ;
+    output                   sctag3_dram_rd_req PHOLD ;
+    output                   sctag3_dram_rd_dummy_req PHOLD ;
+    output [2:0]             sctag3_dram_rd_req_id PHOLD ;
+    output [63:0]            sctag3_dram_wr_data PHOLD ;
+    output                   sctag3_dram_wr_req PHOLD ;
+    input  [127:0]           dram_sctag3_data PSAMPLE ;
+    input  [27:0]            dram_sctag3_ecc PSAMPLE ;
+    input                    dram_sctag3_mecc_err PSAMPLE ;
+    input                    dram_sctag3_rd_ack PSAMPLE ;
+    input  [2:0]             dram_sctag3_rd_req_id PSAMPLE ;
+    input                    dram_sctag3_secc_err PSAMPLE ;
+    input                    dram_sctag3_wr_ack PSAMPLE ;
+    input  [1:0]             dram_chunk_id3 PSAMPLE ;
+    input                    dram_data_vld3 PSAMPLE ;
+    input                    que_scrb_picked3 PSAMPLE ;
+    input                    que_scrb_rd_picked3 PSAMPLE ;
+    input                    que_ras_bank_picked_en3 PSAMPLE ;
+    input                    que_cas_picked3 PSAMPLE ;
+    input                    que_l2_send_id_4_3 PSAMPLE ;
+    input                    que_scrb_write_req3 PSAMPLE ;
+    input  [10:0]            dram_rd_q_cnt_max3 PSAMPLE;
+    input   [2:0]            dram_rd_q_cnt_max_entry3 PSAMPLE;
+    input [31:0]             dram_rd_q_lat3     PSAMPLE;
+    input [31:0]             dram_wr_q_lat3     PSAMPLE;
+    input [33:0]             dram_rd_wr_q_lat3     PSAMPLE;
+
+}
+
+#endif
+
+
+

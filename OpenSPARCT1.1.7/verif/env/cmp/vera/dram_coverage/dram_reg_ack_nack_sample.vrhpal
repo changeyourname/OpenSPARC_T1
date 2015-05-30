@@ -1,0 +1,57 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_reg_ack_nack_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_reg_ack_nack_sample.vrh
+// Description:
+// Coverage object to schmoo sync pulse around wr req.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_reg_ack_nack_sample (bit [1:0] ack_nack)
+// {
+
+  // state declarations
+       state s_ack_nack0  (2'b00);
+       state s_ack_nack1  (2'b01);
+       state s_ack_nack2  (2'b10);
+
+       trans t_ack_nack0_1  (2'b00 -> 2'b01);
+       trans t_ack_nack1_0  (2'b01 -> 2'b00);
+       trans t_ack_nack0_2  (2'b00 -> 2'b10);
+       trans t_ack_nack2_0  (2'b10 -> 2'b00);
+
+  // bad states
+  //bad_state s_not_ack_nack0 (not state);
+    bad_state s_bad_ack_nack3  (2'b11);
+
+  // bad transitions
+  //bad_trans t_not_ack_nack0 (not trans);
+    bad_trans t_ack_nack1_2  (2'b01 -> 2'b10);
+    bad_trans t_ack_nack2_1  (2'b10 -> 2'b01);
+    bad_trans t_ack_nack0_3  (2'b00 -> 2'b11);
+    bad_trans t_ack_nack3_0  (2'b11 -> 2'b00);
+    bad_trans t_ack_nack2_3  (2'b10 -> 2'b11);
+    bad_trans t_ack_nack3_2  (2'b11 -> 2'b10);
+
+//}
+

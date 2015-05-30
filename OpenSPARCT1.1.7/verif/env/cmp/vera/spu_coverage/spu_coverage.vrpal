@@ -1,0 +1,355 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "spu_cov_inc.pal";
+
+#include <vera_defines.vrh>
+#include "iop_rtl.h"
+#include "spu.if.vrh"
+#include "spu_ports_binds.vrh"
+#include "spu_monitors.vrh"
+
+class spu_coverage {
+
+.   foreach $c ( @CORE_STR ) {
+    SPU_TRAP_MON		trap_sample_monitor_C${c};
+    spu_simul_compl_cov_port	C${c}_spu_simul_compl_bind;
+    SPU_LDST_MON		ldst_sample_monitor_C${c};
+    spu_ldst_mon_port		C${c}_spu_ldst_bind;
+    SPU_MUL_MON			mul_sample_monitor_C${c};
+    spu_mul_mon_port		C${c}_spu_mul_bind;
+    SPU_MALDST_MON		maldst_sample_monitor_C${c};
+    spu_maldst_mon_port         C${c}_spu_maldst_bind;
+    SPU_LDSTXA_MON		ldstxa_sample_monitor_C${c};
+    spu_ldstxa_mon_port		C${c}_spu_ldstxa_bind;
+    SPU_MASYNC_SAMPLE_MON	masync_sample_monitor_C${c};
+    spu_ma_mon_port		spu_ma_bind_C${c};
+    spu_mared_mon_port		spu_mared_bind_C${c};
+    spu_maexp_mon_port		spu_maexp_bind_C${c};
+    spu_mamul_mon_port		spu_mamul_bind_C${c};
+    SPU_ABORT_FSM_MON		abort_fsm_monitor_C${c};
+    spu_ma_abort_fsm_cov_port	abort_fsm_bind_C${c};
+.   } # for $c
+
+    coverage_group spu_coverage_group
+    {
+	// const_sample_reference improves perf, in the case in which
+	// we do not reassign to our object handles above such as
+	// C0_ldst_monitor.
+	//const_sample_reference = 1;
+        sample_event = @(posedge spu_intf.cmp_clk);
+        // Default contribution for this group unless diag_done is true.
+        cov_weight = 0;
+.       foreach $c ( @CORE_STR ) {
+#inc "spu_mared_sample.vrhpal"
+#inc "spu_mamul_sample.vrhpal"
+#inc "spu_simul_mul_req_ack_sample.vrhpal"
+#inc "spu_mast_sample.vrhpal"
+#inc "spu_maexp_sample.vrhpal"
+#inc "spu_mald_sample.vrhpal"
+#inc "spu_maaeqb_sample.vrhpal"
+#inc "spu_ill_instr_case_2_sample.vrhpal"
+#inc "spu_priv_act_sample.vrhpal"
+#inc "spu_data_acc_case_1_sample.vrhpal"
+#inc "spu_data_acc_case_2_sample.vrhpal"
+#inc "spu_data_acc_case_3_sample.vrhpal"
+#inc "spu_simul_spu_exu_sample.vrhpal"
+#inc "spu_spu_while_exu_sample.vrhpal"
+#inc "spu_mul_permut_sample.vrhpal"
+#inc "spu_mared_a_vs_n_sample.vrhpal"
+#inc "spu_maadr_sample.vrhpal"
+#inc "spu_malen_sample.vrhpal"
+#inc "spu_mamul_op_len_sample.vrhpal"
+#inc "spu_asi_stxa_ma_busy_sample.vrhpal"
+#inc "spu_ma_abort_fsm_sample.vrhpal"
+#inc "spu_simul_ldxa_sample.vrhpal"
+#inc "spu_simul_stxa_sample.vrhpal"
+#inc "spu_ldstxa_thrid_sample.vrhpal"
+#inc "spu_mamem_perr_sample.vrhpal"
+#inc "spu_masync_sample.vrhpal"
+#inc "spu_ma_kill_op_sample.vrhpal"
+#inc "spu_stxa_force_abort_sample.vrhpal"
+#inc "spu_perr_set_sample.vrhpal"
+#inc "spu_wen_ma_unc_err_sample.vrhpal"
+cross spu_mul_permut_simul_spu_exu_sample_cross_C${c}(spu_mul_permut_sample_bind_C${c}.\$mul_permut_state,
+  					              mul_sample_monitor_C${c}.simul_spu_exu_sample_state);
+cross spu_mul_permut_spu_while_exu_sample_cross_C${c}(spu_mul_permut_sample_bind_C${c}.\$mul_permut_state,
+  					              mul_sample_monitor_C${c}.spu_while_exu_sample_state);
+
+// In all of the cross coverage objects which deal with perr, I don't list
+// idle states as bad_state, because when a state machine is reading mamem
+// and possibly encountering parity errors, the other state machines will
+// be in their idle state.
+
+cross spu_maexp_ma_kill_op_sample_cross_C${c}(spu_maexp_sample_bind_C${c}.\$ma_exp_state,
+  				              spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MAEXP_RDE_PERR         ((spu_maexp_sample_bind_C${c}.\$ma_exp_state.2 == MAEXP_RDE_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+}
+
+cross spu_maexp_stxa_force_abort_sample_cross_C${c}(spu_maexp_sample_bind_C${c}.\$ma_exp_state,
+  					            spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MAEXP_RDE_STXA         ((spu_maexp_sample_bind_C${c}.\$ma_exp_state == MAEXP_RDE_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAEXP_GOTOMULRED1_STXA ((spu_maexp_sample_bind_C${c}.\$ma_exp_state == MAEXP_GOTOMULRED1_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAEXP_GOTOMULRED2_STXA ((spu_maexp_sample_bind_C${c}.\$ma_exp_state == MAEXP_GOTOMULRED2_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAEXP_ECHK_STXA        ((spu_maexp_sample_bind_C${c}.\$ma_exp_state == MAEXP_ECHK_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAEXP_ESMAX_STXA       ((spu_maexp_sample_bind_C${c}.\$ma_exp_state == MAEXP_ESMAX_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+cross spu_mared_ma_kill_op_sample_cross_C${c}(spu_mared_sample_bind_C${c}.\$ma_red_state,
+  				              spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MARED_RDM_PERR             ((spu_mared_sample_bind_C${c}.\$ma_red_state.2 == MARED_RDM_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MARED_RDN_PERR             ((spu_mared_sample_bind_C${c}.\$ma_red_state.2 == MARED_RDN_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+}
+
+cross spu_mared_stxa_force_abort_sample_cross_C${c}(spu_mared_sample_bind_C${c}.\$ma_red_state,
+  					            spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MARED_RDM_STXA             ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_RDM_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_RDN_STXA             ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_RDN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+
+    state s_MARED_CMPSUB_STXA          ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_CMPSUB_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_WR0TOX_STXA          ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_WR0TOX_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_WRMTOX_STXA          ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_WRMTOX_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_WRSTOX_STXA          ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_WRSTOX_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_SAVEPTRS_STXA        ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_SAVEPTRS_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_SUBMN_STXA           ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_SUBMN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_RDMDLY_STXA          ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_RDMDLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_DLY_SAVEPTRS_STXA    ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_DLY_SAVEPTRS_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_TWODLY_SAVEPTRS_STXA ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_TWODLY_SAVEPTRS_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_DONE_DLY1_STXA       ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_RED_DONE_DLY1_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MARED_DONE_DLY2_STXA       ((spu_mared_sample_bind_C${c}.\$ma_red_state == MARED_RED_DONE_DLY2_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+cross spu_mamul_ma_kill_op_sample_cross_C${c}(spu_mamul_sample_bind_C${c}.\$ma_mul_state,
+  				              spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MAMUL_TR2ILOOPA_FRM_IDLE_DLY_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_TR2ILOOPA_FRM_IDLE_DLY) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_ILOOPA_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_ILOOPA_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_JLOOPA_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_JLOOPA_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_JLOOPB_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_JLOOPB_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_JLOOPM_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_JLOOPM_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_JLOOPN_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3 == MAMUL_JLOOPN_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_TR2JLOOPA_FRM_ACCUMSHFT_DLY_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3== MAMUL_TR2JLOOPA_FRM_ACCUMSHFT_DLY) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAMUL_MWRITE_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state.3== MAMUL_MWRITE_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+}
+
+cross spu_mamul_stxa_force_abort_sample_cross_C${c}(spu_mamul_sample_bind_C${c}.\$ma_mul_state,
+  					            spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MAMUL_TR2ILOOPA_FRM_IDLE_DLY_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_TR2ILOOPA_FRM_IDLE_DLY) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_ILOOPA_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_ILOOPA_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_JLOOPA_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_JLOOPA_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_JLOOPB_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_JLOOPB_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_JLOOPM_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_JLOOPM_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_JLOOPN_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_JLOOPN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_TR2JLOOPA_FRM_ACCUMSHFT_DLY_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_TR2JLOOPA_FRM_ACCUMSHFT_DLY) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_MWRITE_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_MWRITE_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+
+    state s_MAMUL_NPRIME_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_NPRIME_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_ACCUMSHFT_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_ACCUMSHFT_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_RESULT_C1_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_RESULT_C1_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_RESULT_C2_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_RESULT_C2_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_RESULT_C3_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_RESULT_C3_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_RESULT_C4_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_RESULT_C4_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_RESULT_C5_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_RESULT_C5_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_TR2MWRITE_FRM_ACCUMSHFT_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state== MAMUL_TR2MWRITE_FRM_ACCUMSHFT_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_ILOOPB_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_ILOOPB_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAMUL_ILOOPN_PERR ((spu_mamul_sample_bind_C${c}.\$ma_mul_state == MAMUL_ILOOPN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+cross spu_maaeqb_ma_kill_op_sample_cross_C${c}(spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state,
+  				               spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+
+    state s_MAAEQB_IJLOOPA_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_IJLOOPA_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_JLOOPA_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_JLOOPA_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_JLOOPM_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_JLOOPM_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_JLOOPN_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_JLOOPN_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_MWRITE_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_MWRITE_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_TR2JLOOPA_FRM_ACCUMSHFT_DLY_STATE_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_TR2JLOOPA_FRM_ACCUMSHFT_DLY_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_TR2ILOOPA1_FRM_ACCUMSHFT_DLY_STATE_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_TR2ILOOPA1_FRM_ACCUMSHFT_DLY_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_IJLOOPA_DLY_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_IJLOOPA_DLY_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+    state s_MAAEQB_ILOOPA_DLY_PERR ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state.3 == MAAEQB_ILOOPA_DLY_STATE) && (spu_ma_kill_op_sample_bind_C${c}.\$ma_kill_op == 1'b1));
+}
+
+cross spu_maaeqb_stxa_force_abort_sample_cross_C${c}(spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state,
+  					             spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+
+    state s_MAAEQB_IJLOOPA_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_IJLOOPA_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_JLOOPA_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_JLOOPA_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_JLOOPM_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_JLOOPM_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_JLOOPN_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_JLOOPN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_MWRITE_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_MWRITE_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_TR2JLOOPA_FRM_ACCUMSHFT_DLY_STATE_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_TR2JLOOPA_FRM_ACCUMSHFT_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_TR2ILOOPA1_FRM_ACCUMSHFT_DLY_STATE_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_TR2ILOOPA1_FRM_ACCUMSHFT_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+
+    state s_MAAEQB_IDLE_DLY_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_IDLE_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ILOOPA_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ILOOPA_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ILOOPA1_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ILOOPA1_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ILOOPN_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ILOOPN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_NPRIME_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_NPRIME_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ACCUMSHFT_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ACCUMSHFT_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ILOOPA_DLY_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ILOOPA_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_ILOOPA1_DLY_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_ILOOPA1_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_IJLOOPA_DLY_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_IJLOOPA_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_RESULT_C1_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_RESULT_C1_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_RESULT_C2_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_RESULT_C2_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_RESULT_C3_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_RESULT_C3_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_RESULT_C4_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_RESULT_C4_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_RESULT_C5_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_RESULT_C5_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAAEQB_TR2MWRITE_FRM_ACCUMSHFT_STXA ((spu_maaeqb_sample_bind_C${c}.\$ma_aeqb_state == MAAEQB_TR2MWRITE_FRM_ACCUMSHFT_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+cross spu_mast_perr_set_sample_cross_C${c}(spu_mast_sample_bind_C${c}.\$ma_st_state,
+  					   spu_perr_set_sample_bind_C${c}.\$perr_set)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+
+    // Look for just the rising edge of perr_set. Unlike ma_kill_op, it stays
+    // asserted for awhile until the error trap is signalled.
+    state s_MAST_RDMEM_PERR ((spu_mast_sample_bind_C${c}.\$ma_st_state.3 == MAST_RDMEM_STATE) && spu_perr_set_sample_bind_C${c}.\$perr_set && !spu_perr_set_sample_bind_C${c}.\$perr_set.1);
+}
+
+cross spu_mast_stxa_force_abort_sample_cross_C${c}(spu_mast_sample_bind_C${c}.\$ma_st_state,
+  					           spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MAST_RDMEM_STXA ((spu_mast_sample_bind_C${c}.\$ma_st_state == MAST_RDMEM_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAST_WAIT4STDRAIN_STXA ((spu_mast_sample_bind_C${c}.\$ma_st_state == MAST_WAIT4STDRAIN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAST_LASTSTREQ_STXA ((spu_mast_sample_bind_C${c}.\$ma_st_state == MAST_LASTSTREQ_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MAST_DLY_TR2RDMEM_FRM_IDLE_STXA ((spu_mast_sample_bind_C${c}.\$ma_st_state == MAST_DLY_TR2RDMEM_FRM_IDLE_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+cross spu_mald_ma_unc_err_sample_cross_C${c}(spu_mald_sample_bind_C${c}.\$ma_ld_state,
+  					     spu_wen_ma_unc_err_sample_bind_C${c}.\$wen_ma_unc_err)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MALD_WAIT4LN_UE ((spu_mald_sample_bind_C${c}.\$ma_ld_state.3 == MALD_WAIT4LN_STATE) && (spu_wen_ma_unc_err_sample_bind_C${c}.\$wen_ma_unc_err == 1'b1));
+}
+
+cross spu_mald_stxa_force_abort_sample_cross_C${c}(spu_mald_sample_bind_C${c}.\$ma_ld_state,
+  					           spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort)
+{
+    cross_auto_bin_max = 0; // Want to ignore everything except what is listed here
+    state s_MALD_WAIT4LN_STXA ((spu_mald_sample_bind_C${c}.\$ma_ld_state == MALD_WAIT4LN_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MALD_LDREQ_STXA ((spu_mald_sample_bind_C${c}.\$ma_ld_state == MALD_LDREQ_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MALD_MAMEMWR_STXA ((spu_mald_sample_bind_C${c}.\$ma_ld_state == MALD_MAMEMWR_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MALD_CHK4MPA1MADDR0_STXA ((spu_mald_sample_bind_C${c}.\$ma_ld_state == MALD_CHK4MPA1MADDR0_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+    state s_MALD_MEMWEN_DLY_STXA ((spu_mald_sample_bind_C${c}.\$ma_ld_state == MALD_MEMWEN_DLY_STATE) && (spu_stxa_force_abort_sample_bind_C${c}.\$stxa_force_abort == 1'b1));
+}
+
+.       } # for $c
+    }
+  
+     task			new();
+}
+
+task spu_coverage::new()
+{
+    bit                  coverage_on;
+
+    // check coverage option
+    if ((get_plus_arg(CHECK, "spu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+	!get_plus_arg(CHECK, "coverage_off")) {
+        coverage_on = 1;
+    } else {
+	coverage_on = 0;
+    }
+
+    // This is set in cmp_top.vr now to "raw_coverage/coverage.db".
+    // There is one file for all the units	[Viranjit 04/07/03]
+    // coverage_set_database_file_name("raw_coverage/spu_coverage.db");
+    if (coverage_on) {
+
+.       foreach $c ( @CORE_STR ) {
+
+        C${c}_spu_simul_compl_bind = spu_simul_compl_sample_bind_C${c};
+        trap_sample_monitor_C${c} = new(C${c}_spu_simul_compl_bind);
+        trap_sample_monitor_C${c}.enableMonitor();
+        trap_sample_monitor_C${c}.monitor();
+
+        C${c}_spu_ldst_bind = C${c}_spu_ldst_mon_bind;
+        ldst_sample_monitor_C${c} = new(C${c}_spu_ldst_bind);
+        ldst_sample_monitor_C${c}.enableMonitor();
+        ldst_sample_monitor_C${c}.monitor();
+
+	C${c}_spu_mul_bind = C${c}_spu_mul_mon_bind;
+	mul_sample_monitor_C${c} = new(C${c}_spu_mul_bind);
+	mul_sample_monitor_C${c}.enableMonitor();
+	mul_sample_monitor_C${c}.monitor();
+
+	C${c}_spu_maldst_bind = C${c}_spu_maldst_mon_bind;
+	maldst_sample_monitor_C${c} = new(C${c}_spu_maldst_bind);
+	maldst_sample_monitor_C${c}.enableMonitor();
+	maldst_sample_monitor_C${c}.monitor();
+
+	C${c}_spu_ldstxa_bind = C${c}_spu_ldstxa_mon_bind;
+	ldstxa_sample_monitor_C${c} = new(C${c}_spu_ldstxa_bind);
+	ldstxa_sample_monitor_C${c}.enableMonitor();
+	ldstxa_sample_monitor_C${c}.monitor();
+
+	spu_ma_bind_C${c} = spu_ma_mon_bind_C${c};
+	spu_mared_bind_C${c} = spu_mared_mon_bind_C${c};
+	spu_maexp_bind_C${c} = spu_maexp_mon_bind_C${c};
+	spu_mamul_bind_C${c} = spu_mamul_mon_bind_C${c};
+	masync_sample_monitor_C${c} = new(C${c}_spu_ldstxa_bind,
+					  spu_ma_bind_C${c},
+				          spu_mared_bind_C${c},
+				          spu_maexp_bind_C${c},
+				          spu_mamul_bind_C${c});
+	masync_sample_monitor_C${c}.enableMonitor();
+	masync_sample_monitor_C${c}.monitor();
+
+	abort_fsm_bind_C${c} = spu_ma_abort_fsm_sample_bind_C${c};
+	abort_fsm_monitor_C${c} = new(abort_fsm_bind_C${c});
+	abort_fsm_monitor_C${c}.enableMonitor();
+	abort_fsm_monitor_C${c}.monitor();
+.       } # foreach $c
+	
+	// Instantiate the coverage group here since it monitors
+	// vera vars in the above monitors.
+	//spu_coverage_group = new();
+
+        printf("%d : Coverage turned on for SPU objects!\n", get_time(LO));
+
+        fork
+        {
+            @(posedge spu_intf.cmp_diag_done) ;
+            spu_coverage_group.set_cov_weight(1); // Since default is 0
+            coverage_save_database(1);
+            printf("%d : Coverage report for SPU generated!\n",
+                   get_time(LO));
+        } join none
+    } // if coverage on
+} // new
+

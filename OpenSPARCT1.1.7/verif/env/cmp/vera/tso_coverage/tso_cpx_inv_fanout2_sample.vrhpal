@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_cpx_inv_fanout2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is a coverage object related to the CPX invalidation fanout:
+// sctag0 and sctag1 send invalidations simultaneously 
+// sctag0 and sctag1 send invalidations simultaneously to multiple sparcs
+// sctag0,1,2 and 3  send invalidations simultaneously 
+// sctag0,1,2 and 3  send invalidations simultaneously to multiple sparcs
+// The bad states are impossible situations of the sort - multiple
+// fanout to multiple cores is flagged but multiple fanout is not,
+// stuff like this.
+//***********************************************************************
+
+// state declarations
+//-------------------
+  state s_MULT_INV01     			(MULT_INV01);
+  state s_MULT_INV01_MULT_FANOUT     		(MULT_INV01_MULT_FANOUT);
+  state s_MULT_INV0123     			(MULT_INV0123);
+
+// bad state declarations
+//-----------------------
+  bad_state s_BAD_MULT_FANOUT01 		(BAD_MULT_FANOUT01);
+  bad_state s_BAD_MULT_FANOUT0123_1 		(BAD_MULT_FANOUT0123_1);
+  bad_state s_BAD_MULT_FANOUT0123_2 		(BAD_MULT_FANOUT0123_2);
+  bad_state s_BAD_MULT_FANOUT0123_3 		(BAD_MULT_FANOUT0123_3);
+  bad_state s_BAD_MULT_FANOUT0123_4 		(BAD_MULT_FANOUT0123_4);
+  bad_state s_BAD_MULT_FANOUT0123_5 		(BAD_MULT_FANOUT0123_5);
+  bad_state s_BAD_MULT_FANOUT0123_6 		(BAD_MULT_FANOUT0123_6);
+  bad_state s_BAD_MULT_FANOUT0123_7 		(BAD_MULT_FANOUT0123_7);

@@ -1,0 +1,79 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_rmo_stackcnt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// rmo store ack count
+//***********************************************************************
+
+  wildcard state s_RMO_STACKCNT_ST00	( 24'b1000_1000_xxxx_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST01	( 24'b0100_0100_xxxx_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST02	( 24'b0010_0010_xxxx_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST03	( 24'b0001_0001_xxxx_xxxx_xxxx_xxxx );
+									   
+  wildcard state s_RMO_STACKCNT_ST04	( 24'bxxxx_xxxx_0000_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST05	( 24'bxxxx_xxxx_0001_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST06	( 24'bxxxx_xxxx_0010_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST07	( 24'bxxxx_xxxx_0011_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST08	( 24'bxxxx_xxxx_0100_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST09	( 24'bxxxx_xxxx_0101_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST10	( 24'bxxxx_xxxx_0110_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST11	( 24'bxxxx_xxxx_0111_xxxx_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST12	( 24'bxxxx_xxxx_1000_xxxx_xxxx_xxxx );
+									   
+  wildcard state s_RMO_STACKCNT_ST13	( 24'bxxxx_xxxx_xxxx_0000_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST14	( 24'bxxxx_xxxx_xxxx_0001_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST15	( 24'bxxxx_xxxx_xxxx_0010_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST16	( 24'bxxxx_xxxx_xxxx_0011_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST17	( 24'bxxxx_xxxx_xxxx_0100_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST18	( 24'bxxxx_xxxx_xxxx_0101_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST19	( 24'bxxxx_xxxx_xxxx_0110_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST20	( 24'bxxxx_xxxx_xxxx_0111_xxxx_xxxx );
+  wildcard state s_RMO_STACKCNT_ST21	( 24'bxxxx_xxxx_xxxx_1000_xxxx_xxxx );
+									   
+  wildcard state s_RMO_STACKCNT_ST22	( 24'bxxxx_xxxx_xxxx_xxxx_0000_xxxx );
+  wildcard state s_RMO_STACKCNT_ST23	( 24'bxxxx_xxxx_xxxx_xxxx_0001_xxxx );
+  wildcard state s_RMO_STACKCNT_ST24	( 24'bxxxx_xxxx_xxxx_xxxx_0010_xxxx );
+  wildcard state s_RMO_STACKCNT_ST25	( 24'bxxxx_xxxx_xxxx_xxxx_0011_xxxx );
+  wildcard state s_RMO_STACKCNT_ST26	( 24'bxxxx_xxxx_xxxx_xxxx_0100_xxxx );
+  wildcard state s_RMO_STACKCNT_ST27	( 24'bxxxx_xxxx_xxxx_xxxx_0101_xxxx );
+  wildcard state s_RMO_STACKCNT_ST28	( 24'bxxxx_xxxx_xxxx_xxxx_0110_xxxx );
+  wildcard state s_RMO_STACKCNT_ST29	( 24'bxxxx_xxxx_xxxx_xxxx_0111_xxxx );
+  wildcard state s_RMO_STACKCNT_ST30	( 24'bxxxx_xxxx_xxxx_xxxx_1000_xxxx );
+									   
+  wildcard state s_RMO_STACKCNT_ST31	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0000 );
+  wildcard state s_RMO_STACKCNT_ST32	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0001 );
+  wildcard state s_RMO_STACKCNT_ST33	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0010 );
+  wildcard state s_RMO_STACKCNT_ST34	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0011 );
+  wildcard state s_RMO_STACKCNT_ST35	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0100 );
+  wildcard state s_RMO_STACKCNT_ST36	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0101 );
+  wildcard state s_RMO_STACKCNT_ST37	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0110 );
+  wildcard state s_RMO_STACKCNT_ST38	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_0111 );
+  wildcard state s_RMO_STACKCNT_ST39	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_1000 );
+
+  wildcard bad_state s_RMO_STACKCNT_ST40	( 24'bxxxx_xxxx_1001_xxxx_xxxx_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST41	( 24'bxxxx_xxxx_xxxx_1001_xxxx_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST42	( 24'bxxxx_xxxx_xxxx_xxxx_1001_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST43	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_1001 );
+
+  wildcard bad_state s_RMO_STACKCNT_ST44	( 24'bxxxx_xxxx_1111_xxxx_xxxx_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST45	( 24'bxxxx_xxxx_xxxx_1111_xxxx_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST46	( 24'bxxxx_xxxx_xxxx_xxxx_1111_xxxx );
+  wildcard bad_state s_RMO_STACKCNT_ST47	( 24'bxxxx_xxxx_xxxx_xxxx_xxxx_1111 );
+

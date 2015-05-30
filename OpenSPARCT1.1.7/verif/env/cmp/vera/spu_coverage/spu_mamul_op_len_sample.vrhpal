@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mamul_op_len_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_mamul_op_len_COV_VRH
+#define INC__TMP_spu_mamul_op_len_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in mamul_op_len_state:
+ * spu_mactl.spu_mactl_mactl_wen,
+ * spu_mactl.spu_mactl_mactl_reg[8:0]
+ */
+
+/*
+ * spu_mamul_op_len_cov
+ *
+ * This coverage object checks that we have exercised all operand lengths
+ * for the modular multiply operation.
+ *
+ * TODO:
+ * + Should I create another object to chec op length for mod red
+ *   and mod exp?
+ * + Still need to implement something to check for all 1's and all 0's
+ *   operand values as specified in the original spu_mamul_bounds object
+ *   description.
+ */
+
+#endif
+
+sample spu_mamul_op_len_sample_bind_C${c}.\$mamul_op_len_state {
+  // Declare states to be covered 
+  m_state s_MAMUL_MUL_OP_LEN (10'h280:10'h29f);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

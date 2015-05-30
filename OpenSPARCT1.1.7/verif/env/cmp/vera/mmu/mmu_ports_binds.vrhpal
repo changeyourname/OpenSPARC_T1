@@ -1,0 +1,745 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mmu_cov_inc.pal";
+#ifndef __MMU_PORTS_VRH__
+#define __MMU_PORTS_VRH__
+
+#include <vera_defines.vrh>
+
+#include "mmu.if.vrh"
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+port mmu_sync_asi_port
+{
+    mmu_sync_asi_state;
+    // dmmu_ps1_ptr_en_m;
+    // dmmu_ps0_ptr_en_m;
+    // dmmu_ctxt_cfg_en_m;
+    // dmmu_direct_ptr_en_m;
+    // dmmu_nzctxt_cfg_en_m;
+    // dmmu_nzctxt_ps0_tsb_en_m;
+    // dmmu_nzctxt_ps1_tsb_en_m;
+    // dmmu_sfsr_wr_en_l;
+    // dmmu_sync_far_en_m;
+    // dmmu_sync_fsr_en_m;
+    // dmmu_tag_access_en_m;
+    // dmmu_tag_target_en_m;
+    // dmmu_tsb_en_m;
+    // dmmu_zctxt_cfg_en_m;
+    // dmmu_zctxt_ps0_tsb_en_m;
+    // dmmu_zctxt_ps1_tsb_en_m;
+    // immu_64k_ptr_en_m;
+    // immu_8k_ptr_en_m;
+    // immu_ctxt_cfg_en_m;
+    // immu_nzctxt_cfg_en_m;
+    // immu_nzctxt_ps0_tsb_en_m;
+    // immu_nzctxt_ps1_tsb_en_m;
+    // immu_sfsr_wr_en_l;
+    // immu_sync_fsr_en_m;
+    // immu_tag_access_en_m;
+    // immu_tag_target_en_m;
+    // immu_tsb_en_m;
+    // immu_zctxt_cfg_en_m;
+    // immu_zctxt_ps0_tsb_en_m;
+    // immu_zctxt_ps1_tsb_en_m;
+    // tlb_access_en_l;
+}
+
+port mmu_slow_asi_and_traps_port{
+    mmu_iside_slow_asi_and_traps_state;
+    mmu_dside_slow_asi_and_traps_state;
+}
+
+port mmu_tlb_ops_port{
+    mmu_dtlb_ops_state;
+    mmu_itlb_ops_state;
+    // tlb_entry_vld;
+    // ddemap_by_page;
+    // idemap_by_page;
+    // ddemap_by_ctxt;
+    // idemap_by_ctxt;
+    // tlu_dtlb_dmp_all_g;
+    // tlu_itlb_dmp_all_g;
+    // dmmu_inv_all_g;
+    // immu_inv_all_g;
+}
+
+port mmu_faults_port{
+    mmu_faults_state;
+    // ifu_tlu_immu_miss_m;
+    // lsu_tlu_dmmu_miss_g;
+    // lsu_tlu_daccess_excptn_g;
+    // tlu_lsu_int_ld_ill_va_w2; // TLU INTCTL
+    // immu_va_oor_brnchetc_m;
+    // exu_tlu_va_oor_jl_ret_m;
+    // exu_tlu_va_oor_m;
+    // va_oor_inst_acc_excp_g;
+    // dmmu_va_oor_g;
+    // va_oor_data_acc_excp_g; //TLU TCL
+    // lsu_tlu_wtchpt_trp_g; //TLU TCL
+    // lsu_tlu_misalign_addr_ldst_atm_m; //TLU TCL
+    // tlu_mmu_sync_data_excp_g; //TLU TCL
+    // ifu_tlu_flsh_inst_e; //TLU TCL
+}
+
+//port mmu_faults_and_err_inj_port{
+//    mmu_faults_and_err_inj_state;
+//}
+
+port mmu_clk_port{
+  clk;
+  cmp_diag_done;
+}
+
+port tte_attributes_port {
+    dmmu_tte_attributes_state;
+    // tlu_dtlb_tte_data_w2;
+    // tlu_itlb_tte_data_w2;
+    // lsu_tlu_tlb_st_inst_m;
+    // lsu_tlu_tlb_ld_inst_m;
+}
+
+port dmmu_pid_port {
+    dmmu_pid_state;
+}
+
+port immu_pid_port {
+    immu_pid_state;
+}
+
+port tlb_addr_match_port{
+    clk;
+    tlb_wr_tte_tag;
+    tlb_wr_tte_data;
+    tlb_wr_vld;
+    tlb_cam_data;
+    tlb_cam_data_vld;
+    tlb_cam_hit;
+    tlb_bypass;
+}
+
+port tlb_demap_port{
+    clk;
+    lsu_tlu_tlb_asi_state_m;
+    lsu_tlu_tlb_st_inst_m;
+    lsu_tlu_tlb_dmp_va_m;
+    lsu_tlu_tlb_ldst_va_m;
+    lsu_dtlb_cam_pid_e;
+    tlu_idtlb_dmp_key_g;
+    tlu_dtlb_dmp_vld_g;
+    tlu_itlb_dmp_vld_g;
+    itlb_cam_data;
+    dtlb_cam_data;
+    itlb_cam_data_vld;
+    dtlb_cam_data_vld;
+    itlb_bypass;
+    dtlb_bypass;
+    itlb_demap;
+    dtlb_demap;
+}
+
+port mmu_err_inj_port{
+    mmu_err_inj_state;
+}
+
+port err_inj_addr_match_port{
+    clk;
+    tlb_wr_tte_tag;
+    tlb_wr_vld;
+    tlb_cam_data;
+    tlb_cam_data_vld;
+    tlb_cam_hit;
+    tlb_bypass;
+    ifu_lsu_error_inj;
+}
+
+port itlb_bypass_port {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    immu_tlb_bypass_state_${t};
+.}
+    // tlb_bypass;
+    // pstate_priv;
+    // hstate_priv;
+}
+
+port dtlb_bypass_port {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    dmmu_tlb_bypass_state_${t};
+.}
+    // tlb_bypass;
+    // pstate_priv;
+    // hstate_priv;
+}
+
+port asi_accesses_port {
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    mmu_asi_accesses_state_T${t};
+.}
+
+}
+
+port atomics_port{
+    mmu_atomics_state;
+}
+
+port pstate_port{
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    pstate_state_${t};
+.}
+}
+
+port trap_level_port{
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    trap_level_state_${t};
+.}
+}
+
+port mmu_normal_ops_port{
+    mmu_normal_ops_state;
+}
+
+port mmu_cam_hit_assr_port{
+    clk;
+    cam_hit;
+    bypass;
+    demap_by_page;
+    demap_by_ctxt;
+    tlb_dmp_all;
+    tlb_demap_auto;
+    mmu_inv_all;
+    tlb_wr_vld;
+    tlb_rd_data_vld;
+    tlb_rd_tag_vld;
+    rw_index;
+    rw_index_vld;
+    demap_key;
+    demap_key_vld;
+}
+ 
+port mmu_isfsr_fields_port{
+    mmu_isfsr_state;
+}
+ 
+port mmu_dsfsr_fields_port{
+    mmu_dsfsr_state;
+}
+ 
+port mmu_mra_fld_en_port{
+        clk;
+	mra_wr_ptr;
+	mra_rd_ptr;
+	mra_wr_vld;
+	mra_rd_vld;
+	mra_field1_en;
+	mra_field2_en;
+	mra_field3_en;
+	mra_field4_en;
+	lsu_exu_ldxa_m;
+	ifu_tlu_inst_vld_m;
+	flush_w_inst_vld_m;
+}
+ 
+port mmu_mra_rd_wr_cntn_port{
+       mra_rd_wr_cntn_state;
+}
+
+port mmu_async_monitor_port{
+	clk;
+	reset;
+	lsu_tlu_tlb_access_tid_m;
+	lsu_tlu_tlb_ld_inst_m;
+	lsu_tlu_tlb_st_inst_m;
+	tlu_lsu_ldxa_async_data_vld;
+	tlu_lsu_ldxa_tid_w2;
+	tlu_lsu_stxa_ack_tid;
+	tlu_lsu_stxa_ack;
+	ifu_lsu_ldxa_data_vld_w2;
+	ifu_lsu_ldxa_tid_w2;
+	lsu_tlbop_force_swo;
+	lsu_ifu_asi_load;
+	ifu_lsu_asi_ack;
+}
+
+port mmu_async_fairness_port {
+	clk;
+	tlb_ld_inst0;
+	tlb_ld_inst1;
+	tlb_ld_inst2;
+	tlb_ld_inst3;
+	tlb_st_inst0;
+	tlb_st_inst1;
+	tlb_st_inst2;
+	tlb_st_inst3;
+	tlb_access_en0_g;
+	tlb_access_en1_g;
+	tlb_access_en2_g;
+	tlb_access_en3_g;
+	tlb_access_rst0;
+	tlb_access_rst1;
+	tlb_access_rst2;
+	tlb_access_rst3;
+}
+
+
+////////////////////////
+// bindings
+///////////////////////
+
+. sub coreBindings {
+.	my($core_num) = @_;
+.	my $c	      = $core_num;
+
+bind mmu_clk_port  mmu_clk_bind_sample_C${c} {
+  clk              mmu_coverage_ifc.clk;
+  cmp_diag_done    mmu_coverage_ifc.cmp_diag_done;
+}
+
+bind mmu_sync_asi_port mmu_sync_asi_bind_sample_C${c}
+{
+    mmu_sync_asi_state	{
+			    mmu_coverage_ifc.C${c}_dmmu_ps1_ptr_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_ps0_ptr_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_ctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_direct_ptr_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_nzctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_nzctxt_ps0_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_nzctxt_ps1_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_sfsr_wr_en_l,
+			    mmu_coverage_ifc.C${c}_dmmu_sync_far_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_sync_fsr_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_tag_target_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_tag_access_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_zctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_zctxt_ps0_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_dmmu_zctxt_ps1_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_immu_64k_ptr_en_m,
+			    mmu_coverage_ifc.C${c}_immu_8k_ptr_en_m,
+			    mmu_coverage_ifc.C${c}_immu_ctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_immu_nzctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_immu_nzctxt_ps0_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_immu_nzctxt_ps1_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_immu_sfsr_wr_en_l,
+			    mmu_coverage_ifc.C${c}_immu_sync_fsr_en_m,
+			    mmu_coverage_ifc.C${c}_immu_tag_access_en_m,
+			    mmu_coverage_ifc.C${c}_immu_tag_target_en_m,
+			    mmu_coverage_ifc.C${c}_immu_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_immu_zctxt_cfg_en_m,
+			    mmu_coverage_ifc.C${c}_immu_zctxt_ps0_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_immu_zctxt_ps1_tsb_en_m,
+			    mmu_coverage_ifc.C${c}_tlb_access_en_l
+			};
+}
+
+bind mmu_slow_asi_and_traps_port  mmu_slow_asi_and_traps_bind_sample_C${c} {
+    mmu_iside_slow_asi_and_traps_state {
+			    mmu_coverage_ifc.C${c}_ifu_tlu_immu_miss_m,
+			    mmu_coverage_ifc.C${c}_lsu_tlu_dmmu_miss_g,
+			    mmu_coverage_ifc.C${c}_lsu_tlu_daccess_excptn_g,
+			    mmu_coverage_ifc.C${c}_tlu_lsu_int_ld_ill_va_w2,
+			    mmu_coverage_ifc.C${c}_immu_va_oor_brnchetc_m,
+			    mmu_coverage_ifc.C${c}_exu_tlu_va_oor_jl_ret_m,
+			    mmu_coverage_ifc.C${c}_exu_tlu_va_oor_m,
+			    mmu_coverage_ifc.C${c}_va_oor_inst_acc_excp_g,
+			    mmu_coverage_ifc.C${c}_dmmu_va_oor_g,
+			    mmu_coverage_ifc.C${c}_va_oor_data_acc_excp_g, 
+			    mmu_coverage_ifc.C${c}_lsu_tlu_wtchpt_trp_g, 
+			    mmu_coverage_ifc.C${c}_lsu_tlu_misalign_addr_ldst_atm_m,
+			    mmu_coverage_ifc.C${c}_tlu_mmu_sync_data_excp_g, 
+			    mmu_coverage_ifc.C${c}_ifu_tlu_flsh_inst_e,
+			    mmu_coverage_ifc.C${c}_idemap_by_page,
+			    mmu_coverage_ifc.C${c}_idemap_by_ctxt,
+			    mmu_coverage_ifc.C${c}_tlu_itlb_dmp_all_g,
+			    mmu_coverage_ifc.C${c}_immu_inv_all_g,
+			    mmu_coverage_ifc.C${c}_immu_data_access_rd_en,
+			    mmu_coverage_ifc.C${c}_immu_data_access_wr_en,
+			    mmu_coverage_ifc.C${c}_immu_data_in_wr_en
+                        };
+    mmu_dside_slow_asi_and_traps_state {
+			    mmu_coverage_ifc.C${c}_ifu_tlu_immu_miss_m,
+			    mmu_coverage_ifc.C${c}_lsu_tlu_dmmu_miss_g,
+			    mmu_coverage_ifc.C${c}_lsu_tlu_daccess_excptn_g,
+			    mmu_coverage_ifc.C${c}_tlu_lsu_int_ld_ill_va_w2,
+			    mmu_coverage_ifc.C${c}_immu_va_oor_brnchetc_m,
+			    mmu_coverage_ifc.C${c}_exu_tlu_va_oor_jl_ret_m,
+			    mmu_coverage_ifc.C${c}_exu_tlu_va_oor_m,
+			    mmu_coverage_ifc.C${c}_va_oor_inst_acc_excp_g,
+			    mmu_coverage_ifc.C${c}_dmmu_va_oor_g,
+			    mmu_coverage_ifc.C${c}_va_oor_data_acc_excp_g, 
+			    mmu_coverage_ifc.C${c}_lsu_tlu_wtchpt_trp_g, 
+			    mmu_coverage_ifc.C${c}_lsu_tlu_misalign_addr_ldst_atm_m,
+			    mmu_coverage_ifc.C${c}_tlu_mmu_sync_data_excp_g, 
+			    mmu_coverage_ifc.C${c}_ifu_tlu_flsh_inst_e,
+			    mmu_coverage_ifc.C${c}_ddemap_by_page,
+			    mmu_coverage_ifc.C${c}_ddemap_by_ctxt,
+			    mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_all_g,
+			    mmu_coverage_ifc.C${c}_dmmu_inv_all_g,
+			    mmu_coverage_ifc.C${c}_dmmu_data_access_rd_en,
+			    mmu_coverage_ifc.C${c}_dmmu_data_access_wr_en,
+			    mmu_coverage_ifc.C${c}_dmmu_data_in_wr_en
+                        };
+    
+}
+
+bind mmu_tlb_ops_port  mmu_tlb_ops_bind_sample_C${c} {
+    mmu_dtlb_ops_state	{
+			    mmu_coverage_ifc.C${c}_dtlb_entry_vld,
+			    mmu_coverage_ifc.C${c}_ddemap_by_page,
+			    mmu_coverage_ifc.C${c}_ddemap_by_ctxt,
+			    mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_all_g,
+			    mmu_coverage_ifc.C${c}_dmmu_inv_all_g,
+			    mmu_coverage_ifc.C${c}_dmmu_data_access_rd_en,
+			    mmu_coverage_ifc.C${c}_dmmu_data_access_wr_en,
+			    mmu_coverage_ifc.C${c}_dmmu_data_in_wr_en
+			};
+    mmu_itlb_ops_state	{
+			    mmu_coverage_ifc.C${c}_itlb_entry_vld,
+			    mmu_coverage_ifc.C${c}_idemap_by_page,
+			    mmu_coverage_ifc.C${c}_idemap_by_ctxt,
+			    mmu_coverage_ifc.C${c}_tlu_itlb_dmp_all_g,
+			    mmu_coverage_ifc.C${c}_immu_inv_all_g,
+			    mmu_coverage_ifc.C${c}_immu_data_access_rd_en,
+			    mmu_coverage_ifc.C${c}_immu_data_access_wr_en,
+			    mmu_coverage_ifc.C${c}_immu_data_in_wr_en
+			};
+}
+
+bind mmu_faults_port  mmu_faults_bind_sample_C${c} {
+    mmu_faults_state	{
+			mmu_coverage_ifc.C${c}_ifu_tlu_immu_miss_m,
+			mmu_coverage_ifc.C${c}_lsu_tlu_dmmu_miss_g,
+			mmu_coverage_ifc.C${c}_lsu_tlu_daccess_excptn_g,
+			mmu_coverage_ifc.C${c}_tlu_lsu_int_ld_ill_va_w2,
+			mmu_coverage_ifc.C${c}_immu_va_oor_brnchetc_m,
+			mmu_coverage_ifc.C${c}_exu_tlu_va_oor_jl_ret_m,
+			mmu_coverage_ifc.C${c}_exu_tlu_va_oor_m,
+			mmu_coverage_ifc.C${c}_va_oor_inst_acc_excp_g,
+			mmu_coverage_ifc.C${c}_dmmu_va_oor_g,
+			mmu_coverage_ifc.C${c}_va_oor_data_acc_excp_g, 
+			mmu_coverage_ifc.C${c}_lsu_tlu_wtchpt_trp_g, 
+			mmu_coverage_ifc.C${c}_lsu_tlu_misalign_addr_ldst_atm_m,
+			mmu_coverage_ifc.C${c}_tlu_mmu_sync_data_excp_g, 
+			mmu_coverage_ifc.C${c}_ifu_tlu_flsh_inst_e,
+			mmu_coverage_ifc.C${c}_dmmu_sync_illgl_va_m,
+			mmu_coverage_ifc.C${c}_immu_sync_illgl_va_m,
+			mmu_coverage_ifc.C${c}_dmmu_async_illgl_va_g,
+			mmu_coverage_ifc.C${c}_immu_async_illgl_va_g,
+			mmu_coverage_ifc.C${c}_demap_sctxt,
+			mmu_coverage_ifc.C${c}_demap_resrv
+			};
+}
+
+//bind mmu_faults_and_err_inj_port  mmu_faults_and_err_inj_bind_sample_C${c} {
+//
+//    mmu_faults_and_err_inj_state        {
+//                        mmu_coverage_ifc.C${c}_ifu_tlu_immu_miss_m,
+//                        mmu_coverage_ifc.C${c}_lsu_tlu_dmmu_miss_g,
+//                        mmu_coverage_ifc.C${c}_lsu_tlu_daccess_excptn_g,
+//                        mmu_coverage_ifc.C${c}_tlu_lsu_int_ld_ill_va_w2,
+//                        mmu_coverage_ifc.C${c}_immu_va_oor_brnchetc_m,
+//                        mmu_coverage_ifc.C${c}_exu_tlu_va_oor_jl_ret_m,
+//                        mmu_coverage_ifc.C${c}_exu_tlu_va_oor_m,
+//                        mmu_coverage_ifc.C${c}_va_oor_inst_acc_excp_g,
+//                        mmu_coverage_ifc.C${c}_dmmu_va_oor_g,
+//                        mmu_coverage_ifc.C${c}_va_oor_data_acc_excp_g,
+//                        mmu_coverage_ifc.C${c}_lsu_tlu_wtchpt_trp_g,
+//                        mmu_coverage_ifc.C${c}_lsu_tlu_misalign_addr_ldst_atm_m,
+//                        mmu_coverage_ifc.C${c}_tlu_mmu_sync_data_excp_g,
+//                        mmu_coverage_ifc.C${c}_ifu_tlu_flsh_inst_e,
+//                        mmu_coverage_ifc.C${c}_ifu_lsu_error_inj[3],
+//                        mmu_coverage_ifc.C${c}_ifu_lsu_error_inj[2],
+//                        mmu_coverage_ifc.C${c}_ifu_lsu_error_inj[1],
+//                        mmu_coverage_ifc.C${c}_ifu_lsu_error_inj[0]
+//                        };
+//}
+
+bind tte_attributes_port mmu_tte_attributes_bind_sample_C${c} {
+    dmmu_tte_attributes_state	{
+				mmu_coverage_ifc.C${c}_tlb_rd_tte_data,
+				mmu_coverage_ifc.C${c}_lsu_tlu_tlb_st_inst_m,
+				mmu_coverage_ifc.C${c}_lsu_tlu_tlb_ld_inst_m
+				};
+}
+
+bind dmmu_pid_port dmmu_pid_bind_sample_C${c} {
+   dmmu_pid_state		{
+				mmu_coverage_ifc.C${c}_dtlb_rd_tte_tag
+				};
+}
+
+bind immu_pid_port immu_pid_bind_sample_C${c} {
+   immu_pid_state		{
+				mmu_coverage_ifc.C${c}_itlb_rd_tte_tag
+				};
+}
+
+bind tlb_addr_match_port mmu_dtlb_addr_match_bind_sample_C${c} {
+    clk					mmu_coverage_ifc.clk;
+    tlb_wr_tte_tag			mmu_coverage_ifc.C${c}_dtlb_wr_tte_tag;
+    tlb_wr_tte_data			mmu_coverage_ifc.C${c}_dtlb_wr_tte_data;
+    tlb_wr_vld				mmu_coverage_ifc.C${c}_dtlb_wr_vld;
+    tlb_cam_data			mmu_coverage_ifc.C${c}_dtlb_cam_data;
+    tlb_cam_data_vld			mmu_coverage_ifc.C${c}_dtlb_cam_data_vld;
+    tlb_cam_hit				mmu_coverage_ifc.C${c}_dtlb_cam_hit;
+    tlb_bypass				mmu_coverage_ifc.C${c}_dtlb_bypass;
+}
+
+bind tlb_addr_match_port mmu_itlb_addr_match_bind_sample_C${c} {
+    clk					mmu_coverage_ifc.clk;
+    tlb_wr_tte_tag			mmu_coverage_ifc.C${c}_itlb_wr_tte_tag;
+    tlb_wr_tte_data			mmu_coverage_ifc.C${c}_itlb_wr_tte_data;
+    tlb_wr_vld				mmu_coverage_ifc.C${c}_itlb_wr_vld;
+    tlb_cam_data			mmu_coverage_ifc.C${c}_itlb_cam_data;
+    tlb_cam_data_vld			mmu_coverage_ifc.C${c}_itlb_cam_data_vld;
+    tlb_cam_hit				mmu_coverage_ifc.C${c}_itlb_cam_hit;
+    tlb_bypass				mmu_coverage_ifc.C${c}_itlb_bypass;
+}
+
+bind tlb_demap_port mmu_tlb_demap_bind_sample_C${c} {
+    clk					mmu_coverage_ifc.clk;
+    lsu_tlu_tlb_asi_state_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_asi_state_m;
+    lsu_tlu_tlb_st_inst_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_st_inst_m;
+    lsu_tlu_tlb_dmp_va_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_dmp_va_m;
+    lsu_tlu_tlb_ldst_va_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_ldst_va_m;
+    lsu_dtlb_cam_pid_e			mmu_coverage_ifc.C${c}_lsu_dtlb_cam_pid_e;
+    tlu_idtlb_dmp_key_g			mmu_coverage_ifc.C${c}_tlu_idtlb_dmp_key_g;
+    tlu_dtlb_dmp_vld_g			mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_vld_g;
+    tlu_itlb_dmp_vld_g			mmu_coverage_ifc.C${c}_tlu_itlb_dmp_vld_g;
+    itlb_cam_data			mmu_coverage_ifc.C${c}_itlb_cam_data;
+    dtlb_cam_data			mmu_coverage_ifc.C${c}_dtlb_cam_data;
+    itlb_cam_data_vld			mmu_coverage_ifc.C${c}_itlb_cam_data_vld;
+    dtlb_cam_data_vld			mmu_coverage_ifc.C${c}_dtlb_cam_data_vld;
+    itlb_bypass				mmu_coverage_ifc.C${c}_itlb_bypass;
+    dtlb_bypass				mmu_coverage_ifc.C${c}_dtlb_bypass;
+    itlb_demap				mmu_coverage_ifc.C${c}_itlb_demap;
+    dtlb_demap				mmu_coverage_ifc.C${c}_dtlb_demap;
+}
+
+bind mmu_err_inj_port mmu_err_inj_bind_sample_C${c} {
+    mmu_err_inj_state	{
+			    mmu_coverage_ifc.C${c}_ifu_lsu_error_inj
+			};
+}
+
+bind err_inj_addr_match_port mmu_itlb_err_inj_addr_match_bind_sample_C${c} {
+    clk				mmu_coverage_ifc.clk;
+    tlb_wr_tte_tag		mmu_coverage_ifc.C${c}_itlb_wr_tte_tag;
+    tlb_wr_vld			mmu_coverage_ifc.C${c}_itlb_wr_vld;
+    tlb_cam_data		mmu_coverage_ifc.C${c}_itlb_cam_data;
+    tlb_cam_data_vld		mmu_coverage_ifc.C${c}_itlb_cam_data_vld;
+    tlb_cam_hit			mmu_coverage_ifc.C${c}_itlb_cam_hit;
+    tlb_bypass			mmu_coverage_ifc.C${c}_itlb_bypass;
+    ifu_lsu_error_inj		mmu_coverage_ifc.C${c}_ifu_lsu_error_inj;
+}
+
+bind err_inj_addr_match_port mmu_dtlb_err_inj_addr_match_bind_sample_C${c} {
+    clk				mmu_coverage_ifc.clk;
+    tlb_wr_tte_tag		mmu_coverage_ifc.C${c}_dtlb_wr_tte_tag;
+    tlb_wr_vld			mmu_coverage_ifc.C${c}_dtlb_wr_vld;
+    tlb_cam_data		mmu_coverage_ifc.C${c}_dtlb_cam_data;
+    tlb_cam_data_vld		mmu_coverage_ifc.C${c}_dtlb_cam_data_vld;
+    tlb_cam_hit			mmu_coverage_ifc.C${c}_dtlb_cam_hit;
+    tlb_bypass			mmu_coverage_ifc.C${c}_dtlb_bypass;
+    ifu_lsu_error_inj		mmu_coverage_ifc.C${c}_ifu_lsu_error_inj;
+}
+
+bind dtlb_bypass_port mmu_dtlb_bypass_bind_sample_C${c} {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    dmmu_tlb_bypass_state_${t}	{
+				    mmu_coverage_ifc.C${c}_dtlb_bypass,
+				    mmu_coverage_ifc.C${c}_pstate_priv[$t],
+				    mmu_coverage_ifc.C${c}_hstate_priv[$t]
+				};
+.}
+}
+
+bind itlb_bypass_port mmu_itlb_bypass_bind_sample_C${c} {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    immu_tlb_bypass_state_${t}	{
+				    mmu_coverage_ifc.C${c}_itlb_bypass,
+				    mmu_coverage_ifc.C${c}_pstate_priv[$t],
+				    mmu_coverage_ifc.C${c}_hstate_priv[$t]
+				};
+.}
+}
+
+bind asi_accesses_port mmu_asi_accesses_bind_sample_C${c} {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    mmu_asi_accesses_state_T${t} {
+				       mmu_coverage_ifc.C${c}_T${t}_lsu_asi_reg
+					};
+.}
+}
+
+bind atomics_port mmu_atomics_bind_sample_C${c} {
+    mmu_atomics_state		{
+					mmu_coverage_ifc.C${c}_ifu_lsu_casa_e,
+					mmu_coverage_ifc.C${c}_ifu_lsu_ldstub_e,
+					mmu_coverage_ifc.C${c}_ifu_lsu_swap_e
+				};
+}
+
+bind pstate_port mmu_pstate_bind_sample_C${c} {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    pstate_state_${t}	{
+					mmu_coverage_ifc.C${c}_pstate${t}
+			};
+.}
+}
+
+bind trap_level_port mmu_trap_level_bind_sample_C${c} {
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    trap_level_state_${t}	{
+					mmu_coverage_ifc.C${c}_trap_level${t}
+			};
+.}
+}
+
+bind mmu_normal_ops_port mmu_normal_ops_bind_sample_C${c} {
+     mmu_normal_ops_state	{
+					mmu_coverage_ifc.C${c}_ifu_lsu_ld_inst_e,
+					mmu_coverage_ifc.C${c}_ifu_lsu_st_inst_e
+				};
+}
+
+bind mmu_cam_hit_assr_port mmu_dtlb_cam_hit_assr_bind_sample_C${c} {
+    clk				mmu_coverage_ifc.clk;
+    cam_hit			mmu_coverage_ifc.C${c}_itlb_cam_hit_array;
+    bypass			mmu_coverage_ifc.C${c}_dtlb_bypass;
+    demap_by_page		mmu_coverage_ifc.C${c}_ddemap_by_page;
+    demap_by_ctxt		mmu_coverage_ifc.C${c}_ddemap_by_ctxt;
+    tlb_dmp_all			mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_all_g;
+    tlb_demap_auto		mmu_coverage_ifc.C${c}_dtlb_demap_auto;
+    mmu_inv_all			mmu_coverage_ifc.C${c}_dmmu_inv_all_g;
+    tlb_wr_vld			mmu_coverage_ifc.C${c}_dtlb_wr_vld;
+    tlb_rd_data_vld		mmu_coverage_ifc.C${c}_dtlb_rd_data_vld;
+    tlb_rd_tag_vld		mmu_coverage_ifc.C${c}_dtlb_rd_tag_vld;
+    rw_index			mmu_coverage_ifc.C${c}_dtlb_rw_index;
+    rw_index_vld		mmu_coverage_ifc.C${c}_dtlb_rw_index_vld;
+    demap_key			mmu_coverage_ifc.C${c}_ddemap_key;
+    demap_key_vld		mmu_coverage_ifc.C${c}_ddemap_key_vld;
+}
+ 
+bind mmu_cam_hit_assr_port mmu_itlb_cam_hit_assr_bind_sample_C${c} {
+    clk				mmu_coverage_ifc.clk;
+    cam_hit			mmu_coverage_ifc.C${c}_itlb_cam_hit_array;
+    bypass			mmu_coverage_ifc.C${c}_itlb_bypass;
+    demap_by_page		mmu_coverage_ifc.C${c}_idemap_by_page;
+    demap_by_ctxt		mmu_coverage_ifc.C${c}_idemap_by_ctxt;
+    tlb_dmp_all			mmu_coverage_ifc.C${c}_tlu_itlb_dmp_all_g;
+    tlb_demap_auto		mmu_coverage_ifc.C${c}_itlb_demap_auto;
+    mmu_inv_all			mmu_coverage_ifc.C${c}_immu_inv_all_g;
+    tlb_wr_vld			mmu_coverage_ifc.C${c}_itlb_wr_vld;
+    tlb_rd_data_vld		mmu_coverage_ifc.C${c}_itlb_rd_data_vld;
+    tlb_rd_tag_vld		mmu_coverage_ifc.C${c}_itlb_rd_tag_vld;
+    rw_index			mmu_coverage_ifc.C${c}_itlb_rw_index;
+    rw_index_vld		mmu_coverage_ifc.C${c}_itlb_rw_index_vld;
+    demap_key			mmu_coverage_ifc.C${c}_idemap_key;
+    demap_key_vld		mmu_coverage_ifc.C${c}_idemap_key_vld;
+}
+ 
+bind mmu_isfsr_fields_port mmu_isfsr_fields_bind_sample_C${c} {
+    mmu_isfsr_state {
+			mmu_coverage_ifc.C${c}_isfsr0
+                    };
+}
+ 
+bind mmu_dsfsr_fields_port mmu_dsfsr_fields_bind_sample_C${c} {
+    mmu_dsfsr_state {
+			mmu_coverage_ifc.C${c}_dsfsr0
+                    };
+}
+
+bind mmu_mra_fld_en_port mmu_mra_fld_en_bind_sample_C${c} {
+        clk			    mmu_coverage_ifc.clk;
+	mra_wr_ptr		    mmu_coverage_ifc.C${c}_mra_wr_ptr;
+	mra_rd_ptr		    mmu_coverage_ifc.C${c}_mra_rd_ptr;
+	mra_wr_vld		    mmu_coverage_ifc.C${c}_mra_wr_vld;
+	mra_rd_vld		    mmu_coverage_ifc.C${c}_mra_rd_vld;
+	mra_field1_en		    mmu_coverage_ifc.C${c}_mra_field1_en;
+	mra_field2_en		    mmu_coverage_ifc.C${c}_mra_field2_en;
+	mra_field3_en		    mmu_coverage_ifc.C${c}_mra_field3_en;
+	mra_field4_en		    mmu_coverage_ifc.C${c}_mra_field4_en;
+        lsu_exu_ldxa_m              mmu_coverage_ifc.C${c}_lsu_exu_ldxa_m;
+        ifu_tlu_inst_vld_m          mmu_coverage_ifc.C${c}_ifu_tlu_inst_vld_m;
+        flush_w_inst_vld_m          mmu_coverage_ifc.C${c}_flush_w_inst_vld_m;
+}
+ 
+bind mmu_mra_rd_wr_cntn_port mmu_mra_rd_wr_cntn_sample_C${c}
+{
+    mra_rd_wr_cntn_state{
+	mmu_coverage_ifc.C${c}_lsu_exu_ldxa_m,
+	mmu_coverage_ifc.C${c}_mra_rd_vld,
+	mmu_coverage_ifc.C${c}_mra_wr_vld
+    };
+}
+
+bind mmu_async_monitor_port mmu_async_monitor_bind_sample_C${c} {
+	clk				mmu_coverage_ifc.clk;
+	reset				mmu_coverage_ifc.C${c}_grst_l;
+	lsu_tlu_tlb_access_tid_m	mmu_coverage_ifc.C${c}_lsu_tlu_tlb_access_tid_m;
+	lsu_tlu_tlb_ld_inst_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_ld_inst_m;
+	lsu_tlu_tlb_st_inst_m		mmu_coverage_ifc.C${c}_lsu_tlu_tlb_st_inst_m;
+	tlu_lsu_ldxa_async_data_vld	mmu_coverage_ifc.C${c}_tlu_lsu_ldxa_async_data_vld;
+	tlu_lsu_ldxa_tid_w2		mmu_coverage_ifc.C${c}_tlu_lsu_ldxa_tid_w2;
+	tlu_lsu_stxa_ack_tid		mmu_coverage_ifc.C${c}_tlu_lsu_stxa_ack_tid;
+	tlu_lsu_stxa_ack		mmu_coverage_ifc.C${c}_tlu_lsu_stxa_ack;
+	ifu_lsu_ldxa_data_vld_w2	mmu_coverage_ifc.C${c}_ifu_lsu_ldxa_data_vld_w2;
+	ifu_lsu_ldxa_tid_w2		mmu_coverage_ifc.C${c}_ifu_lsu_ldxa_tid_w2;
+	lsu_tlbop_force_swo		mmu_coverage_ifc.C${c}_lsu_tlbop_force_swo;
+	ifu_lsu_asi_ack			mmu_coverage_ifc.C${c}_ifu_lsu_asi_ack;
+	lsu_ifu_asi_load		mmu_coverage_ifc.C${c}_lsu_ifu_asi_load;
+}
+
+bind mmu_async_fairness_port mmu_async_fairness_bind_sample_C${c} {
+	clk			mmu_coverage_ifc.clk;
+	tlb_ld_inst0		mmu_coverage_ifc.C${c}_tlb_ld_inst0;
+	tlb_ld_inst1		mmu_coverage_ifc.C${c}_tlb_ld_inst1;
+	tlb_ld_inst2		mmu_coverage_ifc.C${c}_tlb_ld_inst2;
+	tlb_ld_inst3		mmu_coverage_ifc.C${c}_tlb_ld_inst3;
+	tlb_st_inst0		mmu_coverage_ifc.C${c}_tlb_st_inst0;
+	tlb_st_inst1		mmu_coverage_ifc.C${c}_tlb_st_inst1;
+	tlb_st_inst2		mmu_coverage_ifc.C${c}_tlb_st_inst2;
+	tlb_st_inst3		mmu_coverage_ifc.C${c}_tlb_st_inst3;
+	tlb_access_en0_g	mmu_coverage_ifc.C${c}_tlb_access_en0_g;
+	tlb_access_en1_g	mmu_coverage_ifc.C${c}_tlb_access_en1_g;
+	tlb_access_en2_g	mmu_coverage_ifc.C${c}_tlb_access_en2_g;
+	tlb_access_en3_g	mmu_coverage_ifc.C${c}_tlb_access_en3_g;
+	tlb_access_rst0		mmu_coverage_ifc.C${c}_tlb_access_rst0;
+	tlb_access_rst1		mmu_coverage_ifc.C${c}_tlb_access_rst1;
+	tlb_access_rst2		mmu_coverage_ifc.C${c}_tlb_access_rst2;
+	tlb_access_rst3		mmu_coverage_ifc.C${c}_tlb_access_rst3;
+}
+
+.
+. } # coreBindings
+.
+
+// ***********************************************************
+// Declare bindings for each core
+// ***********************************************************
+
+. foreach $core (@CORE_STR) {
+.	&coreBindings( $core );
+. }
+
+#endif

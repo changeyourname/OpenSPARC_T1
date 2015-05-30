@@ -1,0 +1,63 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mared_a_vs_n_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+#include "spu_monitors.vrh"
+
+#ifndef INC__TMP_spu_mared_a_vs_n_COV_VRH
+#define INC__TMP_spu_mared_a_vs_n_COV_VRH
+
+/*
+ * Order of the signals in mared_a_vs_n_state:
+ * spu_mared_done_set, m_gt_n_q, m_lt_n_q
+ */
+
+#define MARED_A_VS_N_AEQN_STATE     4'b100
+#define MARED_A_VS_N_ALTN_STATE     4'b101
+#define MARED_A_VS_N_AGTN_STATE     4'b110
+
+/*
+ * spu_mared_a_vs_n_cov
+ *
+ * This coverage object checks that we have done the modular
+ * reduction algorithm R = A mod N for the cases A == N,
+ * A < N, and A > N. This is done by checking the sticky bits
+ * m_gt_n_q and m_lt_n_q at the end of the operation when
+ * spu_mared_done_set is asserted. Note that in the rtl,
+ * A is called M.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+
+sample spu_mared_a_vs_n_sample_bind_C${c}.\$mared_a_vs_n_state {
+  // Declare states to be covered 
+  state s_MARED_A_VS_N_AEQN_STATE (MARED_A_VS_N_AEQN_STATE);
+  state s_MARED_A_VS_N_ALTN_STATE (MARED_A_VS_N_ALTN_STATE);
+  state s_MARED_A_VS_N_AGTN_STATE (MARED_A_VS_N_AGTN_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

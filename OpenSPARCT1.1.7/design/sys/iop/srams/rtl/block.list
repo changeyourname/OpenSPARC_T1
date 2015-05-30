@@ -1,0 +1,17 @@
+srams/bw_r_dcd
+srams/bw_r_frf
+srams/bw_r_icd
+srams/bw_r_idct
+srams/bw_r_irf
+srams/bw_r_irf_register
+srams/bw_r_rf16x160
+srams/bw_r_rf16x32
+srams/bw_rf_16x65
+srams/bw_rf_16x81
+srams/bw_r_rf32x152b
+srams/bw_r_rf32x80
+srams/bw_r_scm
+srams/bw_r_tlb
+sparc
+fpu
+ccx

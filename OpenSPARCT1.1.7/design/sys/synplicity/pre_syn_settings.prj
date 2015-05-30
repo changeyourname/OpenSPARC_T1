@@ -1,0 +1,62 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: pre_syn_settings.prj
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+#-- Synplicity, Inc.
+
+# Define top module
+set_option -top_module $topmodule
+
+#simulation options
+set_option -write_verilog 1
+set_option -write_vhdl 0
+
+#implementation attributes
+#set_option -vlog_std v95
+set_option -compiler_compatible 0
+
+#compilation/mapping options
+set_option -default_enum_encoding default
+set_option -symbolic_fsm_compiler 1
+set_option -resource_sharing 1
+set_option -use_fsm_explorer 0
+
+#map options
+set_option -frequency 100.00
+set_option -fanout_limit 100
+set_option -disable_io_insertion 1
+set_option -pipe 0
+set_option -retiming 0
+
+#simulation options
+set_option -write_verilog 1
+set_option -write_vhdl 0
+
+#automatic place and route (vendor) options
+#set_option -write_apr_constraint 1
+
+#set result format/file last
+project -result_file "$rev/$topmodule.edf"
+
+#implementation attributes
+#set_option -vlog_std v95
+set_option -compiler_compatible 0
+impl -active $rev
+
+

@@ -1,0 +1,64 @@
+
+This directory contains source code for generating stand-alone
+programs that run on top of hypervisor in T1 FPGA system.
+
+
+libos            - minimalist Operating System needed to run stand-alone programs
+
+include          - header files
+
+libc             - minimalist printf implementation which accepts %s %x %lx %llx
+
+utils            - file2array       
+			Converts a binary file into an array of integers that 
+			could be included in a C program.
+
+                 - elf_to_mem_image
+			Generates the memory image of a process corresponding to
+			a static 64-bit ELF executable program.
+
+mapfile          - linker mapfile to specify the start of program virtual address.
+
+hello_world      - stand-alone program which prints "Hello World" to the console
+
+l2_emul_test     - stand-alone program which tests L2 emulation code running on
+		   microblaze processor in T1 FPGA system
+
+
+TOOLS INFORMATION:
+-----------------
+
+The Makefile uses two environment variables SUN_STUDIO and QTOOLS .
+
+The C compiler and the SPARC Q assembler are picked up as following.
+
+$(SUN_STUDIO)/bin/cc
+$(QTOOLS)/bin/qas
+
+The SPARC Q assembler is normally available in hypervisor source package.
+
+
+MAKE INFORMATION:
+----------------
+
+"make" in this directory creates the memory image files corresponding to the
+stand-alone programs.
+
+"make install" in this directory, if necessary, creates the memory image files 
+corresponding to the stand-alone programs and copies them to ../bin/ directory.
+
+"make clean" in this directory removes all intermediate files
+
+"make clobber" in this directory removes all intermediate files and also removes
+the executables and memory image files. Files in install directory "../bin" are
+NOT removed.
+
+
+
+PROGRAM EXECUTION ENVIRONMENT:
+-----------------------------
+
+The stand-alone program's main() function is called at trap level TL = 0 and run in
+privileged mode. LSU_CONTROL_REG.DM and LSU_CONTROL_REG.IM are not set/enabled and 
+TLB misses are handled by the hypervisor trap handlers.
+

@@ -1,0 +1,714 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_check.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        mmu_checkers.vr
+//  Description:        Tasks for 
+//			1. checking MRA field enable ctl
+//			and make sure there's no rd/wr contention
+//			2. make sure there are no multiple cam hits
+//                      
+//
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+// sys = CMP, cores = 1
+
+#ifndef __MY_MMU_CHECKS__
+#define __MY_MMU_CHECKS__
+
+#include <vera_defines.vrh>
+#include "mmu_ports_binds.vrh"
+#include "mmu.if.vrh"
+//#include "mmu_cov_tasks.vrh"
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Class definitions
+////////////////////////////
+
+class MMU_CHECKS
+{
+
+	mmu_cam_hit_assr_port itlb_cam_hit_assr_bind[$cores];
+	mmu_cam_hit_assr_port dtlb_cam_hit_assr_bind[$cores];
+	mmu_mra_fld_en_port mmu_mra_fld_en_bind[$cores];
+	mmu_async_monitor_port mmu_async_monitor_bind[$cores];
+	tlb_demap_port	mmu_tlb_demap_bind[$cores];
+	tlb_addr_match_port	mmu_itlb_addr_match_bind[$cores];
+	tlb_addr_match_port	mmu_dtlb_addr_match_bind[$cores];
+	mmu_async_fairness_port	mmu_async_fairness_bind[$cores];
+
+//	task new (mmu_mra_fld_en_port mmu_mra_fld_en_bind, mmu_cam_hit_assr_port tlb_cam_hit_assr_bind);
+	task new ();
+
+        task find_rd_wr_contention ();
+        task check_mra_field_enables ();
+	task find_one_hot_violation();
+        task check_async_ops(integer time_out);
+	task check_tlb_operation();
+	task find_mutex(bit [6:0] insig, string name);
+	task async_op_fairness_check();
+
+	task start();
+	task my_exit();
+}
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Definitions of methods of class MMU_TLB_ADDR_MATCH
+////////////////////////////
+
+task MMU_CHECKS:: new()
+{
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+        this.mmu_mra_fld_en_bind[$i] = mmu_mra_fld_en_bind_sample_C$i;
+        this.itlb_cam_hit_assr_bind[$i] = mmu_itlb_cam_hit_assr_bind_sample_C$i;
+        this.dtlb_cam_hit_assr_bind[$i] = mmu_dtlb_cam_hit_assr_bind_sample_C$i;
+        this.mmu_async_monitor_bind[$i] = mmu_async_monitor_bind_sample_C$i;
+        this.mmu_tlb_demap_bind[$i] = mmu_tlb_demap_bind_sample_C$i;
+        this.mmu_itlb_addr_match_bind[$i] = mmu_itlb_addr_match_bind_sample_C$i;
+        this.mmu_dtlb_addr_match_bind[$i] = mmu_dtlb_addr_match_bind_sample_C$i;
+        this.mmu_async_fairness_bind[$i] = mmu_async_fairness_bind_sample_C$i;
+.}
+
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: my_exit()
+{
+     repeat(10) @ ( posedge  this.mmu_async_monitor_bind[0].\$clk );
+     exit(0);
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: async_op_fairness_check()
+{
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Make sure no thread gets suppressed due to too much activity in lower order threads
+    // The way it works:
+    //  * It is ok for a thr to get usurped by a lower order thr once as it is how the priority works
+    //    but if a lower order thr gets serviced twice before a higher order thr gets serviced it is
+    //    a problem
+    //
+    //  * Count the nu of times this happens for individual threads
+    //
+    //  * Make sure the completion is signalled on a legal thread i.e no thread mis matches
+    //
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+    bit spc${i}_0inque,spc${i}_1inque,spc${i}_2inque,spc${i}_3inque;
+    bit spc${i}_0srvd,spc${i}_1srvd,spc${i}_2srvd,spc${i}_3srvd;
+    bit spc${i}_1ovrtkn_by_0,spc${i}_2ovrtkn_by_1,spc${i}_2ovrtkn_by_0,spc${i}_3ovrtkn_by_2,spc${i}_3ovrtkn_by_1,spc${i}_3ovrtkn_by_0;
+    bit spc${i}_en0,spc${i}_en1,spc${i}_en2,spc${i}_en3;
+    bit spc${i}_start_check;
+
+.}
+
+    bit summary_done;
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+    integer spc${i}_1_usurped_by_0=0;
+    integer spc${i}_2_usurped_by_1=0;
+    integer spc${i}_2_usurped_by_0=0;
+    integer spc${i}_3_usurped_by_0=0;
+    integer spc${i}_3_usurped_by_1=0;
+    integer spc${i}_3_usurped_by_2=0;
+
+    integer spc${i}_th0_svc_time = 0 ;
+    integer spc${i}_th1_svc_time = 0 ;
+    integer spc${i}_th2_svc_time = 0 ;
+    integer spc${i}_th3_svc_time = 0 ;
+
+    integer spc${i}_reset = 0;
+
+.}
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+    spc${i}_0inque = 1'b0;
+    spc${i}_1inque = 1'b0;
+    spc${i}_2inque = 1'b0;
+    spc${i}_3inque = 1'b0;
+ 
+.}
+
+    summary_done = 1'b0;
+
+    if (get_plus_arg (CHECK, "mmu_async_fairness_off")){
+    }else{
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+fork{
+
+  while(1){
+
+	@ ( posedge this.mmu_async_fairness_bind[${i}].\$clk );
+
+    spc${i}_reset = spc${i}_reset + 1;
+
+    if(spc${i}_reset > 1000){
+
+. for ( $k =0; $k <= 3; $k++) {
+        spc${i}_${k}srvd = 1'b0;
+.}
+
+. for ( $k =0; $k <= 3; $k++) {
+
+	if( (this.mmu_async_fairness_bind[$i].\$tlb_ld_inst${k} || this.mmu_async_fairness_bind[$i].\$tlb_st_inst${k}) &&
+	  spc${i}_en${k} ) {
+            spc${i}_start_check = 1'b1;
+	    spc${i}_${k}inque = 1'b1;
+//            printf("%d: found tlb_access_en${k}_g\n", get_time(LO));
+//            printf("%d: spc${i}_${k}inque is 1\n", get_time(LO));
+	}
+
+	spc${i}_en${k} = this.mmu_async_fairness_bind[$i].\$tlb_access_en${k}_g;
+
+//      Keep count on how long every op takes
+        if(spc${i}_${k}inque){
+             spc${i}_th${k}_svc_time = spc${i}_th${k}_svc_time + 1;
+        }
+
+        if(this.mmu_async_fairness_bind[$i].\$tlb_access_rst${k} && spc${i}_start_check ){
+	     if(spc${i}_${k}inque != 1'b1 ){
+		 printf("%d: MMU_ASYNC_FAIRNESS_CHECK ERROR: SPC${i} found complete signal tlb_access_rst${k} but it was not in queue!\n",
+		      get_time(LO));
+	     }else{
+//		 printf("%d: MMU_ASYNC_FAIRNESS_CHECK SPC${i} found tlb_access_rst${k}\n",
+//		    get_time(LO));
+	     }
+	     spc${i}_${k}inque = 1'b0;
+	     spc${i}_${k}srvd = 1'b1;
+
+//	    printf("%d: MMU_ASYNC_FAIRNESS_CHECK SPC${i} TLB op on thread $k is serviced in %d cycles \n", 
+//                  get_time(LO) , spc${i}_th${k}_svc_time );
+            spc${i}_th${k}_svc_time = 0;
+
+. if ($k != 0){
+// clear the overtaken bits
+
+. for ($x = $k - 1; $x >= 0; $x-- ){
+             spc${i}_${k}ovrtkn_by_${x} = 1'b0;
+             
+.}
+.}
+	}
+
+.}
+
+. for ( $k=0; $k <= 2; $k++ ){
+        if(spc${i}_${k}srvd == 1'b1){
+
+
+. for ( $j = $k + 1; $j <= 3; $j++){
+
+	    if(spc${i}_${j}inque){
+		 if( spc${i}_${j}ovrtkn_by_${k} ){
+                     spc${i}_${j}_usurped_by_${k} = spc${i}_${j}_usurped_by_${k} + 1;
+		     printf("%d: Info MMU_ASYNC_FAIRNESS_CHECK ERROR: SPC${i} TLB op on thread $j is usurped by thread $k %d times \n", 
+                        get_time(LO), spc${i}_${j}_usurped_by_${k} );
+	         }else{
+		     spc${i}_${j}ovrtkn_by_${k} = 1'b1;
+		     printf("%d: MMU_ASYNC_FAIRNESS_CHECK SPC${i} TLB op on thread $j is overtaken by thread $k \n", 
+                        get_time(LO) );
+	         }
+            }
+.}
+	}
+.}
+
+    } // spc${i}_reset > 100
+
+
+    if(mmu_coverage_ifc.cmp_diag_done && ~summary_done){
+          printf("%d: MMU_ASYNC_FAIRNESS_CHECK SUMMARY\n", get_time(LO) );
+          printf("%d: --------------------------------\n", get_time(LO) );
+. for ( $k=0; $k <= 2; $k++ ){
+. for ( $j = $k + 1; $j <= 3; $j++){
+          printf("%d: SPC${i} TLB op on thread $j is usurped by thread $k %d times\n", get_time(LO), spc${i}_${j}_usurped_by_${k});
+.}
+.}
+         summary_done = 1'b1;
+    }
+      } // while (1)
+
+} join none // main fork
+
+.}
+       
+
+  } // if not turned off
+
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: check_tlb_operation()
+{
+
+fork{
+
+while(1){
+
+    //
+    // Make sure all ops are mutex - cam,bypass,wr,rd,demap,reset.
+    // ITLB 
+    //
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+   @(posedge this.mmu_itlb_addr_match_bind[${i}].\$clk);
+
+    find_mutex({ this.mmu_itlb_addr_match_bind[${i}].\$tlb_cam_hit,
+	       this.mmu_itlb_addr_match_bind[${i}].\$tlb_bypass,
+	       this.mmu_itlb_addr_match_bind[${i}].\$tlb_wr_vld,
+	       (this.itlb_cam_hit_assr_bind[${i}].\$tlb_rd_data_vld || this.itlb_cam_hit_assr_bind[${i}].\$tlb_rd_tag_vld),
+	       this.mmu_tlb_demap_bind[$i].\$itlb_demap,
+	       this.itlb_cam_hit_assr_bind[${i}].\$mmu_inv_all,1'b0},
+	       "IMMU");
+    // DTLB
+		
+    find_mutex({ this.mmu_dtlb_addr_match_bind[${i}].\$tlb_cam_hit,
+	       this.mmu_dtlb_addr_match_bind[${i}].\$tlb_bypass,
+	       this.mmu_dtlb_addr_match_bind[${i}].\$tlb_wr_vld,
+	       ( this.dtlb_cam_hit_assr_bind[${i}].\$tlb_rd_data_vld || this.dtlb_cam_hit_assr_bind[${i}].\$tlb_rd_tag_vld),
+	       this.mmu_tlb_demap_bind[$i].\$dtlb_demap,
+	       this.dtlb_cam_hit_assr_bind[${i}].\$mmu_inv_all,1'b0},
+	       "DMMU");
+    // RW index should not be X when valid
+
+    if(itlb_cam_hit_assr_bind[$i].\$rw_index_vld){
+//        printf("%d: rw_index_vld is on\n", get_time(LO));
+	if(^itlb_cam_hit_assr_bind[$i].\$rw_index === 1'bx){
+	    printf("%d: MMU_TLB_OPS_CHK: ERROR: RW index of ITLB has x's when valid \n ", get_time(LO));
+	}
+    }
+		
+    if(dtlb_cam_hit_assr_bind[$i].\$rw_index_vld){
+        printf("%d: dtlb rw_index_vld is on\n", get_time(LO));
+	if(^(dtlb_cam_hit_assr_bind[$i].\$rw_index) === 1'bx){
+	    printf("%d: MMU_TLB_OPS_CHK: ERROR: RW index of DTLB has x's when valid \n ", get_time(LO));
+	}
+    }
+
+    // wr tag/data should not be x if used.
+
+    if(mmu_itlb_addr_match_bind[$i].\$tlb_wr_vld){
+        printf("%d: itlb tlb_wr_vld is on\n", get_time(LO));
+       if(^(mmu_itlb_addr_match_bind[$i].\$tlb_wr_tte_data) === 1'bx ){
+	   printf("%d: MMU_TLB_OPS_CHK: ERROR: tlb_wr_tte_data of ITLB has x's when valid \n ", get_time(LO));
+       }
+    }
+
+    if(mmu_dtlb_addr_match_bind[$i].\$tlb_wr_vld){
+        printf("%d: dtlb tlb_wr_vld is on\n", get_time(LO));
+       if(^(mmu_dtlb_addr_match_bind[$i].\$tlb_wr_tte_data) === 1'bx ){
+	   printf("%d: MMU_TLB_OPS_CHK: ERROR: tlb_wr_tte_data of dtlb has x's when valid \n ", get_time(LO));
+       }
+    }
+
+    // demap key should not be x if used
+    if(itlb_cam_hit_assr_bind[$i].\$demap_key_vld){
+       if(^(itlb_cam_hit_assr_bind[$i].\$demap_key) === 1'bx){
+	   printf("%d: MMU_TLB_OPS_CHK: ERROR: demap_key of ITLB  has x's when valid \n ", get_time(LO));
+       }
+    }
+		
+    if(itlb_cam_hit_assr_bind[$i].\$demap_key_vld){
+       if(^(itlb_cam_hit_assr_bind[$i].\$demap_key) === 1'bx){
+	   printf("%d: MMU_TLB_OPS_CHK: ERROR: demap_key of dtlb  has x's when valid \n ", get_time(LO));
+       }
+    }
+
+    // demap auto and demap all mutex
+
+    if(itlb_cam_hit_assr_bind[$i].\$tlb_demap_auto && itlb_cam_hit_assr_bind[$i].\$tlb_dmp_all){
+       printf("%d: MMU_TLB_OPS_CHK: ERROR: ITLB demap_auto and demap_all not mutex\n", get_time(LO));
+    }
+
+    if(dtlb_cam_hit_assr_bind[$i].\$tlb_demap_auto && dtlb_cam_hit_assr_bind[$i].\$tlb_dmp_all){
+       printf("%d: MMU_TLB_OPS_CHK: ERROR: dtlb demap_auto and demap_all not mutex\n", get_time(LO));
+    }
+
+.}
+
+}
+
+} join none
+    
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: find_mutex(bit [6:0] insig, string name)
+{
+if(     (insig[0] && (insig[1] || insig[2] || insig[3] || insig[4] || insig[5] || insig[6] ))  || 
+        (insig[1] && (insig[0] || insig[2] || insig[3] || insig[4] || insig[5] || insig[6] ))  || 
+        (insig[2] && (insig[0] || insig[1] || insig[3] || insig[4] || insig[5] || insig[6] ))  || 
+        (insig[3] && (insig[0] || insig[1] || insig[2] || insig[4] || insig[5] || insig[6] ))  || 
+        (insig[4] && (insig[0] || insig[1] || insig[2] || insig[3] || insig[5] || insig[6] ))  || 
+        (insig[5] && (insig[0] || insig[1] || insig[2] || insig[3] || insig[4] || insig[6] ))  || 
+        (insig[6] && (insig[0] || insig[1] || insig[2] || insig[3] || insig[4] || insig[5] ))
+ ){
+       printf("%d: MMU_TLB_OPS_CHK: ERROR: The %s operations are not mutex\n", get_time(LO), name);
+       if(insig[0]){ printf("%d: cam_hit present\n"); }
+       if(insig[1]){ printf("%d: bypass present\n"); }
+       if(insig[2]){ printf("%d: tlb wr present\n"); }
+       if(insig[3]){ printf("%d: tlb data rd present\n"); }
+       if(insig[4]){ printf("%d: tlb tag rd present\n"); }
+       if(insig[5]){ printf("%d: TLB demap present\n"); }
+       if(insig[6]){ printf("%d: inv_all present\n"); }
+//       my_exit();
+  }
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: check_async_ops(integer time_out)
+{
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+   integer spc${i}_mbox_count;
+   integer spc${i}_asyncMBOX;
+   bit [2:0] spc${i}_message;
+   bit spc${i}_in_progress;
+   integer spc${i}_wait_time;
+   bit [1:0] spc${i}_cmplt_thid;
+   bit spc${i}_lsu_ifu_asi_load_d1;
+   bit spc${i}_lsu_ifu_asi_load_rise;
+
+.}
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+
+   spc${i}_asyncMBOX = alloc(MAILBOX,0,1);
+
+   spc${i}_in_progress = 1'b0;
+   spc${i}_wait_time = 0;
+   spc${i}_lsu_ifu_asi_load_d1 = 1'b0;
+   spc${i}_lsu_ifu_asi_load_rise = 1'b0;
+
+.}
+
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+   fork{
+
+      @ (posedge this.mmu_async_monitor_bind[${i}].\$reset);
+
+       while(1){
+	   @ ( posedge this.mmu_async_monitor_bind[${i}].\$clk );
+
+        ///////////////////////////////////////////
+        // Added after bug 6193
+        // Just look for this signal. If on, it means we have had back to back bubbles on 
+        // the pipe
+        ///////////////////////////////////////////
+	 
+	   if(this.mmu_async_monitor_bind[${i}].\$lsu_tlbop_force_swo){
+//	       printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} lsu_tlbop_force_swo is set.\n",get_time(LO));
+	       if ( get_plus_arg (CHECK, "lsu_tlbop_force_swo_check") ){
+	          my_exit() ;
+	       }
+	   }
+
+           if(spc${i}_in_progress){
+	       spc${i}_wait_time = spc${i}_wait_time +1;
+           }
+	   if(spc${i}_wait_time > time_out){
+	       printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} It's been over %d cycles since the last async TLB op. Timing out ...\n",get_time(LO),
+                   time_out);
+//	       my_exit();
+	   }
+
+
+	   if( this.mmu_async_monitor_bind[${i}].\$lsu_ifu_asi_load ){
+	       if(spc${i}_lsu_ifu_asi_load_d1 == 1'b0){
+		    spc${i}_lsu_ifu_asi_load_rise = 1'b1;
+	       }
+	   }
+
+	   if(this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_ld_inst_m  || 
+		 this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_st_inst_m ||
+		 spc${i}_lsu_ifu_asi_load_rise ){
+	       if(spc${i}_in_progress){
+		   printf("%d: MMU_ASYNC_OP_CHK: ERROR: There's a new async op before the previous one has finished spc $i th %b\n",
+		       get_time(LO), this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_access_tid_m);
+//                   my_exit();
+	       }else{
+		   spc${i}_in_progress = 1'b1;
+		   spc${i}_wait_time = 0;
+	       }
+	   }
+
+
+	   spc${i}_lsu_ifu_asi_load_d1 = this.mmu_async_monitor_bind[${i}].\$lsu_ifu_asi_load ;
+
+	   if(spc${i}_lsu_ifu_asi_load_rise && (this.mmu_async_monitor_bind[${i}].\$lsu_ifu_asi_load == 1'b0)){
+	       spc${i}_lsu_ifu_asi_load_rise = 1'b0;
+	   }
+
+	   if(this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_ld_inst_m ||
+		spc${i}_lsu_ifu_asi_load_rise ){
+//		  printf("%d: MMU_ASYNC_OP_CHK: found lsu_tlu_tlb_ld_inst_m on thr %b \n", get_time(LO),
+//			   this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_access_tid_m);
+	       mailbox_put(spc${i}_asyncMBOX, {this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_access_tid_m,1'b0}); 
+	       // 1'b0 for ld and 1'b1 for st
+
+	   }
+
+	   if(this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_st_inst_m){
+//	       printf("%d: MMU_ASYNC_OP_CHK: found lsu_tlu_tlb_st_inst_m lsu_tlu_tlb_access_tid_m %b \n", get_time(LO),
+ //                   this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_access_tid_m);
+	       mailbox_put(spc${i}_asyncMBOX, {this.mmu_async_monitor_bind[${i}].\$lsu_tlu_tlb_access_tid_m,1'b1}); 
+	       // 1'b0 for ld and 1'b1 for st
+
+	   }
+
+           if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_async_data_vld || 
+               this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_data_vld_w2 || 
+               this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack ){
+		  if(spc${i}_in_progress == 1'b0){
+		      printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} Spurious TLB ack signal ",get_time(LO));
+		      if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_async_data_vld){printf("tlu_lsu_ldxa_async_data_vld\n");}
+		      if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack){printf( "tlu_lsu_stxa_ack\n");}
+		      if(this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_data_vld_w2){printf( "ifu_lsu_ldxa_data_vld_w2\n");}
+		      if(this.mmu_async_monitor_bind[${i}].\$ifu_lsu_asi_ack){printf( "ifu_lsu_asi_ack\n");}
+//		      my_exit();
+		  }else{
+	              spc${i}_in_progress = 1'b0;
+		      spc${i}_wait_time = 0;
+		  }
+
+	           spc${i}_mbox_count = mailbox_get(NO_WAIT,spc${i}_asyncMBOX,spc${i}_message); 
+	           if(spc${i}_mbox_count > 1){
+		       printf("%d: MMU_ASYNC_OP_CHK: ERROR: Mbox count %d is unexpected spc $i th %b\n",
+		           get_time(LO), spc${i}_mbox_count, spc${i}_message[2:1]);
+		       printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} There are more than one async operations outstanding\n", get_time(LO));
+//                       my_exit();
+		       while(spc${i}_mbox_count >= 1){
+                          spc${i}_mbox_count = mailbox_get(NO_WAIT,spc${i}_asyncMBOX,spc${i}_message);
+		          printf("%d: MMU_ASYNC_OP_CHK: mbox_count = %d message = %b\n", get_time(LO),spc${i}_mbox_count,spc${i}_message);
+                       }
+	           }
+
+
+	       if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_async_data_vld ||
+		    this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_data_vld_w2 ){
+//		      printf("%d: MMU_ASYNC_OP_CHK: found tlu_lsu_ldxa_async_data_vld/ifu_lsu_ldxa_data_vld_w2 \n", get_time(LO));
+//		      printf("%d: MMU_ASYNC_OP_CHK: tlu_lsu_ldxa_tid_w2 %b ifu_lsu_ldxa_tid_w2 %b \n", get_time(LO), 
+//                           this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_tid_w2, this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_tid_w2);
+	           if(spc${i}_message[0]){
+		       printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} A lsu_tlu_tlb_st_inst_m was seen but ack for lsu_tlu_tlb_ld_inst_m is issued\n",
+		           get_time(LO));
+//		       my_exit();
+	           }
+
+	           if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_async_data_vld ){
+		       spc${i}_cmplt_thid = this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_tid_w2;
+                       printf("%d: MMU_ASYNC_OP_CHK: found tlu_lsu_ldxa_async_data_vld tlu_lsu_ldxa_tid_w2 %b\n", get_time(LO),
+                           this.mmu_async_monitor_bind[${i}].\$tlu_lsu_ldxa_tid_w2);
+	           }else{
+		       spc${i}_cmplt_thid = this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_tid_w2;
+                       printf("%d: MMU_ASYNC_OP_CHK: found ifu_lsu_ldxa_data_vld_w2 ifu_lsu_ldxa_tid_w2 %b\n", get_time(LO),
+                           this.mmu_async_monitor_bind[${i}].\$ifu_lsu_ldxa_tid_w2);
+	           }
+
+	           if(spc${i}_cmplt_thid != spc${i}_message[2:1]){
+		          printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} Thrid of async op cmpletion not matching the inital one\n", get_time(LO));
+		          if(spc${i}_message[0]){
+		              printf("%d: MMU_ASYNC_OP_CHK: Type of operation: lsu_tlu_tlb_st_inst_m\n", get_time(LO));
+		          }else{
+		              printf("%d: MMU_ASYNC_OP_CHK: Type of operation: lsu_tlu_tlb_ld_inst_m\n", get_time(LO));
+		          }
+		          printf("%d: MMU_ASYNC_OP_CHK: Initiating thr id %b Completing thrid %b\n", 
+		              get_time(LO),spc${i}_message[2:1], spc${i}_cmplt_thid);
+//		          my_exit();
+	           }else{
+		           printf("%d: MMU_ASYNC_OP_CHK SPC${i} operation lsu_tlu_tlb_ld_inst_m completed ok on thr %b\n",
+		               get_time(LO), spc${i}_cmplt_thid);
+	           }
+               }
+
+
+	   if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack){
+		  printf("%d: MMU_ASYNC_OP_CHK: found tlu_lsu_stxa_ack \n", get_time(LO));
+
+	       if(spc${i}_message[0] == 1'b0){
+		   printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} A lsu_tlu_tlb_st_inst_m was seen but ack for lsu_tlu_tlb_ld_inst_m is issued\n",
+		       get_time(LO));
+//		   my_exit();
+	       }
+	       if(this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack_tid != spc${i}_message[2:1]){
+		  printf("%d: MMU_ASYNC_OP_CHK: ERROR: SPC${i} Thrid of async op cmpletion not matching the inital one\n", get_time(LO));
+		  if(spc${i}_message[0]){
+		      printf("%d: MMU_ASYNC_OP_CHK: Type of operation: lsu_tlu_tlb_st_inst_m\n", get_time(LO));
+		  }else{
+		      printf("%d: MMU_ASYNC_OP_CHK: Type of operation: lsu_tlu_tlb_ld_inst_m\n", get_time(LO));
+		  }
+		  printf("%d: MMU_ASYNC_OP_CHK: Initiating thr id %b Completing thrid %b\n", 
+		      get_time(LO),spc${i}_message[2:1], this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack_tid);
+//		  my_exit();
+	       }else{
+		  printf("%d: MMU_ASYNC_OP_CHK SPC${i} operation lsu_tlu_tlb_st_inst_m completed ok on thr %b\n",
+		      get_time(LO), this.mmu_async_monitor_bind[${i}].\$tlu_lsu_stxa_ack_tid);
+	       }
+
+	   }
+       }
+    }
+   } join none
+.}
+
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: find_rd_wr_contention()
+{
+   fork{
+       while(1) {
+. for ( $i = 0; $i < $cores; $i++ ) {
+	   @ ( posedge this.mmu_mra_fld_en_bind[${i}].\$clk );
+//           printf("%d: mmu_mra_fld_en_bind working ok\n", get_time(LO));
+           if(this.mmu_mra_fld_en_bind[${i}].\$ifu_tlu_inst_vld_m.1 && (!this.mmu_mra_fld_en_bind[${i}].\$flush_w_inst_vld_m.1) ){
+	       if(this.mmu_mra_fld_en_bind[${i}].\$mra_wr_vld && this.mmu_mra_fld_en_bind[${i}].\$mra_rd_vld.3 ){
+		   printf("%d: MRA_CHECK: spc${i} There's a read/write contention in the MRA. rd ptr = %h wr ptr %h\n",
+		       get_time(LO), this.mmu_mra_fld_en_bind[${i}].\$mra_rd_ptr,this.mmu_mra_fld_en_bind[${i}].\$mra_wr_ptr);
+	           if(this.mmu_mra_fld_en_bind[${i}].\$mra_wr_ptr == this.mmu_mra_fld_en_bind[${i}].\$mra_rd_ptr){
+		       printf("%d: ERROR: MRA_CHECK: spc${i} There's a read/write contention in the MRA. mra_wr/rd ptr = %h\n",
+		           get_time(LO), this.mmu_mra_fld_en_bind[${i}].\$mra_wr_ptr);
+		       repeat(10) @ ( posedge this.mmu_mra_fld_en_bind[${i}].\$clk );
+		       exit(0);
+	           }
+	       }
+	   }
+.}
+       }
+   } join none
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: check_mra_field_enables()
+{
+   fork{
+       while(1) {
+. for ( $i = 0; $i < $cores; $i++ ) {
+	   @ ( posedge this.mmu_mra_fld_en_bind[${i}].\$clk );
+	   if(( this.mmu_mra_fld_en_bind[${i}].\$mra_wr_vld || this.mmu_mra_fld_en_bind[${i}].\$mra_rd_vld) &&
+              ( this.mmu_mra_fld_en_bind[${i}].\$lsu_exu_ldxa_m )){
+		       printf("%d: MRA_FIELD_EN_CHK: spc${i} there's an MRA op\n",
+		           get_time(LO));
+	       if(this.mmu_mra_fld_en_bind[${i}].\$mra_field1_en){
+		   if(this.mmu_mra_fld_en_bind[${i}].\$mra_field2_en || this.mmu_mra_fld_en_bind[${i}].\$mra_field3_en
+			  || this.mmu_mra_fld_en_bind[${i}].\$mra_field4_en){
+		       printf("%d: ERROR: MRA_FIELD_EN_CHK: spc${i} Another field enabled while tag access update \n",
+		           get_time(LO));
+		       
+		       repeat(10) @ ( posedge this.mmu_mra_fld_en_bind[${i}].\$clk );
+		       exit(0);
+		   }
+	       }
+	   }
+.}
+       }
+   } join none
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_CHECKS:: find_one_hot_violation()
+{
+ 
+    integer i;
+    bit found_hit;
+
+fork{
+   while(1) {
+
+. for ( $i = 0; $i < $cores; $i++ ) {
+	@ ( posedge this.itlb_cam_hit_assr_bind[${i}].\$clk );
+	found_hit = 0;
+	for(i=0; i<= 63; i++){
+	    if(this.itlb_cam_hit_assr_bind[${i}].\$cam_hit[i] == 1'b1){
+	       if(found_hit == 1'b1){
+		   printf("%d: Vera ASSERTION ERROR: itlb cam hit is not one hot\n",
+		       get_time(LO));
+                   repeat(10) @ ( posedge this.itlb_cam_hit_assr_bind[${i}].\$clk );
+		   exit(0);
+	       }else{
+		   found_hit = 1'b1;
+                   printf("%d: found cam hit \n", get_time(LO));
+	       }
+	    }
+	}
+	@ ( posedge this.dtlb_cam_hit_assr_bind[${i}].\$clk );
+	found_hit = 0;
+	for(i=0; i<= 63; i++){
+	    if(this.dtlb_cam_hit_assr_bind[${i}].\$cam_hit[i] == 1'b1){
+	       if(found_hit == 1'b1){
+		   printf("%d: Vera ASSERTION ERROR: dtlb cam hit is not one hot\n",
+		       get_time(LO));
+                   repeat(10) @ ( posedge this.dtlb_cam_hit_assr_bind[${i}].\$clk );
+		   exit(0);
+	       }else{
+		   found_hit = 1'b1;
+	       }
+	    }
+	}
+.}
+
+     } // while(1)
+} join none // main fork
+
+}
+//-------------------------
+
+task MMU_CHECKS:: start()
+{
+   if (get_plus_arg (CHECK, "turn_mmu_checks_off")){
+   }else{
+      printf("%d: MMU checks are initiated\n", get_time(LO));
+      this.find_one_hot_violation();
+      this.check_mra_field_enables();
+      this.find_rd_wr_contention();
+      this.check_async_ops(100);
+      this.check_tlb_operation();
+      if (get_plus_arg (CHECK, "mmu_coverage") ||
+        get_plus_arg (CHECK, "coverage_on")) {
+          this.async_op_fairness_check();
+      }
+   }  
+}
+
+#endif

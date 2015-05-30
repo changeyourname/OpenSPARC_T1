@@ -1,0 +1,43 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_mbarrst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// membar/flush reset
+//***********************************************************************
+
+  wildcard state s_MBARRST_ST00	( 12'b1xxx_0xxx_0xxx );
+  wildcard state s_MBARRST_ST01	( 12'b1xxx_0xxx_1xxx );
+  wildcard state s_MBARRST_ST02	( 12'b1xxx_1xxx_0xxx );
+  wildcard state s_MBARRST_ST03	( 12'b1xxx_1xxx_1xxx );
+
+  wildcard state s_MBARRST_ST04	( 12'bx1xx_x0xx_x0xx );
+  wildcard state s_MBARRST_ST05	( 12'bx1xx_x0xx_x1xx );	
+  wildcard state s_MBARRST_ST06	( 12'bx1xx_x1xx_x0xx );
+  wildcard state s_MBARRST_ST07	( 12'bx1xx_x1xx_x1xx );
+
+  wildcard state s_MBARRST_ST08	( 12'bxx1x_xx0x_xx0x );
+  wildcard state s_MBARRST_ST09	( 12'bxx1x_xx0x_xx1x );
+  wildcard state s_MBARRST_ST10	( 12'bxx1x_xx1x_xx0x );
+  wildcard state s_MBARRST_ST11	( 12'bxx1x_xx1x_xx1x );
+
+  wildcard state s_MBARRST_ST12	( 12'bxxx1_xxx0_xxx0 );
+  wildcard state s_MBARRST_ST13	( 12'bxxx1_xxx0_xxx1 );
+  wildcard state s_MBARRST_ST14	( 12'bxxx1_xxx1_xxx0 );
+  wildcard state s_MBARRST_ST15	( 12'bxxx1_xxx1_xxx1 );

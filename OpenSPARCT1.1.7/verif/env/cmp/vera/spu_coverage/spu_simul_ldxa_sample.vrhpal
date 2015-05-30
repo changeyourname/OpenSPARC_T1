@@ -1,0 +1,80 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_simul_ldxa_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_simul_ldxa_COV_VRH
+#define INC__TMP_spu_simul_ldxa_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in simul_ldxa_sample_state:
+ * ldxaOutstanding[3:0]
+ */
+
+/*
+ * spu_simul_ldxa_cov
+ *
+ * This coverage object checks that we have exercised all possible
+ * cases of outstanding ldxas for the 4 threads. The bits 3..0 of
+ * ldxaOutstanding correspond to an outstanding ldxa for that thread
+ * number. ldxaOutstanding is driven by SPU_LDSTXA_MON.
+ *
+ * It is only possible to get three ldxas outstanding at a time.
+ * Actually, it's two normal ldxas plus the blocking ldxa from the
+ * MA Sync register. I don't think it's possible to get 4 outstanding,
+ * so I've marked it here as a bad state so we'll know if it ever
+ * occurs.
+ *
+ * I have seen ldxas back to back 1 cycle apart, but I've never
+ * seen three outstanding for non-blocking ldxas. Not sure if
+ * it's really possible or not.
+ */
+
+#endif
+
+sample ldstxa_sample_monitor_C${c}.simul_ldxa_sample_state {
+  // All cases of a single thread outstanding
+  state s_SIMUL_LDXA_0001 (4'h1);
+  state s_SIMUL_LDXA_0010 (4'h2);
+  state s_SIMUL_LDXA_0100 (4'h4);
+  state s_SIMUL_LDXA_1000 (4'h8);
+  // All cases of 2 threads outstanding
+  state s_SIMUL_LDXA_0011 (4'h3);
+  state s_SIMUL_LDXA_0101 (4'h5);
+  state s_SIMUL_LDXA_0110 (4'h6);
+  state s_SIMUL_LDXA_1001 (4'h9);
+  state s_SIMUL_LDXA_1010 (4'ha);
+  state s_SIMUL_LDXA_1100 (4'hc);
+  // All cases of 3 threads outstanding
+  state s_SIMUL_LDXA_0111 (4'h7);
+  state s_SIMUL_LDXA_1011 (4'hb);
+  state s_SIMUL_LDXA_1101 (4'hd);
+  state s_SIMUL_LDXA_1110 (4'he);
+  // 4 threads outstanding
+  state s_SIMUL_LDXA_1111 (4'hf);
+
+  // Declare bad states
+
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

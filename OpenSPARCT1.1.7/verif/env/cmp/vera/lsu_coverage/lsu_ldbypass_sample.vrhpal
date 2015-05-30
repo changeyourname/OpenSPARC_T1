@@ -1,0 +1,61 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldbypass_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+  wildcard state s_LDRAW_STATE00  (18'b1_0_00000000_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE01  (18'b1_0_xxxxxxx1_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE02  (18'b1_0_xxxxxx1x_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE03  (18'b1_0_xxxxx1xx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE04  (18'b1_0_xxxx1xxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE05  (18'b1_0_xxx1xxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE06  (18'b1_0_xx1xxxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE07  (18'b1_0_x1xxxxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE08  (18'b1_0_1xxxxxxx_xxxxxxxx); 
+
+  wildcard state s_LDRAW_STATE09  (18'b1_1_00000000_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE10  (18'b1_1_xxxxxxx1_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE11  (18'b1_1_xxxxxx1x_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE12  (18'b1_1_xxxxx1xx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE13  (18'b1_1_xxxx1xxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE14  (18'b1_1_xxx1xxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE15  (18'b1_1_xx1xxxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE16  (18'b1_1_x1xxxxxx_xxxxxxxx); 
+  wildcard state s_LDRAW_STATE17  (18'b1_1_1xxxxxxx_xxxxxxxx); 
+
+  wildcard state s_LDRAW_STATE18  (18'b1_0_xxxxxxxx_00000000); 
+  wildcard state s_LDRAW_STATE19  (18'b1_0_xxxxxxxx_xxxxxxx1); 
+  wildcard state s_LDRAW_STATE20  (18'b1_0_xxxxxxxx_xxxxxx1x); 
+  wildcard state s_LDRAW_STATE21  (18'b1_0_xxxxxxxx_xxxxx1xx); 
+  wildcard state s_LDRAW_STATE22  (18'b1_0_xxxxxxxx_xxxx1xxx); 
+  wildcard state s_LDRAW_STATE23  (18'b1_0_xxxxxxxx_xxx1xxxx); 
+  wildcard state s_LDRAW_STATE24  (18'b1_0_xxxxxxxx_xx1xxxxx); 
+  wildcard state s_LDRAW_STATE25  (18'b1_0_xxxxxxxx_x1xxxxxx); 
+  wildcard state s_LDRAW_STATE26  (18'b1_0_xxxxxxxx_1xxxxxxx); 
+
+  wildcard state s_LDRAW_STATE27  (18'b1_1_xxxxxxxx_00000000); 
+  wildcard state s_LDRAW_STATE28  (18'b1_1_xxxxxxxx_xxxxxxx1); 
+  wildcard state s_LDRAW_STATE29  (18'b1_1_xxxxxxxx_xxxxxx1x); 
+  wildcard state s_LDRAW_STATE30  (18'b1_1_xxxxxxxx_xxxxx1xx); 
+  wildcard state s_LDRAW_STATE31  (18'b1_1_xxxxxxxx_xxxx1xxx); 
+  wildcard state s_LDRAW_STATE32  (18'b1_1_xxxxxxxx_xxx1xxxx); 
+  wildcard state s_LDRAW_STATE33  (18'b1_1_xxxxxxxx_xx1xxxxx); 
+  wildcard state s_LDRAW_STATE34  (18'b1_1_xxxxxxxx_x1xxxxxx); 
+  wildcard state s_LDRAW_STATE35  (18'b1_1_xxxxxxxx_1xxxxxxx); 
+
+  bad_state s_not_s_LDRAW_STATE36 (18'b1_1_00000000_00000000); 

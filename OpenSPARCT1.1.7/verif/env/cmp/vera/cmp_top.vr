@@ -1,0 +1,901 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmp_top.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#define DUMMY_RQ     5'h1f
+#define BSC_RQ       15
+#include <vera_defines.vrh>
+#include <VeraListProgram.vrh>
+#include <ListMacros.vrh>
+#include "cmp_defines.vri"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+
+#ifndef NO_CHECKERS
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#endif
+
+#ifdef JBI_CKR
+#include "jbi_ckr.if.vrh"
+#include "jbi_ckr_ports_binds.vrh"
+#include "jbus_snoop.vrh"
+#include "sc_snoop.vrh"
+#include "iob_jbi_snoop.vrh"
+#include "ssi_snoop.vrh"
+#include "jbi_debug_snoop.vrh"
+#include "jbi_checker.vrh"
+#include "jbi_ckr_tasks.vrh"
+#endif
+
+#include "dram.vrh"
+
+#ifdef LSU_COVERAGE
+#include "lsu_coverage.vri"
+#endif
+#ifdef LSUEXT_COVERAGE
+#include "lsu_coverage.vri"
+#endif
+#ifdef SPU_COVERAGE
+#include "spu_coverage.vri"
+#endif
+#ifdef IFU_COVERAGE
+#include "ifu_coverage.vri"
+#endif
+#ifdef MMU_COVERAGE
+#include "mmu_coverage.vri"
+#endif
+#ifdef TLU_COVERAGE
+#include "tlu_coverage.vri"
+#endif
+#ifdef FPU_COVERAGE
+#include "fpu_coverage.vri"
+#endif
+#ifdef FFU_COVERAGE
+#include "ffu_coverage.vri"
+#endif
+#ifdef ERR_COVERAGE
+#include "err_coverage.vri"
+#endif
+#ifdef EXU_COVERAGE
+#include "exu_coverage.vri"
+#endif
+#ifdef TSO_COVERAGE
+#include "tso_coverage.vri"
+#endif
+#ifdef MT_COVERAGE
+#include "mt_coverage.vri"
+#endif
+#ifdef CMPMSS_COVERAGE
+#include "cmpmss_coverage.vri"
+#endif
+#ifdef CORECCX_COVERAGE
+#include "coreccx_coverage.vri"
+#endif
+#ifdef DRAM_COVERAGE
+#include "dram_coverage.vri"
+#endif
+#ifdef IOB_COVERAGE
+#include "iob_coverage.vri"
+#endif
+#ifdef JBI_COVERAGE
+#include "jbi_coverage.vri"
+#endif
+
+
+#include "vera_event.vrh"
+#include "pcxpacket.vrh"
+#include "cpxpacket.vrh"
+#include "pcx_record.vrh"
+#include "cpx_record.vrh"
+#include "cmp_tasks.vrh"
+ExternVeraList(integer)
+#include "bwbfm.vrh"  
+#include "bwsniper.vrh"  
+#include "l2order.vrh"  
+#include "cpxorder.vrh"
+#include "l2jbi.vrh"
+
+#ifndef NO_CHECKERS
+#include "mmu_check.vrh"
+#include "l1_checker.vrh"  
+#include "iob_checker.vrh"  
+#endif
+
+//define hdl task here.
+hdl_task fail(bit [1023:0]     comment)  "cmp_top.monitor.fail";
+// hdl_task i_dump(bit [3:0]      cpu_id)   "cmp_top.monitor.dump_cache.i_dump";
+// hdl_task d_dump(bit [3:0]      cpu_id)   "cmp_top.monitor.dump_cache.d_dump";
+hdl_task check_counter()                 "cmp_top.cmp_mem.check_counter";
+hdl_task action(bit[1023:0]    path,
+                bit[255:0]     val,
+                bit[7:0]       msb,
+                bit[7:0]       lsb,
+                bit[7:0]       type)
+                                         "cmp_top.monitor.trig_event.action";
+
+hdl_task write(bit [63:0]      addr,
+               bit [127:0]     data)     "cmp_top.monitor.trig_event.write";
+hdl_task read(bit [63:0]       addr,
+              bit [127:0]      data)     "cmp_top.monitor.trig_event.read";
+
+#ifdef GATE_SIM
+#else
+hdl_task inj_irf_err_hdl (bit[71:0] err_mask_rs1,
+                          bit[71:0] err_mask_rs2,
+                          bit[71:0] err_mask_rs3,
+                          bit err_inj_dbg) "cmp_top.err_inject.inj_irf_err_hdl";
+hdl_task inj_ic_err_hdl (bit[33:0] err_mask_ir,
+                         bit[33:0] err_mask_nir,
+                         bit[29:0] err_mask_tag,
+                         bit err_inj_dbg) "cmp_top.err_inject.inj_ic_err_hdl";
+hdl_task inj_dc_data_err_hdl (bit[71:0] err_mask_data,
+                              bit err_inj_dbg) "cmp_top.err_inject.inj_dc_data_err_hdl";
+hdl_task inj_dc_tag_err_hdl (bit[29:0] err_mask_tag,
+                             bit err_inj_dbg) "cmp_top.err_inject.inj_dc_tag_err_hdl";
+hdl_task inj_frf_err_hdl (bit[77:0] err_mask_frf_rs1,
+                          bit[77:0] err_mask_frf_rs2_rd,
+                          bit fst,
+                          bit err_inj_dbg) "cmp_top.err_inject.inj_frf_err_hdl";
+hdl_task inj_itlb_data_err_hdl (bit[42:0] err_mask_data,
+                                bit err_inj_dbg) "cmp_top.err_inject.inj_itlb_data_err_hdl";
+hdl_task inj_dtlb_data_err_hdl (bit[47:0] addr,
+                                bit[42:0] err_mask_data,
+                                bit err_inj_dbg) "cmp_top.err_inject.inj_dtlb_data_err_hdl";
+hdl_task inj_ic_tag_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_ic_tag_err_rand_hdl";
+hdl_task inj_ic_data_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_ic_data_err_rand_hdl";        
+hdl_task inj_irf_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_irf_err_rand_hdl";        
+hdl_task inj_frf_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_frf_err_rand_hdl";        
+hdl_task inj_dc_tag_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_dc_tag_err_rand_hdl";        
+hdl_task inj_dc_data_err_rand_hdl (integer loc, integer bit_num) "cmp_top.err_inject.inj_dc_data_err_rand_hdl";
+hdl_task inj_rand_err_dcd_wr_hdl (bit [7:0] bitnum, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_dcd_wr_hdl";
+hdl_task inj_rand_err_dct_wr_hdl (bit [4:0] bitnum, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_dct_wr_hdl";
+hdl_task inj_rand_err_icd_wr_hdl (bit [5:0] bitnum, bit [3:0] err_word, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_icd_wr_hdl";
+hdl_task inj_rand_err_ict_wr_hdl (bit [4:0] bitnum, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_ict_wr_hdl";
+hdl_task inj_rand_err_irf_wr_hdl (bit [6:0] bitnum, bit [1:0] wr_stage, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_irf_wr_hdl";
+hdl_task inj_rand_err_frf_wr_hdl (bit [5:0] bitnum, bit [1:0] reg_index, bit err_inj_dbg) "cmp_top.err_inject.inj_rand_err_frf_wr_hdl";
+
+export  extern task trig_pc_d(bit [2:0]   cpu_id,
+                              bit [63:0]  pc);
+
+// declare external tasks/classes/functions here if necessary
+// extern         task loadMainMemToVera(string mem, bit sht);
+// extern         task io_loadMainMemToVera(string mem);
+extern         task read_vera_tasks(string file, integer kind,
+                                    string lvl,  string  name);
+extern task err_inject ();
+extern task rand_err_inject (integer cycles, integer seed);
+extern task rand_err_inject_on_wr (bit[5:0] err_unit_mask, integer dc_freq,
+                            integer ic_freq, integer irf_freq,
+                            integer frf_freq, integer itlb_freq,
+                            integer dtlb_freq, bit dtlb_pa_err, bit itlb_pa_err,
+                            integer err_seed);
+
+#endif //ifdef GATE_SIM
+
+//define global variable here
+extern  bit        fail_flag, time_flag;
+extern  string     why;
+extern  bit        reset;
+extern  bit [63:0] mainMem[];
+extern  bit        meccMem[];
+extern  bit [63:0] data_section;
+extern  dram_port  dram_bind[4];
+
+MakeVeraList(string)
+MakeVeraList(integer)
+
+////////////////////////////////////////////////////////////////////////////////
+// create bind.
+////////////////////////////////////////////////////////////////////////////////
+
+task create_cpx_binding (var cpx_port cpx_bind[8])
+{
+  cpx_bind[0] = cpx_bind_0 ;
+  cpx_bind[1] = cpx_bind_1 ;
+  cpx_bind[2] = cpx_bind_2 ;
+  cpx_bind[3] = cpx_bind_3 ;
+  cpx_bind[4] = cpx_bind_4 ;
+  cpx_bind[5] = cpx_bind_5 ;
+  cpx_bind[6] = cpx_bind_6 ;
+  cpx_bind[7] = cpx_bind_7 ;
+}
+
+task create_pcx_binding (var pcx_port pcx_bind[8])
+{
+  pcx_bind[0] = pcx_bind_0 ;
+  pcx_bind[1] = pcx_bind_1 ;
+  pcx_bind[2] = pcx_bind_2 ;
+  pcx_bind[3] = pcx_bind_3 ;
+  pcx_bind[4] = pcx_bind_4 ;
+  pcx_bind[5] = pcx_bind_5 ;
+  pcx_bind[6] = pcx_bind_6 ;
+  pcx_bind[7] = pcx_bind_7 ;
+}
+
+task create_dram_binding (var dram_port dram_bind[4])
+{
+  dram_bind [0] = dram_bind_0 ;
+  dram_bind [1] = dram_bind_1 ;
+  dram_bind [2] = dram_bind_2 ;
+  dram_bind [3] = dram_bind_3 ;
+}
+
+task create_ucb_binding (var ucb_port ucb_bind[2])
+{
+  ucb_bind [0] = ucb_bind_0 ;
+  ucb_bind [1] = ucb_bind_1 ;
+}
+
+task create_dimm_binding (var dimm_port dimm_bind[4])
+{
+  dimm_bind [0] = dimm_bind_0 ;
+  dimm_bind [1] = dimm_bind_1 ;
+  dimm_bind [2] = dimm_bind_2 ;
+  dimm_bind [3] = dimm_bind_3 ;
+}
+
+task create_i2c_binding (var i2c_port i2c_bind[2])
+{
+  i2c_bind [0] = i2c_bind_0 ;
+  i2c_bind [1] = i2c_bind_1 ;
+}
+
+//---------------------------------------------------------------------------------------------------
+// main program
+program cmp_top_test
+{ 
+  // define global variables here if necessary
+  bit [63:0]           mainMem[];
+  bit                  meccMem[];
+  bit [63:0]           d_data;
+  dram_port            dram_bind[4];
+  dimm_port            dimm_bind[4];
+  i2c_port             i2c_bind[2];
+  pcx_port             pcx_bind[8];
+  cpx_port             cpx_bind[8];
+  xbar_port            xbar_bind[4];
+  l2_port              l2_bind[4];
+  ucb_port             ucb_bind[2];
+  bit [63:0]           depend_addr;
+  bit [4:0]            depend_inst;
+  bit [1:0]            depend_flag;
+
+  integer              socket,   socket_timeout, client_connection, sas_ret_val, i, cpu_num;
+  bit [1:0]            Qsel[8];
+  bit [63:0]           data_section;
+  string               why;
+  bit                  reset, fail_flag, time_flag;
+  bit [31:0]           thread_status;
+  bit [63:0]           dram_errMax = 64'h00000000ffffffff;
+  bit [63:0]           dram_errCnt[];
+  bit                  coverage_on;
+  event                dram_diag_done;
+  bit                  asm_err_en = 0;
+  bit                  err_inj_dbg = 0;
+  bit                  allow_cons_irf_err = 0;  
+  bit [15:0]           pc_d_cnt[];
+  bit [15:0]           pc_d_cnt_frf[];
+  bit [15:0]           pc_e_cnt[];
+  bit [15:0]           pc_f_cnt[];
+  bit [15:0]           pc_m_cnt[];
+  bit [15:0]           pc_f_cnt_itlb[];
+  bit [15:0]           pc_m_cnt_dtlb[];  
+  bit [47:0]           irferr_data[];
+  bit [47:0]           frferr_data[];
+  bit [13:0]           icderr_data[];
+  bit [4:0]            icterr_data[];
+  bit [6:0]            dcderr_data[];
+  bit [4:0]            dcterr_data[];
+  bit [5:0]            itlb_d_err_data[];
+  bit [5:0]            dtlb_d_err_data[];  
+  integer              rand_err_cycles;
+  integer              rand_err_seed;
+  bit [5:0]            tmp_err_unit_mask;
+  bit [5:0]            err_unit_mask;
+  integer              dc_freq;
+  integer              ic_freq;
+  integer              irf_freq;
+  integer              frf_freq;
+  integer              itlb_freq;
+  integer              dtlb_freq;
+  bit                  dtlb_pa_err;
+  bit                  itlb_pa_err;
+
+#ifdef LSU_COVERAGE
+  lsu_coverage		lsu_coverage_obj;
+#endif
+#ifdef LSUEXT_COVERAGE
+  lsuext_coverage	lsuext_coverage_obj;
+#endif
+#ifdef SPU_COVERAGE
+  spu_coverage		spu_coverage_obj;
+#endif
+#ifdef IFU_COVERAGE
+  ifu_coverage          ifu_coverage_obj;
+#endif
+#ifdef MMU_COVERAGE
+  mmu_coverage          mmu_coverage_obj;
+#endif
+#ifdef TLU_COVERAGE
+  tlu_coverage          tlu_coverage_obj;
+#endif
+#ifdef FPU_COVERAGE
+  fpu_coverage          fpu_coverage_obj;
+#endif
+#ifdef TSO_COVERAGE
+  tso_coverage		tso_coverage_obj;
+#endif
+#ifdef FFU_COVERAGE
+  ffu_coverage		ffu_coverage_obj;
+#endif
+#ifdef ERR_COVERAGE
+  err_coverage		err_coverage_obj;
+#endif
+#ifdef EXU_COVERAGE
+  exu_coverage		exu_coverage_obj;
+#endif
+#ifdef MT_COVERAGE
+  mt_coverage		mt_coverage_obj;
+#endif
+#ifdef CMPMSS_COVERAGE
+  cmpmss_coverage	cmpmss_coverage_obj;
+#endif
+#ifdef CORECCX_COVERAGE
+  coreccx_coverage	coreccx_coverage_obj;
+#endif
+#ifdef DRAM
+#else
+#ifdef DRAM_COVERAGE
+  cmpdram_coverage         cmpdram_coverage_obj;
+#endif 
+#endif 
+#ifdef IOB_COVERAGE
+  iob_coverage	        iob_coverage_obj;
+#endif
+#ifdef JBI_COVERAGE
+  jbi_coverage		jbi_coverage_obj;
+#endif
+
+  bit [PCX_WIDTH-1:0]  local_spc_pcx_data_pa;
+  bit [1:0]            local_spc_pcx_qsel_pa;
+  bit [9:0]            local_spc_pcx_req_pq;
+  bit [CPX_WIDTH-1:0]  local_cpx_spc_data_cx;
+  bit                  local_cpx_spc_data_rdy_cx;
+  bit [9:0]            local_pcx_spc_grant_pa;
+
+  // iob                  iob_inst;
+  BW_BFM               bw_bfm[8];
+  BW_SNIPER            bw_sniper;
+
+#ifndef NO_CHECKERS
+  MMU_CHECKS		mmu_checks;
+  L1_CHECKER           	l1_checker;
+  IOB_CHECKER          	iob_checker;
+#endif
+  
+#ifdef JBI_CKR
+  // Used by JBUS SAT components
+  bit [31:0] simt = 0;            // Current simulation time
+  integer    debug = 0;           // Debug level
+  integer    error_cnt = 0;       // Error Count
+  bit        rand_data = 1;
+
+  // JBI_CHECKER, ports/binds, and snoops
+  jbus_snoop_port    jbus_jbi_binds;
+  sc_snoop_port      sc_snoop_binds[];
+  iob_ucb_snoop_port jbi_iob_snoop_binds;
+  iob_ucb_snoop_port ssi_iob_snoop_binds;
+  iob_mondo_snoop_port jbi_mondo_snoop_binds;
+  ssi_snoop_port     ssi_snoop_binds;
+  jbi_debug_snoop_port     jbi_debug_snoop_binds;
+    
+  JBUS_SNOOP         jbus_snoop;
+  SC_SNOOP           sc_snoop[];
+  IOB_JBI_SNOOP      iob_snoop;
+  SSI_SNOOP          ssi_snoop;
+  JBI_DEBUG_SNOOP    jbi_debug_snoop;
+  
+  JBI_CHECKER        jbi_checker;
+#endif
+  
+  VeraListIterator_vera_event event_it;
+  VeraListIterator_PcxPacket pcx_it;
+  VeraList_vera_event         vera_tasks[];
+  VeraList_PcxPacket          pcx_list   = new;
+  VeraList_CpxPacket          cpx_list   = new;
+  VeraList_string             str_list   = new;
+  VeraList_PcxPacket          soft_list  = new;
+  VeraList_PcxPacket          io_list    = new;
+  
+  socket                                 = 0;
+  fail_flag                              = 0;
+  reset                                  = 0;
+  thread_status                          = 0;
+  cmp_top.rst_l                          = 1'b0;
+  
+  //check coverage option
+  coverage_on                            = 0;	// off by default
+  if(get_plus_arg(CHECK, "coverage_on"))coverage_on = 1;
+
+  if (get_plus_arg (CHECK, "asm_err_en"))  {
+    //enable error directive parsing; asm_err_en has to be set before the parsing begins
+    asm_err_en = 1'b1;
+    printf ("\n                 %d: Info->Enabled cmp error injection.\n", get_time(LO));
+    if (get_plus_arg (CHECK, "err_inj_dbg")) err_inj_dbg = 1'b1;
+  }
+  
+  //common operation for both spar and cmp.
+  if (!get_plus_arg (CHECK, "DRAM")) read_vera_tasks("diag.ev", 0, "", "");
+
+  if(get_plus_arg (CHECK, "DRAM")){
+    //dram_ready = 1'b1;
+    //enable_ranks = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+    //enable_stack = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+    create_ucb_binding(ucb_bind);
+    ucb_bind[0].$iob_ucb_vld               = 0;
+    ucb_bind[1].$iob_ucb_vld               = 0;
+    create_dram_binding(dram_bind);
+    create_dimm_binding(dimm_bind);
+    //read_dram_init("dram_config.doc");
+    //loadMainMemToVera("mem.data", 0);
+    //for (i=0; i < 4; i++) {
+    //  dram_bind[i].$sctag_dram_rd_req    = 'h0;
+    //  dram_bind[i].$sctag_dram_data_vld  = 'h0;
+    //  dram_bind[i].$sctag_dram_rd_req_id = 'h0;
+    //  dram_bind[i].$sctag_dram_wr_req    = 'h0;
+    //  dram_bind[i].$sctag_dram_addr      = 'hx;
+    //  dram_bind[i].$sctag_dram_wr_data   = 'hx;
+    //}
+    //init_signal();
+    //@0,100 cmp_top.cmp_grst_l == 1'b1;
+    if (get_plus_arg (CHECK, "DRAM_I2C")) {
+      create_i2c_binding(i2c_bind);
+    }
+    //for (i=0; i < 4; i++) { dram_mon[i] = new(i); }
+    //if (get_plus_arg(CHECK, "INIT_DRAM")) read_dram_init("dram_config.doc");
+    //set_dram_error_count_reg( dram_errMax);
+    //dram_ready = 1'b0;
+    //d_data                  = 64'h1111_1111_bc00_0000;
+    //////// Call DRAM SAT top ///////////////////
+    dram_sat_top ();
+  }
+  else { 
+    // cmp_top.io_cpx_req_cq        = 'h0;
+    // cmp_top.io_cpx_data_ca       = 'hx;
+    // cmp_top.io_pcx_stall_pq      = 'h0;
+    cpu_num = get_plus_arg (NUM, "cpu_num=") + 1;
+
+    create_pcx_binding(pcx_bind); 
+    create_cpx_binding(cpx_bind); 
+
+    // load memory image into boot rom
+    // io_loadMainMemToVera("mem.image");
+
+    // initialize control signals
+
+    for (i=0; i < 4; i++)
+    {
+      Qsel[i] = 'h0;
+    }
+
+    // disable unused sparc interfaces
+
+    if (get_plus_arg (CHECK, "BW_BFM0")) { bw_bfm [0] = new (pcx_bind [0], cpx_bind [0], 0, "bwbfm0.cmd", "BW_BFM_0") ; }
+    if (get_plus_arg (CHECK, "BW_BFM1")) { bw_bfm [1] = new (pcx_bind [1], cpx_bind [1], 1, "bwbfm1.cmd", "BW_BFM_1") ; }
+    if (get_plus_arg (CHECK, "BW_BFM2")) { bw_bfm [2] = new (pcx_bind [2], cpx_bind [2], 2, "bwbfm2.cmd", "BW_BFM_2") ; }
+    if (get_plus_arg (CHECK, "BW_BFM3")) { bw_bfm [3] = new (pcx_bind [3], cpx_bind [3], 3, "bwbfm3.cmd", "BW_BFM_3") ; }
+    if (get_plus_arg (CHECK, "BW_BFM4")) { bw_bfm [4] = new (pcx_bind [4], cpx_bind [4], 4, "bwbfm4.cmd", "BW_BFM_4") ; }
+    if (get_plus_arg (CHECK, "BW_BFM5")) { bw_bfm [5] = new (pcx_bind [5], cpx_bind [5], 5, "bwbfm5.cmd", "BW_BFM_5") ; }
+    if (get_plus_arg (CHECK, "BW_BFM6")) { bw_bfm [6] = new (pcx_bind [6], cpx_bind [6], 6, "bwbfm6.cmd", "BW_BFM_6") ; }
+    if (get_plus_arg (CHECK, "BW_BFM7")) { bw_bfm [7] = new (pcx_bind [7], cpx_bind [7], 7, "bwbfm7.cmd", "BW_BFM_7") ; }
+
+    // sniper
+    bw_sniper = new (cpx_bind, pcx_bind, bw_bfm, "BW_SNIPER") ;
+
+#ifndef NO_CHECKERS
+    // mmu checks
+    mmu_checks = new();
+    mmu_checks.start();
+    
+    // l1 checker
+    l1_checker = new("L1_CHECKER");
+    l1_checker.start();
+
+    // iob checker
+    iob_checker = new("IOB_CHECKER");
+    iob_checker.start();
+#endif
+
+#ifdef JBI_CKR
+    if (get_plus_arg(CHECK, "jbi_ckr")) {
+      printf("Instantiating jbi_checker objects\n");
+      jbi_ckr_update_simtime(simt);
+    
+      jbus_jbi_binds = jbus_snoop_bind_0;
+      sc_snoop_binds[0] = sc_snoop_bind_0;
+      sc_snoop_binds[1] = sc_snoop_bind_1;
+      sc_snoop_binds[2] = sc_snoop_bind_2;
+      sc_snoop_binds[3] = sc_snoop_bind_3;
+      jbi_iob_snoop_binds = iob_ucb_snoop_bind_jbi;
+      ssi_iob_snoop_binds = iob_ucb_snoop_bind_ssi;
+      jbi_mondo_snoop_binds = iob_mondo_snoop_bind_0;
+      ssi_snoop_binds = ssi_snoop_bind_0;
+      jbi_debug_snoop_binds = jbi_debug_snoop_bind_0;
+    
+      jbus_snoop = new ("JBUS_SNOOP", jbus_jbi_binds);
+      iob_snoop = new (jbi_iob_snoop_binds,
+                       ssi_iob_snoop_binds,
+                       jbi_mondo_snoop_binds,
+                       "IOB_JBI_SNOOP");
+      sc_snoop[0] = new (sc_snoop_binds[0],0,0,"SC_SNOOP_0");
+      sc_snoop[1] = new (sc_snoop_binds[1],1,0,"SC_SNOOP_1");
+      sc_snoop[2] = new (sc_snoop_binds[2],2,0,"SC_SNOOP_2");
+      sc_snoop[3] = new (sc_snoop_binds[3],3,0,"SC_SNOOP_3");
+      ssi_snoop = new (ssi_snoop_binds,"SSI_SNOOP");
+      jbi_debug_snoop = new (jbi_debug_snoop_binds,"JBI_DEBUG_SNOOP");
+    
+      jbi_checker = new("JBI_CHECKER");
+      jbi_checker.set_snoopers(sc_snoop, iob_snoop, ssi_snoop, jbi_debug_snoop, jbus_snoop);
+  
+      jbus_snoop.snoop();
+      iob_snoop.snoop();
+      sc_snoop[0].snoop();
+      sc_snoop[1].snoop();
+      sc_snoop[2].snoop();
+      sc_snoop[3].snoop();
+      ssi_snoop.snoop();
+      jbi_debug_snoop.snoop();
+    
+      jbi_checker.start();
+    }
+#endif
+    
+    // disable dram self refresh
+    // dram_top.clk_ddr_slfrsh = 1'b0;
+
+    // drive the reset signal
+    // init_signal();
+
+    // instantiate the io bridge
+    // iob_inst         = new;
+
+    // coverage objects should not be started until reset is de-asserted
+    // and then wait for a few clocks for the signals to reach the
+    // different SPARC pipeline stages
+    // [Viranjit 9/04/03]
+    @( posedge cmp_top.cmp_grst_l );
+    // FIX ME WITH sparc_rclk when it is connected!
+    repeat (5) @ (posedge cmp_top.cmp_gclk);
+
+    // L2order trace dump (l2order.vr)
+    TraceL2Order();
+
+    // CPX Ordering Monitor (cpxorder.vr)
+    MonitorCPX();
+
+    // L2JBI (inv before ack) Monitor (l2jbi.vr)
+    CheckJbiInvBeforeAck();
+
+    // ------- start these objects after reset has been de-asserted ---------
+    // set name of coverage database file
+    // Note: this file contains results for _all_ coverage objects
+    //       to work around a bug in Vera 6.1.0Beta1, move this to after
+    //       coverage objects are instantiated [Viranjit 8/1/03]
+    // coverage_set_database_file_name("raw_coverage/coverage.db");
+#ifdef LSU_COVERAGE
+    if ((get_plus_arg(CHECK, "lsu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating lsu_coverage object\n");
+	lsu_coverage_obj = new();
+    }
+#endif
+#ifdef LSUEXT_COVERAGE
+    if ((get_plus_arg(CHECK, "lsuext_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating lsuext_coverage object\n");
+	lsuext_coverage_obj = new();
+    }
+#endif
+#ifdef TSO_COVERAGE
+    if ((get_plus_arg(CHECK, "tso_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating tso_coverage object\n");
+	tso_coverage_obj = new();
+    }
+#endif
+#ifdef MMU_COVERAGE
+    if ((get_plus_arg(CHECK, "mmu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating mmu_coverage object\n");
+	mmu_coverage_obj = new();
+    }
+#endif
+#ifdef IFU_COVERAGE
+    if ((get_plus_arg(CHECK, "ifu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating ifu_coverage object\n");
+	ifu_coverage_obj = new();
+    }
+#endif
+#ifdef TLU_COVERAGE
+    if ((get_plus_arg(CHECK, "tlu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating tlu_coverage object\n");
+	tlu_coverage_obj = new();
+    }
+#endif
+#ifdef FPU_COVERAGE
+    if ((get_plus_arg(CHECK, "fpu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating fpu_coverage object\n");
+	fpu_coverage_obj = new();
+    }
+#endif
+#ifdef SPU_COVERAGE
+    if ((get_plus_arg(CHECK, "spu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating spu_coverage object\n");
+	spu_coverage_obj = new();
+    }
+#endif
+#ifdef FFU_COVERAGE
+    if ((get_plus_arg(CHECK, "ffu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating ffu_coverage object\n");
+	ffu_coverage_obj = new();
+    }
+#endif
+#ifdef ERR_COVERAGE
+    if ((get_plus_arg(CHECK, "err_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating err_coverage object\n");
+	err_coverage_obj = new();
+    }
+#endif
+#ifdef EXU_COVERAGE
+    if ((get_plus_arg(CHECK, "exu_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating exu_coverage object\n");
+	exu_coverage_obj = new();
+    }
+#endif
+#ifdef MT_COVERAGE
+    if ((get_plus_arg(CHECK, "mt_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+        printf("Instantiating mt_coverage object\n");
+        mt_coverage_obj = new();
+    }
+#endif
+#ifdef CMPMSS_COVERAGE
+    if ((get_plus_arg(CHECK, "cmpmss_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating cmpmss_coverage object\n");
+	cmpmss_coverage_obj = new();
+    }
+#endif
+#ifdef CORECCX_COVERAGE
+    if ((get_plus_arg(CHECK, "coreccx_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating coreccx_coverage object\n");
+	coreccx_coverage_obj = new();
+    }
+#endif
+#ifdef DRAM
+#else
+#ifdef DRAM_COVERAGE
+    if ((get_plus_arg(CHECK, "dram_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+        printf("Instantiating CMP dram_coverage object\n");
+        cmpdram_coverage_obj = new();
+    }
+#endif
+#endif
+#ifdef IOB_COVERAGE
+    if ((get_plus_arg(CHECK, "iob_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating iob_coverage object\n");
+	iob_coverage_obj = new();
+    }
+#endif
+#ifdef JBI_COVERAGE
+    if ((get_plus_arg(CHECK, "jbi_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+	printf("Instantiating jbi_coverage object\n");
+	jbi_coverage_obj = new();
+    }
+#endif
+    // set name of coverage database file
+    // Note: this file contains results for _all_ coverage objects
+    coverage_set_database_file_name("raw_coverage/coverage.db");
+    // by default, no data saved (until diag passes) [Viranjit 10/14/03]
+    //     unless +force_save_cov is set as vcs plusarg [Viranjit 11/17/03]
+    if (get_plus_arg (CHECK, "force_save_cov")) {
+	coverage_save_database(1);
+    } else {
+	coverage_save_database(0);
+    }
+
+#ifdef GATE_SIM
+#else
+    if (get_plus_arg (CHECK, "asm_err_en"))  {
+      err_inject ();
+    } else if (get_plus_arg (CHECK, "rand_err_on_wr")
+        || get_plus_arg (CHECK, "rand_err_en")) {
+      tmp_err_unit_mask = 6'b000000;
+      dc_freq = 5;
+      ic_freq = 5;
+      irf_freq = 5;
+      frf_freq = 5;
+      itlb_freq = 20;
+      dtlb_freq = 20;
+      dtlb_pa_err = 1'b0;
+      itlb_pa_err = 1'b0;      
+      
+      if (get_plus_arg (CHECK, "dc_err")) {
+        tmp_err_unit_mask[0] = 1'b1;
+      }
+
+      if (get_plus_arg (CHECK, "ic_err")) {
+        tmp_err_unit_mask[1] = 1'b1;
+      }
+      
+      if (get_plus_arg (CHECK, "irf_err")) {
+        tmp_err_unit_mask[2] = 1'b1;
+      }
+        
+      if (get_plus_arg (CHECK, "frf_err")) {
+        tmp_err_unit_mask[3] = 1'b1;
+      }
+
+      if (get_plus_arg (CHECK, "itlb_err")) {
+        tmp_err_unit_mask[4] = 1'b1;
+      }
+
+      if (get_plus_arg (CHECK, "dtlb_err")) {
+        tmp_err_unit_mask[5] = 1'b1;
+      }
+      
+      if (tmp_err_unit_mask == 6'b000000) {
+        err_unit_mask = 6'b111111;
+      } else {
+        err_unit_mask = tmp_err_unit_mask;        
+      }
+
+      if (err_unit_mask[0] == 1'b1) {
+        if (get_plus_arg (CHECK, "dc_err_freq=")) {
+          dc_freq = get_plus_arg (NUM, "dc_err_freq=");
+        }
+      }
+
+      if (err_unit_mask[1] == 1'b1) {      
+        if (get_plus_arg (CHECK, "ic_err_freq=")) {
+          ic_freq = get_plus_arg (NUM, "ic_err_freq=");
+        }
+      }
+
+      if (err_unit_mask[2] == 1'b1) {     
+        if (get_plus_arg (CHECK, "irf_err_freq=")) {
+          irf_freq = get_plus_arg (NUM, "irf_err_freq=");
+        }
+      }
+
+      if (err_unit_mask[3] == 1'b1) {      
+        if (get_plus_arg (CHECK, "frf_err_freq=")) {
+          frf_freq = get_plus_arg (NUM, "frf_err_freq=");
+        }
+      }
+
+      if (err_unit_mask[4] == 1'b1) {      
+        if (get_plus_arg (CHECK, "itlb_err_freq=")) {
+          itlb_freq = get_plus_arg (NUM, "itlb_err_freq=");
+        }
+        if (get_plus_arg (CHECK, "itlb_pa_err")) {
+          itlb_pa_err = 1'b1;
+        }
+      }
+
+      if (err_unit_mask[5] == 1'b1) {      
+        if (get_plus_arg (CHECK, "dtlb_err_freq=")) {
+          dtlb_freq = get_plus_arg (NUM, "dtlb_err_freq=");
+        }
+        if (get_plus_arg (CHECK, "dtlb_pa_err")) {
+          dtlb_pa_err = 1'b1;
+        }
+      }
+
+      if (get_plus_arg (CHECK, "rand_err_seed=")) {
+        rand_err_seed = get_plus_arg (NUM, "rand_err_seed=");
+      } else if (get_plus_arg (CHECK, "tg_seed=")) {
+        rand_err_seed = get_plus_arg (NUM, "tg_seed=");        
+      } else {
+        rand_err_seed = -1;
+      }
+
+      if (get_plus_arg (CHECK, "err_inj_dbg")) {
+        err_inj_dbg = 1'b1;
+      }
+
+      if (get_plus_arg (CHECK, "allow_cons_irf_err")) {
+        allow_cons_irf_err = 1'b1;
+      }
+      
+      rand_err_inject_on_wr (err_unit_mask,dc_freq,ic_freq,
+                             irf_freq,frf_freq,itlb_freq,dtlb_freq,dtlb_pa_err,itlb_pa_err,rand_err_seed);
+      
+    }
+
+#endif // ifdef GATE_SIM
+
+    // wait until diag is done
+    fork
+    {//monitor pcx_port and get packet.
+      while(1){
+        @(posedge cmp_top.cmp_gclk);
+        if(fail_flag)break;
+      }
+    }join all
+    if(fail_flag){
+      repeat(2)@(posedge cmp_top.cmp_gclk);
+      fail(why);
+    } else {
+      coverage_save_database(1);
+    }
+    //cmp_main();
+  }
+  if(fail_flag)printf("\n%0d : Simulation -> FAIL (%s)\n\n", get_time(LO), why);
+  else         printf("\n%0d : Simulation -> PASS (%s)\n\n", get_time(LO), why);
+}
+/*----------------------------------------------------------------------------
+make sparc integface.
+-----------------------------------------------------------------------------*/
+task update_sparc_intf ()
+{
+  printf("intf_send> %x %x %x\n", local_cpx_spc_data_cx,
+                                  local_cpx_spc_data_rdy_cx,
+                                  local_pcx_spc_grant_pa);
+  if(vsv_call_func(client_connection, WAIT, "update_sparc_intf", sas_ret_val,
+                    local_spc_pcx_data_pa,
+                    local_spc_pcx_qsel_pa,
+                    local_spc_pcx_req_pq,
+                    local_cpx_spc_data_cx,
+                    local_cpx_spc_data_rdy_cx,
+                    local_pcx_spc_grant_pa
+                    )
+      )error("vsv_call_func failure\n");
+  printf ("intf_rcvd> %x %x %x\n", local_spc_pcx_data_pa,
+                                   local_spc_pcx_qsel_pa, local_spc_pcx_req_pq);
+}

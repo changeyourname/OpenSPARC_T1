@@ -1,0 +1,65 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: diag_mini.list
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+# Created by KD
+# Contains Names of Diags to Run
+# # means failed
+# ## means passed
+# ### means FP transactions (commented for the time being)
+
+
+bypass_win
+chase_l1hit
+dcache_falseraw
+dcache_partialraw
+dcache_realraw
+dcache_war
+dexec_nf
+dmiss_imiss
+done_retry_trap
+exu_alu
+flush_pipe
+fp_movixcc2
+ifetch_traps
+ihit_sameset
+imiss_branches
+imiss_oddeven
+imiss_sameset
+intr_basic1
+intr_basic2
+l2_access
+l2_buf
+ldst_endiansign
+ldst_raw
+lsu_ldx
+lsu_mbar
+lsu_stbar
+nop
+simple_br
+tr_intexc1
+tr_intr00
+tr_intr0
+tr_intr1
+tr_intr2
+tr_sir0
+tr_tcc
+tr_tixcc0
+win_restore0
+

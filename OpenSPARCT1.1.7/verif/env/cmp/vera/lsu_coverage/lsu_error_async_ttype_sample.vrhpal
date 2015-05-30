@@ -1,0 +1,38 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_async_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu async trap type valid
+
+wildcard state s_LSU_ASYNC_TRAP_VLD                (13'b1xxxxxxxxxxxx);
+wildcard state s_LSU_ASYNC_CAM_PERR_UNC_OFF        (13'b0100000000x00);
+wildcard state s_LSU_ASYNC_CAM_PERR_UNC_ON         (13'b1100010000x00);
+wildcard state s_LSU_ASYNC_ASI_DATA_PERR_OFF       (13'b0010000000x00);
+wildcard state s_LSU_ASYNC_ASI_DATA_PERR_ON        (13'b1010010000x00);
+wildcard state s_LSU_ASYNC_ASI_TAG_PERR_OFF        (13'b0001000000x00);
+wildcard state s_LSU_ASYNC_ASI_TAG_PERR_ON         (13'b1001010000x00);
+wildcard state s_LSU_ASYNC_IFU_UNC_ERR_OFF         (13'b0000100000x00);
+wildcard state s_LSU_ASYNC_IFU_UNC_ERR_ON          (13'b1000110000x00);
+state s_LSU_ASYNC_PMEM_UNC_ERROR_TMP_OFF  (13'b0000000100000);
+state s_LSU_ASYNC_PMEM_UNC_ERROR_TMP_ON   (13'b1000001100100);
+state s_LSU_ASYNC_BLD_UNC_ERR_PEND_OFF    (13'b0000000010000);
+state s_LSU_ASYNC_BLD_UNC_ERR_PEND_ON     (13'b1000001010100);
+wildcard state s_LSU_ASYNC_ATM_ST_UNC_ERR          (13'b1000000000x10);
+wildcard state s_LSU_ASYNC_SPUBYP_TRAP_ACTIVE      (13'b1000000000x01);
+

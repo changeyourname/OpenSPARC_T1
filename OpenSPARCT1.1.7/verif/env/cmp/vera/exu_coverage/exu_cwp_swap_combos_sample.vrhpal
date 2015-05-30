@@ -1,0 +1,184 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_cwp_swap_combos_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// coverage_def EXU_CWP_SWAP_COMBOS_COV  exu_cwp_swap_combos_state
+//state declarations
+
+state s_SWAP_0_S		(SWAP_0_S);
+state s_SWAP_0P_S		(SWAP_0P_S);		
+state s_SWAP_0_R		(SWAP_0_R);		
+state s_SWAP_0P_R		(SWAP_0P_R);		
+state s_SWAP_0_F		(SWAP_0_F);		
+state s_SWAP_0P_F		(SWAP_0P_F);		
+state s_SWAP_0_C		(SWAP_0_C);		
+state s_SWAP_0P_C		(SWAP_0P_C);
+state s_SWAP_1_S		(SWAP_1_S);		
+state s_SWAP_1P_S		(SWAP_1P_S);		
+state s_SWAP_1_R		(SWAP_1_R);		
+state s_SWAP_1P_R		(SWAP_1P_R);		
+state s_SWAP_1_F		(SWAP_1_F);		
+state s_SWAP_1P_F		(SWAP_1P_F);		
+state s_SWAP_1_C		(SWAP_1_C);		
+state s_SWAP_1P_C		(SWAP_1P_C);		
+state s_SWAP_2_S		(SWAP_2_S);		
+state s_SWAP_2P_S		(SWAP_2P_S);		
+state s_SWAP_2_R		(SWAP_2_R);		
+state s_SWAP_2P_R		(SWAP_2P_R);		
+state s_SWAP_2_F		(SWAP_2_F);		
+state s_SWAP_2P_F		(SWAP_2P_F);		
+state s_SWAP_2_C		(SWAP_2_C);		
+state s_SWAP_2P_C		(SWAP_2P_C);		
+state s_SWAP_3_S		(SWAP_3_S);		
+state s_SWAP_3P_S		(SWAP_3P_S);		
+state s_SWAP_3_R		(SWAP_3_R);		
+state s_SWAP_3P_R		(SWAP_3P_R);		
+state s_SWAP_3_F		(SWAP_3_F);
+state s_SWAP_3P_F		(SWAP_3P_F);		
+state s_SWAP_3_C		(SWAP_3_C);		
+state s_SWAP_3P_C		(SWAP_3P_C);		
+				
+state s_SWAP_0_1		(SWAP_0_1);		
+state s_SWAP_0P_1		(SWAP_0P_1);		
+state s_SWAP_0_1P		(SWAP_0_1P);		
+state s_SWAP_0P_1P		(SWAP_0P_1P);		
+state s_SWAP_0_1_S		(SWAP_0_1_S);		
+state s_SWAP_0P_1_S		(SWAP_0P_1_S);		
+state s_SWAP_0_1P_S		(SWAP_0_1P_S);		
+state s_SWAP_0P_1P_S		(SWAP_0P_1P_S);		
+state s_SWAP_0_1_R		(SWAP_0_1_R);		
+state s_SWAP_0P_1_R		(SWAP_0P_1_R);		
+state s_SWAP_0_1P_R		(SWAP_0_1P_R);		
+state s_SWAP_0P_1P_R		(SWAP_0P_1P_R);		
+state s_SWAP_0_1_F		(SWAP_0_1_F);		
+state s_SWAP_0P_1_F		(SWAP_0P_1_F);		
+state s_SWAP_0_1P_F		(SWAP_0_1P_F);		
+state s_SWAP_0P_1P_F		(SWAP_0P_1P_F);		
+state s_SWAP_0_1_C		(SWAP_0_1_C);		
+state s_SWAP_0P_1_C		(SWAP_0P_1_C);		
+state s_SWAP_0_1P_C		(SWAP_0_1P_C);		
+state s_SWAP_0P_1P_C		(SWAP_0P_1P_C);		
+				
+state s_SWAP_0_2		(SWAP_0_2);		
+state s_SWAP_0P_2		(SWAP_0P_2);		
+state s_SWAP_0_2P		(SWAP_0_2P);		
+state s_SWAP_0P_2P		(SWAP_0P_2P);		
+state s_SWAP_0_2_S		(SWAP_0_2_S);		
+state s_SWAP_0P_2_S		(SWAP_0P_2_S);		
+state s_SWAP_0_2P_S		(SWAP_0_2P_S);		
+state s_SWAP_0P_2P_S		(SWAP_0P_2P_S);		
+state s_SWAP_0_2_R		(SWAP_0_2_R);		
+state s_SWAP_0P_2_R		(SWAP_0P_2_R);		
+state s_SWAP_0_2P_R		(SWAP_0_2P_R);		
+state s_SWAP_0P_2P_R		(SWAP_0P_2P_R);		
+state s_SWAP_0_2_F		(SWAP_0_2_F);		
+state s_SWAP_0P_2_F		(SWAP_0P_2_F);		
+state s_SWAP_0_2P_F		(SWAP_0_2P_F);		
+state s_SWAP_0P_2P_F		(SWAP_0P_2P_F);		
+state s_SWAP_0_2_C		(SWAP_0_2_C);		
+state s_SWAP_0P_2_C		(SWAP_0P_2_C);		
+state s_SWAP_0_2P_C		(SWAP_0_2P_C);		
+state s_SWAP_0P_2P_C		(SWAP_0P_2P_C);		
+				
+state s_SWAP_0_3		(SWAP_0_3);		
+state s_SWAP_0P_3		(SWAP_0P_3);		
+state s_SWAP_0_3P		(SWAP_0_3P);		
+state s_SWAP_0P_3P		(SWAP_0P_3P);		
+state s_SWAP_0_3_S		(SWAP_0_3_S);		
+state s_SWAP_0P_3_S		(SWAP_0P_3_S);		
+state s_SWAP_0_3P_S		(SWAP_0_3P_S);		
+state s_SWAP_0P_3P_S		(SWAP_0P_3P_S);		
+state s_SWAP_0_3_R		(SWAP_0_3_R);		
+state s_SWAP_0P_3_R		(SWAP_0P_3_R);		
+state s_SWAP_0_3P_R		(SWAP_0_3P_R);		
+state s_SWAP_0P_3P_R		(SWAP_0P_3P_R);		
+state s_SWAP_0_3_F		(SWAP_0_3_F);		
+state s_SWAP_0P_3_F		(SWAP_0P_3_F);		
+state s_SWAP_0_3P_F		(SWAP_0_3P_F);		
+state s_SWAP_0P_3P_F		(SWAP_0P_3P_F);		
+state s_SWAP_0_3_C		(SWAP_0_3_C);		
+state s_SWAP_0P_3_C		(SWAP_0P_3_C);		
+state s_SWAP_0_3P_C		(SWAP_0_3P_C);		
+state s_SWAP_0P_3P_C		(SWAP_0P_3P_C);		
+				
+state s_SWAP_1_2		(SWAP_1_2);		
+state s_SWAP_1P_2		(SWAP_1P_2);		
+state s_SWAP_1_2P		(SWAP_1_2P);		
+state s_SWAP_1P_2P		(SWAP_1P_2P);		
+state s_SWAP_1_2_S		(SWAP_1_2_S);		
+state s_SWAP_1P_2_S		(SWAP_1P_2_S);		
+state s_SWAP_1_2P_S		(SWAP_1_2P_S);		
+state s_SWAP_1P_2P_S		(SWAP_1P_2P_S);		
+state s_SWAP_1_2_R		(SWAP_1_2_R);		
+state s_SWAP_1P_2_R		(SWAP_1P_2_R);		
+state s_SWAP_1_2P_R		(SWAP_1_2P_R);		
+state s_SWAP_1P_2P_R		(SWAP_1P_2P_R);		
+state s_SWAP_1_2_F		(SWAP_1_2_F);		
+state s_SWAP_1P_2_F		(SWAP_1P_2_F);		
+state s_SWAP_1_2P_F		(SWAP_1_2P_F);		
+state s_SWAP_1P_2P_F		(SWAP_1P_2P_F);		
+state s_SWAP_1_2_C		(SWAP_1_2_C);		
+state s_SWAP_1P_2_C		(SWAP_1P_2_C);		
+state s_SWAP_1_2P_C		(SWAP_1_2P_C);		
+state s_SWAP_1P_2P_C		(SWAP_1P_2P_C);		
+				
+state s_SWAP_1_3		(SWAP_1_3);		
+state s_SWAP_1P_3		(SWAP_1P_3);		
+state s_SWAP_1_3P		(SWAP_1_3P);		
+state s_SWAP_1P_3P		(SWAP_1P_3P);		
+state s_SWAP_1_3_S		(SWAP_1_3_S);		
+state s_SWAP_1P_3_S		(SWAP_1P_3_S);		
+state s_SWAP_1_3P_S		(SWAP_1_3P_S);		
+state s_SWAP_1P_3P_S		(SWAP_1P_3P_S);		
+state s_SWAP_1_3_R		(SWAP_1_3_R);		
+state s_SWAP_1P_3_R		(SWAP_1P_3_R);		
+state s_SWAP_1_3P_R		(SWAP_1_3P_R);		
+state s_SWAP_1P_3P_R		(SWAP_1P_3P_R);		
+state s_SWAP_1_3_F		(SWAP_1_3_F);		
+state s_SWAP_1P_3_F		(SWAP_1P_3_F);		
+state s_SWAP_1_3P_F		(SWAP_1_3P_F);		
+state s_SWAP_1P_3P_F		(SWAP_1P_3P_F);		
+state s_SWAP_1_3_C		(SWAP_1_3_C);		
+state s_SWAP_1P_3_C		(SWAP_1P_3_C);		
+state s_SWAP_1_3P_C		(SWAP_1_3P_C);		
+state s_SWAP_1P_3P_C		(SWAP_1P_3P_C);		
+				
+state s_SWAP_2_3		(SWAP_2_3);		
+state s_SWAP_2P_3		(SWAP_2P_3);		
+state s_SWAP_2_3P		(SWAP_2_3P);		
+state s_SWAP_2P_3P		(SWAP_2P_3P);		
+				
+state s_SWAP_0_2_3		(SWAP_0_2_3);		
+state s_SWAP_0_2P_3		(SWAP_0_2P_3);		
+state s_SWAP_0_2_3P		(SWAP_0_2_3P);		
+state s_SWAP_0_2P_3P		(SWAP_0_2P_3P);		
+state s_SWAP_0P_2_3		(SWAP_0P_2_3);		
+state s_SWAP_0P_2P_3		(SWAP_0P_2P_3);		
+state s_SWAP_0P_2_3P		(SWAP_0P_2_3P);		
+state s_SWAP_0P_2P_3P		(SWAP_0P_2P_3P);		
+				
+state s_SWAP_1_2_3		(SWAP_1_2_3);		
+state s_SWAP_1_2P_3		(SWAP_1_2P_3);		
+state s_SWAP_1_2_3P		(SWAP_1_2_3P);		
+state s_SWAP_1_2P_3P		(SWAP_1_2P_3P);		
+state s_SWAP_1P_2_3		(SWAP_1P_2_3);		
+state s_SWAP_1P_2P_3		(SWAP_1P_2P_3);		
+state s_SWAP_1P_2_3P		(SWAP_1P_2_3P);		
+state s_SWAP_1P_2P_3P		(SWAP_1P_2P_3P);		
+

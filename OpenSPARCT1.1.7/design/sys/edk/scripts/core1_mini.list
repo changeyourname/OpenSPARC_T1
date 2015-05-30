@@ -1,0 +1,88 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: core1_mini.list
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+bug3273
+bypass_win
+chase_l1hit
+dcache_falseraw
+dcache_partialraw
+dcache_realraw
+dcache_war
+dexec_nf
+dmiss_imiss
+done_retry_trap
+exu_add
+exu_alu
+exu_sub
+faddd_diff_sm_pinf
+ffu_faligndata
+flush_pipe
+fp_movixcc2
+fp_simple_all0
+fp_simple_all1
+hp_reg_rdwr
+ifetch_traps
+ihit_sameset
+imiss_branches
+imiss_oddeven
+imiss_sameset
+intr_basic1
+intr_basic2
+l2_access
+l2_buf
+ldst_endiansign
+ldst_raw
+lsu_align_rand
+lsu_atomic
+lsu_ldx
+lsu_mbar
+lsu_stbar
+mt_alu_ldx
+mt_dcache_falseraw
+mt_dhit_sameset
+mt_dhit_specload
+mt_dmiss_specload
+mt_dsameline
+mt_isameline
+mt_muldivldx
+mt_raw
+mt_wrrdcwp
+mt_wrrdcwp_loop
+mtblkldst_loop
+nop
+simple_br
+# spu_maexp		# Requires SPU  Uncomment if SPU is included
+# spu_maexp_mul		# Requires SPU  Uncomment if SPU is included
+# spu_mamem		# Requires SPU  Uncomment if SPU is included
+# spu_mamul		# Requires SPU  Uncomment if SPU is included
+# spu_mared		# Requires SPU  Uncomment if SPU is included
+tr_intexc1
+tr_intr0
+tr_intr00
+tr_intr2
+tr_intr1
+tr_sir0
+tr_tcc
+tr_tixcc0
+v9_allinst
+v9_alu_mov
+v9_dmmudmp
+v9_immudmp
+win_restore0

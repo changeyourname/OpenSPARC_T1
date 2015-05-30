@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_br_dlyslt_rb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_br_dlyslt_rb_cov.vr
+// Description:
+// This coverage object covers special conditions in the delay slot of
+// branches
+// 
+// State: 10'b: brd,thr_vld_d,stb8,muld,divd,fpod,iced,fstw,rfew,dcw2
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_BR_DLYSLT_RB_COV (bit [9:0] cov_vector)
+// {
+  wildcard trans t_br_stb8 (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'b0110000000);
+  wildcard trans t_br_muld (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'b0101000000);
+  wildcard trans t_br_divd (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'b0100100000);
+  wildcard trans t_br_fpod (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'b0100010000); 
+  wildcard trans t_br_iced (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'b0100001000); //This is not possible
+  wildcard trans t_br_fstw (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'bx10xxxxxxx -> 10'bxxxxxxx0xx[.2.] -> 10'bxxxxxxx1xx);
+  wildcard trans t_br_fstw_stb8 (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'bx11xxxxxxx -> 10'bxxxxxxx0xx[.2.] -> 10'bxxxxxxx1xx);  
+  wildcard trans t_br_rfew (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'bx10xxxxxxx -> 10'bxxxxxxxx0x[.2.] -> 10'bxxxxxxxx1x);
+  wildcard trans t_br_rfew_stb8 (10'b1100000000 -> 10'bx0xxxxxxxx[.1:3.] -> 10'bx11xxxxxxx -> 10'bxxxxxxxx0x[.2.] -> 10'bxxxxxxxx1x);
+  wildcard trans t_br_dcw2 (10'b1100000000 -> 10'bxxxxxxxxx1);
+  wildcard trans t_br_dcw2_stb8 (10'b1100000000 -> 10'bxxxxxxxxx1 -> 10'bx0xxxxxxxx[.1:2.] -> 10'bx11xxxxxxx);
+//Add rfew_fstw
+// }	

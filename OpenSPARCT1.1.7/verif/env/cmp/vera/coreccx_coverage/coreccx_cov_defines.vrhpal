@@ -1,0 +1,43 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_cov_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// PCX reqtypes
+#define LOAD_RQ    5'b00000
+#define IMISS_RQ   5'b10000
+#define STORE_RQ   5'b00001
+#define CAS1_RQ    5'b00010
+#define CAS2_RQ    5'b00011
+#define SWAP_RQ    5'b00110
+#define STRLOAD_RQ 5'b00100
+#define STRST_RQ   5'b00101
+#define INT_RQ     5'b01001
+#define FWD_RQ     5'b01101
+#define FILL       5'b11111
+
+// CPX rtntypes
+#define LOAD_RET    4'b0000
+#define IFILL_RET   4'b0001
+#define ST_ACK      4'b0100
+#define STRLOAD_RET 4'b0010
+#define STRST_ACK   4'b0110
+#define INT_RET     4'b0111
+#define FWD_RPY_RET 4'b1011
+#define EVICT_REQ   4'b0011
+#define ERR_RET     4'b1100

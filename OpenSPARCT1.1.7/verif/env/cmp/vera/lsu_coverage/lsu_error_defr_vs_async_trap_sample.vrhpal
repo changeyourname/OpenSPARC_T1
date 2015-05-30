@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_defr_vs_async_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu deferred trap vs async trap valid
+
+wildcard trans t_DEFR_TRAP_T0_ASYNC_TRAP_T1         (8'b110000xx -> 8'b0xxxx101);
+wildcard trans t_DEFR_TRAP_T0_ASYNC_TRAP_T2         (8'b110000xx -> 8'b0xxxx110);
+wildcard trans t_DEFR_TRAP_T0_ASYNC_TRAP_T3         (8'b110000xx -> 8'b0xxxx111);
+wildcard trans t_DEFR_TRAP_T1_ASYNC_TRAP_T0         (8'b101000xx -> 8'b0xxxx100);
+wildcard trans t_DEFR_TRAP_T1_ASYNC_TRAP_T2         (8'b101000xx -> 8'b0xxxx110);
+wildcard trans t_DEFR_TRAP_T1_ASYNC_TRAP_T3         (8'b101000xx -> 8'b0xxxx111);
+wildcard trans t_DEFR_TRAP_T2_ASYNC_TRAP_T0         (8'b100100xx -> 8'b0xxxx100);
+wildcard trans t_DEFR_TRAP_T2_ASYNC_TRAP_T1         (8'b100100xx -> 8'b0xxxx101);
+wildcard trans t_DEFR_TRAP_T2_ASYNC_TRAP_T3         (8'b100100xx -> 8'b0xxxx111);
+wildcard trans t_DEFR_TRAP_T3_ASYNC_TRAP_T0         (8'b100010xx -> 8'b0xxxx100);
+wildcard trans t_DEFR_TRAP_T3_ASYNC_TRAP_T1         (8'b100010xx -> 8'b0xxxx101);
+wildcard trans t_DEFR_TRAP_T3_ASYNC_TRAP_T2         (8'b100010xx -> 8'b0xxxx110);
+
+
+wildcard trans t_ASYNC_TRAP_T0_DEFR_TRAP_T1         (8'b0xxxx100 -> 8'b101000xx);
+wildcard trans t_ASYNC_TRAP_T0_DEFR_TRAP_T2         (8'b0xxxx100 -> 8'b100100xx);
+wildcard trans t_ASYNC_TRAP_T0_DEFR_TRAP_T3         (8'b0xxxx100 -> 8'b100010xx);
+wildcard trans t_ASYNC_TRAP_T1_DEFR_TRAP_T0         (8'b0xxxx101 -> 8'b110000xx);
+wildcard trans t_ASYNC_TRAP_T1_DEFR_TRAP_T2         (8'b0xxxx101 -> 8'b100100xx);
+wildcard trans t_ASYNC_TRAP_T1_DEFR_TRAP_T3         (8'b0xxxx101 -> 8'b100010xx);
+wildcard trans t_ASYNC_TRAP_T2_DEFR_TRAP_T0         (8'b0xxxx110 -> 8'b110000xx);
+wildcard trans t_ASYNC_TRAP_T2_DEFR_TRAP_T1         (8'b0xxxx110 -> 8'b101000xx);
+wildcard trans t_ASYNC_TRAP_T2_DEFR_TRAP_T3         (8'b0xxxx110 -> 8'b100010xx);
+wildcard trans t_ASYNC_TRAP_T3_DEFR_TRAP_T0         (8'b0xxxx111 -> 8'b110000xx);
+wildcard trans t_ASYNC_TRAP_T3_DEFR_TRAP_T1         (8'b0xxxx111 -> 8'b101000xx);
+wildcard trans t_ASYNC_TRAP_T3_DEFR_TRAP_T2         (8'b0xxxx111 -> 8'b100100xx);
+
+

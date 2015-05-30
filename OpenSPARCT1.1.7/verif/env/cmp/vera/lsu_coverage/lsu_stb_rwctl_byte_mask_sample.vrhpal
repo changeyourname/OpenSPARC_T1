@@ -1,0 +1,39 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_rwctl_byte_mask_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// binding for store buffer byte_mask
+
+state s_BYTE_MASK_0 (9'b100000001);
+state s_BYTE_MASK_1 (9'b100000010);
+state s_BYTE_MASK_2 (9'b100000100);
+state s_BYTE_MASK_3 (9'b100001000);
+state s_BYTE_MASK_4 (9'b100010000);
+state s_BYTE_MASK_5 (9'b100100000);
+state s_BYTE_MASK_6 (9'b101000000);
+state s_BYTE_MASK_7 (9'b110000000);
+state s_BYTE_MASK_8 (9'b100000011);
+state s_BYTE_MASK_9 (9'b100001100);
+state s_BYTE_MASK_10 (9'b100110000);
+state s_BYTE_MASK_11 (9'b111000000);
+state s_BYTE_MASK_12 (9'b100001111);
+state s_BYTE_MASK_13 (9'b111110000);
+state s_BYTE_MASK_14 (9'b111111111);
+
+

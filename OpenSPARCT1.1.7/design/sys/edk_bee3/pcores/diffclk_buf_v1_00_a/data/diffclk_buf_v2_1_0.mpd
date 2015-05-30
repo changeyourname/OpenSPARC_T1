@@ -1,0 +1,36 @@
+## Copyright (c) 2008 BEEcube, Inc.  All rights reserved.
+## You may copy and modify these files for your own internal use solely with
+## BEEcube hardware systems using Xilinx programmable logic devices and the
+## Xilinx EDK system.  No rights are granted to redistribute these files
+## without the explicit permission of BEEcube.
+
+## Name:        diffclk_buf
+## Description: Differential clock input buffer
+## Version:     1.00.a
+## Author:      Kevin Camera
+## Date:        08/15/2008
+
+BEGIN diffclk_buf
+
+## Peripheral Options
+OPTION IPTYPE = PERIPHERAL
+OPTION IMP_NETLIST = TRUE
+OPTION HDL = VHDL
+OPTION DESC = Differential clock buffer
+OPTION LONG_DESC = Differential clock input buffer
+OPTION IP_GROUP = BEE3
+OPTION ARCH_SUPPORT_MAP = (virtex5=PREFERRED, others=OBSOLETE)
+
+IO_INTERFACE IO_IF = diffclk_0
+
+## Bus Interfaces
+
+## Generics for VHDL or Parameters for Verilog
+
+## Ports
+PORT Clkin_p = "", DIR = IN, SIGIS=CLK, IOB_STATE=BUF, THREE_STATE=FALSE
+PORT Clkin_m = "", DIR = IN, IOB_STATE=BUF, THREE_STATE=FALSE
+PORT Clkout = "", SIGIS=CLK, DIR=O, CLK_FACTOR=1
+
+END
+

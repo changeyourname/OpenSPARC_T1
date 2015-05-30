@@ -1,0 +1,96 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_add_ashift_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+// coverage_def FPU_ADD_ASHIFT_COV (bit [6:0] fpu_add_ashift_state)
+// {
+
+// state declarations
+  state s_FPU_ASHIFT_00  ( FPU_ASHIFT_00 );
+  state s_FPU_ASHIFT_01  ( FPU_ASHIFT_01 );
+  state s_FPU_ASHIFT_02  ( FPU_ASHIFT_02 );
+  state s_FPU_ASHIFT_03  ( FPU_ASHIFT_03 );
+  state s_FPU_ASHIFT_04  ( FPU_ASHIFT_04 );
+  state s_FPU_ASHIFT_05  ( FPU_ASHIFT_05 );
+  state s_FPU_ASHIFT_06  ( FPU_ASHIFT_06 );
+  state s_FPU_ASHIFT_07  ( FPU_ASHIFT_07 );
+  state s_FPU_ASHIFT_08  ( FPU_ASHIFT_08 );
+  state s_FPU_ASHIFT_09  ( FPU_ASHIFT_09 );
+  state s_FPU_ASHIFT_10  ( FPU_ASHIFT_10 );
+  state s_FPU_ASHIFT_11  ( FPU_ASHIFT_11 );
+  state s_FPU_ASHIFT_12  ( FPU_ASHIFT_12 );
+  state s_FPU_ASHIFT_13  ( FPU_ASHIFT_13 );
+  state s_FPU_ASHIFT_14  ( FPU_ASHIFT_14 );
+  state s_FPU_ASHIFT_15  ( FPU_ASHIFT_15 );
+  state s_FPU_ASHIFT_16  ( FPU_ASHIFT_16 );
+  state s_FPU_ASHIFT_17  ( FPU_ASHIFT_17 );
+  state s_FPU_ASHIFT_18  ( FPU_ASHIFT_18 );
+  state s_FPU_ASHIFT_19  ( FPU_ASHIFT_19 );
+  state s_FPU_ASHIFT_20  ( FPU_ASHIFT_20 );
+  state s_FPU_ASHIFT_21  ( FPU_ASHIFT_21 );
+  state s_FPU_ASHIFT_22  ( FPU_ASHIFT_22 );
+  state s_FPU_ASHIFT_23  ( FPU_ASHIFT_23 );
+  state s_FPU_ASHIFT_24  ( FPU_ASHIFT_24 );
+  state s_FPU_ASHIFT_25  ( FPU_ASHIFT_25 );
+  state s_FPU_ASHIFT_26  ( FPU_ASHIFT_26 );
+  state s_FPU_ASHIFT_27  ( FPU_ASHIFT_27 );
+  state s_FPU_ASHIFT_28  ( FPU_ASHIFT_28 );
+  state s_FPU_ASHIFT_29  ( FPU_ASHIFT_29 );
+  state s_FPU_ASHIFT_30  ( FPU_ASHIFT_30 );
+  state s_FPU_ASHIFT_31  ( FPU_ASHIFT_31 );
+  state s_FPU_ASHIFT_32  ( FPU_ASHIFT_32 );
+  state s_FPU_ASHIFT_33  ( FPU_ASHIFT_33 );
+  state s_FPU_ASHIFT_34  ( FPU_ASHIFT_34 );
+  state s_FPU_ASHIFT_35  ( FPU_ASHIFT_35 );
+  state s_FPU_ASHIFT_36  ( FPU_ASHIFT_36 );
+  state s_FPU_ASHIFT_37  ( FPU_ASHIFT_37 );
+  state s_FPU_ASHIFT_38  ( FPU_ASHIFT_38 );
+  state s_FPU_ASHIFT_39  ( FPU_ASHIFT_39 );
+  state s_FPU_ASHIFT_40  ( FPU_ASHIFT_40 );
+  state s_FPU_ASHIFT_41  ( FPU_ASHIFT_41 );
+  state s_FPU_ASHIFT_42  ( FPU_ASHIFT_42 );
+  state s_FPU_ASHIFT_43  ( FPU_ASHIFT_43 );
+  state s_FPU_ASHIFT_44  ( FPU_ASHIFT_44 );
+  state s_FPU_ASHIFT_45  ( FPU_ASHIFT_45 );
+  state s_FPU_ASHIFT_46  ( FPU_ASHIFT_46 );
+  state s_FPU_ASHIFT_47  ( FPU_ASHIFT_47 );
+  state s_FPU_ASHIFT_48  ( FPU_ASHIFT_48 );
+  state s_FPU_ASHIFT_49  ( FPU_ASHIFT_49 );
+  state s_FPU_ASHIFT_50  ( FPU_ASHIFT_50 );
+  state s_FPU_ASHIFT_51  ( FPU_ASHIFT_51 );
+  state s_FPU_ASHIFT_52  ( FPU_ASHIFT_52 );
+  state s_FPU_ASHIFT_53  ( FPU_ASHIFT_53 );
+  state s_FPU_ASHIFT_54  ( FPU_ASHIFT_54 );
+  state s_FPU_ASHIFT_55  ( FPU_ASHIFT_55 );
+  state s_FPU_ASHIFT_56  ( FPU_ASHIFT_56 );
+  state s_FPU_ASHIFT_57  ( FPU_ASHIFT_57 );
+  state s_FPU_ASHIFT_58  ( FPU_ASHIFT_58 );
+  state s_FPU_ASHIFT_59  ( FPU_ASHIFT_59 );
+  state s_FPU_ASHIFT_60  ( FPU_ASHIFT_60 );
+  state s_FPU_ASHIFT_61  ( FPU_ASHIFT_61 );
+  state s_FPU_ASHIFT_62  ( FPU_ASHIFT_62 );
+  state s_FPU_ASHIFT_63  ( FPU_ASHIFT_63 );
+// }

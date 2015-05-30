@@ -1,0 +1,258 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_tr_rb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+. 
+. $dv_root = $ENV{DV_ROOT};
+.
+. #To change the number of conditions covered, remember to comment or uncomment the signals in the 
+. #coverage instance in ifu_coverage.vrpal
+. @trap_conds = ("trpf","trps","trpd","ints");
+. @rb_conds = ("ics","stb8","rbd","rbw","ldmw","flhw","dcw2");
+.
+. @cov_states = ();
+. @rb_cov_states = ();
+. @trap_cov_states = ();
+. $state_vec_len = 14;
+. %bitmap = ("trpf" => 0,"trps" => 1,"trpd" => 2,"ints" => 3,"vldd" => 4,
+.            "brd" => 5,"a" => 6,"ics" => 7,"stb8" => 8,"rbd" => 9,"rbw" => 10,
+.            "ldmw" => 11,"flhw" => 12,"dcw2" => 13);
+. %prim_state_vec = ();
+. 
+. #####################################################################
+. # Disallowed conditions hashes
+. #####################################################################
+. 
+. %impos_states = (trpf => {"none" => 0},
+. 		   trps => {"ics" => 0},
+. 		   trpd => {"stb8" => 0},
+. 		   ints => {"none" => 0},
+.		   ics  => {"trps" => 0},
+.		   stb8 => {"trpd" => 0},
+.   		   rbd  => {"none" => 0},
+.		   rbw  => {"dcw2" => 0},
+.		   ldmw => {"dcw2" => 0,"flhw" => 0},
+.		   flhw => {"dcw2" => 0,"ldmw" => 0},
+.		   dcw2 => {"rbw" => 0,"ldmw" => 0,"flhw" => 0},
+. 		);
+. 
+. #####################################################################
+. # Create all possible combinations of states within the allowed
+. # state space
+. #####################################################################
+. 
+. @trap_cov_states = create_states (-1, @trap_conds);
+. @rb_cov_states = create_states (-1, @rb_conds);
+.
+. #####################################################################
+. # print the comments
+. #####################################################################
+. 
+// ***************************************************************************
+//
+// File:	ifu_tr_rb_cov.vr
+// Description:
+// This coverage object covers frontend (F,S) and D-stage traps in the delay
+// slot of branches and other rollbacks, prioritization of fe traps wrt to
+// interrupts
+// 
+// State: 14'b:
+// trpf,trps,trpd,ints,thr_vld_d,br_d,a,ic_s,stb8,rb_d,rb_w,ldmw,flhw,dcw2
+//
+// ***************************************************************************
+
+. #####################################################################
+. # Set the coverage vector state bits
+. #####################################################################
+. 
+. foreach $tr_state (@trap_cov_states) {
+.   foreach $rb_state (@rb_cov_states) {
+.     if (state_combined_allowed($tr_state, $rb_state)) {
+.        $state = $tr_state."_".$rb_state;
+.	 if (multiple_state_chk_ok ($state)) {
+.           $state_vector = set_state_bits ($state);
+.           print  "\twildcard state s_$state\t\t($state_vector);\n";
+.	 }
+.     }
+.   }
+.   $state_vector = set_state_bits ($tr_state);
+.   print  "\twildcard state s_$tr_state\t\t($state_vector);\n";
+. }
+. 
+  wildcard state s_trpd_stb8	          (14'bxx1x1xxx1xxxxx);
+  wildcard bad_state s_trpf_brd           (14'b1xxx11xxx0xxxx); //Thread cannot run when br is in D-stage
+  wildcard bad_state s_trpf_ics_rbd_flhw  (14'b1xxxxxx1x1xx1x);
+  wildcard bad_state s_trpf_ics_rbd_rbw   (14'b1xxxxxx1x11xxx);
+  wildcard bad_state s_trpf_ics_dcw2      (14'b1xxxxxx1xxxxx1);
+  wildcard bad_state s_trpf_ics_ldmw      (14'b1xxxxxx1xxx1xx);
+  wildcard bad_state s_trpf_trps_ldmw     (14'b11xxxxxxxxx1xx);
+  wildcard bad_state s_trpf_rbd_ldmw      (14'b1xxxxxxxx1x1xx);
+
+  wildcard trans t_ints_brd     (14'b000111xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx);
+  wildcard trans t_ints_brd_a   (14'b000111xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx -> 14'bxxxxxx1xxxxxx);  
+  wildcard trans t_ints_trps_brd   (14'b010111xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx);
+  wildcard trans t_ints_trps_brd_a (14'b010111xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx -> 14'bxxxxxx1xxxxxx);
+  wildcard trans t_trps_brd     (14'b010011xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx);
+  wildcard trans t_trps_brd_a   (14'b010011xxxxxxxx -> 14'bxxxx0xxxxxxxxx[.1:3.] -> 14'bxxxx1xxxxxxxx -> 14'bxxxxxx1xxxxxx);
+  wildcard trans t_flhw_0_ints  (14'bxxxxxxxxxxxx1x -> 14'bxxx1xxxxxxxxxx);
+  wildcard trans t_flhw_1_ints  (14'bxxxxxxxxxxxx1x -> 14'bxxx0xxxxxxxx0x -> 14'bxxx1xxxxxxxxxx);
+  wildcard trans t_flhw_2_ints  (14'bxxxxxxxxxxxx1x -> 14'bxxx0xxxxxxxx0x[.2.] -> 14'bxxx1xxxxxxxxxx);
+  wildcard trans t_flhw_n_ints  (14'bxxxxxxxxxxxx1x -> 14'bxxx0xxxxxxxx0x[.3:5.] -> 14'bxxx1xxxxxxxxxx);
+  wildcard trans t_ints_0_flhw  (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxxxx1x);
+  wildcard trans t_ints_1_flhw  (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxxxx0x -> 14'bxxxxxxxxxxxx1x);
+  wildcard trans t_ints_2_flhw  (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxxxx0x[.2.] -> 14'bxxxxxxxxxxxx1x);
+  wildcard trans t_ints_n_flhw  (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxxxx0x[.3:5.] -> 14'bxxxxxxxxxxxx1x);
+  wildcard trans t_ics_brd_a    (14'b000011x1000000 -> 14'bxxxxxx1xxxxxxx); //An imiss or ic error in an annulled delay slot
+  wildcard trans t_ints_0_rbw   (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxx1xxx);
+  wildcard trans t_ints_1_rbw   (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxx0xxx -> 14'bxxxxxxxxxx1xxx);
+  wildcard trans t_ints_2_rbw   (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxx0xxx[.2.] -> 14'bxxxxxxxxxx1xxx);
+  wildcard trans t_ints_n_rbw   (14'bxxx1xxxxxxxxxx -> 14'bxxxxxxxxxx0xxx[.3:5.] -> 14'bxxxxxxxxxx1xxx);
+// };
+. 
+. #####################################################################
+. # Subroutine for creating the states from the state space matrix
+. #####################################################################
+. 
+. sub create_states {
+.   my $i; 
+.   my @cov_conds = ();
+.   my @states = ();
+.   my @new_states = ();
+.   my $state;
+.
+.   $i = $_[0];shift @_;
+.   @cov_conds = @_;
+.
+.   if ($i < $#cov_conds) {
+.     $i++;
+.     @states = create_states($i, @cov_conds);
+.     foreach $state (@states) {
+.       if (state_allowed ($cov_conds[$i], $state)) {
+. 	push (@new_states, $cov_conds[$i]."_".$state);
+.       }
+.     }
+.       push (@states, @new_states);
+.       push (@states, $cov_conds[$i]);
+.   }
+.   return (@states);
+. }
+. 
+. #####################################################################
+. # Subroutine to check if a state is allowed
+. #####################################################################
+. 
+. sub state_allowed {
+.   my $cond = $_[0];
+.   my $state = $_[1];
+.   my (@elems, $elem);
+.
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     if (exists ($impos_states{$cond}{$elem})) {
+.       return 0;
+.     }
+.   }
+.   return 1;
+. }
+
+. #####################################################################
+. # Subroutine to set the state bits in the coverage vector
+. #####################################################################
+.
+. sub state_combined_allowed {
+.   my $tr_state = $_[0];
+.   my $rb_state = $_[1];
+.   my (@tr_elems, $tr_elem);
+.   my (@rb_elems, $rb_elem);
+.
+.   @tr_elems = split ("_", $tr_state);
+.   @rb_elems = split ("_", $rb_state);
+.   foreach $tr_elem (@tr_elems) {
+.     foreach $rb_elem (@rb_elems) {
+.       if (exists ($impos_states{$rb_elem}{$tr_elem})) {
+.         return 0;
+.       }
+.     }
+.   }
+.   return 1;
+. }
+. 
+. #####################################################################
+. # Subroutine to set the state bits in the coverage vector
+. #####################################################################
+. 
+. sub set_state_bits {
+.   my $state = $_[0];
+.   my (@elems, $elem, @state_vector, @bitpos, $bit, $state_vector_str);
+. 
+.   @state_vector = (0) x $state_vec_len;
+.   $state_vector[$bitmap{brd}] = x;
+.   $state_vector[$bitmap{a}] = x;
+.   $state_vector[$bitmap{vldd}] = x;
+. 
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     $state_vector[$bitmap{$elem}] = 1;
+.   }
+. 
+.   $state_vector_str = "$state_vec_len\'b";
+.   for ($i = 0; $i < $state_vec_len; $i++) {
+.     $state_vector_str = $state_vector_str.$state_vector[$i];
+.   }
+.
+.   if ($#elems == 0) {
+.     $prim_state_vec{$elems[0]} = $state_vector_str;
+.   }
+.
+.   return $state_vector_str;
+. }
+. #####################################################################
+. # Checks for special disallowed states
+. #####################################################################
+. 
+. sub multiple_state_chk_ok {
+.   my $state = $_[0];
+. 
+.   ##An out of range pc can happen only if it is a spill over from
+.   ##0x7fff...fc or is the target of a branch. In the spill over case,
+.   ##an icache access is only possible if 0x7fff..c is AFTER the delay slot of a
+.   ##branch (or prefetch/stxa_ext_asi/membar). For inst_vld_f, it is also
+.   ##needed that d-dtage inst be not long latency, so the only rollback 
+.   ##from the d-stage is stb9 or icerr_d, both are not possible in the delay slot
+.   if ((($state =~ /trpf/) && ($state =~ /ics/) && ($state =~ /rbd/)) &&
+.	(($state =~ /flhw/) || ($state =~ /rbw/))) { 
+.     return 0;
+.   }
+.
+.   #See reason above. ldmiss or dc_parity_err has no meaning for branch
+.   if (($state =~ /trpf/) && (($state =~ /ics/) || ($state =~ /trps/)) &&
+.       (($state =~ /dcw2/) || ($state =~ /ldmw/))) {
+.     return 0;
+.   }
+.
+.   ##trpf,rbd cannot happen with with ldmw. trpf demands that the d-stage
+.   ##inst be a non long latency op so that the thread is still active in the f-stage
+.   ##and not switched out. This rules out retracted mul,div and fpop as possible d-stage rollbacks
+.   ##stb9 and icerr_d cannot happen with ld miss. 
+.   if (($state =~ /trpf/) && ($state =~ /rbd/) && ($state =~ /ldmw/)) { 
+.     return 0;
+.   }
+.
+.   return 1;
+. }

@@ -1,0 +1,220 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: regfile.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        regfile.vrpal
+//  Description:        Class definition and methods for generic register
+//                      reference modelling to be used for per-unit
+//                      register functionality.
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class REGFILE {
+
+  string        name;
+  // add_mask : defines the valid address bits to access reg
+  bit [63:0]    add_mask; // if undefined, defaults to 'hFFFF_FFFF
+  // reg_vals : register values - set only for valid addresses & add_mask
+  bit [63:0]    reg_vals[];
+  // wr_mask  : defines the writeable bits of reg
+  bit [63:0]    wr_mask[]; // if undefined, defaults to 'hFFFF_FFFF
+  // rd_mask  : defines the readable bits of reg - else returns 0 on unmasked bits
+  bit [63:0]    rd_mask[]; // if undefined, defaults to 'hFFFF_FFFF
+  // rst_mask : reset value of register, if bit value is 1, bit does not reset
+  bit [63:0]    rst_mask[]; // if undefined, defaults to 'h0
+
+  // RESET - TBD
+  // reg_incr task - for counters/timers
+
+  // class constructor
+  task new (string name, (bit [63:0] add_mask = 64'hFFFF_FFFF_FFFF_FFFF));
+
+  // dump_regs - dump out contents of regfile
+  task dump_regs ();
+
+  // print_reg - prints out all info about a single register
+  //             also indicates if address is valid register
+
+  task print_reg (bit [63:0] address);
+
+  // read_reg : returns 64 bit vector stored at given address, anded with value mask
+  //            and with the register's read_mask. returns 0 if successful, 1 if not
+  function bit read_reg(bit [63:0] address,
+                      var bit [63:0] value,                       
+                      (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF));
+  // write_reg: writes the bits in the given vector anded with the value mask
+  //            to the given address.  Also uses the register's read_mask.
+  //            Will not overwrite masked off (zeros in masks) bits.
+  //            returns 0 if successful, 1 if not
+  function bit write_reg(bit [63:0] address,
+                      bit [63:0] value,
+                      (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF));
+  // get_val  : returns 64 bit vector stored at given address, anded with value mask
+  //            returns 0 if successful, 1 if not
+  function bit get_val(bit [63:0] address,
+                      var bit [63:0] value,                       
+                      (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF));
+  // set_val  : writes the bits in the given vector anded with the value mask
+  //            to the given address.  Will not overwrite masked off bits.
+  //            returns 0 if successful, 1 if not
+  function bit set_val(bit [63:0] address,
+                      bit [63:0] value,
+                      (bit [63:0] val_mask = 64'h0));
+  // ck_val   : returns a 0 if address is defined, 1 if not
+  function bit ck_add (bit [63:0] address, 
+                      (bit [63:0] add_mask = 64'hFFFF_FFFF_FFFF_FFFF));
+  // set_add_mask : sets the address mask
+  task         set_add_mask(bit [63:0] mask);
+  // set_reg  : sets up the attributes of a register.
+  //            sets value to given value
+  //            sets wr_mask to given value
+  //            sets rd_mask to given value
+  //            sets rst_mask to given value
+  task         set_reg (bit [63:0] address,
+                        bit [63:0] value,
+                        (bit [63:0] wr_mask = 64'hFFFF_FFFF_FFFF_FFFF),
+                        (bit [63:0] rd_mask = 64'hFFFF_FFFF_FFFF_FFFF),
+                        (bit [63:0] rst_mask = 64'h0));
+  // reset_regs : resets all registers to their reset values
+}
+
+task REGFILE::new(string name, (bit [63:0] add_mask = 64'hFFFF_FFFF_FFFF_FFFF)) {
+  this.name = name;
+  this.add_mask = add_mask;
+}
+
+task REGFILE::dump_regs() {
+  bit [63:0]    index = 64'h0;
+  integer       regs_exist, i = 0;
+
+  printf ("%s Regs : Dumping regs.  Add mask: %16h\n", this.name, this.add_mask);
+  regs_exist = assoc_index(FIRST, this.reg_vals, index);
+  while (regs_exist) {
+    print_reg(index);
+    regs_exist = assoc_index(NEXT, this.reg_vals, index);
+    i++;
+  }
+  printf ("%s Regs : %0d regs defined\n", this.name, i);
+}
+
+task REGFILE::print_reg(bit [63:0] address) {
+  if (!this.ck_add(address)) {
+    printf ("%s : Add : %16h : %16h : wm %16h : rm %16h : rst %16h\n",
+           this.name, address, this.reg_vals[address & this.add_mask],
+           this.wr_mask[address & this.add_mask],
+           this.rd_mask[address & this.add_mask],
+           this.rst_mask[address & this.add_mask]);
+  } else {
+    printf ("%s : Address %16h Unpopulated\n", this.name, address);
+  }
+}
+
+function bit REGFILE::read_reg(bit [63:0] address,
+                              var bit [63:0] value,
+                              (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF)) {
+  if (!this.ck_add(address)) {
+    value = this.reg_vals[address & this.add_mask] &
+      this.rd_mask[address & this.add_mask] & val_mask;
+    read_reg = 1'b0;
+  } else {
+    value = 64'hx;
+    read_reg = 1'b1;
+  }
+}
+
+function bit REGFILE::write_reg(bit [63:0] address,
+                              bit [63:0] value,
+                              (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF)) {
+  bit [63:0] tmp_regval, tmp_mask;
+  if (!this.ck_add(address)) {
+    tmp_mask   = val_mask & this.wr_mask[address & this.add_mask];
+    tmp_regval = this.reg_vals[address & this.add_mask] & ~tmp_mask;
+    this.reg_vals[address & this.add_mask] = (value & tmp_mask) | tmp_regval;
+    write_reg = 1'b0;
+  } else {
+    write_reg = 1'b1;
+  }
+}
+
+function bit REGFILE::get_val(bit [63:0] address,
+                              var bit [63:0] value,
+                              (bit [63:0] val_mask = 64'hFFFF_FFFF_FFFF_FFFF)) {
+  if (!this.ck_add(address)) {
+    value = this.reg_vals[address & this.add_mask] & val_mask;
+    get_val = 1'b0;
+  } else {
+    value = 64'hx;
+    get_val = 1'b1;
+  }
+}
+
+function bit REGFILE::set_val(bit [63:0] address,
+                              bit [63:0] value,
+                              (bit [63:0] val_mask = 64'h0)) {
+  bit [63:0] tmp_regval;
+  bit        tmp_rslt;
+//   printf ("%s : SET_VAL ADD %16h VAL %16h MASK %16h\n",
+//           this.name, address, value, val_mask);
+  if (!this.ck_add(address)) {
+    tmp_regval = this.reg_vals[address & this.add_mask] & val_mask;
+    this.reg_vals[address & this.add_mask] = (value & ~val_mask) | tmp_regval;
+//   printf ("%s : SET_VAL MOD_ADD %16h ORIG_VAL %16h VAL&MASK %16h origm %16h wr %16h\n",
+//           this.name, address & this.add_mask, this.reg_vals[address&this.add_mask],
+//           val_mask & value, tmp_regval, value & val_mask | tmp_regval);
+    set_val = 1'b0;
+  } else {
+    set_val = 1'b1;
+  }
+  tmp_regval = 64'h0;
+//   tmp_rslt = this.get_val(address, tmp_regval);
+//   printf ("Wrote to add %16h data from %16h using %16h\n",
+//           address, tmp_regval, value);
+}
+
+function bit REGFILE::ck_add(bit [63:0] address,
+                             (bit [63:0] add_mask = 64'hFFFF_FFFF_FFFF_FFFF)) {
+  // assoc_index returns TRUE if entry exists, FALSE if not
+  // ck_add returns 1'b0 if entry exists, 1'b1 if not
+  ck_add = assoc_index(CHECK,  this.reg_vals, address & add_mask) ? 1'b0 : 1'b1;
+
+}
+
+task REGFILE::set_add_mask(bit [63:0] mask) {
+  this.add_mask = mask;
+}
+
+task REGFILE::set_reg (bit [63:0] address,
+                      bit [63:0] value,
+                      (bit [63:0] wr_mask  = 64'hFFFF_FFFF_FFFF_FFFF),
+                      (bit [63:0] rd_mask  = 64'hFFFF_FFFF_FFFF_FFFF),
+                      (bit [63:0] rst_mask = 64'h0)) {
+  this.reg_vals[address & this.add_mask] = value;
+  this.wr_mask[address & this.add_mask]  = wr_mask;
+  this.rd_mask[address & this.add_mask]  = rd_mask;
+  this.rst_mask[address & this.add_mask]  = rst_mask;
+//   printf ("Setting register add: %16h val: %16h wr_mask: %16h rd_mask: %16h\n",
+//           address, value, wr_mask, rd_mask);
+}

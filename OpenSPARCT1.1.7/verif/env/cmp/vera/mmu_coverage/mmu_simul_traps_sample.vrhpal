@@ -1,0 +1,41 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_simul_traps_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+wildcard state s_MMU_SIMUL_TRAPS (MMU_SIMUL_TRAPS);
+wildcard state s_IFU_TLU_IMMU_MISM_WITH_ANOTHER	(IFU_TLU_IMMU_MISM_WITH_ANOTHER);
+wildcard state s_LSU_TLU_DMMU_MISG_WITH_ANOTHER	(LSU_TLU_DMMU_MISG_WITH_ANOTHER);
+wildcard state s_LSU_TLU_DACCESEXCPTN_G_WITH_ANOTHER	(LSU_TLU_DACCESEXCPTN_G_WITH_ANOTHER);
+wildcard state s_TLU_LSU_INT_LD_ILL_VA_W2_WITH_ANOTHER	(TLU_LSU_INT_LD_ILL_VA_W2_WITH_ANOTHER);
+wildcard state s_IMMU_VA_OOR_BRNCHETC_M_WITH_ANOTHER	(IMMU_VA_OOR_BRNCHETC_M_WITH_ANOTHER);
+wildcard state s_EXU_TLU_VA_OOR_JL_RET_M_WITH_ANOTHER	(EXU_TLU_VA_OOR_JL_RET_M_WITH_ANOTHER);
+wildcard state s_EXU_TLU_VA_OOR_M_WITH_ANOTHER	(EXU_TLU_VA_OOR_M_WITH_ANOTHER);
+wildcard state s_VA_OOR_INST_ACC_EXCP_G_WITH_ANOTHER	(VA_OOR_INST_ACC_EXCP_G_WITH_ANOTHER);
+wildcard state s_DMMU_VA_OOR_G_WITH_ANOTHER	(DMMU_VA_OOR_G_WITH_ANOTHER);
+wildcard state s_VA_OOR_DATA_ACC_EXCP_G_WITH_ANOTHER	(VA_OOR_DATA_ACC_EXCP_G_WITH_ANOTHER);
+wildcard state s_LSU_TLU_WTCHPT_TRP_G_WITH_ANOTHER	(LSU_TLU_WTCHPT_TRP_G_WITH_ANOTHER);
+wildcard state s_LSU_TLU_MISALIGN_ADDR_LDST_ATM_M_WITH_ANOTHER	(LSU_TLU_MISALIGN_ADDR_LDST_ATM_M_WITH_ANOTHER);
+wildcard state s_TLU_MMU_SYNC_DATA_EXCP_G_WITH_ANOTHER	(TLU_MMU_SYNC_DATA_EXCP_G_WITH_ANOTHER);
+wildcard state s_IFU_TLU_FLSH_INST_E_WITH_ANOTHER	(IFU_TLU_FLSH_INST_E_WITH_ANOTHER);
+wildcard state s_DMMU_SYNC_ILLGL_VA_M_WITH_ANOTHER (DMMU_SYNC_ILLGL_VA_M_WITH_ANOTHER);
+wildcard state s_IMMU_SYNC_ILLGL_VA_M_WITH_ANOTHER (IMMU_SYNC_ILLGL_VA_M_WITH_ANOTHER);
+wildcard state s_DMMU_ASYNC_ILLGL_VA_G_WITH_ANOTHER (DMMU_ASYNC_ILLGL_VA_G_WITH_ANOTHER);
+wildcard state s_IMMU_ASYNC_ILLGL_VA_G_WITH_ANOTHER (IMMU_ASYNC_ILLGL_VA_G_WITH_ANOTHER);
+wildcard state s_DEMAP_SCTXT_WITH_ANOTHER (DEMAP_SCTXT_WITH_ANOTHER);
+wildcard state s_DEMAP_RESRV_WITH_ANOTHER (DEMAP_RESRV_WITH_ANOTHER);

@@ -1,0 +1,126 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_cntrlfsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_cntrlfsm_cov.vr
+// Description:
+// Coverage object for the thread state machine
+//
+// State: 5'b: thr_state(5)
+//
+// ***************************************************************************
+
+
+// coverage_def dram_cntrlfsm_cov (bit [4:0] que_pos)
+// {
+
+  // state declarations
+  state s_QUEPOS0       (QUEPOS0);
+  state s_QUEPOS1       (QUEPOS1);
+  state s_QUEPOS2       (QUEPOS2);
+  state s_QUEPOS3       (QUEPOS3);
+  state s_QUEPOS4       (QUEPOS4);
+  state s_QUEPOS5       (QUEPOS5);
+  state s_QUEPOS6       (QUEPOS6);
+  state s_QUEPOS7       (QUEPOS7);
+  state s_QUEPOS8       (QUEPOS8);
+  state s_QUEPOS9       (QUEPOS9);
+  state s_QUEPOS10      (QUEPOS10);
+  state s_QUEPOS11      (QUEPOS11);
+  state s_QUEPOS12      (QUEPOS12);
+  state s_QUEPOS13      (QUEPOS13);
+  state s_QUEPOS14      (QUEPOS14);
+  state s_QUEPOS15      (QUEPOS15);
+  state s_QUEPOS16      (QUEPOS16);
+  state s_QUEPOS17      (QUEPOS17);
+  state s_QUEPOS18      (QUEPOS18);
+  state s_QUEPOS19      (QUEPOS19);
+  state s_QUEPOS20      (QUEPOS20);
+  state s_QUEPOS21      (QUEPOS21);
+
+  // transitions(to same)
+  trans t_s_QUEPOS0_s_QUEPOS0         (QUEPOS0 -> QUEPOS0);
+  trans t_s_QUEPOS1_s_QUEPOS1         (QUEPOS1 -> QUEPOS1);
+  trans t_s_QUEPOS3_s_QUEPOS3         (QUEPOS3 -> QUEPOS3);
+  trans t_s_QUEPOS4_s_QUEPOS4         (QUEPOS4 -> QUEPOS4);
+  trans t_s_QUEPOS5_s_QUEPOS5         (QUEPOS5 -> QUEPOS5);
+  trans t_s_QUEPOS6_s_QUEPOS6         (QUEPOS6 -> QUEPOS6);
+  // redundant rtl, these not possible
+  //trans t_s_QUEPOS7_s_QUEPOS7         (QUEPOS7 -> QUEPOS7);
+  //trans t_s_QUEPOS8_s_QUEPOS8         (QUEPOS8 -> QUEPOS8);
+  trans t_s_QUEPOS9_s_QUEPOS9         (QUEPOS9 -> QUEPOS9);
+  trans t_s_QUEPOS10_s_QUEPOS10       (QUEPOS10 -> QUEPOS10);
+  trans t_s_QUEPOS11_s_QUEPOS11       (QUEPOS11 -> QUEPOS11);
+  trans t_s_QUEPOS13_s_QUEPOS13       (QUEPOS13 -> QUEPOS13);
+  trans t_s_QUEPOS14_s_QUEPOS14       (QUEPOS14 -> QUEPOS14);
+  trans t_s_QUEPOS15_s_QUEPOS15       (QUEPOS15 -> QUEPOS15);
+  trans t_s_QUEPOS16_s_QUEPOS16       (QUEPOS16 -> QUEPOS16);
+  trans t_s_QUEPOS17_s_QUEPOS17       (QUEPOS17 -> QUEPOS17);
+  trans t_s_QUEPOS18_s_QUEPOS18       (QUEPOS18 -> QUEPOS18);
+  trans t_s_QUEPOS19_s_QUEPOS19       (QUEPOS19 -> QUEPOS19);
+  trans t_s_QUEPOS21_s_QUEPOS21       (QUEPOS21 -> QUEPOS21);
+
+  // transitions(to different)
+  trans t_s_QUEPOS0_s_QUEPOS1         (QUEPOS0 -> QUEPOS1);
+  trans t_s_QUEPOS0_s_QUEPOS14        (QUEPOS0 -> QUEPOS14);
+  trans t_s_QUEPOS1_s_QUEPOS2         (QUEPOS1 -> QUEPOS2);
+  //trans t_s_QUEPOS2_s_QUEPOS16        (QUEPOS2 -> QUEPOS16);
+  trans t_s_QUEPOS2_s_QUEPOS21        (QUEPOS2 -> QUEPOS21);
+  trans t_s_QUEPOS3_s_QUEPOS4         (QUEPOS3 -> QUEPOS4);
+  trans t_s_QUEPOS4_s_QUEPOS5         (QUEPOS4 -> QUEPOS5);
+  //trans t_s_QUEPOS5_s_QUEPOS6         (QUEPOS5 -> QUEPOS6);
+  trans t_s_QUEPOS5_s_QUEPOS21         (QUEPOS5 -> QUEPOS21);
+  trans t_s_QUEPOS6_s_QUEPOS12        (QUEPOS6 -> QUEPOS12);
+  trans t_s_QUEPOS7_s_QUEPOS12        (QUEPOS7 -> QUEPOS12);
+  trans t_s_QUEPOS8_s_QUEPOS9         (QUEPOS8 -> QUEPOS9);
+  trans t_s_QUEPOS9_s_QUEPOS18        (QUEPOS9 -> QUEPOS18);
+  trans t_s_QUEPOS10_s_QUEPOS11       (QUEPOS10 -> QUEPOS11);
+  trans t_s_QUEPOS11_s_QUEPOS12       (QUEPOS11 -> QUEPOS12);
+  trans t_s_QUEPOS12_s_QUEPOS13       (QUEPOS12 -> QUEPOS13);
+  trans t_s_QUEPOS12_s_QUEPOS14       (QUEPOS12 -> QUEPOS14);
+  trans t_s_QUEPOS13_s_QUEPOS10       (QUEPOS13 -> QUEPOS10);
+  trans t_s_QUEPOS13_s_QUEPOS1        (QUEPOS13 -> QUEPOS1);
+  trans t_s_QUEPOS13_s_QUEPOS7        (QUEPOS13 -> QUEPOS7);
+  trans t_s_QUEPOS13_s_QUEPOS8        (QUEPOS13 -> QUEPOS8);
+  trans t_s_QUEPOS13_s_QUEPOS11       (QUEPOS13 -> QUEPOS11);
+  trans t_s_QUEPOS13_s_QUEPOS12       (QUEPOS13 -> QUEPOS12);
+  trans t_s_QUEPOS14_s_QUEPOS15       (QUEPOS14 -> QUEPOS15);
+  trans t_s_QUEPOS15_s_QUEPOS10       (QUEPOS15 -> QUEPOS10);
+  trans t_s_QUEPOS16_s_QUEPOS17       (QUEPOS16 -> QUEPOS17);
+  trans t_s_QUEPOS17_s_QUEPOS3        (QUEPOS17 -> QUEPOS3);
+  trans t_s_QUEPOS18_s_QUEPOS19       (QUEPOS18 -> QUEPOS19);
+  trans t_s_QUEPOS19_s_QUEPOS20       (QUEPOS19 -> QUEPOS20);
+  trans t_s_QUEPOS20_s_QUEPOS10       (QUEPOS20 -> QUEPOS10);
+  trans t_s_QUEPOS21_s_QUEPOS2        (QUEPOS21 -> QUEPOS2);
+  trans t_s_QUEPOS21_s_QUEPOS6        (QUEPOS21 -> QUEPOS6);
+  trans t_s_QUEPOS21_s_QUEPOS16       (QUEPOS21 -> QUEPOS16);
+
+  // transitions(combinations)
+  // to be added
+
+  // bad states
+  bad_state s_not_QUEFSM_STATE (not state) if((dram_coverage_ifc_dram_clk.dram_Ch${c}_que_channel_disabled == 1'b0) && (dram_coverage_ifc_dram_clk.dram_rst_l == 1'b1));
+
+  // bad transitions 
+  bad_trans t_not_QUEFSM_TRANS (not trans) if((dram_coverage_ifc_dram_clk.dram_Ch${c}_que_channel_disabled == 1'b0) && (dram_coverage_ifc_dram_clk.dram_rst_l == 1'b1));
+
+// }
+

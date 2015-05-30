@@ -1,0 +1,216 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_trap_cov.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// This is the trap coverage obj.
+// We just make it more modular by saperating it from core_pipe coverage monitor.
+//
+
+
+// i wish the coverage can be extended in this class by i think i stay on the safe side.
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+
+
+//#define LIUXI_DEBUG
+
+// in this class we only do the trap type translation!
+// pipe stages:
+// F S D E M W W1 W2
+
+class TrapCov {
+
+  local bit [8:0] trap_pipe[];
+  local bit [1:0] thid_pipe[];
+  
+  local bit valid[];
+  local mt_cov_port my_pt;
+
+
+  event smpl_event;
+
+  // public
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'w1', 'w2');
+. for my $i (2..6) {
+.     my $p = $pipe[$i];
+  bit [2:0] trap_sample_${p};
+. }
+  
+
+  
+  task new(mt_cov_port pt) {
+    integer i;
+    my_pt = pt;
+    for (i=0; i<10; i++) { valid[i]=0; trap_pipe[i] =0; }
+    CoverOn();
+  }
+
+  local task Going();
+
+  local task CoverOn();
+
+}
+
+
+task TrapCov::CoverOn ()
+{
+  integer done = 0;
+  string rpt;
+  
+  fork {
+    while (!done) {
+      @ (posedge my_pt.\$cmp_clk);
+      Going();
+
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'w1', 'w2');
+. for my $i (2..6) {
+.     my $p = $pipe[$i];
+// need to change this to sample!!
+   trap_sample_${p} = {|trap_pipe[$i], thid_pipe[$i]};
+. }
+
+      trigger(ONE_SHOT, smpl_event);
+      
+    }
+  } {
+    @ (posedge my_pt.\$cmp_diag_done);
+    done = 1;
+  } join none
+
+}
+
+task TrapCov::Going ()
+{
+  integer i;
+  bit trap = 0;
+  bit [8:0] tmp_trap;
+  bit [1:0] tmp_thid;
+
+#ifdef LIUXI_DEBUG
+  {
+    integer i;
+    for (i=3; i<8; i++) {
+      printf ("=== %h %h ==",trap_pipe[i], thid_pipe[i]); 
+    }
+    printf("\n");
+  }
+#endif
+
+  // here is for ifu trap
+  
+  trap_pipe[0] = 0;
+  thid_pipe[0] = 0;
+  for (i=8; i>0; i--) {
+    trap_pipe[i] = trap_pipe[i-1];
+    thid_pipe[i] = thid_pipe[i-1];
+  }
+
+  // here is for reset, reset is resolved in M stage!
+  trap = my_pt.\$rst_m;
+  if (trap===1'b1) {
+    thid_pipe[3] = my_pt.\$thrid_m;
+    trap_pipe[3] = 1; // just makeup a value
+  }
+  
+#ifdef LIUXI_DEBUG
+  printf("===== %b ----- %h ===== %0d\n", trap, tmp_trap, get_time(LO));
+  if (trap===1'b1) printf("TRAP %b %h %h===== RST ====== M %0d\n",
+                   trap, trap_pipe[3], thid_pipe[3], get_time(LO));
+#endif
+
+  
+  trap = my_pt.\$trap_e;
+  
+  tmp_trap = my_pt.\$ttype_e;
+  tmp_thid = my_pt.\$thr_e;
+
+  trap_pipe[2] = (trap === 1'b1)? tmp_trap : 0;
+  thid_pipe[2] = (trap === 1'b1)? tmp_thid : 0;
+#ifdef LIUXI_DEBUG
+  if (trap) {
+    printf("TRAP %b %h %h=====IFU======E %0d\n",
+           trap, tmp_trap, tmp_thid, get_time(LO));
+    {     
+      integer i;
+      for (i=3; i<8; i++) {
+        printf ("=== %h %h ==",trap_pipe[i], thid_pipe[i]); 
+      }   
+      printf("time %0d\n", get_time(LO));
+    }    
+  }
+
+
+#endif
+
+  if (trap===1'b1) return;
+
+
+  // here is for exu trap
+  // trap = my_pt.\$exu_trap_e;
+
+  trap = my_pt.\$early_ttype_vld_e |
+         my_pt.\$ecc_ue_trap_e;
+
+
+  tmp_trap = my_pt.\$exu_ttype_e;
+
+  trap_pipe[2] = (trap===1'b1)? tmp_trap : 0;
+  thid_pipe[2] = (trap===1'b1)? tmp_thid : 0;
+  
+#ifdef LIUXI_DEBUG
+  printf("===== %b ----- %h ===== %0d\n", trap, tmp_trap, get_time(LO));
+  if (trap===1'b1) printf("TRAP %b %h %h=====EXE======E %0d\n",
+                   trap, tmp_trap, tmp_thid, get_time(LO));
+#endif
+
+
+
+  /*
+  
+  trap = my_pt.\$trap_m;
+
+#ifdef LIUXI_DEBUG
+  if (trap) printf("TRAP %b %h %h===========M %0d\n",
+                   trap, tmp_trap, tmp_thid, get_time(LO));
+#endif
+  tmp_trap = my_pt.\$ttype_m;
+  trap_pipe[3] = trap? tmp_trap : 0;
+*/
+
+  trap = my_pt.\$trap_0w1 |
+         my_pt.\$trap_1w1 | 
+         my_pt.\$trap_2w1 |
+         my_pt.\$trap_3w1;
+  tmp_thid = { my_pt.\$trap_3w1,
+               my_pt.\$trap_2w1,
+               my_pt.\$trap_1w1,
+               my_pt.\$trap_0w1};
+#ifdef LIUXI_DEBUG
+  if (trap) printf("TRAP %b %h %h===========W1 %0d\n",
+                   trap, tmp_trap, tmp_thid, get_time(LO));
+#endif
+  
+  trap_pipe[5] = trap | trap_pipe[5];
+  thid_pipe[5] = trap ? tmp_thid : thid_pipe[5];
+
+
+}
+
+

@@ -1,0 +1,1253 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tlu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	tlu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level TLU coverage class.
+ *	Contains the new() task which instantiates all the TLU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "tlu.if.vrh"
+#include "tlu_ports_binds.vrh"
+#include "tlu_defines.vrh"
+
+class tlu_coverage {
+
+  event cov_sample_event;
+
+. foreach $c (@CORE_STR) {
+  bit		C${c}_s_privileged_d;
+  bit		C${c}_s_privileged_e;
+  bit		C${c}_s_privileged_m;
+  bit		C${c}_s_privileged_g;
+  bit [1:0]	C${c}_gl_lvl;
+  bit [2:0]	C${c}_trap_lvl, C${c}_trap_lvl_new;
+  bit [2:0]	C${c}_trap_lvl_w1, C${c}_trap_lvl_new_w1;
+  bit 		C${c}_tl_gt_0, C${c}_new_tl_gt_0;
+  bit [3:0]	C${c}_pil_m, C${c}_pil_g;
+  bit		C${c}_wr_gl_g, C${c}_wr_tl_g;
+  bit		C${c}_wr_gl_g1, C${c}_wr_tl_g1;
+  bit		C${c}_wr_gl_g2, C${c}_wr_tl_g2;
+  bit [63:0]	C${c}_inrr_i2;
+  bit		C${c}_rd_ivr, C${c}_wr_irr;
+  bit		C${c}_t_hpstate_enb_g, C${c}_t_hpstate_red_g, C${c}_t_hpstate_priv_g;
+  bit		C${c}_t_hpstate_enb_w2, C${c}_t_hpstate_red_w2, C${c}_t_hpstate_priv_w2;
+  bit		C${c}_t_pstate_priv_g, C${c}_t_pstate_priv_w2;
+  bit [2:0]	C${c}_trap_lvl_g_w2, C${c}_trap_lvl_w2;
+  bit 		C${c}_tl_at_maxtl_g_w2;
+  bit           C${c}_wrm_rst_g, C${c}_xir_rst_g;
+  bit		C${c}_local_iside_trap_g;
+  bit		C${c}_async_trap;
+  bit		C${c}_smb_softint_g;
+  bit		C${c}_tick_npt_d, C${c}_pcr_priv_d;
+  bit [3:0]	C${c}_halt_inst;
+  bit [16:0]	C${c}_softint_g;
+  bit           C${c}_sw_hw_intr_vld, C${c}_cwp_cmplt_hw_intr, C${c}_async_trap_hw_intr;
+  bit [3:0]     C${c}_pic_wrap_cpu_mondo, C${c}_pic_wrap_dev_mondo, C${c}_pic_wrap_resum_err;
+  bit [3:0]     C${c}_pic_wrap_tlz_trap;
+  bit [1:0]	C${c}_fp_trap_tid;
+  bit [1:0]	C${c}_spill_trap_tid;
+  bit [1:0]	C${c}_lsu_async_trap_tid_w2;
+  bit [1:0]	C${c}_tick_tid;
+  bit           C${c}_hscpd_dacc_excpt_m, C${c}_qtail_dacc_excpt_m;
+  //bit [3:0]	C${c}_pic_wrap;
+  bit [3:0]	C${c}_nukeint_vld;
+
+  bit [4:0]	C${c}_true_hpstate_w1;
+  bit [11:0]	C${c}_true_pstate_w1;
+  bit		C${c}_tl_at_maxtl_w1;
+  bit		C${c}_tl_at_maxtlless1_w1;
+  bit		C${c}_tl_gt_0_w1;
+
+  // New state (port - signals) variables for coverage group sample
+  bit [49:0]	tlu_thrd_fsm_sample_C${c};
+  bit [61:0]	tlu_asi_access_sample_C${c};
+  bit [61:0]	tlu_asiacc_trap_sample_C${c};
+  bit [12:0]	tlu_asr_access_sample_C${c};
+  bit [13:0]	tlu_asracc_trap_sample_C${c};
+  bit [15:0]	tlu_cmpr_intdis_sample_C${c};
+  bit [14:0]	tlu_st_intl_extl_sync_sample_C${c};
+  bit [7:0]	tlu_st_intl_extl_async_fp_sample_C${c};
+  bit [7:0]	tlu_st_intl_extl_async_sp_sample_C${c};
+  bit [12:0]	tlu_st_intl_extl_async_ls_sample_C${c};
+  bit [9:0]	tlu_mt_intl_extl_sample_C${c};
+  bit [12:0]	tlu_intrp_trap_sample_C${c};
+  bit [2:0]	tlu_intrp_trap_2_sample_C${c};
+  bit [13:0]	tlu_mtb2b_extl_sample_C${c};
+  bit [10:0]	tlu_multi_intl_tevt_sample_C${c};
+  bit [8:0]	tlu_multi_intl_pevt_sample_C${c};
+  bit [12:0]	tlu_multi_intl_trap_sample_C${c};
+  bit [14:0]	tlu_multi_tsasr_sample_C${c};
+  bit [32:0]	tlu_mtb2b_tsasr_sample_C${c};
+  bit [11:0]	tlu_async_starv_sample_C${c};
+  bit [31:0]	tlu_sftint_update_sample_C${c};
+  bit [26:0]	tlu_softint_sample_C${c};
+  bit [5:0]	tlu_stb2b_trap_sample_C${c};
+  bit [14:0]	tlu_suspend_resume_sample_C${c};
+  bit [137:0]	tlu_thrd_intrp_sample_C${c};
+  bit [20:0]	tlu_gl_lvl_sample_C${c};
+  bit [24:0]	tlu_tl_lvl_sample_C${c};
+  bit [19:0]	tlu_tlz_trap_sample_C${c};
+  bit [29:0]	tlu_wd_rst_sample_C${c};
+  bit [17:0]	tlu_acc_violation_sample_C${c};
+  bit [9:0]	tlu_sync_ifu_ttype_sample_C${c};
+  bit [13:0]	tlu_sync_exu_ttype_sample_C${c};
+  bit [9:0]	tlu_sync_lsu_ttype_sample_C${c};
+  bit [13:0]	tlu_async_ttype_sample_C${c};
+  bit [8:0]	tlu_lsu_trap_stat_sample_C${c};
+  bit [10:0]	tlu_ttype_sample_C${c};
+  bit [5:0]	tlu_flushed_intrp_sample_C${c};
+  bit [45:0]	tlu_multi_extl_traps_sample_C${c};
+  bit [9:0]	tlu_specinst_async_trpevt_sample_C${c};
+  //bit [67:0] 	tlu_pib_sample_C${c};
+  bit [4:0] 	tlu_pib_pich0_sample_C${c};
+  bit [4:0] 	tlu_pib_pich1_sample_C${c};
+  bit [4:0] 	tlu_pib_pich2_sample_C${c};
+  bit [4:0] 	tlu_pib_pich3_sample_C${c};
+  bit [11:0] 	tlu_pib_picl0_sample_C${c};
+  bit [11:0] 	tlu_pib_picl1_sample_C${c};
+  bit [11:0] 	tlu_pib_picl2_sample_C${c};
+  bit [11:0] 	tlu_pib_picl3_sample_C${c};
+
+. }
+
+  coverage_group tlu_coverage_group {
+
+    const_sample_reference	= 1;	// refs. to sample vars. are const
+    sample_event		= sync( ALL, cov_sample_event );
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. the test passes
+
+.   foreach $c (@CORE_STR) {
+
+  sample tlu_thrd_fsm_sample_C${c} {
+#inc "tlu_thrd_fsm_sample.vrhpal";
+  }
+  sample tlu_asi_access_sample_C${c} {
+#inc "tlu_asi_access_sample.vrhpal";
+  }
+  sample tlu_asiacc_trap_sample_C${c} {
+#inc "tlu_asiacc_trap_sample.vrhpal";
+  }
+  sample tlu_asr_access_sample_C${c} {
+#inc "tlu_asr_access_sample.vrhpal";
+  }
+  sample tlu_asracc_trap_sample_C${c} {
+#inc "tlu_asracc_trap_sample.vrhpal";
+  }
+  sample tlu_cmpr_intdis_sample_C${c} {
+#inc "tlu_cmpr_intdis_sample.vrhpal";
+  }
+  sample tlu_st_intl_extl_sync_sample_C${c} {
+#inc "tlu_st_intl_extl_sync_sample.vrhpal";
+  }
+  sample tlu_st_intl_extl_async_fp_sample_C${c} {
+#inc "tlu_st_intl_extl_async_fp_sample.vrhpal";
+  }
+  sample tlu_st_intl_extl_async_sp_sample_C${c} {
+#inc "tlu_st_intl_extl_async_sp_sample.vrhpal";
+  }
+  sample tlu_st_intl_extl_async_ls_sample_C${c} {
+#inc "tlu_st_intl_extl_async_ls_sample.vrhpal";
+  }
+  sample tlu_mt_intl_extl_sample_C${c} {
+#inc "tlu_mt_intl_extl_sample.vrhpal";
+  }
+  sample tlu_intrp_trap_sample_C${c} {
+#inc "tlu_intrp_trap_sample.vrhpal";
+  }
+  sample tlu_intrp_trap_2_sample_C${c} {
+#inc "tlu_intrp_trap_2_sample.vrhpal";
+  }
+  sample tlu_mtb2b_extl_sample_C${c} {
+#inc "tlu_mtb2b_extl_sample.vrhpal";
+  }
+  sample tlu_multi_intl_tevt_sample_C${c} {
+#inc "tlu_multi_intl_tevt_sample.vrhpal";
+  }
+  sample tlu_multi_intl_pevt_sample_C${c} {
+#inc "tlu_multi_intl_pevt_sample.vrhpal";
+  }
+  sample tlu_multi_intl_trap_sample_C${c} {
+#inc "tlu_multi_intl_trap_sample.vrhpal";
+  }
+  sample tlu_multi_tsasr_sample_C${c} {
+#inc "tlu_multi_tsasr_sample.vrhpal";
+  }
+  sample tlu_mtb2b_tsasr_sample_C${c} {
+#inc "tlu_mtb2b_tsasr_sample.vrhpal";
+  }
+  sample tlu_async_starv_sample_C${c} {
+#inc "tlu_async_starv_sample.vrhpal";
+  }
+  sample tlu_pib_pich0_sample_C${c} {
+#inc "tlu_pib_pich0_sample.vrhpal";
+  }
+  sample tlu_pib_pich1_sample_C${c} {
+#inc "tlu_pib_pich1_sample.vrhpal";
+  }
+  sample tlu_pib_pich2_sample_C${c} {
+#inc "tlu_pib_pich2_sample.vrhpal";
+  }
+  sample tlu_pib_pich3_sample_C${c} {
+#inc "tlu_pib_pich3_sample.vrhpal";
+  }
+  sample tlu_pib_picl0_sample_C${c} {
+#inc "tlu_pib_picl0_sample.vrhpal";
+  }
+  sample tlu_pib_picl1_sample_C${c} {
+#inc "tlu_pib_picl1_sample.vrhpal";
+  }
+  sample tlu_pib_picl2_sample_C${c} {
+#inc "tlu_pib_picl2_sample.vrhpal";
+  }
+  sample tlu_pib_picl3_sample_C${c} {
+#inc "tlu_pib_picl3_sample.vrhpal";
+  }
+  sample tlu_sftint_update_sample_C${c} {
+#inc "tlu_sftint_update_sample.vrhpal";
+  }
+  sample tlu_softint_sample_C${c} {
+#inc "tlu_softint_sample.vrhpal";
+  }
+  sample tlu_stb2b_trap_sample_C${c} {
+#inc "tlu_stb2b_trap_sample.vrhpal";
+  }
+  sample tlu_suspend_resume_sample_C${c} {
+#inc "tlu_suspend_resume_sample.vrhpal";
+  }
+  sample tlu_thrd_intrp_sample_C${c} {
+#inc "tlu_thrd_intrp_sample.vrhpal";
+  }
+  sample tlu_gl_lvl_sample_C${c} {
+#inc "tlu_gl_lvl_sample.vrhpal";
+  }
+  sample tlu_tl_lvl_sample_C${c} {
+#inc "tlu_tl_lvl_sample.vrhpal";
+  }
+  sample tlu_tlz_trap_sample_C${c} {
+#inc "tlu_tlz_trap_sample.vrhpal";
+  }
+  sample tlu_wd_rst_sample_C${c} {
+#inc "tlu_wd_rst_sample.vrhpal";
+  }
+  sample tlu_acc_violation_sample_C${c} {
+#inc "tlu_acc_violation_sample.vrhpal";
+  }
+  sample tlu_sync_ifu_ttype_sample_C${c} {
+#inc "tlu_sync_ifu_ttype_sample.vrhpal";
+  }
+  sample tlu_sync_exu_ttype_sample_C${c} {
+#inc "tlu_sync_exu_ttype_sample.vrhpal";
+  }
+  sample tlu_sync_lsu_ttype_sample_C${c} {
+#inc "tlu_sync_lsu_ttype_sample.vrhpal";
+  }
+  sample tlu_async_ttype_sample_C${c} {
+#inc "tlu_async_ttype_sample.vrhpal";
+  }
+  sample tlu_lsu_trap_stat_sample_C${c} {
+#inc "tlu_lsu_trap_stat_sample.vrhpal";
+  }
+  sample tlu_ttype_sample_C${c} {
+#inc "tlu_ttype_sample.vrhpal";
+  }
+  sample tlu_flushed_intrp_sample_C${c} {
+#inc "tlu_flushed_intrp_sample.vrhpal";
+  }
+  sample tlu_multi_extl_traps_sample_C${c} {
+#inc "tlu_multi_extl_traps_sample.vrhpal";
+  }
+  sample tlu_specinst_async_trpevt_sample_C${c} {
+#inc "tlu_specinst_async_trpevt_sample.vrhpal";
+  }
+.   } # foreach $c
+
+  } // coverage_group
+
+
+  ///////////////////////
+  // Tasks and Functions
+  task new();
+  task set_cov_cond_bits ();
+. foreach $c (@CORE_STR) {
+  function bit C${c}_multi_bit_on (bit [16:0] data_in);
+. }
+
+}
+
+task tlu_coverage::new() {
+
+  bit coverage_on;
+
+  if (get_plus_arg (CHECK, "tlu_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+    tlu_coverage_group	= new();
+    printf("\n\n%d : Coverage turned on for TLU objects!\n\n", get_time(LO));
+    set_cov_cond_bits ();
+
+    fork {
+      @ (posedge tlu_cov_top.cmp_diag_done);
+      tlu_coverage_group.set_cov_weight(1);
+      coverage_save_database(1);
+      printf("\n\n%d : Coverage for TLU objects generated!\n\n", get_time(LO));
+
+    } join none
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////
+// This task is a psuedo coverage object that combines a few conditions
+// so that the actual coverage objects' state space doesn't get too big
+//////////////////////////////////////////////////////////////////////////
+
+task tlu_coverage::set_cov_cond_bits ()
+{
+  fork {
+    while (1) {
+      @(posedge tlu_cov_top.clk);
+
+. foreach $c (@CORE_STR) {
+
+      C${c}_nukeint_vld[3:0] = C${c}_tlu_evt_bind.\$rstthr_i2[3:0] & {4{C${c}_tlu_evt_bind.\$nukeint_i2}};
+
+      //C${c}_pic_wrap = (C${c}_tlu_evt_bind.\$pich_wrap | C${c}_tlu_evt_bind.\$picl_wrap);
+ 
+      C${c}_s_privileged_d = C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_d] | C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_d];
+      C${c}_s_privileged_e = C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_e] | C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_e];
+      C${c}_s_privileged_m = C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_m] | C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_m];
+      C${c}_s_privileged_g = C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g] | C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g];
+
+      case (C${c}_tlu_tid_bind.\$tid_d) {
+        2'b00: {
+          C${c}_tick_npt_d = C${c}_tlu_asr_bind.\$tick_npt0;
+          C${c}_pcr_priv_d = C${c}_tlu_pib_bind.\$pcr0[0];
+        }
+        2'b01: {
+          C${c}_tick_npt_d = C${c}_tlu_asr_bind.\$tick_npt1;
+          C${c}_pcr_priv_d = C${c}_tlu_pib_bind.\$pcr1[0];
+        }
+        2'b10: {
+          C${c}_tick_npt_d = C${c}_tlu_asr_bind.\$tick_npt2;
+          C${c}_pcr_priv_d = C${c}_tlu_pib_bind.\$pcr2[0];
+        }
+        2'b11: {
+          C${c}_tick_npt_d = C${c}_tlu_asr_bind.\$tick_npt3;
+          C${c}_pcr_priv_d = C${c}_tlu_pib_bind.\$pcr3[0];
+        }
+      }
+
+      case (C${c}_tlu_tid_bind.\$tid_m) {
+        2'b00: {
+          C${c}_pil_m = C${c}_tlu_asr_bind.\$pil0;
+        }
+        2'b01: {
+          C${c}_pil_m = C${c}_tlu_asr_bind.\$pil1;
+        }
+        2'b10: {
+          C${c}_pil_m = C${c}_tlu_asr_bind.\$pil2;
+        }
+        2'b11: {
+          C${c}_pil_m = C${c}_tlu_asr_bind.\$pil3;
+        }
+      }
+
+      case (C${c}_tlu_tid_bind.\$tid_g) {
+        2'b00: {
+          C${c}_gl_lvl = C${c}_tlu_asr_bind.\$gl_lvl0;
+          C${c}_trap_lvl = C${c}_tlu_asr_bind.\$trap_lvl0; 
+          C${c}_trap_lvl_new = C${c}_tlu_asr_bind.\$trap_lvl0_new; 
+          C${c}_inrr_i2 = C${c}_tlu_intdp_bind.\$t0_inrr;
+          C${c}_pil_g = C${c}_tlu_asr_bind.\$pil0;
+          C${c}_softint_g = C${c}_tlu_asr_bind.\$softint0;
+	}
+        2'b01: {
+          C${c}_gl_lvl = C${c}_tlu_asr_bind.\$gl_lvl1;
+          C${c}_trap_lvl = C${c}_tlu_asr_bind.\$trap_lvl1; 
+          C${c}_trap_lvl_new = C${c}_tlu_asr_bind.\$trap_lvl1_new; 
+          C${c}_inrr_i2 = C${c}_tlu_intdp_bind.\$t1_inrr;
+          C${c}_pil_g = C${c}_tlu_asr_bind.\$pil1;
+          C${c}_softint_g = C${c}_tlu_asr_bind.\$softint1;
+	}
+        2'b10: {
+          C${c}_gl_lvl = C${c}_tlu_asr_bind.\$gl_lvl2;
+          C${c}_trap_lvl = C${c}_tlu_asr_bind.\$trap_lvl2; 
+          C${c}_trap_lvl_new = C${c}_tlu_asr_bind.\$trap_lvl2_new; 
+          C${c}_inrr_i2 = C${c}_tlu_intdp_bind.\$t2_inrr;
+          C${c}_pil_g = C${c}_tlu_asr_bind.\$pil2;
+          C${c}_softint_g = C${c}_tlu_asr_bind.\$softint2;
+	}
+        2'b11: {
+          C${c}_gl_lvl = C${c}_tlu_asr_bind.\$gl_lvl3;
+          C${c}_trap_lvl = C${c}_tlu_asr_bind.\$trap_lvl3; 
+          C${c}_trap_lvl_new = C${c}_tlu_asr_bind.\$trap_lvl3_new; 
+          C${c}_inrr_i2 = C${c}_tlu_intdp_bind.\$t3_inrr;
+          C${c}_pil_g = C${c}_tlu_asr_bind.\$pil3;
+          C${c}_softint_g = C${c}_tlu_asr_bind.\$softint3;
+	}
+      }
+      case (C${c}_tlu_tid_bind.\$tid_w1) {
+        2'b00: {
+          C${c}_true_pstate_w1 = C${c}_tlu_state_bind.\$true_pstate0;
+  	  C${c}_true_hpstate_w1 = C${c}_tlu_state_bind.\$true_hpstate0;
+          C${c}_trap_lvl_w1 = C${c}_tlu_asr_bind.\$trap_lvl0; 
+          C${c}_trap_lvl_new_w1 = C${c}_tlu_asr_bind.\$trap_lvl0_new; 
+          C${c}_tl_gt_0_w1 = C${c}_tlu_asr_bind.\$tl0_gt_0;
+          C${c}_tl_at_maxtl_w1  = C${c}_tlu_asr_bind.\$tl0_at_maxtl;
+          C${c}_tl_at_maxtlless1_w1 = C${c}_tlu_asr_bind.\$tl0_at_maxtlless1;
+	}
+        2'b01: {
+          C${c}_true_pstate_w1 = C${c}_tlu_state_bind.\$true_pstate1;
+  	  C${c}_true_hpstate_w1 = C${c}_tlu_state_bind.\$true_hpstate1;
+          C${c}_trap_lvl_w1 = C${c}_tlu_asr_bind.\$trap_lvl1; 
+          C${c}_trap_lvl_new_w1 = C${c}_tlu_asr_bind.\$trap_lvl1_new; 
+          C${c}_tl_gt_0_w1 = C${c}_tlu_asr_bind.\$tl1_gt_0;
+          C${c}_tl_at_maxtl_w1  = C${c}_tlu_asr_bind.\$tl1_at_maxtl;
+          C${c}_tl_at_maxtlless1_w1 = C${c}_tlu_asr_bind.\$tl1_at_maxtlless1;
+	}
+        2'b10: {
+          C${c}_true_pstate_w1 = C${c}_tlu_state_bind.\$true_pstate2;
+  	  C${c}_true_hpstate_w1 = C${c}_tlu_state_bind.\$true_hpstate2;
+          C${c}_trap_lvl_w1 = C${c}_tlu_asr_bind.\$trap_lvl2; 
+          C${c}_trap_lvl_new_w1 = C${c}_tlu_asr_bind.\$trap_lvl2_new; 
+          C${c}_tl_gt_0_w1 = C${c}_tlu_asr_bind.\$tl2_gt_0;
+          C${c}_tl_at_maxtl_w1  = C${c}_tlu_asr_bind.\$tl2_at_maxtl;
+          C${c}_tl_at_maxtlless1_w1 = C${c}_tlu_asr_bind.\$tl2_at_maxtlless1;
+	}
+        2'b11: {
+          C${c}_true_pstate_w1 = C${c}_tlu_state_bind.\$true_pstate3;
+  	  C${c}_true_hpstate_w1 = C${c}_tlu_state_bind.\$true_hpstate3;
+          C${c}_trap_lvl_w1 = C${c}_tlu_asr_bind.\$trap_lvl3; 
+          C${c}_trap_lvl_new_w1 = C${c}_tlu_asr_bind.\$trap_lvl3_new; 
+          C${c}_tl_gt_0_w1 = C${c}_tlu_asr_bind.\$tl3_gt_0;
+          C${c}_tl_at_maxtl_w1  = C${c}_tlu_asr_bind.\$tl3_at_maxtl;
+          C${c}_tl_at_maxtlless1_w1 = C${c}_tlu_asr_bind.\$tl3_at_maxtlless1;
+	}
+      }
+      C${c}_tl_gt_0  = (C${c}_trap_lvl_w1 !== 3'b000);
+      C${c}_new_tl_gt_0  = (C${c}_trap_lvl_new_w1 !== 3'b000);
+
+      C${c}_wr_gl_g = C${c}_tlu_asr_bind.\$wsr_inst_g & (C${c}_tlu_asr_bind.\$sraddr_d.3 == 7'h30);
+      C${c}_wr_tl_g = C${c}_tlu_asr_bind.\$wsr_inst_g & (C${c}_tlu_asr_bind.\$sraddr_d.3 == 7'h27);
+      C${c}_wr_gl_g1 = C${c}_tlu_asr_bind.\$wsr_inst_g.1 & (C${c}_tlu_asr_bind.\$sraddr_d.4 == 7'h30);
+      C${c}_wr_tl_g1 = C${c}_tlu_asr_bind.\$wsr_inst_g.1 & (C${c}_tlu_asr_bind.\$sraddr_d.4 == 7'h27);
+      C${c}_wr_gl_g2 = C${c}_tlu_asr_bind.\$wsr_inst_g.2 & (C${c}_tlu_asr_bind.\$sraddr_d.5 == 7'h30);
+      C${c}_wr_tl_g2 = C${c}_tlu_asr_bind.\$wsr_inst_g.2 & (C${c}_tlu_asr_bind.\$sraddr_d.5 == 7'h27);
+
+      C${c}_rd_ivr = C${c}_tlu_asi_bind.\$alt_space_e.2 &
+                     C${c}_tlu_asi_bind.\$ld_inst_e.2 &
+		     (C${c}_tlu_asi_bind.\$int_asi_state == 8'h74);
+
+      C${c}_wr_irr = C${c}_tlu_asi_bind.\$alt_space_e.2 &
+		     C${c}_tlu_asi_bind.\$st_inst_e.2 &
+		     (C${c}_tlu_asi_bind.\$int_asi_state == 8'h72);
+
+      //>>>>>>>>>>>>>>>>>>>>>for wd_rst_sample
+      if (C${c}_tlu_trap_bind.\$trappc_vld_w1.1 === 1'b1) {
+        C${c}_t_hpstate_enb_g = C${c}_tlu_state_bind.\$hpstate_enb.2[C${c}_tlu_trap_bind.\$trap_tid_w1.1];
+        C${c}_t_hpstate_red_g = C${c}_tlu_state_bind.\$hpstate_red.2[C${c}_tlu_trap_bind.\$trap_tid_w1.1];
+        C${c}_t_hpstate_priv_g = C${c}_tlu_state_bind.\$hpstate_priv.2[C${c}_tlu_trap_bind.\$trap_tid_w1.1];
+        C${c}_t_pstate_priv_g = C${c}_tlu_state_bind.\$pstate_priv.2[C${c}_tlu_trap_bind.\$trap_tid_w1.1]; 
+        C${c}_t_hpstate_enb_w2 = C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_trap_bind.\$trap_tid_w1.1]; 
+        C${c}_t_hpstate_red_w2 = C${c}_tlu_state_bind.\$hpstate_red[C${c}_tlu_trap_bind.\$trap_tid_w1.1]; 
+        C${c}_t_hpstate_priv_w2 = C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_trap_bind.\$trap_tid_w1.1];
+        C${c}_t_pstate_priv_w2 = C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_trap_bind.\$trap_tid_w1.1];
+
+        case (C${c}_tlu_trap_bind.\$trap_tid_w1.1) {
+          2'b00: C${c}_trap_lvl_g_w2 = C${c}_tlu_asr_bind.\$trap_lvl0.2; 
+          2'b01: C${c}_trap_lvl_g_w2 = C${c}_tlu_asr_bind.\$trap_lvl1.2; 
+          2'b10: C${c}_trap_lvl_g_w2 = C${c}_tlu_asr_bind.\$trap_lvl2.2; 
+          2'b11: C${c}_trap_lvl_g_w2 = C${c}_tlu_asr_bind.\$trap_lvl3.2; 
+        }
+        case (C${c}_tlu_trap_bind.\$trap_tid_w1.1) {
+          2'b00: C${c}_tl_at_maxtl_g_w2 = C${c}_tlu_asr_bind.\$tl0_at_maxtl.2;
+          2'b01: C${c}_tl_at_maxtl_g_w2 = C${c}_tlu_asr_bind.\$tl1_at_maxtl.2;
+          2'b10: C${c}_tl_at_maxtl_g_w2 = C${c}_tlu_asr_bind.\$tl2_at_maxtl.2;
+          2'b11: C${c}_tl_at_maxtl_g_w2 = C${c}_tlu_asr_bind.\$tl3_at_maxtl.2;
+        }
+        case (C${c}_tlu_trap_bind.\$trap_tid_w1.1) {
+          2'b00: C${c}_trap_lvl_w2 = C${c}_tlu_asr_bind.\$trap_lvl0; 
+          2'b01: C${c}_trap_lvl_w2 = C${c}_tlu_asr_bind.\$trap_lvl1; 
+          2'b10: C${c}_trap_lvl_w2 = C${c}_tlu_asr_bind.\$trap_lvl2; 
+          2'b11: C${c}_trap_lvl_w2 = C${c}_tlu_asr_bind.\$trap_lvl3; 
+        } // case
+      } // if
+
+      C${c}_wrm_rst_g = C${c}_tlu_trap_bind.\$reset_sel_g.2 & C${c}_tlu_trap_bind.\$rstint_m.3 & (C${c}_tlu_trap_bind.\$reset_id_g.2[3:0] == 4'b0001);
+      C${c}_xir_rst_g = C${c}_tlu_trap_bind.\$reset_sel_g.2 & C${c}_tlu_trap_bind.\$rstint_m.3 & (C${c}_tlu_trap_bind.\$reset_id_g.2[3:0] == 4'b0011);
+      //<<<<<<<<<<<<<<<<<<<<for wd_rst_sample
+
+      C${c}_local_iside_trap_g = C${c}_tlu_trap_bind.\$tick_priv_act_g |
+                                 C${c}_tlu_trap_bind.\$pib_priv_act_g |
+                                 C${c}_tlu_trap_bind.\$htrap_ill_inst_g;
+
+      C${c}_async_trap = C${c}_tlu_trap_bind.\$fp_trap_ieee754.1 | 
+                         C${c}_tlu_trap_bind.\$fp_trap_other.1 |
+                         C${c}_tlu_trap_bind.\$spill_trap.1 |
+                         C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2;
+
+      C${c}_smb_softint_g = C${c}_multi_bit_on(C${c}_tlu_asr_bind.\$wsr_data_g[16:0]);
+
+      C${c}_halt_inst[3:0] = 4'h0;
+      C${c}_halt_inst[C${c}_tlu_tid_bind.\$tid_m] = ( C${c}_tlu_asr_bind.\$wsr_inst_m 
+                                                    & C${c}_tlu_tid_bind.\$inst_vld_m
+                                                    & (C${c}_tlu_asr_bind.\$sraddr_d.2 == 7'h1a) 
+                                                    & ~C${c}_tlu_asr_bind.\$wsr_data_m[0]);
+
+      C${c}_sw_hw_intr_vld = |(C${c}_tlu_evt_bind.\$sftint_vld & C${c}_tlu_evt_bind.\$hwint_i3);
+      C${c}_cwp_cmplt_hw_intr = (C${c}_tlu_trap_bind.\$cwp_cmplt) ?
+                                (C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_trap_bind.\$cwp_cmplt_tid]) : 1'b0;
+
+      C${c}_async_trap_hw_intr = (C${c}_tlu_trap_bind.\$fp_trap_ieee754 | C${c}_tlu_trap_bind.\$fp_trap_other) ?
+                                 (C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_trap_bind.\$fp_trap_tid]) :
+                                 (C${c}_tlu_trap_bind.\$spill_trap) ?
+                                 (C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_trap_bind.\$spill_trap_tid]) :
+                                 (C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2) ?
+                                 (C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_trap_bind.\$lsu_async_tid_w2]) :
+                                 1'b0;
+
+     C${c}_pic_wrap_cpu_mondo = (C${c}_tlu_evt_bind.\$pib_wrap_m & C${c}_tlu_evt_bind.\$cpu_mondo_cmp);
+     C${c}_pic_wrap_dev_mondo = (C${c}_tlu_evt_bind.\$pib_wrap_m & C${c}_tlu_evt_bind.\$dev_mondo_cmp); 
+     C${c}_pic_wrap_resum_err = (C${c}_tlu_evt_bind.\$pib_wrap_m & C${c}_tlu_evt_bind.\$resum_err_cmp);
+     C${c}_pic_wrap_tlz_trap = (C${c}_tlu_evt_bind.\$pib_wrap_m & C${c}_tlu_evt_bind.\$tlz_thread);
+
+     C${c}_fp_trap_tid = (C${c}_tlu_trap_bind.\$fp_trap_ieee754 | C${c}_tlu_trap_bind.\$fp_trap_other) ?
+                         C${c}_tlu_trap_bind.\$fp_trap_tid : 2'b00;
+     C${c}_spill_trap_tid = (C${c}_tlu_trap_bind.\$spill_trap) ? 
+                            C${c}_tlu_trap_bind.\$spill_trap_tid : 2'b00;
+     C${c}_lsu_async_trap_tid_w2 = (C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2) ? 
+                                C${c}_tlu_trap_bind.\$lsu_async_tid_w2 : 2'b00;
+
+     //////////////////////////////////////////////////////////////////////////
+     //---------------------------- coverage state variables -----------------/
+      tlu_thrd_fsm_sample_C${c} =  { 
+                                C${c}_true_hpstate_w1,
+                                C${c}_true_pstate_w1,
+                                C${c}_trap_lvl_w1,
+                                C${c}_tl_at_maxtl_w1,
+                                C${c}_tl_at_maxtlless1_w1,
+                                C${c}_tlu_asr_bind.\$tl_at_maxstl[C${c}_tlu_tid_bind.\$tid_w1],
+                                C${c}_tl_gt_0_w1,
+                                C${c}_tlu_trap_bind.\$trap_taken_w2,
+                                C${c}_tlu_trap_bind.\$priv_traps_w2, // RTL timing change on 09/17/03
+                                C${c}_tlu_trap_bind.\$internal_wdr_g.1,
+                                C${c}_tlu_trap_bind.\$rstint_m.2,
+                                C${c}_tlu_trap_bind.\$sir_rst_g.1,
+                                C${c}_tlu_trap_bind.\$dnrtry_w2[C${c}_tlu_tid_bind.\$tid_w1],
+                                C${c}_tlu_asr_bind.\$wsr_inst_w2,
+                                C${c}_tlu_asr_bind.\$sraddr_d.4,
+                                C${c}_tlu_asr_bind.\$wsr_data_g.1[11:0]
+                              };
+
+      tlu_asi_access_sample_C${c} =  {
+				  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_e],
+				  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_e],
+				  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_e],
+				  C${c}_tlu_asi_bind.\$alt_space_e,
+				  C${c}_tlu_asi_bind.\$ld_inst_e,
+				  C${c}_tlu_asi_bind.\$st_inst_e,
+				  C${c}_tlu_asi_bind.\$asi_state_e,
+				  C${c}_tlu_asi_bind.\$ldst_va_e 
+				};
+      tlu_asiacc_trap_sample_C${c} = { 
+                                  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_e],
+                                  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_e],
+                                  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_e],
+                                  C${c}_tlu_asi_bind.\$alt_space_e,
+                                  C${c}_tlu_asi_bind.\$ld_inst_e, 
+                                  C${c}_tlu_asi_bind.\$st_inst_e, 
+                                  C${c}_tlu_asi_bind.\$asi_state_e,
+                                  C${c}_tlu_asi_bind.\$ldst_va_e 
+                                };
+
+      tlu_asr_access_sample_C${c} = { 
+                                 C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_d],
+                                 C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+                                 C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+                                 C${c}_s_privileged_d,
+                                 C${c}_tlu_asr_bind.\$wsr_inst_d, 
+    		     	         C${c}_tlu_asr_bind.\$rsr_inst_d, 
+    			         C${c}_tlu_asr_bind.\$sraddr_d 
+                               }; 
+
+      tlu_asracc_trap_sample_C${c} = { 
+                                  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_d],
+                                  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+                                  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+ 			     	  C${c}_tlu_asr_bind.\$rsr_inst_d, 
+                                  C${c}_tlu_asr_bind.\$wsr_inst_d, 
+  				  C${c}_tlu_asr_bind.\$sraddr_d, 
+                                  C${c}_tick_npt_d, 
+                                  C${c}_pcr_priv_d
+                                };
+
+      tlu_gl_lvl_sample_C${c} = { 
+                             C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_asr_bind.\$wsr_inst_g.2,
+                             C${c}_tlu_asr_bind.\$wsr_inst_g.1,
+                             C${c}_tlu_asr_bind.\$wsr_inst_g,
+                             C${c}_tlu_asr_bind.\$gl_rw_g.2,
+                             C${c}_tlu_asr_bind.\$gl_rw_g.1,
+                             C${c}_tlu_asr_bind.\$gl_rw_g,
+                             C${c}_tlu_trap_bind.\$trap_taken_g.2,
+                             C${c}_tlu_trap_bind.\$trap_taken_g.1,
+                             C${c}_tlu_trap_bind.\$trap_taken_g,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g.2,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g.1,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g,
+			     C${c}_tlu_asr_bind.\$wsr_data_g[3:0],
+			     C${c}_gl_lvl
+                           };
+      tlu_tl_lvl_sample_C${c} = { 
+                             C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                             C${c}_tlu_asr_bind.\$wsr_inst_g.2,
+                             C${c}_tlu_asr_bind.\$wsr_inst_g.1,
+                             C${c}_tlu_asr_bind.\$wsr_inst_g,
+                             C${c}_tlu_asr_bind.\$tl_rw_g.2,
+                             C${c}_tlu_asr_bind.\$tl_rw_g.1,
+                             C${c}_tlu_asr_bind.\$tl_rw_g,
+                             C${c}_tlu_trap_bind.\$trap_taken_g.2,
+                             C${c}_tlu_trap_bind.\$trap_taken_g.1,
+                             C${c}_tlu_trap_bind.\$trap_taken_g,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g.2,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g.1,
+		     	     C${c}_tlu_trap_bind.\$dnrtry_g,
+			     C${c}_tlu_asr_bind.\$wsr_data_g[3:0],
+			     C${c}_trap_lvl,
+		     	     C${c}_trap_lvl_new 
+                           };
+
+      tlu_sftint_update_sample_C${c} = { 
+                                    C${c}_tlu_state_bind.\$pstate_ie[C${c}_tlu_tid_bind.\$tid_g],
+                                    C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                    C${c}_s_privileged_g,
+                                    C${c}_tlu_asr_bind.\$wsr_inst_g,
+                                    C${c}_tlu_asr_bind.\$sraddr_d.3,
+				    C${c}_tlu_asr_bind.\$wsr_data_g[16:0],
+                                    C${c}_tlu_evt_bind.\$tickcmp_int[C${c}_tlu_tid_bind.\$tid_g],
+                                    C${c}_tlu_evt_bind.\$stickcmp_int[C${c}_tlu_tid_bind.\$tid_g],
+                                    (C${c}_tlu_evt_bind.\$pich_wrap[C${c}_tlu_tid_bind.\$tid_g] | 
+                                     C${c}_tlu_evt_bind.\$picl_wrap[C${c}_tlu_tid_bind.\$tid_g]),
+                                    C${c}_tlu_evt_bind.\$set_hintp_g[C${c}_tlu_tid_bind.\$tid_g]
+                                  };
+
+      tlu_thrd_intrp_sample_C${c} = { 
+                                 C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_inrr_i2,
+                                 C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_intdp_bind.\$int_id,
+                                 C${c}_rd_ivr,
+                                 C${c}_wr_irr,
+                                 C${c}_tlu_asi_bind.\$st_rs3_data_g
+                               };
+
+      tlu_wd_rst_sample_C${c} = { 
+                             C${c}_t_hpstate_enb_g,
+                             C${c}_t_hpstate_red_g,
+                             C${c}_t_hpstate_priv_g,
+                             C${c}_t_hpstate_enb_w2,
+                             C${c}_t_hpstate_red_w2,
+                             C${c}_t_hpstate_priv_w2,
+                             C${c}_t_pstate_priv_g,
+                             C${c}_t_pstate_priv_w2,
+			     C${c}_tl_at_maxtl_g_w2,
+			     C${c}_trap_lvl_g_w2,
+			     C${c}_trap_lvl_w2,
+                             //C${c}_tlu_trap_bind.\$priv_traps_g.2,
+                             C${c}_tlu_trap_bind.\$priv_traps_w2.1, // RTL timing change on 09/17/03
+                             //C${c}_tlu_trap_bind.\$hyper_wdr_trap_g.2,
+                             C${c}_tlu_trap_bind.\$hyper_wdr_trap_w2.1, // RTL timing change on 09/17/03
+                             C${c}_tlu_trap_bind.\$internal_wdr_g.2,
+                             C${c}_tlu_trap_bind.\$sir_rst_g.2,
+                             C${c}_wrm_rst_g,
+                             C${c}_xir_rst_g,
+                             C${c}_tlu_trap_bind.\$trappc_vld_w1.1,
+                             C${c}_tlu_trap_bind.\$trap_pc_w2[7:0] 
+                           };
+
+      C${c}_tick_tid = (C${c}_tlu_tid_bind.\$tick_tid !== 2'bxx) ? C${c}_tlu_tid_bind.\$tick_tid : 2'b00;
+      tlu_multi_intl_tevt_sample_C${c} = { 
+                                 C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tick_tid],
+                                 C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tick_tid],
+                                 C${c}_tlu_state_bind.\$pstate_priv[C${c}_tick_tid],
+                                 C${c}_tlu_state_bind.\$pstate_ie[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$tickcmp_int[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$stickcmp_int[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$set_hintp_g[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$pib_wrap_m[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$cpu_mondo_cmp[C${c}_tick_tid],
+                                 C${c}_tlu_evt_bind.\$dev_mondo_cmp[C${c}_tick_tid], 
+                                 C${c}_tlu_evt_bind.\$resum_err_cmp[C${c}_tick_tid]
+                               };
+
+      tlu_multi_intl_pevt_sample_C${c} = { 
+                                 (|(C${c}_tlu_state_bind.\$hpstate_enb & C${c}_tlu_evt_bind.\$pib_wrap_m)),
+                                 (|(C${c}_tlu_state_bind.\$hpstate_priv & C${c}_tlu_evt_bind.\$pib_wrap_m)),
+                                 (|(C${c}_tlu_state_bind.\$pstate_priv & C${c}_tlu_evt_bind.\$pib_wrap_m)),
+                                 (|(C${c}_tlu_state_bind.\$pstate_ie & C${c}_tlu_evt_bind.\$pib_wrap_m)),
+                                 (|(C${c}_tlu_state_bind.\$hpstate_tlz & C${c}_tlu_evt_bind.\$pib_wrap_m)),
+                                 (|(C${c}_pic_wrap_cpu_mondo)),
+                                 (|(C${c}_pic_wrap_dev_mondo)),
+                                 (|(C${c}_pic_wrap_resum_err)),
+                                 (|(C${c}_pic_wrap_tlz_trap))
+                               };
+ 
+      tlu_multi_intl_trap_sample_C${c} = { 
+                                 C${c}_tlu_state_bind.\$hpstate_tlz[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_state_bind.\$pstate_ie[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_evt_bind.\$tlz_thread[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_softint_g[0],
+                                 C${c}_softint_g[16],
+                                 C${c}_tlu_asr_bind.\$hintp[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_softint_g[15],
+                                 C${c}_tlu_evt_bind.\$cpu_mondo_cmp[C${c}_tlu_tid_bind.\$tid_g],
+                                 C${c}_tlu_evt_bind.\$dev_mondo_cmp[C${c}_tlu_tid_bind.\$tid_g], 
+                                 C${c}_tlu_evt_bind.\$resum_err_cmp[C${c}_tlu_tid_bind.\$tid_g]
+                               };
+ 
+      C${c}_hscpd_dacc_excpt_m = ( C${c}_tlu_asi_bind.\$alt_space_e.1) & 
+                                 ( (C${c}_tlu_asi_bind.\$ld_inst_e.1) | (C${c}_tlu_asi_bind.\$st_inst_e.1)) & 
+                                 ( C${c}_tlu_asi_bind.\$asi_state_e.1 == 8'h20) & 
+                                 ( (C${c}_tlu_asi_bind.\$ldst_va_e.1[5:0] == 6'h20) |
+                                   (C${c}_tlu_asi_bind.\$ldst_va_e.1[5:0] == 6'h28) ) &
+                                 C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_m] & 
+                                 ( ~C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_m]) & 
+                                 C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_m];
+
+      C${c}_qtail_dacc_excpt_m = ( C${c}_tlu_asi_bind.\$alt_space_e.1) & 
+                                 ( C${c}_tlu_asi_bind.\$st_inst_e.1) & 
+                                 ( C${c}_tlu_asi_bind.\$asi_state_e.1 == 8'h25) & 
+                                 ( (C${c}_tlu_asi_bind.\$ldst_va_e.1[9:0] == 10'h3c8) |
+                                   (C${c}_tlu_asi_bind.\$ldst_va_e.1[9:0] == 10'h3d8) |
+                                   (C${c}_tlu_asi_bind.\$ldst_va_e.1[9:0] == 10'h3e8) |
+                                   (C${c}_tlu_asi_bind.\$ldst_va_e.1[9:0] == 10'h3f8) ) &
+                                 C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_m] & 
+                                 ( ~C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_m]) & 
+                                 C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_m];
+
+      tlu_stb2b_trap_sample_C${c} = { 
+                                 C${c}_tlu_trap_bind.\$sync_trap_g,
+                                 //C${c}_tlu_trap_bind.\$sync_trap_m,
+                                 C${c}_tlu_tid_bind.\$ifu_inst_vld_m &
+                                 ( C${c}_tlu_trap_bind.\$ifu_ttype_vld_m |
+                                   C${c}_tlu_trap_bind.\$exu_ttype_vld_m |
+                                   C${c}_tlu_trap_bind.\$hwint_m |
+                                   C${c}_tlu_trap_bind.\$swint_m |
+                                   C${c}_tlu_trap_bind.\$rstint_m |
+                                   C${c}_hscpd_dacc_excpt_m |
+                                   C${c}_qtail_dacc_excpt_m |
+                                   C${c}_tlu_trap_bind.\$tlz_trap_m[C${c}_tlu_tid_bind.\$tid_m] ),
+                                 C${c}_tlu_tid_bind.\$tid_g,
+                                 C${c}_tlu_tid_bind.\$tid_m
+                               };
+
+      tlu_mtb2b_extl_sample_C${c} = { 
+                                 C${c}_tlu_trap_bind.\$ifu_ttype_vld_g.1,
+                                 C${c}_tlu_trap_bind.\$ifu_ttype_vld_g,
+                                 C${c}_tlu_trap_bind.\$exu_ttype_vld_g.1,
+                                 C${c}_tlu_trap_bind.\$exu_ttype_vld_g,
+                                 C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2.1,
+                                 C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2,
+                                 C${c}_tlu_trap_bind.\$fp_ill_inst_m.2,
+                                 C${c}_tlu_trap_bind.\$fp_ill_inst_m.1,
+                                 C${c}_tlu_trap_bind.\$spu_rsrv_illgl_m.2,
+                                 C${c}_tlu_trap_bind.\$spu_rsrv_illgl_m.1,
+                                 (C${c}_tlu_trap_bind.\$fp_trap_ieee754 | 
+                                  C${c}_tlu_trap_bind.\$fp_trap_other),
+                                 C${c}_tlu_trap_bind.\$spill_trap,
+                                 C${c}_tlu_trap_bind.\$cwp_cmplt,
+                                 C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2 
+                               };
+
+      tlu_tlz_trap_sample_C${c} = { 
+                               C${c}_tlu_tid_bind.\$tid_w1,
+                               C${c}_tlu_state_bind.\$hpstate_tlz,
+                               C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_w1],
+                               C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_w1],
+                               C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_w1],
+		     	       C${c}_tlu_trap_bind.\$dnrtry_w2[C${c}_tlu_tid_bind.\$tid_w1],
+                               C${c}_tlu_asr_bind.\$wsr_inst_w2,
+                               C${c}_tlu_asr_bind.\$sraddr_d.4,
+			       C${c}_tl_gt_0,
+			       C${c}_new_tl_gt_0
+                             };
+
+      tlu_st_intl_extl_sync_sample_C${c} = { 
+                                C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_state_bind.\$pstate_ie[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_state_bind.\$hpstate_tlz[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_trap_bind.\$ifu_ttype_vld_g,
+                                C${c}_tlu_trap_bind.\$exu_ttype_vld_g,
+                                C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2,
+                                C${c}_tlu_evt_bind.\$sftint_vld[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_evt_bind.\$hintp_vld[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_evt_bind.\$hwint_i3[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_nukeint_vld[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_evt_bind.\$pib_wrap_m.1[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_evt_bind.\$tlz_thread[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_trap_bind.\$lsu_defr_trp_taken_g,
+                                C${c}_local_iside_trap_g,
+                                C${c}_tlu_trap_bind.\$local_dside_trap_g 
+                              };
+      tlu_st_intl_extl_async_fp_sample_C${c} = { 
+                                C${c}_tlu_state_bind.\$hpstate_priv[C${c}_fp_trap_tid],
+                                C${c}_tlu_state_bind.\$pstate_ie[C${c}_fp_trap_tid],
+                                (C${c}_tlu_trap_bind.\$fp_trap_ieee754 | C${c}_tlu_trap_bind.\$fp_trap_other),
+                                C${c}_tlu_evt_bind.\$sftint_vld[C${c}_fp_trap_tid],
+                                C${c}_tlu_evt_bind.\$hintp_vld[C${c}_fp_trap_tid],
+                                C${c}_tlu_evt_bind.\$hwint_i3[C${c}_fp_trap_tid],
+                                C${c}_nukeint_vld[C${c}_fp_trap_tid],
+                                C${c}_tlu_evt_bind.\$pib_wrap_m[C${c}_fp_trap_tid]
+                              };
+      tlu_st_intl_extl_async_sp_sample_C${c} = { 
+                                C${c}_tlu_state_bind.\$hpstate_priv[C${c}_spill_trap_tid],
+                                C${c}_tlu_state_bind.\$pstate_ie[C${c}_spill_trap_tid],
+                                C${c}_tlu_trap_bind.\$spill_trap,
+                                C${c}_tlu_evt_bind.\$sftint_vld[C${c}_spill_trap_tid],
+                                C${c}_tlu_evt_bind.\$hintp_vld[C${c}_spill_trap_tid],
+                                C${c}_tlu_evt_bind.\$hwint_i3[C${c}_spill_trap_tid],
+                                C${c}_nukeint_vld[C${c}_spill_trap_tid],
+                                C${c}_tlu_evt_bind.\$pib_wrap_m[C${c}_spill_trap_tid]
+                              };
+      tlu_st_intl_extl_async_ls_sample_C${c} = { 
+                                C${c}_tlu_state_bind.\$hpstate_priv[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_state_bind.\$pstate_ie[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_state_bind.\$hpstate_tlz[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2,
+                                C${c}_tlu_evt_bind.\$sftint_vld[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$hintp_vld[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$hwint_i3[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_nukeint_vld[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$pib_wrap_m.2[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$cpu_mondo_cmp[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$dev_mondo_cmp[C${c}_lsu_async_trap_tid_w2], 
+                                C${c}_tlu_evt_bind.\$resum_err_cmp[C${c}_lsu_async_trap_tid_w2],
+                                C${c}_tlu_evt_bind.\$tlz_thread[C${c}_lsu_async_trap_tid_w2]
+                              };
+      tlu_mt_intl_extl_sample_C${c} = { 
+                                C${c}_tlu_trap_bind.\$ifu_ttype_vld_g,
+                                C${c}_tlu_trap_bind.\$exu_ttype_vld_g,
+                                C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2,
+                                (C${c}_tlu_trap_bind.\$fp_trap_ieee754 | C${c}_tlu_trap_bind.\$fp_trap_other),
+                                C${c}_tlu_trap_bind.\$spill_trap,
+                                C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2,
+                                (|C${c}_tlu_evt_bind.\$cpu_mondo_cmp),
+                                (|C${c}_tlu_evt_bind.\$dev_mondo_cmp),
+                                (|C${c}_tlu_evt_bind.\$resum_err_cmp),
+                                (|C${c}_tlu_evt_bind.\$tlz_thread)
+                              };
+
+      tlu_cmpr_intdis_sample_C${c} = { 
+                                  C${c}_tlu_state_bind.\$pstate_ie[C${c}_tlu_tid_bind.\$tid_m],
+                                  C${c}_tlu_evt_bind.\$tick_match,
+                                  C${c}_tlu_evt_bind.\$stick_match,
+                                  C${c}_tlu_evt_bind.\$htick_match,
+                                  C${c}_tlu_asr_bind.\$tickcmp0[63],
+                                  C${c}_tlu_asr_bind.\$tickcmp1[63],
+                                  C${c}_tlu_asr_bind.\$tickcmp2[63],
+                                  C${c}_tlu_asr_bind.\$tickcmp3[63],
+                                  C${c}_tlu_asr_bind.\$stickcmp0[63],
+                                  C${c}_tlu_asr_bind.\$stickcmp1[63],
+                                  C${c}_tlu_asr_bind.\$stickcmp2[63],
+                                  C${c}_tlu_asr_bind.\$stickcmp3[63],
+                                  C${c}_tlu_asr_bind.\$htick_intdis0,
+                                  C${c}_tlu_asr_bind.\$htick_intdis1,
+                                  C${c}_tlu_asr_bind.\$htick_intdis2,
+                                  C${c}_tlu_asr_bind.\$htick_intdis3 
+                                };
+
+      tlu_multi_tsasr_sample_C${c} = { 
+                                  C${c}_s_privileged_g,
+                                  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_async_trap,
+                                  C${c}_tlu_trap_bind.\$cwp_cmplt.1,
+                                  C${c}_tlu_asr_bind.\$wsr_inst_g,
+                                  C${c}_tlu_asr_bind.\$rsr_inst_d.3,
+                                  C${c}_tlu_asr_bind.\$sraddr_d.3
+                                };
+
+      tlu_mtb2b_tsasr_sample_C${c} = { 
+                                  (C${c}_tlu_tid_bind.\$tid_g === C${c}_tlu_tid_bind.\$tid_m),
+                                  C${c}_s_privileged_g,
+                                  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_g],
+                                  C${c}_tlu_trap_bind.\$sync_trap_g,
+                                  C${c}_tlu_trap_bind.\$dnrtry_g,
+                                  C${c}_tlu_trap_bind.\$cwp_fastcmplt_g,
+                                  C${c}_tlu_asr_bind.\$wsr_inst_g,
+                                  C${c}_tlu_asr_bind.\$rsr_inst_d.3,
+                                  C${c}_tlu_asr_bind.\$sraddr_d.3, 
+                                  C${c}_s_privileged_m,
+                                  C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_m],
+                                  C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_m],
+                                  C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_m],
+                                  C${c}_tlu_trap_bind.\$sync_trap_m,
+                                  (C${c}_tlu_trap_bind.\$done_inst_m | C${c}_tlu_trap_bind.\$retry_inst_m),
+                                  C${c}_tlu_trap_bind.\$cwp_fastcmplt_m,
+                                  C${c}_tlu_asr_bind.\$wsr_inst_m,
+                                  C${c}_tlu_asr_bind.\$rsr_inst_d.2,
+                                  C${c}_tlu_asr_bind.\$sraddr_d.2 
+                                };
+
+      tlu_async_starv_sample_C${c} = { 
+                                  C${c}_async_trap,
+                                  C${c}_tlu_trap_bind.\$sync_trap_g,
+                                  (C${c}_tlu_trap_bind.\$fp_trap_ieee754.1 |
+                                   C${c}_tlu_trap_bind.\$fp_trap_other.1),
+                                  C${c}_tlu_trap_bind.\$spill_trap.1,
+                                  C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2,
+                                  C${c}_tlu_trap_bind.\$cwp_cmplt.1,
+                                  C${c}_tlu_trap_bind.\$iside_ttype_vld_g,
+                                  (C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2 |
+                                   C${c}_tlu_trap_bind.\$local_dside_trap_g), 
+                                  C${c}_tlu_trap_bind.\$exu_ttype_vld_g,
+                                  C${c}_tlu_trap_bind.\$dnrtry_g,
+                                  C${c}_tlu_trap_bind.\$cwp_fastcmplt_g,
+                                  C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2 & 
+                                  (C${c}_lsu_async_trap_tid_w2 ==  C${c}_tlu_tid_bind.\$tid_w1)
+                                };
+
+      tlu_softint_sample_C${c} = { 
+                              C${c}_tlu_state_bind.\$pstate_ie[C${c}_tlu_tid_bind.\$tid_g],
+                              C${c}_s_privileged_g,
+                              C${c}_tlu_asr_bind.\$wsr_inst_g, 
+                              C${c}_tlu_asr_bind.\$set_sftint_g, 
+                              C${c}_tlu_asr_bind.\$sftint_rw_g, 
+                              C${c}_tlu_asr_bind.\$wsr_data_g[16:0], 
+                              C${c}_pil_g,
+                              C${c}_smb_softint_g
+                            };
+
+
+      tlu_intrp_trap_sample_C${c} = { 
+                                C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_trap_bind.\$hwint_m.1,
+                                C${c}_tlu_trap_bind.\$swint_m.1,
+                                C${c}_tlu_trap_bind.\$rstint_m.1,
+                                C${c}_tlu_intdp_bind.\$inc_ind_ld_int[C${c}_tlu_tid_bind.\$tid_g],
+                                C${c}_tlu_trap_bind.\$hwint_m.2,
+                                C${c}_tlu_trap_bind.\$swint_m.2,
+                                C${c}_tlu_trap_bind.\$rstint_m.2,
+                                //C${c}_async_trap,
+                                (C${c}_tlu_trap_bind.\$fp_trap_ieee754.1 | 
+                                 C${c}_tlu_trap_bind.\$fp_trap_other.1 |
+                                 C${c}_tlu_trap_bind.\$spill_trap.1 ),
+                                C${c}_tlu_trap_bind.\$cwp_cmplt.1,
+                                //C${c}_sync_trap_only_g,
+                                (C${c}_tlu_trap_bind.\$iside_ttype_vld_g |
+                                 C${c}_tlu_trap_bind.\$exu_ttype_vld_g   |
+                                 C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2 ),
+                                //C${c}_sync_trap_only_w2,
+                                (C${c}_tlu_trap_bind.\$iside_ttype_vld_g.1 |
+                                 C${c}_tlu_trap_bind.\$exu_ttype_vld_g.1   |
+                                 C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2.1 ),
+                                (C${c}_tlu_trap_bind.\$lsu_defr_trp_taken_g.1 |
+                                 C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2)
+                              };
+
+      tlu_intrp_trap_2_sample_C${c} = { 
+                                  C${c}_sw_hw_intr_vld,
+                                  C${c}_cwp_cmplt_hw_intr,
+                                  C${c}_async_trap_hw_intr
+	                         };
+
+
+      tlu_suspend_resume_sample_C${c} = { 
+                                     C${c}_halt_inst,
+                                     C${c}_tlu_evt_bind.\$nukeint_i2,
+                                     C${c}_tlu_evt_bind.\$resumint_i2,
+                                     C${c}_tlu_evt_bind.\$rstint_i2,
+                                     C${c}_tlu_evt_bind.\$rstthr_i2,
+                                     C${c}_tlu_evt_bind.\$hwint_i3
+                                   };
+
+      tlu_acc_violation_sample_C${c} = { 
+                                    C${c}_tlu_tid_bind.\$tid_d,
+                                    C${c}_tlu_state_bind.\$hpstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+                                    C${c}_tlu_state_bind.\$pstate_priv[C${c}_tlu_tid_bind.\$tid_d],
+			     	    C${c}_tlu_asr_bind.\$rsr_inst_d, 
+			     	    C${c}_tlu_asr_bind.\$wsr_inst_d, 
+                                    C${c}_tlu_asr_bind.\$tick_npt3,
+                                    C${c}_tlu_asr_bind.\$tick_npt2,
+                                    C${c}_tlu_asr_bind.\$tick_npt1,
+                                    C${c}_tlu_asr_bind.\$tick_npt0,
+				    C${c}_tlu_asr_bind.\$sraddr_d,
+                                    C${c}_tlu_state_bind.\$hpstate_enb[C${c}_tlu_tid_bind.\$tid_d]
+                                  }; 
+
+      tlu_sync_ifu_ttype_sample_C${c} = {
+                                          C${c}_tlu_trap_bind.\$ifu_ttype_vld_m,
+                                          C${c}_tlu_trap_bind.\$ifu_ttype_m
+                                        };
+
+      tlu_sync_exu_ttype_sample_C${c} = {
+                                          C${c}_tlu_trap_bind.\$exu_ttype_vld_m,
+                                          C${c}_tlu_trap_bind.\$exu_ttype_m,
+					  C${c}_tlu_trap_bind.\$exu_misalign_addr_jmpl_rtn_m,
+					  C${c}_tlu_trap_bind.\$exu_ue_trap_m,
+					  C${c}_tlu_trap_bind.\$exu_va_oor_jl_ret_m,
+					  C${c}_tlu_trap_bind.\$exu_va_oor_m
+                                        };
+
+      tlu_sync_lsu_ttype_sample_C${c} = {
+                                          C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2,
+                                          C${c}_tlu_trap_bind.\$lsu_ttype_m2
+                                        };
+
+      tlu_async_ttype_sample_C${c} = {
+                                      C${c}_tlu_trap_bind.\$lsu_async_ttype_vld_w2,
+                                      C${c}_tlu_trap_bind.\$lsu_async_ttype_w2,
+                                      C${c}_tlu_trap_bind.\$spill_trap,
+                                      C${c}_tlu_trap_bind.\$spill_other,
+                                      C${c}_tlu_trap_bind.\$fp_ill_inst_m,
+                                      C${c}_tlu_trap_bind.\$fp_trap_ieee754,
+                                      C${c}_tlu_trap_bind.\$fp_trap_other,
+                                      C${c}_tlu_trap_bind.\$fp_trap_ue
+                                     };
+      tlu_lsu_trap_stat_sample_C${c} = {
+                                        C${c}_tlu_trap_bind.\$lsu_misalign_ldst_atm_m,
+                                        C${c}_tlu_trap_bind.\$lsu_squash_va_oor_m,
+                                        C${c}_tlu_trap_bind.\$lsu_priv_action_g,
+                                        C${c}_tlu_trap_bind.\$lsu_daccess_excptn_g,
+                                        C${c}_tlu_trap_bind.\$lsu_daccess_prot_g,
+                                        C${c}_tlu_trap_bind.\$lsu_wtchpt_trp_g,
+                                        C${c}_tlu_trap_bind.\$lsu_defr_trp_taken_g,
+                                        C${c}_tlu_trap_bind.\$lsu_early_flush2_w,
+                                        C${c}_tlu_trap_bind.\$lsu_early_flush_w
+                                       };
+      tlu_ttype_sample_C${c} = {
+                                 C${c}_tlu_trap_bind.\$restore_pc_sel_w1,
+                                 C${c}_tlu_trap_bind.\$trappc_vld_w1,
+                                 C${c}_tlu_trap_bind.\$trap_pc_w1[13:5]
+                               };
+
+      tlu_flushed_intrp_sample_C${c} = {
+                                        C${c}_tlu_trap_bind.\$ifu_tlu_flush_fd_w,
+                                        C${c}_tlu_trap_bind.\$ifu_tlu_flush_m.1,
+                                        C${c}_tlu_trap_bind.\$hwint_m,
+                                        C${c}_tlu_trap_bind.\$swint_m,
+                                        C${c}_tlu_trap_bind.\$rstint_m,
+                                        C${c}_tlu_trap_bind.\$sir_inst_m
+                                       };
+
+      tlu_multi_extl_traps_sample_C${c} = {
+                                            C${c}_tlu_trap_bind.\$ifu_ttype_vld_m.1,
+                                            C${c}_tlu_trap_bind.\$ifu_ttype_m.1,
+                                            C${c}_tlu_trap_bind.\$ifu_tlu_flush_fd_w,
+                                            C${c}_tlu_trap_bind.\$ifu_tlu_flush_m.1,
+                                            C${c}_tlu_trap_bind.\$priv_violtn_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_ttype_vld_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_ttype_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_misalign_addr_jmpl_rtn_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_ue_trap_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_va_oor_jl_ret_m.1,
+                                            C${c}_tlu_trap_bind.\$exu_va_oor_m.1,
+                                            C${c}_tlu_trap_bind.\$lsu_ttype_vld_m2,
+                                            C${c}_tlu_trap_bind.\$lsu_ttype_m2,
+                                            C${c}_tlu_trap_bind.\$lsu_misalign_ldst_atm_m.1,
+                                            C${c}_tlu_trap_bind.\$lsu_squash_va_oor_m.1,
+                                            C${c}_tlu_trap_bind.\$lsu_priv_action_g,
+                                            C${c}_tlu_trap_bind.\$lsu_daccess_excptn_g,
+                                            C${c}_tlu_trap_bind.\$lsu_daccess_prot_g,
+                                            C${c}_tlu_trap_bind.\$lsu_wtchpt_trp_g,
+                                            C${c}_tlu_trap_bind.\$lsu_defr_trp_taken_g,
+                                            C${c}_tlu_trap_bind.\$lsu_early_flush_w,
+                                            C${c}_tlu_trap_bind.\$tlz_trap_m.1[C${c}_tlu_tid_bind.\$tid_g]
+                                          };
+
+      tlu_specinst_async_trpevt_sample_C${c} = {
+                                                C${c}_tlu_trap_bind.\$done_inst_m,
+                                                C${c}_tlu_trap_bind.\$retry_inst_m,
+                                                C${c}_tlu_trap_bind.\$hwint_m,
+                                                C${c}_tlu_trap_bind.\$swint_m,
+                                                C${c}_tlu_trap_bind.\$rstint_m,
+                                                C${c}_tlu_trap_bind.\$sir_inst_m,
+                                                (C${c}_tlu_trap_bind.\$spill_trap |
+                                                 C${c}_tlu_trap_bind.\$spill_other),
+                                                (C${c}_tlu_trap_bind.\$fp_trap_ieee754 |
+                                                 C${c}_tlu_trap_bind.\$fp_trap_other |
+                                                 C${c}_tlu_trap_bind.\$fp_trap_ue),
+                                                C${c}_tlu_evt_bind.\$pib_wrap_m[C${c}_tlu_tid_bind.\$tid_m],
+                                                C${c}_tlu_trap_bind.\$tlz_trap_m[C${c}_tlu_tid_bind.\$tid_m]
+                                               };
+
+      /*
+      tlu_pib_sample_C${c} = { 
+                          C${c}_tlu_state_bind.\$hpstate_enb,
+                          C${c}_tlu_state_bind.\$hpstate_priv,
+                          C${c}_tlu_state_bind.\$pstate_priv,
+                          C${c}_tlu_pib_bind.\$pcr3[5:1],
+                          C${c}_tlu_pib_bind.\$pcr2[5:1],
+                          C${c}_tlu_pib_bind.\$pcr1[5:1],
+                          C${c}_tlu_pib_bind.\$pcr0[5:1],
+                          C${c}_tlu_pib_bind.\$inst_vld,
+                          C${c}_tlu_pib_bind.\$stb_full,
+                          C${c}_tlu_pib_bind.\$fp_cmplt,
+                          C${c}_tlu_pib_bind.\$l1_imiss,
+                          C${c}_tlu_pib_bind.\$l1_dmiss,
+                          C${c}_tlu_pib_bind.\$itlb_mis,
+                          C${c}_tlu_pib_bind.\$dtlb_mis,
+                          C${c}_tlu_pib_bind.\$l2_imiss,
+                          C${c}_tlu_pib_bind.\$l2_dmiss 
+                        };
+      */
+
+      tlu_pib_pich0_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[0],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[0],
+                                    C${c}_tlu_pib_bind.\$pcr_st[0],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[0],
+                                    C${c}_tlu_pib_bind.\$inst_vld[0]
+                                   };
+      tlu_pib_pich1_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[1],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[1],
+                                    C${c}_tlu_pib_bind.\$pcr_st[1],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[1],
+                                    C${c}_tlu_pib_bind.\$inst_vld[1]
+                                   };
+      tlu_pib_pich2_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[2],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[2],
+                                    C${c}_tlu_pib_bind.\$pcr_st[2],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[2],
+                                    C${c}_tlu_pib_bind.\$inst_vld[2]
+                                   };
+      tlu_pib_pich3_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[3],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[3],
+                                    C${c}_tlu_pib_bind.\$pcr_st[3],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[3],
+                                    C${c}_tlu_pib_bind.\$inst_vld[3]
+                                   };
+      tlu_pib_picl0_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[0],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[0],
+                                    C${c}_tlu_pib_bind.\$pcr_st[0],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[0],
+                                    C${c}_tlu_pib_bind.\$picl_stb_full[0],
+                                    C${c}_tlu_pib_bind.\$picl_fpu_inst[0],
+                                    C${c}_tlu_pib_bind.\$picl_ica_miss[0],
+                                    C${c}_tlu_pib_bind.\$picl_dca_miss[0],
+                                    C${c}_tlu_pib_bind.\$picl_itlb_mis[0],
+                                    C${c}_tlu_pib_bind.\$picl_dtlb_mis[0],
+                                    C${c}_tlu_pib_bind.\$picl_l2_imiss[0],
+                                    C${c}_tlu_pib_bind.\$picl_l2_dmiss[0]
+                                   };
+      tlu_pib_picl1_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[1],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[1],
+                                    C${c}_tlu_pib_bind.\$pcr_st[1],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[1],
+                                    C${c}_tlu_pib_bind.\$picl_stb_full[1],
+                                    C${c}_tlu_pib_bind.\$picl_fpu_inst[1],
+                                    C${c}_tlu_pib_bind.\$picl_ica_miss[1],
+                                    C${c}_tlu_pib_bind.\$picl_dca_miss[1],
+                                    C${c}_tlu_pib_bind.\$picl_itlb_mis[1],
+                                    C${c}_tlu_pib_bind.\$picl_dtlb_mis[1],
+                                    C${c}_tlu_pib_bind.\$picl_l2_imiss[1],
+                                    C${c}_tlu_pib_bind.\$picl_l2_dmiss[1]
+                                   };
+      tlu_pib_picl2_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[2],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[2],
+                                    C${c}_tlu_pib_bind.\$pcr_st[2],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[2],
+                                    C${c}_tlu_pib_bind.\$picl_stb_full[2],
+                                    C${c}_tlu_pib_bind.\$picl_fpu_inst[2],
+                                    C${c}_tlu_pib_bind.\$picl_ica_miss[2],
+                                    C${c}_tlu_pib_bind.\$picl_dca_miss[2],
+                                    C${c}_tlu_pib_bind.\$picl_itlb_mis[2],
+                                    C${c}_tlu_pib_bind.\$picl_dtlb_mis[2],
+                                    C${c}_tlu_pib_bind.\$picl_l2_imiss[2],
+                                    C${c}_tlu_pib_bind.\$picl_l2_dmiss[2]
+                                   };
+      tlu_pib_picl3_sample_C${c} = { 
+                                    C${c}_tlu_pib_bind.\$curr_priv_st[3],
+                                    C${c}_tlu_pib_bind.\$curr_priv_ut[3],
+                                    C${c}_tlu_pib_bind.\$pcr_st[3],
+                                    C${c}_tlu_pib_bind.\$pcr_ut[3],
+                                    C${c}_tlu_pib_bind.\$picl_stb_full[3],
+                                    C${c}_tlu_pib_bind.\$picl_fpu_inst[3],
+                                    C${c}_tlu_pib_bind.\$picl_ica_miss[3],
+                                    C${c}_tlu_pib_bind.\$picl_dca_miss[3],
+                                    C${c}_tlu_pib_bind.\$picl_itlb_mis[3],
+                                    C${c}_tlu_pib_bind.\$picl_dtlb_mis[3],
+                                    C${c}_tlu_pib_bind.\$picl_l2_imiss[3],
+                                    C${c}_tlu_pib_bind.\$picl_l2_dmiss[3]
+                                   };
+.} #foreach
+
+      trigger (cov_sample_event);
+    } // while(1)
+  } join none
+} // task tlu_coverage::set_cov_cond_bits ()
+
+. foreach $c (@CORE_STR) {
+function bit tlu_coverage::C${c}_multi_bit_on (bit [16:0] data_in)
+{
+  case (data_in) {
+    17'h00000: C${c}_multi_bit_on = 1'b0;
+    17'h00001: C${c}_multi_bit_on = 1'b0;
+    17'h00002: C${c}_multi_bit_on = 1'b0;
+    17'h00004: C${c}_multi_bit_on = 1'b0;
+    17'h00008: C${c}_multi_bit_on = 1'b0;
+    17'h00010: C${c}_multi_bit_on = 1'b0;
+    17'h00020: C${c}_multi_bit_on = 1'b0;
+    17'h00040: C${c}_multi_bit_on = 1'b0;
+    17'h00080: C${c}_multi_bit_on = 1'b0;
+    17'h00100: C${c}_multi_bit_on = 1'b0;
+    17'h00200: C${c}_multi_bit_on = 1'b0;
+    17'h00400: C${c}_multi_bit_on = 1'b0;
+    17'h00800: C${c}_multi_bit_on = 1'b0;
+    17'h01000: C${c}_multi_bit_on = 1'b0;
+    17'h02000: C${c}_multi_bit_on = 1'b0;
+    17'h04000: C${c}_multi_bit_on = 1'b0;
+    17'h08000: C${c}_multi_bit_on = 1'b0;
+    17'h10000: C${c}_multi_bit_on = 1'b0;
+    default: C${c}_multi_bit_on = 1'b1;
+  }
+}
+
+.}

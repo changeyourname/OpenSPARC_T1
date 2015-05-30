@@ -1,0 +1,273 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "exu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	exu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level EXU coverage class.
+ *	Contains the new() task which instantiates all the EXU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ * $Id: ifu_coverage.vrpal,v 1.1 2002/12/02 08:19:21 vmadan Exp $
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "exu.if.vrh"
+#include "exu_ports_binds.vrh"
+#include "exu_defines.vrh"
+
+
+
+class exu_coverage {
+    event cov_sample_event;
+
+. foreach $c ( @CORE_STR ) {
+   bit		C${c}_exu_mul_wb;
+   bit		C${c}_exu_div_wb;
+   bit	        C${c}_exu_rcc_bypass_vld;
+   bit	        C${c}_exu_rs3_bypass_vld;
+   bit	        C${c}_exu_rs3h_bypass_vld;
+
+   bit [5:0]	exu_wb_sample_C${c}_exu_irf_dual_wb_state;
+   bit [5:0]	exu_wb_sample_C${c}_exu_irf_mult_wb_state;
+   bit [11:0]   exu_operand_bypass_sample_C${c}_exu_rcc_bypass_state;
+   bit [11:0]   exu_operand_bypass_sample_C${c}_exu_rs3_bypass_state;
+   bit [11:0]   exu_operand_bypass_sample_C${c}_exu_rs3h_bypass_state;
+.}
+
+    coverage_group exu_coverage_group {
+
+	const_sample_reference	= 1;
+	sample_event		= sync(ALL,cov_sample_event);
+	cov_weight		= 0;	// until diag_done
+					
+. foreach $c ( @CORE_STR ) {
+
+    sample exu_ecc_sample_C${c}_exu_ecc_bind.\$exu_ecc_ce_state {
+#inc "exu_ecc_ce_sample.vrhpal";
+    }
+
+    sample exu_ecc_sample_C${c}_exu_ecc_bind.\$exu_ecc_ue_state {
+#inc "exu_ecc_ue_sample.vrhpal";
+    }
+
+    sample exu_swap_inout_sample_C${c}_exu_swap_inout_bind.\$exu_swap_odd_state {
+#inc "exu_swap_odd_sample.vrhpal";
+    }
+
+    sample exu_swap_inout_sample_C${c}_exu_swap_inout_bind.\$exu_swap_even_state {
+#inc "exu_swap_even_sample.vrhpal";
+    }
+
+    sample exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind.\$exu_cwp_swap_st0_state {
+#inc "exu_cwp_swap_st0_sample.vrhpal";
+    }
+
+    sample exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind.\$exu_cwp_swap_st1_state {
+#inc "exu_cwp_swap_st1_sample.vrhpal";
+    }
+
+    sample exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind.\$exu_cwp_swap_st2_state {
+#inc "exu_cwp_swap_st2_sample.vrhpal";
+    }
+
+    sample exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind.\$exu_cwp_swap_st3_state {
+#inc "exu_cwp_swap_st3_sample.vrhpal";
+    }
+
+    sample exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind.\$exu_cwp_swap_combos_state {
+#inc "exu_cwp_swap_combos_sample.vrhpal";
+    }
+
+    sample exu_div_ops_sample_C${c}_exu_div_fsm_bind.\$exu_div_fsm_state {
+#inc "exu_div_fsm_sample.vrhpal";
+    }
+
+    sample exu_div_ops_sample_C${c}_exu_div_fsm_bind.\$exu_div_fsm_xx_state {
+#inc "exu_div_fsm_xx_sample.vrhpal";
+    }
+
+    sample exu_irf_sample_C${c}_exu_irf_bind.\$exu_irf_case1_state {
+#inc "exu_irf_case1_sample.vrhpal";
+    }
+
+    sample exu_irf_sample_C${c}_exu_irf_bind.\$exu_irf_case2_state {
+#inc "exu_irf_case2_sample.vrhpal";
+    }
+
+    sample exu_irf_sample_C${c}_exu_irf_bind.\$exu_irf_case3_state {
+#inc "exu_irf_case3_sample.vrhpal";
+    }
+
+    sample exu_logic_ops_sample_C${c}_exu_logic_bind.\$exu_logic_state {
+#inc "exu_logic_sample.vrhpal";
+    }
+
+    sample exu_operand_bypass_sample_C${c}_exu_rcc_bypass_state {
+#inc "exu_rcc_bypass_sample.vrhpal";
+    }
+
+    sample exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_rs1_bypass_state {
+#inc "exu_rs1_bypass_sample.vrhpal";
+    }
+
+    sample exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_rs2_bypass_state {
+#inc "exu_rs2_bypass_sample.vrhpal";
+    }
+
+    sample exu_operand_bypass_sample_C${c}_exu_rs3_bypass_state {
+#inc "exu_rs3_bypass_sample.vrhpal";
+    }
+
+    sample exu_operand_bypass_sample_C${c}_exu_rs3h_bypass_state {
+#inc "exu_rs3h_bypass_sample.vrhpal";
+    }
+
+     sample exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_single_bypass_state {
+#inc "exu_single_bypass_sample.vrhpal";
+    }
+
+    sample exu_swap_global_sample_C${c}_exu_swap_global_bind.\$exu_swap_global_state {
+#inc "exu_swap_global_sample.vrhpal";
+    }
+
+    sample exu_swap_local_sample_C${c}_exu_swap_local_bind.\$exu_swap_local_state {
+#inc "exu_swap_local_sample.vrhpal";
+    }
+
+    sample exu_tagged_ops_sample_C${c}_exu_tag_bind.\$exu_tag_add_state {
+#inc "exu_tag_add_sample.vrhpal";
+    }
+
+    sample exu_tagged_ops_sample_C${c}_exu_tag_bind.\$exu_tag_sub_state {
+#inc "exu_tag_sub_sample.vrhpal";
+    }
+
+    sample exu_wb_sample_C${c}_exu_irf_dual_wb_state {
+#inc "exu_wb_sample.vrhpal";
+    }
+
+    sample exu_wb_sample_C${c}_exu_irf_mult_wb_state {
+#inc "exu_mult_wb_sample.vrhpal";
+    }
+
+    sample exu_wmg_sample_C${c}_exu_wmg_bind.\$exu_wmg_state {
+#inc "exu_wmg_sample.vrhpal";
+    }
+
+. } # for $c
+
+    } // coverage_group
+
+    task                  new();
+    task		  set_pseudo_wires();
+}
+
+
+task exu_coverage::new() {
+
+    bit coverage_on;
+
+    // check coverage option
+    if ( get_plus_arg( CHECK, "exu_coverage" ) ||
+	 get_plus_arg( CHECK, "coverage_on" )
+	) {
+
+	coverage_on	= 1;
+
+	// check if coverage to be disabled for everyone
+	if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+	    coverage_on	= 0;
+	}
+
+    } else {
+	coverage_on	= 0;
+    }
+.
+    if(coverage_on){
+	exu_coverage_group	= new();
+	printf("%d : Coverage turned on for EXU objects!\n", get_time(LO));
+	set_pseudo_wires();
+
+	fork {
+	 @(posedge exu_cov_top.cmp_diag_done);
+	 exu_coverage_group.set_cov_weight(1);
+	 coverage_save_database(1);
+	 printf("%d : Coverage for EXU generated!\n", get_time(LO));
+	} join none
+    } // if(coverage_on)
+
+} // task exu_coverage::new()
+
+task exu_coverage::set_pseudo_wires()
+{
+   fork {
+      while(1) {
+         @(posedge exu_cov_top.cmp_clk);
+.foreach $c (@CORE_STR) {
+   C${c}_exu_mul_wb = exu_cov_top.C${c}_exu_muldiv_wb &  exu_cov_top.C${c}_exu_mul_done;
+   C${c}_exu_div_wb = exu_cov_top.C${c}_exu_muldiv_wb &  exu_cov_top.C${c}_exu_div_done;
+
+   exu_wb_sample_C${c}_exu_irf_dual_wb_state = {
+	exu_wb_sample_C${c}_exu_wb_bind.\$exu_irf_dual_wb_state_partial,
+	C${c}_exu_mul_wb,
+	C${c}_exu_div_wb
+	};
+
+   exu_wb_sample_C${c}_exu_irf_mult_wb_state = {
+	exu_wb_sample_C${c}_exu_wb_bind.\$exu_irf_mult_wb_state_partial,
+	C${c}_exu_mul_wb,
+	C${c}_exu_div_wb
+	};
+
+   C${c}_exu_rcc_bypass_vld = exu_cov_top.C${c}_exu_rs1_ifu_vld & 
+			exu_cov_top.C${c}_ifu_rcc_mvbr_d;
+   C${c}_exu_rs3_bypass_vld = exu_cov_top.C${c}_exu_rs3e_ifu_vld | 
+			exu_cov_top.C${c}_exu_rs3o_ifu_vld;
+   C${c}_exu_rs3h_bypass_vld = exu_cov_top.C${c}_exu_rs3e_ifu_vld & 
+			exu_cov_top.C${c}_exu_rs3o_ifu_vld ;
+   
+   exu_operand_bypass_sample_C${c}_exu_rcc_bypass_state = {
+	C${c}_exu_rcc_bypass_vld,
+	exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_rcc_bypass_state_partial
+	};
+
+   exu_operand_bypass_sample_C${c}_exu_rs3_bypass_state = {
+	C${c}_exu_rs3_bypass_vld,
+	exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_rs3_bypass_state_partial
+	};
+
+   exu_operand_bypass_sample_C${c}_exu_rs3h_bypass_state = {
+	C${c}_exu_rs3h_bypass_vld,
+	exu_operand_bypass_sample_C${c}_exu_bypass_bind.\$exu_rs3h_bypass_state_partial
+	};
+
+.} #foreach
+         trigger(cov_sample_event);
+      } // while(1)
+   } join none
+} // exu_coverage::set_pseudo_wires()
+
+

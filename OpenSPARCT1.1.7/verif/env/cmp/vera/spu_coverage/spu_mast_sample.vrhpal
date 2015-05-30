@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mast_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_mast_COV_VRH
+#define INC__TMP_spu_mast_COV_VRH
+
+#define MAST_IDLE_STATE				`MA_ST_STATE_WIDTH'b10000
+#define MAST_RDMEM_STATE			`MA_ST_STATE_WIDTH'b01000
+#define MAST_WAIT4STDRAIN_STATE			`MA_ST_STATE_WIDTH'b00100
+#define MAST_LASTSTREQ_STATE			`MA_ST_STATE_WIDTH'b00010
+#define MAST_DLY_TR2RDMEM_FRM_IDLE_STATE	`MA_ST_STATE_WIDTH'b00001
+
+#endif
+sample spu_mast_sample_bind_C${c}.\$ma_st_state {
+  //state declarations
+
+  state s_MAST_IDLE_STATE	(MAST_IDLE_STATE);
+  state s_MAST_RDMEM_STATE	(MAST_RDMEM_STATE);
+  state s_MAST_WAIT4STDRAIN_STATE	(MAST_WAIT4STDRAIN_STATE);
+  state s_MAST_LASTSTREQ_STATE	(MAST_LASTSTREQ_STATE);
+  state s_MAST_DLY_TR2RDMEM_FRM_IDLE_STATE	(MAST_DLY_TR2RDMEM_FRM_IDLE_STATE);
+
+  bad_state s_not_MAST_STATE (not state);
+
+  // transitions
+
+  trans t_MAST_IDLE_2_IDLE_STATE (MAST_IDLE_STATE -> MAST_IDLE_STATE);
+  trans t_MAST_WAIT4STDRAIN_2_IDLE_STATE (MAST_WAIT4STDRAIN_STATE -> MAST_IDLE_STATE);
+  trans t_MAST_LASTSTREQ_2_IDLE_STATE (MAST_LASTSTREQ_STATE -> MAST_IDLE_STATE);
+
+  trans t_MAST_WAIT4STDRAIN_2_RDMEM_STATE (MAST_WAIT4STDRAIN_STATE -> MAST_RDMEM_STATE);
+  trans t_MAST_DLY_TR2RDMEM_FRM_IDLE_2_RDMEM_STATE (MAST_DLY_TR2RDMEM_FRM_IDLE_STATE -> MAST_RDMEM_STATE);
+
+  trans t_MAST_IDLE_2_DLY_TR2RDMEM_FRM_IDLE_STATE (MAST_IDLE_STATE -> MAST_DLY_TR2RDMEM_FRM_IDLE_STATE);
+
+  trans t_MAST_WAIT4STDRAIN_2_WAIT4STDRAIN_STATE (MAST_WAIT4STDRAIN_STATE -> MAST_WAIT4STDRAIN_STATE);
+  trans t_MAST_RDMEM_2_WAIT4STDRAIN_STATE (MAST_RDMEM_STATE -> MAST_WAIT4STDRAIN_STATE);
+
+  trans t_MAST_WAIT4STDRAIN_2_LASTSTREQ_STATE (MAST_WAIT4STDRAIN_STATE -> MAST_LASTSTREQ_STATE);
+  trans t_MAST_LASTSTREQ_2_LASTSTREQ_STATE (MAST_LASTSTREQ_STATE -> MAST_LASTSTREQ_STATE);
+
+  //bad_trans t_not_MAST_TRANS (not trans);
+}
+ 

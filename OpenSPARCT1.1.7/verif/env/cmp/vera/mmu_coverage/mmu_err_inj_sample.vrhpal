@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_err_inj_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU Error Injection Statistics
+// Tables 11.1.7 & 11.1.8
+//
+// ***************************************************************************
+
+
+
+// coverage_def MMU_ERR_INJ_COV (bit [3:0] mmu_err_inj_state)
+// {
+  // state declarations
+
+wildcard state s_DMMU_TAG_ERR_INJ	(DMMU_TAG_ERR_INJ);
+wildcard state s_DMMU_DATA_ERR_INJ	(DMMU_DATA_ERR_INJ);
+wildcard state s_IMMU_TAG_ERR_INJ	(IMMU_TAG_ERR_INJ);
+wildcard state s_IMMU_DATA_ERR_INJ	(IMMU_DATA_ERR_INJ);
+
+  // transitions(combinations)
+
+wildcard trans t_ERR_INJ_BCK_TO_BCK	([ANY_ERR_STATE] -> [ANY_ERR_STATE]);
+wildcard trans t_ERR_INJ_1CYC_ERR_INJ	([ANY_ERR_STATE] -> ERR_DONT_CARE [.1.] -> [ANY_ERR_STATE]);
+wildcard trans t_ERR_INJ_2CYC_ERR_INJ	([ANY_ERR_STATE] -> ERR_DONT_CARE [.2.] -> [ANY_ERR_STATE]);
+wildcard trans t_ERR_INJ_3CYC_ERR_INJ	([ANY_ERR_STATE] -> ERR_DONT_CARE [.3.] -> [ANY_ERR_STATE]);
+wildcard trans t_ERR_INJ_4CYC_ERR_INJ	([ANY_ERR_STATE] -> ERR_DONT_CARE [.4.] -> [ANY_ERR_STATE]);
+
+  // bad states
+
+  // bad transitions
+
+// }

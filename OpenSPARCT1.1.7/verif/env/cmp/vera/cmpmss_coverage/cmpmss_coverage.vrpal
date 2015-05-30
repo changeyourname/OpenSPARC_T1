@@ -1,0 +1,215 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpmss_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "cmpmss_cov_inc.pal";
+
+#include <vera_defines.vrh>
+#include "cmpmss_cov_defines.vrh"
+#include "cmpmss_cov_ports_binds.vrh"
+
+
+class cmpmss_coverage {
+
+    coverage_group cmpmss_coverage_group {
+
+        const_sample_reference = 1; // reference to variable sampled is constant
+        sample_event = @(posedge cmpmss_cov.clk);
+        cov_weight = 0; // 0 until diag passes
+
+
+        // CCX coverage object definitions
+        sample cmpccx_pcx_req_sample.\$cmpccx_pcx_req_state {
+#inc "cmpccx_pcx_req_sample.vrhpal";
+        }
+        sample cmpccx_cpx_req_sample.\$cmpccx_cpx_req_state {
+#inc "cmpccx_cpx_req_sample.vrhpal";
+        }
+        sample cmpccx_pcx_sequence_sample.\$cmpccx_pcx_sequence_state {
+#inc "cmpccx_pcx_sequence_sample.vrhpal";
+        }
+        sample cmpccx_cpx_sequence_sample.\$cmpccx_cpx_sequence_state {
+#inc "cmpccx_cpx_sequence_sample.vrhpal";
+        }
+        sample cmpccx_pcx_qfull_sample.\$cmpccx_pcx_qfull_state {
+#inc "cmpccx_pcx_qfull_sample.vrhpal";
+        }
+        sample cmpccx_cpx_qfull_sample.\$cmpccx_cpx_qfull_state {
+#inc "cmpccx_cpx_qfull_sample.vrhpal";
+        }
+        sample cmpccx_pcx_stallatom_sample.\$cmpccx_pcx_stallatom_state {
+#inc "cmpccx_pcx_stallatom_sample.vrhpal";
+        }
+        sample cmpccx_cpx_stallatom_sample.\$cmpccx_cpx_stallatom_state {
+#inc "cmpccx_cpx_stallatom_sample.vrhpal";
+        }
+
+
+        // L2 coverage object definitions
+.for ($b=0; $b<$BANKS; $b++) {
+
+//        sample cmpl2_pcx_fields_sample_${b}.\$cmpl2_pcx_fields_state {
+//#inc "cmpl2_pcx_fields_sample.vrhpal";
+//        }
+//        sample cmpl2_cpx_fields_sample_${b}.\$cmpl2_cpx_fields_state {
+//#inc "cmpl2_cpx_fields_sample.vrhpal";
+//        }
+//        sample cmpl2_inv_vector_sample_${b}.\$cmpl2_inv_vector_state {
+//#inc "cmpl2_inv_vector_sample.vrhpal";
+//        }
+//        sample cmpl2_addr_sample_${b}.\$cmpl2_addr_state {
+//#inc "cmpl2_addr_sample.vrhpal";
+//        }
+        sample cmpl2_jbi_fields_sample_${b}.\$cmpl2_jbi_fields_state {
+#inc "cmpl2_jbi_fields_sample.vrhpal";
+        }
+        sample cmpl2_iq_count_sample_${b}.\$cmpl2_iq_count_state {
+#inc "cmpl2_iq_count_sample.vrhpal";
+        }
+        sample cmpl2_iq_overflow_sample_${b}.\$cmpl2_iq_overflow_state {
+#inc "cmpl2_iq_overflow_sample.vrhpal";
+        }
+        sample cmpl2_oq_count_sample_${b}.\$cmpl2_oq_count_state {
+#inc "cmpl2_oq_count_sample.vrhpal";
+        }
+        sample cmpl2_oq_ifill12_sample_${b}.\$cmpl2_oq_ifill12_state {
+#inc "cmpl2_oq_ifill12_sample.vrhpal";
+        }
+        sample cmpl2_oq_overflow_sample_${b}.\$cmpl2_oq_overflow_state {
+#inc "cmpl2_oq_overflow_sample.vrhpal";
+        }
+        sample cmpl2_dir_write_sample_${b}.\$cmpl2_dir_write_state {
+#inc "cmpl2_dir_write_sample.vrhpal";
+        }
+        sample cmpl2_dir_lookup_sample_${b}.\$cmpl2_dir_lookup_state {
+#inc "cmpl2_dir_lookup_sample.vrhpal";
+        }
+        sample cmpl2_mb_count_sample_${b}.\$cmpl2_mb_count_state {
+#inc "cmpl2_mb_count_sample.vrhpal";
+        }
+        sample cmpl2_mb_sameindex_sample_${b}.\$cmpl2_mb_sameindex_state {
+#inc "cmpl2_mb_sameindex_sample.vrhpal";
+        }
+        sample cmpl2_mb_hit_bypass_sample_${b}.\$cmpl2_mb_hit_bypass_state {
+#inc "cmpl2_mb_hit_bypass_sample.vrhpal";
+        }
+        sample cmpl2_mb_overflow_sample_${b}.\$cmpl2_mb_overflow_state {
+#inc "cmpl2_mb_overflow_sample.vrhpal";
+        }
+        sample cmpl2_fb_count_sample_${b}.\$cmpl2_fb_count_state {
+#inc "cmpl2_fb_count_sample.vrhpal";
+        }
+        sample cmpl2_fbmb_miss_entries_sample_${b}.\$cmpl2_fbmb_miss_entries_state {
+#inc "cmpl2_fbmb_miss_entries_sample.vrhpal";
+        }
+        sample cmpl2_fbmb_stdep_entries_sample_${b}.\$cmpl2_fbmb_stdep_entries_state {
+#inc "cmpl2_fbmb_stdep_entries_sample.vrhpal";
+        }
+        sample cmpl2_fb_bypass_entries_sample_${b}.\$cmpl2_fb_bypass_entries_state {
+#inc "cmpl2_fb_bypass_entries_sample.vrhpal";
+        }
+        sample cmpl2_fb_bypass_insts_sample_${b}.\$cmpl2_fb_bypass_insts_state {
+#inc "cmpl2_fb_bypass_insts_sample.vrhpal";
+        }
+        sample cmpl2_fill_complete_sample_${b}.\$cmpl2_fill_complete_state {
+#inc "cmpl2_fill_complete_sample.vrhpal";
+        }
+        sample cmpl2_wb_count_sample_${b}.\$cmpl2_wb_count_state {
+#inc "cmpl2_wb_count_sample.vrhpal";
+        }
+        sample cmpl2_wb_hit_bypass_sample_${b}.\$cmpl2_wb_hit_bypass_state {
+#inc "cmpl2_wb_hit_bypass_sample.vrhpal";
+        }
+        sample cmpl2_snpiq_valid_sample_${b}.\$cmpl2_snpiq_valid_state {
+#inc "cmpl2_snpiq_valid_sample.vrhpal";
+        }
+        sample cmpl2_rdmawb_valid_sample_${b}.\$cmpl2_rdmawb_valid_state {
+#inc "cmpl2_rdmawb_valid_sample.vrhpal";
+        }
+        sample cmpl2_pipeline_full_sample_${b}.\$cmpl2_pipeline_full_state {
+#inc "cmpl2_pipeline_full_sample.vrhpal";
+        }
+        sample cmpl2_stalled_insts1_sample_${b}.\$cmpl2_stalled_insts1_state {
+#inc "cmpl2_stalled_insts1_sample.vrhpal";
+        }
+        sample cmpl2_stalled_insts2_sample_${b}.\$cmpl2_stalled_insts2_state {
+#inc "cmpl2_stalled_insts2_sample.vrhpal";
+        }
+        sample cmpl2_stalled_scrub1_sample_${b}.\$cmpl2_stalled_scrub1_state {
+#inc "cmpl2_stalled_scrub1_sample.vrhpal";
+        }
+        sample cmpl2_stalled_scrub2_sample_${b}.\$cmpl2_stalled_scrub2_state {
+#inc "cmpl2_stalled_scrub2_sample.vrhpal";
+        }
+        sample cmpl2_vuad_bypass_sample_${b}.\$cmpl2_vuad_bypass_state {
+#inc "cmpl2_vuad_bypass_sample.vrhpal";
+        }
+        sample cmpl2_offmode_directmap_insts_sample_${b}.\$cmpl2_offmode_directmap_insts_state {
+#inc "cmpl2_offmode_directmap_insts_sample.vrhpal";
+        }
+        sample cmpl2_inst_flow_sample_${b}.\$cmpl2_inst_flow_state {
+#inc "cmpl2_inst_flow_sample.vrhpal";
+        }
+        sample cmpl2_buffer_hits_sample_${b}.\$cmpl2_buffer_hits_state {
+#inc "cmpl2_buffer_hits_sample.vrhpal";
+        }
+        sample cmpl2_error_status_reg_sample_${b}.\$cmpl2_error_status_reg_state {
+#inc "cmpl2_error_status_reg_sample.vrhpal";
+        }
+        sample cmpl2_error_trans_sample_${b}.\$cmpl2_error_trans_state {
+#inc "cmpl2_error_trans_sample.vrhpal";
+        }
+        sample cmpl2_error_tag_sample_${b}.\$cmpl2_error_tag_state {
+#inc "cmpl2_error_tag_sample.vrhpal";
+        }
+        sample cmpl2_error_offmode_sample_${b}.\$cmpl2_error_offmode_state {
+#inc "cmpl2_error_offmode_sample.vrhpal";
+        }
+        sample cmpl2_scrub_stall_sample_${b}.\$cmpl2_scrub_stall_state {
+#inc "cmpl2_scrub_stall_sample.vrhpal";
+        }
+        sample cmpl2_tecc_writeback_sample_${b}.\$cmpl2_tecc_writeback_state {
+#inc "cmpl2_tecc_writeback_sample.vrhpal";
+        }
+        
+.} # for $b
+
+    } // coverage_group
+
+
+    task new();
+}
+
+
+task cmpmss_coverage::new() {
+    
+    integer i;
+
+    cmpmss_coverage_group = new();
+    
+    fork
+    {
+        // wait for diag to pass
+        @(posedge cmpmss_cov.diag_done);
+        cmpmss_coverage_group.set_cov_weight(1);
+        coverage_save_database(1);
+        printf("%d : Coverage for MSS generated!\n", get_time(LO));
+    }
+    join none
+}

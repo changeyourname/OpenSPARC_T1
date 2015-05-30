@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_miscpick_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+
+
+// coverage_def LSU_MISCPICK_COV (bit [3:0] misc_pcx_rq_vld)
+// {
+  // state declarations
+
+  state s_MREQ0   (MREQ0);
+  state s_MREQ1   (MREQ1);
+  state s_MREQ2   (MREQ2);
+  state s_MREQ3   (MREQ3);
+  state s_MREQ4   (MREQ4);
+  state s_MREQ5   (MREQ5);
+  state s_MREQ6   (MREQ6);
+  state s_MREQ7   (MREQ7);
+  state s_MREQ8   (MREQ8);
+  state s_MREQ9   (MREQ9);
+  state s_MREQ10  (MREQ10);
+  state s_MREQ11  (MREQ11);
+  state s_MREQ12  (MREQ12);
+  state s_MREQ13  (MREQ13);
+  state s_MREQ14  (MREQ14);
+  state s_MREQ15  (MREQ15);
+
+  bad_state s_not_MSTATE (not state);
+
+  m_trans t_b2b_reqs (1:15 -> 1:15);
+
+// }
+

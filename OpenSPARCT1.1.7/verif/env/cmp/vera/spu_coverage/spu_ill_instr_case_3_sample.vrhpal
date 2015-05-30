@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_ill_instr_case_3_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_ill_instr_case_3_COV_VRH
+#define INC__TMP_spu_ill_instr_case_3_COV_VRH
+#define ILL_INSTR_CASE_3_STATE 2'b11
+
+/* TODO:
+ * + Am I qualifying illgl correctly?
+ * + Need other signal(s) to indicate that the reason
+ *   for the illegal instruction exception was really this case.
+ */
+
+/*
+ * Order of the signals in ill_instr_case_3_state:
+ * spu_lsu_ddata_illgl_w2, spu_lsu_ldxa_data_vld_w2
+ */
+
+/*
+ * spu_ill_instr_case_3_cov
+ *
+ * This coverage object checks for one of three illegal instruction cases in
+ * the SPU. Here is the case, taken from the spu_testplan.tex
+ * file:
+ *
+ * Case 3: When both SDATA and DDATA are set, then at most 8 bytes of source
+ *   data should be stored by software into the data register before a ldxa
+ *   of destination data is performed. If additional source data is store
+ *   by software, an \textit{Illegal Instruction} is taken.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample spu_ill_instr_case_3_sample_bind_C${c}.\$ill_instr_case_3_state {
+  // Declare states to be covered 
+  state s_ILL_INSTR_CASE_3_STATE (ILL_INSTR_CASE_3_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

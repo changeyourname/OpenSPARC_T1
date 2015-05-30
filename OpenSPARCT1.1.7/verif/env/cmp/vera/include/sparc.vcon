@@ -1,0 +1,132 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: sparc.vcon
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+timescale 1ps/1ps
+
+////////////////////////////////////////////////////////////////////////////////
+// sparc signals
+////////////////////////////////////////////////////////////////////////////////
+
+connect input cmp_top.sparc_rclk = "cmp_top.iop.sparc0.rclk" iskew -1 oskew 1
+connect inout cmp_top.cpx_io_grant_cx = "cmp_top.iop.cpx_iob_grant_cx2" iskew -1 oskew 1
+connect inout cmp_top.pcx_io_data_px = "cmp_top.iop.pcx_iob_data_px2" iskew -1 oskew 1
+connect inout cmp_top.pcx_io_data_rdy_px = "cmp_top.iop.pcx_iob_data_rdy_px2" iskew -1 oskew 1
+connect inout cmp_top.io_cpx_data_ca = "cmp_top.iop.iob_cpx_data_ca" iskew -1 oskew 1 
+connect inout cmp_top.io_cpx_req_cq = "cmp_top.iop.iob_cpx_req_cq" iskew -1 oskew 1 
+connect inout cmp_top.io_pcx_stall_pq = "cmp_top.iop.iob_pcx_stall_pq" iskew -1 oskew 1 
+
+connect inout cmp_top.spc0_pcx_data_pa = "cmp_top.iop.spc0_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc1_pcx_data_pa = "cmp_top.iop.spc1_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc2_pcx_data_pa = "cmp_top.iop.spc2_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc3_pcx_data_pa = "cmp_top.iop.spc3_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc4_pcx_data_pa = "cmp_top.iop.spc4_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc5_pcx_data_pa = "cmp_top.iop.spc5_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc6_pcx_data_pa = "cmp_top.iop.spc6_pcx_data_pa" iskew -1 oskew 1
+connect inout cmp_top.spc7_pcx_data_pa = "cmp_top.iop.spc7_pcx_data_pa" iskew -1 oskew 1
+
+connect inout cmp_top.spc0_pcx_req_pq = "cmp_top.iop.spc0_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc1_pcx_req_pq = "cmp_top.iop.spc1_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc2_pcx_req_pq = "cmp_top.iop.spc2_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc3_pcx_req_pq = "cmp_top.iop.spc3_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc4_pcx_req_pq = "cmp_top.iop.spc4_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc5_pcx_req_pq = "cmp_top.iop.spc5_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc6_pcx_req_pq = "cmp_top.iop.spc6_pcx_req_pq" iskew -1 oskew 1
+connect inout cmp_top.spc7_pcx_req_pq = "cmp_top.iop.spc7_pcx_req_pq" iskew -1 oskew 1
+
+connect inout cmp_top.spc0_pcx_atom_pq = "cmp_top.iop.spc0_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc1_pcx_atom_pq = "cmp_top.iop.spc1_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc2_pcx_atom_pq = "cmp_top.iop.spc2_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc3_pcx_atom_pq = "cmp_top.iop.spc3_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc4_pcx_atom_pq = "cmp_top.iop.spc4_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc5_pcx_atom_pq = "cmp_top.iop.spc5_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc6_pcx_atom_pq = "cmp_top.iop.spc6_pcx_atom_pq" iskew -1 oskew 1
+connect inout cmp_top.spc7_pcx_atom_pq = "cmp_top.iop.spc7_pcx_atom_pq" iskew -1 oskew 1
+
+connect inout cmp_top.pcx_spc0_grant_pa = "cmp_top.iop.pcx_spc0_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc1_grant_pa = "cmp_top.iop.pcx_spc1_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc2_grant_pa = "cmp_top.iop.pcx_spc2_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc3_grant_pa = "cmp_top.iop.pcx_spc3_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc4_grant_pa = "cmp_top.iop.pcx_spc4_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc5_grant_pa = "cmp_top.iop.pcx_spc5_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc6_grant_pa = "cmp_top.iop.pcx_spc6_grant_px" iskew -1 oskew 1 
+connect inout cmp_top.pcx_spc7_grant_pa = "cmp_top.iop.pcx_spc7_grant_px" iskew -1 oskew 1
+
+connect inout cmp_top.cpx_spc0_data_cx = "cmp_top.iop.cpx_spc0_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc1_data_cx = "cmp_top.iop.cpx_spc1_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc2_data_cx = "cmp_top.iop.cpx_spc2_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc3_data_cx = "cmp_top.iop.cpx_spc3_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc4_data_cx = "cmp_top.iop.cpx_spc4_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc5_data_cx = "cmp_top.iop.cpx_spc5_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc6_data_cx = "cmp_top.iop.cpx_spc6_data_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc7_data_cx = "cmp_top.iop.cpx_spc7_data_cx2" iskew -1 oskew 1 
+
+connect inout cmp_top.cpx_spc0_data_rdy_cx = "cmp_top.iop.cpx_spc0_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc1_data_rdy_cx = "cmp_top.iop.cpx_spc1_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc2_data_rdy_cx = "cmp_top.iop.cpx_spc2_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc3_data_rdy_cx = "cmp_top.iop.cpx_spc3_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc4_data_rdy_cx = "cmp_top.iop.cpx_spc4_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc5_data_rdy_cx = "cmp_top.iop.cpx_spc5_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc6_data_rdy_cx = "cmp_top.iop.cpx_spc6_data_rdy_cx2" iskew -1 oskew 1 
+connect inout cmp_top.cpx_spc7_data_rdy_cx = "cmp_top.iop.cpx_spc7_data_rdy_cx2" iskew -1 oskew 1 
+
+connect inout cmp_top.fp_cpx_req_cq = "cmp_top.iop.fp_cpx_req_cq" iskew -1 oskew 1 
+// connect inout cmp_top.fp_cpx_atom_cq = "cmp_top.iop.mem.fp_cpx_atom_cq" iskew -1 oskew 1 
+
+#ifdef GATE_SIM
+#else
+//signals for error injection
+connect input cmp_top.pc_d = "cmp_top.iop.sparc0.ifu.fdp.pc_d" iskew -1 oskew 1
+connect input cmp_top.pc_e = "cmp_top.iop.sparc0.ifu.fdp.pc_e" iskew -1 oskew 1
+connect input cmp_top.pc_f = "cmp_top.iop.sparc0.ifu.fdp.pc_f" iskew -1 oskew 1
+connect input cmp_top.pc_m = "cmp_top.iop.sparc0.ifu.fdp.pc_m" iskew -1 oskew 1
+connect input cmp_top.thr_d = "cmp_top.iop.sparc0.ifu.fcl.thr_d" iskew -1 oskew 1
+connect input cmp_top.thr_e = "cmp_top.iop.sparc0.ifu.fcl.thr_e" iskew -1 oskew 1
+connect input cmp_top.thr_f = "cmp_top.iop.sparc0.ifu.fcl.thr_f" iskew -1 oskew 1
+connect input cmp_top.thr_m = "cmp_top.iop.sparc0.ifu.fcl.thr_m" iskew -1 oskew 1
+connect input cmp_top.fcl_dtu_inst_vld_d = "cmp_top.iop.sparc0.ifu.fcl.fcl_dtu_inst_vld_d" iskew -1 oskew 1
+connect input cmp_top.ctl_frf_ren = "cmp_top.iop.sparc0.ffu.ctl.ctl_frf_ren" iskew -1 oskew 1
+connect input cmp_top.icd_rdreq_f = "cmp_top.iop.sparc0.ifu.icd.rdreq_f" iskew -1 oskew 1
+connect input cmp_top.icd_wrreq_f = "cmp_top.iop.sparc0.ifu.icd.wrreq_f" iskew -1 oskew 1
+connect input cmp_top.ict_wrreq_f = "cmp_top.iop.sparc0.ifu.ict.wrreq_y" iskew -1 oskew 1
+connect input cmp_top.inst_vld_f = "cmp_top.iop.sparc0.ifu.fcl.inst_vld_f" iskew -1 oskew 1
+connect input cmp_top.dcd_rdreq_m = "cmp_top.iop.sparc0.lsu.dcache.dcache_rvld_m" iskew -1 oskew 1
+connect input cmp_top.dct_rdreq_m = "cmp_top.iop.sparc0.lsu.dtag.rdreq_y" iskew -1 oskew 1
+connect input cmp_top.dcd_wrreq_m = "cmp_top.iop.sparc0.lsu.dcache.dcache_wvld_m" iskew -1 oskew 1
+connect input cmp_top.dct_wrreq_m = "cmp_top.iop.sparc0.lsu.dtag.wrreq_y" iskew -1 oskew 1
+connect input cmp_top.irf_wen_w = "cmp_top.iop.sparc0.exu.irf.active_win_thr_rd_w_neg_wr_en" iskew -1 oskew 1
+connect input cmp_top.irf_wen_w2 = "cmp_top.iop.sparc0.exu.irf.active_win_thr_rd_w2_neg_wr_en" iskew -1 oskew 1
+connect input cmp_top.frf_wen = "cmp_top.iop.sparc0.ffu.frf.wen_d1" iskew -1 oskew 1
+connect input cmp_top.ifu_tlu_inst_vld_m = "cmp_top.iop.sparc0.ifu.ifu_tlu_inst_vld_m" iskew -1 oskew 1
+connect input cmp_top.ecl_byp_sel_ecc_m = "cmp_top.iop.sparc0.exu.ecl.writeback.ecl_byp_sel_ecc_m" iskew -1 oskew 1
+connect input cmp_top.ifu_ffu_fst_d = "cmp_top.iop.sparc0.ifu.ifu_ffu_fst_d" iskew -1 oskew 1
+connect input cmp_top.rs1_ren_d = "cmp_top.iop.sparc0.exu.irf.ifu_exu_ren1_d" iskew -1 oskew 1
+connect input cmp_top.rs2_ren_d = "cmp_top.iop.sparc0.exu.irf.ifu_exu_ren2_d" iskew -1 oskew 1
+connect input cmp_top.rs3_ren_d = "cmp_top.iop.sparc0.exu.irf.ifu_exu_ren3_d" iskew -1 oskew 1
+connect input cmp_top.ifu_tlu_ttype_vld_m = "cmp_top.iop.sparc0.ifu.ifu_tlu_ttype_vld_m" iskew -1 oskew 1
+connect input cmp_top.inst_vld_e = "cmp_top.iop.sparc0.ifu.fcl.inst_vld_e" iskew -1 oskew 1
+connect input cmp_top.intr_vld_d = "cmp_top.iop.sparc0.ifu.fcl.intr_vld_d" iskew -1 oskew 1
+connect input cmp_top.fpop1_e =  "cmp_top.iop.sparc0.ffu.ctl.fpop1_e" iskew -1 oskew 1
+connect input cmp_top.fpop2_e = "cmp_top.iop.sparc0.ffu.ctl.fpop2_e" iskew -1 oskew 1
+connect input cmp_top.visop_e = "cmp_top.iop.sparc0.ffu.ctl.visop_e" iskew -1 oskew 1
+connect input cmp_top.cam_vld_f = "cmp_top.iop.sparc0.ifu.itlb.cam_vld" iskew -1 oskew 1
+connect input cmp_top.cam_vld_m = "cmp_top.iop.sparc0.lsu.dtlb.cam_vld" iskew -1 oskew 1
+connect input cmp_top.exu_lsu_ldst_va_e = "cmp_top.iop.sparc0.exu.exu_lsu_ldst_va_e" iskew -1 oskew 1
+#endif //ifdef GATE_SIM
+

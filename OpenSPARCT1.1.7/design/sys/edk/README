@@ -1,0 +1,74 @@
+
+Issues
+------
+    A.  Dual-core system stability
+
+        Occasionally the dual-core system hangs if networking is enabled. It is
+        recommended that the ramdisk image "ramdisk.snv-b77-nd.no-boot-time-network.gz"
+	be used for booting Operating System on the dual-core system. Networking
+	can be enabled after the system reaches console login prompt similar to
+	enabling networking after booting to maintenance mode.
+
+	Ubuntu Linux is not yet supported on the dual-core system.
+
+	There are no known stability issues with OpenSolaris or Ubuntu Linux
+	running on a single core system.
+
+    B.  Floating-point support in Firmware.
+
+	Currently, the CCX firmware emulates the floating-point processing for
+	the floating-point unit, because that unit is not included in the FPGA
+        project.  Approximately 50 diagnostic tests in the core1_full regression
+	which exercise the floating-point unit fail when run on the FPGA
+	project.  The cause is probably due to the emulation code not
+	supporting some special cases.  These cases have been commented out of
+	the core1_full test list.
+
+
+    C.  EDK project workarounds
+
+	Before running EDK on any of the project files supplied, the user must
+	run the following script:
+	
+	    $DV_ROOT/design/sys/edk/fix_edk.pl
+
+	This script applies work-arounds for two problems encountered in EDK.
+	Files from the EDK release area are copied to the project and modified.
+
+    D.  Meeting Timing with other netlists.
+
+	The EDK project comes with a pre-synthesized netlist for the OpenSPARC
+	T1 core.  This netlist was compiled with Synplify Pro, version 8.8,
+	targeting the XC5VLX110 FPGA.
+	With this netlist is used, both the dual-core project and the single-
+	core project get through place & route with no timing violations.
+	The two bit files included in the $DV_ROOT/design/sys/edk/bitfiles
+	directory were implemented using this netlist.
+
+	If Synplicity Pro is used targeting the XC5VXL110T (the actual part on
+	the board), the dual-core design implements with no timing violations, 
+	but the single-core design has one small timing violation.  It is a
+	violation of a cross clock domain path.   However, this timing 
+	violation didn't seem to affect the functionality of the design.  We
+	were still able to run a complete regression on this design with no
+	failures.
+
+	OpenSPARC T1 Netlists generated with XST version 10.1 were also tested.
+       	The dual-core design implemented with no timing violations, but the 
+	single-core design had a large timing violation.  This can be corrected
+	by changing the options specified in the file.
+
+	 $DV_ROOT/design/sys/edk/etc/fast_runtime.opt
+
+	 In the options for the program map, delete the line "-t 3".  The
+	 single-core design should then route with no timing violations.
+
+    E.  Diagnostic test ordering.
+	
+	In a hardware regresssion, tests now run without re-downloading the 
+	bit file between each tests.  This makes it necessary for each test
+	to initialize the core properly.  We have noticed that a test named
+	tr_intr2 fails if it is executed after test tr_intr1.  Therefore, in
+	our test lists, we have changed the test order so that test tr_intr2
+	runs first.
+

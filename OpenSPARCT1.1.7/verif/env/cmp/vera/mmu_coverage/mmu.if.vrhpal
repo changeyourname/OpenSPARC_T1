@@ -1,0 +1,286 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mmu_cov_inc.pal";
+#ifndef __MMU_IF_VRH__
+#define __MMU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface mmu_coverage_ifc
+{
+  // Common & Clock Signals
+  input clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+
+input C${c}_dmmu_ps1_ptr_en_m         PSAMPLE;
+input C${c}_dmmu_ps0_ptr_en_m          PSAMPLE;
+input C${c}_dmmu_ctxt_cfg_en_m        PSAMPLE;
+input C${c}_dmmu_direct_ptr_en_m      PSAMPLE;
+input C${c}_dmmu_nzctxt_cfg_en_m      PSAMPLE;
+input C${c}_dmmu_nzctxt_ps0_tsb_en_m  PSAMPLE;
+input C${c}_dmmu_nzctxt_ps1_tsb_en_m  PSAMPLE;
+input [3:0] C${c}_dmmu_sfsr_wr_en_l    	PSAMPLE;
+input C${c}_dmmu_sync_far_en_m        PSAMPLE;
+input C${c}_dmmu_sync_fsr_en_m        PSAMPLE;
+input C${c}_dmmu_tag_access_en_m      PSAMPLE;
+input C${c}_dmmu_tag_target_en_m      PSAMPLE;
+input C${c}_dmmu_tsb_en_m             PSAMPLE;
+input C${c}_dmmu_zctxt_cfg_en_m       PSAMPLE;
+input C${c}_dmmu_zctxt_ps0_tsb_en_m   PSAMPLE;
+input C${c}_dmmu_zctxt_ps1_tsb_en_m   PSAMPLE;
+input C${c}_immu_64k_ptr_en_m         PSAMPLE;
+input C${c}_immu_8k_ptr_en_m          PSAMPLE;
+input C${c}_immu_ctxt_cfg_en_m        PSAMPLE;
+input C${c}_immu_nzctxt_cfg_en_m      PSAMPLE;
+input C${c}_immu_nzctxt_ps0_tsb_en_m  PSAMPLE;
+input C${c}_immu_nzctxt_ps1_tsb_en_m  PSAMPLE;
+input [3:0] C${c}_immu_sfsr_wr_en_l    	PSAMPLE;
+input C${c}_immu_sync_fsr_en_m        PSAMPLE;
+input C${c}_immu_tag_access_en_m      PSAMPLE;
+input C${c}_immu_tag_target_en_m      PSAMPLE;
+input C${c}_immu_tsb_en_m             PSAMPLE;
+input C${c}_immu_zctxt_cfg_en_m       PSAMPLE;
+input C${c}_immu_zctxt_ps0_tsb_en_m   PSAMPLE;
+input C${c}_immu_zctxt_ps1_tsb_en_m   PSAMPLE;
+input C${c}_tlb_access_en_l           PSAMPLE;
+
+
+// Inputs for MMU_FAULTS_COV
+
+input C${c}_ifu_tlu_immu_miss_m		PSAMPLE;
+input C${c}_lsu_tlu_dmmu_miss_g		PSAMPLE;
+input C${c}_lsu_tlu_daccess_excptn_g		PSAMPLE;
+input C${c}_inst_access_excp_g		PSAMPLE;
+input C${c}_tlu_lsu_int_ld_ill_va_w2		PSAMPLE;
+input C${c}_immu_va_oor_brnchetc_m		PSAMPLE;
+input C${c}_exu_tlu_va_oor_jl_ret_m		PSAMPLE;
+input C${c}_exu_tlu_va_oor_m		PSAMPLE;
+input C${c}_va_oor_inst_acc_excp_g		PSAMPLE;
+input C${c}_dmmu_va_oor_g		PSAMPLE;
+input C${c}_va_oor_data_acc_excp_g		PSAMPLE;
+input C${c}_lsu_tlu_wtchpt_trp_g		PSAMPLE;
+input C${c}_lsu_tlu_misalign_addr_ldst_atm_m		PSAMPLE;
+input C${c}_tlu_mmu_sync_data_excp_g		PSAMPLE;
+input C${c}_ifu_tlu_flsh_inst_e		PSAMPLE;
+input C${c}_dmmu_sync_illgl_va_m	PSAMPLE;
+input C${c}_immu_sync_illgl_va_m	PSAMPLE;
+input C${c}_dmmu_async_illgl_va_g	PSAMPLE;
+input C${c}_immu_async_illgl_va_g	PSAMPLE;
+input C${c}_demap_sctxt	PSAMPLE;
+input C${c}_demap_resrv	PSAMPLE;
+
+
+// these faults are to be qualified with
+
+input [8:0] C${c}_exu_tlu_ttype_m 	PSAMPLE depth 4;
+input C${c}_exu_tlu_ttype_vld_m		PSAMPLE depth 4;
+
+// Inputs for TTE_ATTRIBUTES_COV
+
+input [42:0]	C${c}_tlu_dtlb_tte_data_w2		PSAMPLE depth 4;
+input [42:0]	C${c}_tlu_itlb_tte_data_w2		PSAMPLE depth 4;
+input [42:0]	C${c}_tlb_rd_tte_data			PSAMPLE depth 4;
+input		C${c}_tlb_rd_data_vld			PSAMPLE depth 4;
+input		C${c}_cam_vld				PSAMPLE depth 4;
+input		C${c}_tlb_cam_hit				PSAMPLE depth 4;
+input C${c}_lsu_tlu_tlb_st_inst_m			PSAMPLE depth 4;
+input C${c}_lsu_tlu_tlb_ld_inst_m			PSAMPLE depth 4;
+
+// Inputs for PID field of the TTE
+
+input [58:0]    C${c}_dtlb_rd_tte_tag		PSAMPLE depth 4;
+input [58:0]    C${c}_itlb_rd_tte_tag		PSAMPLE depth 4;
+
+// Inputs for MMU_TLB_OPS_COV
+
+input C${c}_dtlb_entry_vld		PSAMPLE;
+input C${c}_itlb_entry_vld		PSAMPLE;
+input C${c}_ddemap_by_page		PSAMPLE;
+input C${c}_idemap_by_page		PSAMPLE;
+input C${c}_ddemap_by_ctxt		PSAMPLE;
+input C${c}_idemap_by_ctxt		PSAMPLE;
+input C${c}_tlu_dtlb_dmp_all_g		PSAMPLE;
+input C${c}_tlu_itlb_dmp_all_g		PSAMPLE;
+input C${c}_dmmu_inv_all_g		PSAMPLE;
+input C${c}_immu_inv_all_g		PSAMPLE;
+input C${c}_itlb_demap_auto		PSAMPLE;
+input C${c}_dtlb_demap_auto		PSAMPLE;
+input C${c}_dmmu_data_access_rd_en	PSAMPLE;
+input C${c}_immu_data_access_rd_en	PSAMPLE;
+input C${c}_dmmu_data_access_wr_en	PSAMPLE;
+input C${c}_immu_data_access_wr_en	PSAMPLE;
+input C${c}_dmmu_data_in_wr_en		PSAMPLE;
+input C${c}_immu_data_in_wr_en		PSAMPLE;
+
+input C${c}_dtlb_demap			PSAMPLE;
+input C${c}_itlb_demap			PSAMPLE;
+
+// Inputs for DTLB_WR_FL_RD_COV
+input [58:0] C${c}_dtlb_wr_tte_tag		PSAMPLE depth 4;
+input [42:0] C${c}_dtlb_wr_tte_data		PSAMPLE depth 4;
+input C${c}_dtlb_wr_vld			PSAMPLE depth 4;
+input [58:0]	C${c}_dtlb_cam_data		PSAMPLE depth 4;
+input C${c}_dtlb_cam_data_vld		PSAMPLE depth 4;
+input C${c}_dtlb_cam_hit		PSAMPLE;
+input C${c}_dtlb_bypass			PSAMPLE;
+
+// Inputs for ITLB_WR_FL_RD_COV
+input [58:0] C${c}_itlb_wr_tte_tag		PSAMPLE depth 4;
+input [42:0] C${c}_itlb_wr_tte_data		PSAMPLE depth 4;
+input C${c}_itlb_wr_vld			PSAMPLE depth 4;
+input [58:0]	C${c}_itlb_cam_data		PSAMPLE depth 4;
+input C${c}_itlb_cam_data_vld		PSAMPLE depth 4;
+input C${c}_itlb_cam_hit		PSAMPLE;
+input C${c}_itlb_bypass			PSAMPLE;
+
+// Inputs for MMU_DMP_FL_RD_COV
+
+input C${c}_clk		PSAMPLE;
+input [7:0] C${c}_lsu_tlu_tlb_asi_state_m		PSAMPLE depth 4;
+input [47:0] C${c}_lsu_tlu_tlb_dmp_va_m		PSAMPLE depth 4;
+input C${c}_lsu_tlu_tlb_ldst_va_m		PSAMPLE depth 4;
+input [2:0] C${c}_lsu_dtlb_cam_pid_e		PSAMPLE depth 4;
+input [40:0] C${c}_tlu_idtlb_dmp_key_g		PSAMPLE depth 4;
+
+// Inputs for sfsr field values check
+
+input [23:0] C${c}_dsfsr0			PSAMPLE;
+input [23:0] C${c}_isfsr0			PSAMPLE;
+
+input C${c}_tlu_dtlb_dmp_vld_g		PSAMPLE depth 4;
+input C${c}_tlu_itlb_dmp_vld_g		PSAMPLE depth 4;
+
+// Inputs for MMU_ERR_INJ_COV
+
+input [3:0]	C${c}_ifu_lsu_error_inj	PSAMPLE;
+
+// Inputs for MMU_TLB_BYPASS_COV
+
+input [3:0]	C${c}_pstate_priv		PSAMPLE;
+input [3:0]	C${c}_hstate_priv		PSAMPLE;
+
+// Inputs for MMU_ASI_ACCESS
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+input [7:0]     C${c}_T${t}_lsu_asi_reg		PSAMPLE;
+.}
+
+// Inputs for MMU Atomics
+input  C${c}_ifu_lsu_casa_e			PSAMPLE;
+input  C${c}_ifu_lsu_ldstub_e			PSAMPLE;
+input  C${c}_ifu_lsu_swap_e			PSAMPLE;
+
+// Inputs for MMU PSTATE attr's
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+input  [11:0]  C${c}_pstate${t}			PSAMPLE;
+.}
+
+// Inputs for MMU trap level
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+input  [2:0]  C${c}_trap_level${t}		PSAMPLE;
+.}
+
+// Inputs for MMU normal ops
+input C${c}_ifu_lsu_ld_inst_e			PSAMPLE;
+input C${c}_ifu_lsu_st_inst_e			PSAMPLE;
+
+// Inputs for cam hit one hot assertion check
+input [63:0] C${c}_dtlb_cam_hit_array		PSAMPLE;
+input [63:0] C${c}_itlb_cam_hit_array			PSAMPLE;
+
+// Inputs for MRA filed enables assertion check
+input    [3:0] C${c}_mra_wr_ptr		PSAMPLE depth 3;
+input    [3:0] C${c}_mra_rd_ptr		PSAMPLE depth 3;
+input    C${c}_mra_wr_vld		PSAMPLE depth 3;
+input    C${c}_mra_rd_vld		PSAMPLE depth 3;
+input    C${c}_mra_field1_en		PSAMPLE depth 3;
+input    C${c}_mra_field2_en		PSAMPLE depth 3;
+input    C${c}_mra_field3_en		PSAMPLE depth 3;
+input    C${c}_mra_field4_en		PSAMPLE depth 3;
+input    C${c}_lsu_exu_ldxa_m		PSAMPLE depth 3;
+
+input [1:0]  C${c}_lsu_tlu_tlb_access_tid_m	PSAMPLE;
+input        C${c}_tlu_lsu_ldxa_async_data_vld	PSAMPLE;
+input [1:0]  C${c}_tlu_lsu_ldxa_tid_w2	PSAMPLE;
+input [1:0]  C${c}_tlu_lsu_stxa_ack_tid	PSAMPLE;
+input        C${c}_tlu_lsu_stxa_ack	PSAMPLE;
+input        C${c}_ifu_lsu_ldxa_data_vld_w2	PSAMPLE;
+input [1:0]  C${c}_ifu_lsu_ldxa_tid_w2		PSAMPLE;
+input	     C${c}_grst_l	PSAMPLE;
+input        C${c}_lsu_ifu_asi_load	PSAMPLE;
+input        C${c}_ifu_lsu_asi_ack	PSAMPLE;
+
+// Inputs for TLB ops assertion checks
+input C${c}_dtlb_rd_data_vld	PSAMPLE;
+input C${c}_dtlb_rd_tag_vld	PSAMPLE;
+input [5:0] C${c}_dtlb_rw_index	PSAMPLE;
+input C${c}_dtlb_rw_index_vld	PSAMPLE;
+input [40:0] C${c}_ddemap_key	PSAMPLE;
+input C${c}_ddemap_key_vld	PSAMPLE;
+
+input C${c}_itlb_rd_data_vld	PSAMPLE;
+input C${c}_itlb_rd_tag_vld	PSAMPLE;
+input [5:0] C${c}_itlb_rw_index	PSAMPLE;
+input C${c}_itlb_rw_index_vld	PSAMPLE;
+input [40:0] C${c}_idemap_key	PSAMPLE;
+input C${c}_idemap_key_vld	PSAMPLE;
+
+// ASYNC ops fairness check
+input        C${c}_tlb_ld_inst0	PSAMPLE;
+input        C${c}_tlb_ld_inst1	PSAMPLE;
+input        C${c}_tlb_ld_inst2	PSAMPLE;
+input        C${c}_tlb_ld_inst3	PSAMPLE;
+input        C${c}_tlb_st_inst0	PSAMPLE;
+input        C${c}_tlb_st_inst1	PSAMPLE;
+input        C${c}_tlb_st_inst2	PSAMPLE;
+input        C${c}_tlb_st_inst3	PSAMPLE;
+input        C${c}_tlb_access_en0_g	PSAMPLE;
+input        C${c}_tlb_access_en1_g	PSAMPLE;
+input        C${c}_tlb_access_en2_g	PSAMPLE;
+input        C${c}_tlb_access_en3_g	PSAMPLE;
+input        C${c}_tlb_access_rst0	PSAMPLE;
+input        C${c}_tlb_access_rst1	PSAMPLE;
+input        C${c}_tlb_access_rst2	PSAMPLE;
+input        C${c}_tlb_access_rst3	PSAMPLE;
+
+input        C${c}_lsu_tlbop_force_swo	PSAMPLE;
+
+// MRA rd/wr contention check
+input        C${c}_flush_w_inst_vld_m	PSAMPLE depth 2;
+input        C${c}_ifu_tlu_inst_vld_m	PSAMPLE depth 2;
+
+.}
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+}
+
+#endif

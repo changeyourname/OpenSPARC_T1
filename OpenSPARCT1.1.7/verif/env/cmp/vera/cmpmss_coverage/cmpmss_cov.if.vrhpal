@@ -1,0 +1,267 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpmss_cov.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "cmpmss_cov_inc.pal"
+
+#ifndef INC_CMPMSS_COV_IF_VRH
+#define INC_CMPMSS_COV_IF_VRH
+
+interface cmpmss_cov {
+
+    input clk CLOCK;
+    input diag_done PSAMPLE;
+    
+    // CCX_PCX_REQ_COV, CCX_PCX_SEQUENCE_COV
+    input [3:0] spc0_pcx_req PSAMPLE;
+    input [3:0] spc1_pcx_req PSAMPLE;
+    input [3:0] spc2_pcx_req PSAMPLE;
+    input [3:0] spc3_pcx_req PSAMPLE;
+    input [3:0] spc4_pcx_req PSAMPLE;
+    input [3:0] spc5_pcx_req PSAMPLE;
+    input [3:0] spc6_pcx_req PSAMPLE;
+    input [3:0] spc7_pcx_req PSAMPLE;
+    input spc0_pcx_atom PSAMPLE;
+    input spc1_pcx_atom PSAMPLE;
+    input spc2_pcx_atom PSAMPLE;
+    input spc3_pcx_atom PSAMPLE;
+    input spc4_pcx_atom PSAMPLE;
+    input spc5_pcx_atom PSAMPLE;
+    input spc6_pcx_atom PSAMPLE;
+    input spc7_pcx_atom PSAMPLE;
+
+    // CCX_PCX_SEQUENCE_COV
+    input [3:0] pcx_spc0_grant PSAMPLE;
+    
+    // CCX_CPX_REQ_COV, CCX_CPX_SEQUENCE_COV
+    input [7:0] sctag0_cpx_req PSAMPLE;
+    input [7:0] sctag1_cpx_req PSAMPLE;
+    input [7:0] sctag2_cpx_req PSAMPLE;
+    input [7:0] sctag3_cpx_req PSAMPLE;
+    input sctag0_cpx_atom PSAMPLE;
+    input sctag1_cpx_atom PSAMPLE;
+    input sctag2_cpx_atom PSAMPLE;
+    input sctag3_cpx_atom PSAMPLE;
+
+    // CCX_CPX_SEQUENCE_COV
+    input [7:0] cpx_sctag0_grant PSAMPLE;
+
+    // CCX_PCX_QFULL_COV
+    input [7:0] pcx_arb0_qfull PSAMPLE;
+    input [7:0] pcx_arb1_qfull PSAMPLE;
+    input [7:0] pcx_arb2_qfull PSAMPLE;
+    input [7:0] pcx_arb3_qfull PSAMPLE;
+    
+    // CCX_CPX_QFULL_COV
+    input [3:0] cpx_arb0_qfull PSAMPLE;
+    input [3:0] cpx_arb1_qfull PSAMPLE;
+    input [3:0] cpx_arb2_qfull PSAMPLE;
+    input [3:0] cpx_arb3_qfull PSAMPLE;
+    input [3:0] cpx_arb4_qfull PSAMPLE;
+    input [3:0] cpx_arb5_qfull PSAMPLE;
+    input [3:0] cpx_arb6_qfull PSAMPLE;
+    input [3:0] cpx_arb7_qfull PSAMPLE;
+
+    // CCX_PCX_STALLATOM_COV
+    input [7:0] pcx_arb0_atom PSAMPLE;
+    input [7:0] pcx_arb0_grant_a PSAMPLE;
+    input pcx_arb0_stall_a PSAMPLE;
+
+    // CCX_CPX_STALLATOM_COV
+    input [3:0] cpx_arb0_atom PSAMPLE;
+    input [3:0] cpx_arb0_grant_a PSAMPLE;
+    input cpx_arb0_stall_a PSAMPLE;
+
+.for($b=0; $b<$BANKS; $b++) {
+/*
+    // L2_CPX_FIELDS_COV
+    input [144:0] sctag${b}_cpx_data PSAMPLE;
+*/
+
+    input arbctl_inst_vld_c2_${b} PSAMPLE;
+    input arbctl_inst_diag_c2_${b} PSAMPLE;
+    input arbctl_inval_inst_c2_${b} PSAMPLE;
+    input decdp_inst_int_c2_${b} PSAMPLE;
+    input [39:0] arbdp_addr_c2_${b} PSAMPLE;
+
+    // L2_JBI_FIELDS_COV
+    input jbi_sctag${b}_req_vld PSAMPLE;
+    input [31:0] jbi_sctag${b}_req PSAMPLE;
+
+    // L2_DIR_WRITE_COV
+    input ic_wr_en_c4_${b} PSAMPLE;
+    input [4:0] dir_panel_icd_c4_${b} PSAMPLE;
+    input [5:0] wr_ic_dir_entry_c4_${b} PSAMPLE;
+    input dc_wr_en_c4_${b} PSAMPLE;
+    input [4:0] dir_panel_dcd_c4_${b} PSAMPLE;
+    input [5:0] wr_dc_dir_entry_c4_${b} PSAMPLE;
+
+    // L2_DIR_LOOKUP_COV
+    input [3:0] ic_lkup_row_dec_c4_${b} PSAMPLE;
+    input [2:0] lkup_row_addr_icd_c4_${b} PSAMPLE;
+    input [3:0] dc_lkup_row_dec_c4_${b} PSAMPLE;
+    input [2:0] lkup_row_addr_dcd_c4_${b} PSAMPLE;
+
+    // L2_IQ_COUNT_COV
+    input [4:0] iq_count_${b} PSAMPLE;
+
+    // L2_IQ_OVERFLOW_COV
+    input pcx_sctag${b}_data_rdy PSAMPLE;
+    input [123:0] pcx_sctag${b}_data PSAMPLE;
+
+    // L2_OQ_COUNT_COV
+    input [4:0] oq_count_${b} PSAMPLE;
+
+    // L2_OQ_IFILL12_COV
+    input imiss1_to_xbarq_c6_${b} PSAMPLE;
+    input sel_old_req_${b} PSAMPLE;
+
+    // L2_OQ_OVERFLOW_COV
+    input oqarray_wr_en_${b} PSAMPLE;
+    input [144:0] oq_array_data_in_${b} PSAMPLE;
+
+    // L2_MB_COUNT_COV
+    input [4:0] mb_count_${b} PSAMPLE;
+
+    // L2_MB_SAMEINDEX_COV
+    input [4:0] mb_sameindex_count_${b} PSAMPLE;
+
+    // L2_MB_HIT_BYPASS_COV
+    input tmp_hit_unqual_c2_${b} PSAMPLE;
+    input tmp_cam_hit_c2_${b} PSAMPLE;
+    input mbf_insert_c3_tmp_${b} PSAMPLE;
+    input [15:0] cam_hit_vec_c1_${b} PSAMPLE;
+    
+    // L2_MB_OVERFLOW_COV
+    input mbf_insert_c2_${b} PSAMPLE;
+    
+    // L2_FB_COUNT_COV
+    input [3:0] fb_count_${b} PSAMPLE;
+
+    // L2_FBMB_MISS_ENTRIES_COV
+    input fbf_ready_miss_r1_${b} PSAMPLE;
+    input [2:0] dram_rd_req_id_r0_d1_${b} PSAMPLE;
+    input [3:0] fbf_enc_ld_mbid_r1_${b} PSAMPLE;
+
+    // L2_FBMB_STDEP_ENTRIES_COV
+    input fbf_st_or_dep_rdy_c4_${b} PSAMPLE;
+    input [7:0] fill_complete_c4_${b} PSAMPLE;
+    input [3:0] fbf_enc_dep_mbid_c4_${b} PSAMPLE;
+
+    // L2_FB_BYPASS_ENTRIES_COV
+    input fbctl_hit_c2_${b} PSAMPLE;
+    input [7:0] fb_hit_vec_c2_${b} PSAMPLE;
+
+    // L2_FB_BYPASS_INSTS_COV
+    input [33:0] arbdp_inst_c2_${b} PSAMPLE;
+
+    // L2_FILL_COMPLETE_COV
+    input [7:0] dec_fill_entry_c3_${b} PSAMPLE;
+    input [7:0] no_fill_entry_dequeue_c3_${b} PSAMPLE;
+    input en_hit_dequeue_c2_${b} PSAMPLE;
+    input rdma_inst_c2_${b} PSAMPLE;
+    input mbctl_rdma_reg_vld_c2_${b} PSAMPLE;
+    
+    // L2_WB_COUNT_COV
+    input [3:0] wb_count_${b} PSAMPLE;
+
+    // L2_WB_HIT_BYPASS_COV
+    input bypass_hit_en_c2_${b} PSAMPLE;
+    input [7:0] wb_cam_hit_vec_tmp_c2_${b} PSAMPLE;
+    
+    // L2_SNPIQ_VALID_COV
+    input [1:0] snpq_valid_${b} PSAMPLE;
+
+    // L2_RDMAWB_VALID_COV
+    input [3:0] rdma_valid_${b} PSAMPLE;
+
+    // L2_PIPELINE_FULL_COV
+    input arbctl_inst_vld_c1_${b} PSAMPLE;
+
+    // L2_STALLED_INSTS1_COV
+    input same_col_stall_c1_${b} PSAMPLE;
+    input imiss_stall_op_c1inc1_${b} PSAMPLE;
+    input arbctl_fill_vld_c2_${b} PSAMPLE;
+    input arbctl_fill_vld_c3_${b} PSAMPLE;
+    input rdma_64B_stall_${b} PSAMPLE;
+    input inval_inst_vld_c3_${b} PSAMPLE;
+    input inval_inst_vld_c4_${b} PSAMPLE;
+    input inst_l2data_vld_c2_${b} PSAMPLE;
+    input inst_l2tag_vld_c2_${b} PSAMPLE;
+    input inst_l2tag_vld_c3_${b} PSAMPLE;
+    input inst_l2vuad_vld_c2_${b} PSAMPLE;
+    input inst_l2vuad_vld_c3_${b} PSAMPLE;
+    input inst_l2vuad_vld_c4_${b} PSAMPLE;
+    input inc_tag_ecc_cnt_c2_${b} PSAMPLE;
+    input inc_tag_ecc_cnt_c3_${b} PSAMPLE;
+    input data_ecc_active_c4_${b} PSAMPLE;
+    input arbctl_inst_diag_c1_${b} PSAMPLE;
+    input [33:0] arbdp_inst_c1_${b} PSAMPLE;
+
+    // L2_STALLED_INSTS2_COV
+    input arbdp_evict_c1_${b} PSAMPLE;
+    input arbdp_inst_fb_c1_${b} PSAMPLE;
+    input decdp_imiss_inst_c1_${b} PSAMPLE;
+    input decdp_ic_inval_c1_${b} PSAMPLE;
+    input decdp_dc_inval_c1_${b} PSAMPLE;
+    input arbdp_tecc_c1_${b} PSAMPLE;
+    input arbdp_inst_rsvd_c1_${b} PSAMPLE;
+    input arbctl_stall_c2_${b} PSAMPLE;
+
+    // L2_VUAD_BYPASS_COV
+    input vuad_sel_c2orc3_${b} PSAMPLE;
+    input vuad_sel_c2_${b} PSAMPLE;
+    input vuad_sel_c4orc5_${b} PSAMPLE;
+    input vuad_sel_c4_${b} PSAMPLE;
+    
+    // L2_OFFMODE_DIRECTMAP_INSTS_COV
+    input l2_bypass_mode_on_d1_${b} PSAMPLE;
+    input l2_dir_map_on_d1_${b} PSAMPLE;
+
+    // L2_INST_FLOW_COV
+    input tagctl_hit_l2orfb_c2_${b} PSAMPLE;
+    input mbctl_hit_c2_${b} PSAMPLE;
+    input arbdp_inst_mb_c2_${b} PSAMPLE;
+    input arbctl_evict_vld_c2_${b} PSAMPLE;
+
+    // L2_BUFFER_HITS_COV
+    input fbctl_mbctl_match_c2_${b} PSAMPLE;
+    input wbctl_hit_qual_c2_${b} PSAMPLE;
+    input rdmatctl_hit_qual_c2_${b} PSAMPLE;
+    
+    // L2_ERROR_STATUS_REG_COV
+    input [63:0] err_state_new_c9_${b} PSAMPLE;
+    input [63:0] err_status_in_${b} PSAMPLE;
+
+    // L2_ERROR_TRANS_COV
+    input [63:0] csr_l2_errstate_reg_${b} PSAMPLE;
+
+    // L2_ERROR_TAG_COV
+    input tecc_c2_${b} PSAMPLE;
+    input par_err_c2_${b} PSAMPLE;
+    input arbdp_pst_with_ctrue_c2_${b} PSAMPLE;
+
+    // L2_ERROR_OFFMODE_COV
+    input fbuerr0_d1_${b} PSAMPLE;
+    input fbcerr0_d1_${b} PSAMPLE;    
+.}
+
+}
+
+#endif

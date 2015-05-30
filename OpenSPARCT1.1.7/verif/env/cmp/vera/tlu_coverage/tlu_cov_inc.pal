@@ -1,0 +1,26 @@
+.##########################################################################
+.#
+.# File:	tlu_cov_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file that uses a map of the sys(tem) being
+.#	simulated and decides on:
+.#		number of cores
+.#		instance path for each core (for tlu)
+.#
+.##########################################################################
+. $cores	= 1;		# default settings
+. $sys		= "CMP";	# default system being simulated
+.# END_INIT
+. $THREADS_PER_CORE	= 4;	# a frequently used constant
+.
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+// sys = $sys, cores = $cores
+.
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]		= $i;
+.	$TLU_COV_PATHS[$i]	= "cmp_top.iop.sparc${i}.tlu";
+.	$SPARC_COV_PATHS[$i]	= "cmp_top.iop.sparc${i}";
+. 	$TLU_MON_PATHS[$i] 	= "cmp_top.monitor.tlu_mon${i}";
+. }

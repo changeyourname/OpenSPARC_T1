@@ -1,0 +1,92 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_mul_rsticky_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+
+// coverage_def FPU_MUL_RSTICKY_COV (bit [56:0] fpu_mul_rsticky_state)
+// {
+
+// state declarations
+
+  state s_FPU_MUL_RSTICKY0  ( FPU_MUL_RSTICKY0 );
+  state s_FPU_MUL_RSTICKY1  ( FPU_MUL_RSTICKY1 );
+  state s_FPU_MUL_RSTICKY2  ( FPU_MUL_RSTICKY2 );
+  state s_FPU_MUL_RSTICKY3  ( FPU_MUL_RSTICKY3 );
+  state s_FPU_MUL_RSTICKY4  ( FPU_MUL_RSTICKY4 );
+  state s_FPU_MUL_RSTICKY5  ( FPU_MUL_RSTICKY5 );
+  state s_FPU_MUL_RSTICKY6  ( FPU_MUL_RSTICKY6 );
+  state s_FPU_MUL_RSTICKY7  ( FPU_MUL_RSTICKY7 );
+  state s_FPU_MUL_RSTICKY8  ( FPU_MUL_RSTICKY8 );
+  state s_FPU_MUL_RSTICKY9  ( FPU_MUL_RSTICKY9 );
+  state s_FPU_MUL_RSTICKY10 ( FPU_MUL_RSTICKY10);
+  state s_FPU_MUL_RSTICKY11 ( FPU_MUL_RSTICKY11);
+  state s_FPU_MUL_RSTICKY12 ( FPU_MUL_RSTICKY12);
+  state s_FPU_MUL_RSTICKY13 ( FPU_MUL_RSTICKY13);
+  state s_FPU_MUL_RSTICKY14 ( FPU_MUL_RSTICKY14);
+  state s_FPU_MUL_RSTICKY15 ( FPU_MUL_RSTICKY15);
+  state s_FPU_MUL_RSTICKY16 ( FPU_MUL_RSTICKY16);
+  state s_FPU_MUL_RSTICKY17 ( FPU_MUL_RSTICKY17);
+  state s_FPU_MUL_RSTICKY18 ( FPU_MUL_RSTICKY18);
+  state s_FPU_MUL_RSTICKY19 ( FPU_MUL_RSTICKY19);
+  state s_FPU_MUL_RSTICKY20 ( FPU_MUL_RSTICKY20);
+  state s_FPU_MUL_RSTICKY21 ( FPU_MUL_RSTICKY21);
+  state s_FPU_MUL_RSTICKY22 ( FPU_MUL_RSTICKY22);
+  state s_FPU_MUL_RSTICKY23 ( FPU_MUL_RSTICKY23);
+  state s_FPU_MUL_RSTICKY24 ( FPU_MUL_RSTICKY24);
+  state s_FPU_MUL_RSTICKY25 ( FPU_MUL_RSTICKY25);
+  state s_FPU_MUL_RSTICKY26 ( FPU_MUL_RSTICKY26);
+  state s_FPU_MUL_RSTICKY27 ( FPU_MUL_RSTICKY27);
+  state s_FPU_MUL_RSTICKY28 ( FPU_MUL_RSTICKY28);
+  state s_FPU_MUL_RSTICKY29 ( FPU_MUL_RSTICKY29);
+  state s_FPU_MUL_RSTICKY30 ( FPU_MUL_RSTICKY30);
+  state s_FPU_MUL_RSTICKY31 ( FPU_MUL_RSTICKY31);
+  state s_FPU_MUL_RSTICKY32 ( FPU_MUL_RSTICKY32);
+  state s_FPU_MUL_RSTICKY33 ( FPU_MUL_RSTICKY33);
+  state s_FPU_MUL_RSTICKY34 ( FPU_MUL_RSTICKY34);
+  state s_FPU_MUL_RSTICKY35 ( FPU_MUL_RSTICKY35);
+  state s_FPU_MUL_RSTICKY36 ( FPU_MUL_RSTICKY36);
+  state s_FPU_MUL_RSTICKY37 ( FPU_MUL_RSTICKY37);
+  state s_FPU_MUL_RSTICKY38 ( FPU_MUL_RSTICKY38);
+  state s_FPU_MUL_RSTICKY39 ( FPU_MUL_RSTICKY39);
+  state s_FPU_MUL_RSTICKY40 ( FPU_MUL_RSTICKY40);
+  state s_FPU_MUL_RSTICKY41 ( FPU_MUL_RSTICKY41);
+  state s_FPU_MUL_RSTICKY42 ( FPU_MUL_RSTICKY42);
+  state s_FPU_MUL_RSTICKY43 ( FPU_MUL_RSTICKY43);
+  state s_FPU_MUL_RSTICKY44 ( FPU_MUL_RSTICKY44);
+  state s_FPU_MUL_RSTICKY45 ( FPU_MUL_RSTICKY45);
+  state s_FPU_MUL_RSTICKY46 ( FPU_MUL_RSTICKY46);
+  state s_FPU_MUL_RSTICKY47 ( FPU_MUL_RSTICKY47);
+  state s_FPU_MUL_RSTICKY48 ( FPU_MUL_RSTICKY48);
+  state s_FPU_MUL_RSTICKY49 ( FPU_MUL_RSTICKY49);
+  state s_FPU_MUL_RSTICKY50 ( FPU_MUL_RSTICKY50);
+  state s_FPU_MUL_RSTICKY51 ( FPU_MUL_RSTICKY51);
+  state s_FPU_MUL_RSTICKY52 ( FPU_MUL_RSTICKY52);
+  state s_FPU_MUL_RSTICKY53 ( FPU_MUL_RSTICKY53);
+  state s_FPU_MUL_RSTICKY54 ( FPU_MUL_RSTICKY54);
+  state s_FPU_MUL_RSTICKY55 ( FPU_MUL_RSTICKY55);
+  state s_FPU_MUL_RSTICKY56 ( FPU_MUL_RSTICKY56);
+
+// }

@@ -1,0 +1,177 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_thrd_intrp_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for Thread Interrupts
+//
+//***************************************************************************
+
+
+// coverage_def TLU_THRD_INTRP_COV (bit [136:0] tlu_thrd_intrp_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_INTR_ARR_AT_IRR_ALL	(INTR_ARR_AT_IRR_ALL);
+  wildcard state s_INTR_ARR_AT_IRR_N63	(INTR_ARR_AT_IRR_N63);
+  wildcard state s_INTR_ARR_AT_IRR_N62	(INTR_ARR_AT_IRR_N62);
+  wildcard state s_INTR_ARR_AT_IRR_N61	(INTR_ARR_AT_IRR_N61);
+  wildcard state s_INTR_ARR_AT_IRR_N60	(INTR_ARR_AT_IRR_N60);
+  wildcard state s_INTR_ARR_AT_IRR_N59	(INTR_ARR_AT_IRR_N59);
+  wildcard state s_INTR_ARR_AT_IRR_N58	(INTR_ARR_AT_IRR_N58);
+  wildcard state s_INTR_ARR_AT_IRR_N57	(INTR_ARR_AT_IRR_N57);
+  wildcard state s_INTR_ARR_AT_IRR_N56	(INTR_ARR_AT_IRR_N56);
+  wildcard state s_INTR_ARR_AT_IRR_N55	(INTR_ARR_AT_IRR_N55);
+  wildcard state s_INTR_ARR_AT_IRR_N54	(INTR_ARR_AT_IRR_N54);
+  wildcard state s_INTR_ARR_AT_IRR_N53	(INTR_ARR_AT_IRR_N53);
+  wildcard state s_INTR_ARR_AT_IRR_N52	(INTR_ARR_AT_IRR_N52);
+  wildcard state s_INTR_ARR_AT_IRR_N51	(INTR_ARR_AT_IRR_N51);
+  wildcard state s_INTR_ARR_AT_IRR_N50	(INTR_ARR_AT_IRR_N50);
+  wildcard state s_INTR_ARR_AT_IRR_N49	(INTR_ARR_AT_IRR_N49);
+  wildcard state s_INTR_ARR_AT_IRR_N48	(INTR_ARR_AT_IRR_N48);
+  wildcard state s_INTR_ARR_AT_IRR_N47	(INTR_ARR_AT_IRR_N47);
+  wildcard state s_INTR_ARR_AT_IRR_N46	(INTR_ARR_AT_IRR_N46);
+  wildcard state s_INTR_ARR_AT_IRR_N45	(INTR_ARR_AT_IRR_N45);
+  wildcard state s_INTR_ARR_AT_IRR_N44	(INTR_ARR_AT_IRR_N44);
+  wildcard state s_INTR_ARR_AT_IRR_N43	(INTR_ARR_AT_IRR_N43);
+  wildcard state s_INTR_ARR_AT_IRR_N42	(INTR_ARR_AT_IRR_N42);
+  wildcard state s_INTR_ARR_AT_IRR_N41	(INTR_ARR_AT_IRR_N41);
+  wildcard state s_INTR_ARR_AT_IRR_N40	(INTR_ARR_AT_IRR_N40);
+  wildcard state s_INTR_ARR_AT_IRR_N39	(INTR_ARR_AT_IRR_N39);
+  wildcard state s_INTR_ARR_AT_IRR_N38	(INTR_ARR_AT_IRR_N38);
+  wildcard state s_INTR_ARR_AT_IRR_N37	(INTR_ARR_AT_IRR_N37);
+  wildcard state s_INTR_ARR_AT_IRR_N36	(INTR_ARR_AT_IRR_N36);
+  wildcard state s_INTR_ARR_AT_IRR_N35	(INTR_ARR_AT_IRR_N35);
+  wildcard state s_INTR_ARR_AT_IRR_N34	(INTR_ARR_AT_IRR_N34);
+  wildcard state s_INTR_ARR_AT_IRR_N33	(INTR_ARR_AT_IRR_N33);
+  wildcard state s_INTR_ARR_AT_IRR_N32	(INTR_ARR_AT_IRR_N32);
+  wildcard state s_INTR_ARR_AT_IRR_N31	(INTR_ARR_AT_IRR_N31);
+  wildcard state s_INTR_ARR_AT_IRR_N30	(INTR_ARR_AT_IRR_N30);
+  wildcard state s_INTR_ARR_AT_IRR_N29	(INTR_ARR_AT_IRR_N29);
+  wildcard state s_INTR_ARR_AT_IRR_N28	(INTR_ARR_AT_IRR_N28);
+  wildcard state s_INTR_ARR_AT_IRR_N27	(INTR_ARR_AT_IRR_N27);
+  wildcard state s_INTR_ARR_AT_IRR_N26	(INTR_ARR_AT_IRR_N26);
+  wildcard state s_INTR_ARR_AT_IRR_N25	(INTR_ARR_AT_IRR_N25);
+  wildcard state s_INTR_ARR_AT_IRR_N24	(INTR_ARR_AT_IRR_N24);
+  wildcard state s_INTR_ARR_AT_IRR_N23	(INTR_ARR_AT_IRR_N23);
+  wildcard state s_INTR_ARR_AT_IRR_N22	(INTR_ARR_AT_IRR_N22);
+  wildcard state s_INTR_ARR_AT_IRR_N21	(INTR_ARR_AT_IRR_N21);
+  wildcard state s_INTR_ARR_AT_IRR_N20	(INTR_ARR_AT_IRR_N20);
+  wildcard state s_INTR_ARR_AT_IRR_N19	(INTR_ARR_AT_IRR_N19);
+  wildcard state s_INTR_ARR_AT_IRR_N18	(INTR_ARR_AT_IRR_N18);
+  wildcard state s_INTR_ARR_AT_IRR_N17	(INTR_ARR_AT_IRR_N17);
+  wildcard state s_INTR_ARR_AT_IRR_N16	(INTR_ARR_AT_IRR_N16);
+  wildcard state s_INTR_ARR_AT_IRR_N15	(INTR_ARR_AT_IRR_N15);
+  wildcard state s_INTR_ARR_AT_IRR_N14	(INTR_ARR_AT_IRR_N14);
+  wildcard state s_INTR_ARR_AT_IRR_N13	(INTR_ARR_AT_IRR_N13);
+  wildcard state s_INTR_ARR_AT_IRR_N12	(INTR_ARR_AT_IRR_N12);
+  wildcard state s_INTR_ARR_AT_IRR_N11	(INTR_ARR_AT_IRR_N11);
+  wildcard state s_INTR_ARR_AT_IRR_N10	(INTR_ARR_AT_IRR_N10);
+  wildcard state s_INTR_ARR_AT_IRR_N09	(INTR_ARR_AT_IRR_N09);
+  wildcard state s_INTR_ARR_AT_IRR_N08	(INTR_ARR_AT_IRR_N08);
+  wildcard state s_INTR_ARR_AT_IRR_N07	(INTR_ARR_AT_IRR_N07);
+  wildcard state s_INTR_ARR_AT_IRR_N06	(INTR_ARR_AT_IRR_N06);
+  wildcard state s_INTR_ARR_AT_IRR_N05	(INTR_ARR_AT_IRR_N05);
+  wildcard state s_INTR_ARR_AT_IRR_N04	(INTR_ARR_AT_IRR_N04);
+  wildcard state s_INTR_ARR_AT_IRR_N03	(INTR_ARR_AT_IRR_N03);
+  wildcard state s_INTR_ARR_AT_IRR_N02	(INTR_ARR_AT_IRR_N02);
+  wildcard state s_INTR_ARR_AT_IRR_N01	(INTR_ARR_AT_IRR_N01);
+  wildcard state s_INTR_ARR_AT_IRR_N00	(INTR_ARR_AT_IRR_N00);
+
+  wildcard state s_RD_IVR_AT_IRR_ALL	(RD_IVR_AT_IRR_ALL);
+  wildcard state s_RD_IVR_AT_IRR_N63	(RD_IVR_AT_IRR_N63);
+  wildcard state s_RD_IVR_AT_IRR_N62	(RD_IVR_AT_IRR_N62);
+  wildcard state s_RD_IVR_AT_IRR_N61	(RD_IVR_AT_IRR_N61);
+  wildcard state s_RD_IVR_AT_IRR_N60	(RD_IVR_AT_IRR_N60);
+  wildcard state s_RD_IVR_AT_IRR_N59	(RD_IVR_AT_IRR_N59);
+  wildcard state s_RD_IVR_AT_IRR_N58	(RD_IVR_AT_IRR_N58);
+  wildcard state s_RD_IVR_AT_IRR_N57	(RD_IVR_AT_IRR_N57);
+  wildcard state s_RD_IVR_AT_IRR_N56	(RD_IVR_AT_IRR_N56);
+  wildcard state s_RD_IVR_AT_IRR_N55	(RD_IVR_AT_IRR_N55);
+  wildcard state s_RD_IVR_AT_IRR_N54	(RD_IVR_AT_IRR_N54);
+  wildcard state s_RD_IVR_AT_IRR_N53	(RD_IVR_AT_IRR_N53);
+  wildcard state s_RD_IVR_AT_IRR_N52	(RD_IVR_AT_IRR_N52);
+  wildcard state s_RD_IVR_AT_IRR_N51	(RD_IVR_AT_IRR_N51);
+  wildcard state s_RD_IVR_AT_IRR_N50	(RD_IVR_AT_IRR_N50);
+  wildcard state s_RD_IVR_AT_IRR_N49	(RD_IVR_AT_IRR_N49);
+  wildcard state s_RD_IVR_AT_IRR_N48	(RD_IVR_AT_IRR_N48);
+  wildcard state s_RD_IVR_AT_IRR_N47	(RD_IVR_AT_IRR_N47);
+  wildcard state s_RD_IVR_AT_IRR_N46	(RD_IVR_AT_IRR_N46);
+  wildcard state s_RD_IVR_AT_IRR_N45	(RD_IVR_AT_IRR_N45);
+  wildcard state s_RD_IVR_AT_IRR_N44	(RD_IVR_AT_IRR_N44);
+  wildcard state s_RD_IVR_AT_IRR_N43	(RD_IVR_AT_IRR_N43);
+  wildcard state s_RD_IVR_AT_IRR_N42	(RD_IVR_AT_IRR_N42);
+  wildcard state s_RD_IVR_AT_IRR_N41	(RD_IVR_AT_IRR_N41);
+  wildcard state s_RD_IVR_AT_IRR_N40	(RD_IVR_AT_IRR_N40);
+  wildcard state s_RD_IVR_AT_IRR_N39	(RD_IVR_AT_IRR_N39);
+  wildcard state s_RD_IVR_AT_IRR_N38	(RD_IVR_AT_IRR_N38);
+  wildcard state s_RD_IVR_AT_IRR_N37	(RD_IVR_AT_IRR_N37);
+  wildcard state s_RD_IVR_AT_IRR_N36	(RD_IVR_AT_IRR_N36);
+  wildcard state s_RD_IVR_AT_IRR_N35	(RD_IVR_AT_IRR_N35);
+  wildcard state s_RD_IVR_AT_IRR_N34	(RD_IVR_AT_IRR_N34);
+  wildcard state s_RD_IVR_AT_IRR_N33	(RD_IVR_AT_IRR_N33);
+  wildcard state s_RD_IVR_AT_IRR_N32	(RD_IVR_AT_IRR_N32);
+  wildcard state s_RD_IVR_AT_IRR_N31	(RD_IVR_AT_IRR_N31);
+  wildcard state s_RD_IVR_AT_IRR_N30	(RD_IVR_AT_IRR_N30);
+  wildcard state s_RD_IVR_AT_IRR_N29	(RD_IVR_AT_IRR_N29);
+  wildcard state s_RD_IVR_AT_IRR_N28	(RD_IVR_AT_IRR_N28);
+  wildcard state s_RD_IVR_AT_IRR_N27	(RD_IVR_AT_IRR_N27);
+  wildcard state s_RD_IVR_AT_IRR_N26	(RD_IVR_AT_IRR_N26);
+  wildcard state s_RD_IVR_AT_IRR_N25	(RD_IVR_AT_IRR_N25);
+  wildcard state s_RD_IVR_AT_IRR_N24	(RD_IVR_AT_IRR_N24);
+  wildcard state s_RD_IVR_AT_IRR_N23	(RD_IVR_AT_IRR_N23);
+  wildcard state s_RD_IVR_AT_IRR_N22	(RD_IVR_AT_IRR_N22);
+  wildcard state s_RD_IVR_AT_IRR_N21	(RD_IVR_AT_IRR_N21);
+  wildcard state s_RD_IVR_AT_IRR_N20	(RD_IVR_AT_IRR_N20);
+  wildcard state s_RD_IVR_AT_IRR_N19	(RD_IVR_AT_IRR_N19);
+  wildcard state s_RD_IVR_AT_IRR_N18	(RD_IVR_AT_IRR_N18);
+  wildcard state s_RD_IVR_AT_IRR_N17	(RD_IVR_AT_IRR_N17);
+  wildcard state s_RD_IVR_AT_IRR_N16	(RD_IVR_AT_IRR_N16);
+  wildcard state s_RD_IVR_AT_IRR_N15	(RD_IVR_AT_IRR_N15);
+  wildcard state s_RD_IVR_AT_IRR_N14	(RD_IVR_AT_IRR_N14);
+  wildcard state s_RD_IVR_AT_IRR_N13	(RD_IVR_AT_IRR_N13);
+  wildcard state s_RD_IVR_AT_IRR_N12	(RD_IVR_AT_IRR_N12);
+  wildcard state s_RD_IVR_AT_IRR_N11	(RD_IVR_AT_IRR_N11);
+  wildcard state s_RD_IVR_AT_IRR_N10	(RD_IVR_AT_IRR_N10);
+  wildcard state s_RD_IVR_AT_IRR_N09	(RD_IVR_AT_IRR_N09);
+  wildcard state s_RD_IVR_AT_IRR_N08	(RD_IVR_AT_IRR_N08);
+  wildcard state s_RD_IVR_AT_IRR_N07	(RD_IVR_AT_IRR_N07);
+  wildcard state s_RD_IVR_AT_IRR_N06	(RD_IVR_AT_IRR_N06);
+  wildcard state s_RD_IVR_AT_IRR_N05	(RD_IVR_AT_IRR_N05);
+  wildcard state s_RD_IVR_AT_IRR_N04	(RD_IVR_AT_IRR_N04);
+  wildcard state s_RD_IVR_AT_IRR_N03	(RD_IVR_AT_IRR_N03);
+  wildcard state s_RD_IVR_AT_IRR_N02	(RD_IVR_AT_IRR_N02);
+  wildcard state s_RD_IVR_AT_IRR_N01	(RD_IVR_AT_IRR_N01);
+
+  wildcard state s_RD_IVR_NEW_TRAP	(RD_IVR_NEW_TRAP_63  ,RD_IVR_NEW_TRAP_62  ,RD_IVR_NEW_TRAP_61  ,RD_IVR_NEW_TRAP_60  ,RD_IVR_NEW_TRAP_59  ,RD_IVR_NEW_TRAP_58  ,RD_IVR_NEW_TRAP_57  ,RD_IVR_NEW_TRAP_56  ,RD_IVR_NEW_TRAP_55  ,RD_IVR_NEW_TRAP_54  ,RD_IVR_NEW_TRAP_53  ,RD_IVR_NEW_TRAP_52  ,RD_IVR_NEW_TRAP_51  ,RD_IVR_NEW_TRAP_50  ,RD_IVR_NEW_TRAP_49  ,RD_IVR_NEW_TRAP_48  ,RD_IVR_NEW_TRAP_47  ,RD_IVR_NEW_TRAP_46  ,RD_IVR_NEW_TRAP_45  ,RD_IVR_NEW_TRAP_44  ,RD_IVR_NEW_TRAP_43  ,RD_IVR_NEW_TRAP_42  ,RD_IVR_NEW_TRAP_41  ,RD_IVR_NEW_TRAP_40  ,RD_IVR_NEW_TRAP_39  ,RD_IVR_NEW_TRAP_38  ,RD_IVR_NEW_TRAP_37  ,RD_IVR_NEW_TRAP_36  ,RD_IVR_NEW_TRAP_35  ,RD_IVR_NEW_TRAP_34  ,RD_IVR_NEW_TRAP_33  ,RD_IVR_NEW_TRAP_32  ,RD_IVR_NEW_TRAP_31  ,RD_IVR_NEW_TRAP_30  ,RD_IVR_NEW_TRAP_29  ,RD_IVR_NEW_TRAP_28  ,RD_IVR_NEW_TRAP_27  ,RD_IVR_NEW_TRAP_26  ,RD_IVR_NEW_TRAP_25  ,RD_IVR_NEW_TRAP_24  ,RD_IVR_NEW_TRAP_23  ,RD_IVR_NEW_TRAP_22  ,RD_IVR_NEW_TRAP_21  ,RD_IVR_NEW_TRAP_20  ,RD_IVR_NEW_TRAP_19  ,RD_IVR_NEW_TRAP_18  ,RD_IVR_NEW_TRAP_17  ,RD_IVR_NEW_TRAP_16  ,RD_IVR_NEW_TRAP_15  ,RD_IVR_NEW_TRAP_14  ,RD_IVR_NEW_TRAP_13  ,RD_IVR_NEW_TRAP_12  ,RD_IVR_NEW_TRAP_11  ,RD_IVR_NEW_TRAP_10  ,RD_IVR_NEW_TRAP_09  ,RD_IVR_NEW_TRAP_08  ,RD_IVR_NEW_TRAP_07  ,RD_IVR_NEW_TRAP_06  ,RD_IVR_NEW_TRAP_05  ,RD_IVR_NEW_TRAP_04  ,RD_IVR_NEW_TRAP_03  ,RD_IVR_NEW_TRAP_02  ,RD_IVR_NEW_TRAP_01  ,RD_IVR_NEW_TRAP_00 );
+  wildcard state s_WR_IRR_NEW_TRAP	(WR_IRR_NEW_TRAP_63  ,WR_IRR_NEW_TRAP_62  ,WR_IRR_NEW_TRAP_61  ,WR_IRR_NEW_TRAP_60  ,WR_IRR_NEW_TRAP_59  ,WR_IRR_NEW_TRAP_58  ,WR_IRR_NEW_TRAP_57  ,WR_IRR_NEW_TRAP_56  ,WR_IRR_NEW_TRAP_55  ,WR_IRR_NEW_TRAP_54  ,WR_IRR_NEW_TRAP_53  ,WR_IRR_NEW_TRAP_52  ,WR_IRR_NEW_TRAP_51  ,WR_IRR_NEW_TRAP_50  ,WR_IRR_NEW_TRAP_49  ,WR_IRR_NEW_TRAP_48  ,WR_IRR_NEW_TRAP_47  ,WR_IRR_NEW_TRAP_46  ,WR_IRR_NEW_TRAP_45  ,WR_IRR_NEW_TRAP_44  ,WR_IRR_NEW_TRAP_43  ,WR_IRR_NEW_TRAP_42  ,WR_IRR_NEW_TRAP_41  ,WR_IRR_NEW_TRAP_40  ,WR_IRR_NEW_TRAP_39  ,WR_IRR_NEW_TRAP_38  ,WR_IRR_NEW_TRAP_37  ,WR_IRR_NEW_TRAP_36  ,WR_IRR_NEW_TRAP_35  ,WR_IRR_NEW_TRAP_34  ,WR_IRR_NEW_TRAP_33  ,WR_IRR_NEW_TRAP_32  ,WR_IRR_NEW_TRAP_31  ,WR_IRR_NEW_TRAP_30  ,WR_IRR_NEW_TRAP_29  ,WR_IRR_NEW_TRAP_28  ,WR_IRR_NEW_TRAP_27  ,WR_IRR_NEW_TRAP_26  ,WR_IRR_NEW_TRAP_25  ,WR_IRR_NEW_TRAP_24  ,WR_IRR_NEW_TRAP_23  ,WR_IRR_NEW_TRAP_22  ,WR_IRR_NEW_TRAP_21  ,WR_IRR_NEW_TRAP_20  ,WR_IRR_NEW_TRAP_19  ,WR_IRR_NEW_TRAP_18  ,WR_IRR_NEW_TRAP_17  ,WR_IRR_NEW_TRAP_16  ,WR_IRR_NEW_TRAP_15  ,WR_IRR_NEW_TRAP_14  ,WR_IRR_NEW_TRAP_13  ,WR_IRR_NEW_TRAP_12  ,WR_IRR_NEW_TRAP_11  ,WR_IRR_NEW_TRAP_10  ,WR_IRR_NEW_TRAP_09  ,WR_IRR_NEW_TRAP_08  ,WR_IRR_NEW_TRAP_07  ,WR_IRR_NEW_TRAP_06  ,WR_IRR_NEW_TRAP_05  ,WR_IRR_NEW_TRAP_04  ,WR_IRR_NEW_TRAP_03  ,WR_IRR_NEW_TRAP_02  ,WR_IRR_NEW_TRAP_01  ,WR_IRR_NEW_TRAP_00 );
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

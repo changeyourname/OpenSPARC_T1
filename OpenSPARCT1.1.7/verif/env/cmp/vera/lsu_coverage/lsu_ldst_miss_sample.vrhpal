@@ -1,0 +1,37 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldst_miss_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// lsu_exu_ldst_miss_w2 fanin
+// 
+// sig = ( a | b | c | d | e | f | g | h | i ) & j & k
+//
+//***********************************************************************
+
+  wildcard state s_LDST_MISS_ST0	( 11'b1XXXXXXXX_11 );
+  wildcard state s_LDST_MISS_ST1	( 11'bX1XXXXXXX_11 );
+  wildcard state s_LDST_MISS_ST2	( 11'bXX1XXXXXX_11 );
+  wildcard state s_LDST_MISS_ST3	( 11'bXXX1XXXXX_11 );
+  wildcard state s_LDST_MISS_ST4	( 11'bXXXX1XXXX_11 );
+  wildcard state s_LDST_MISS_ST5	( 11'bXXXXX1XXX_11 );
+  wildcard state s_LDST_MISS_ST6	( 11'bXXXXXX1XX_11 );
+  wildcard state s_LDST_MISS_ST7	( 11'bXXXXXXX1X_11 );
+  wildcard state s_LDST_MISS_ST8	( 11'bXXXXXXXX1_11 );
+

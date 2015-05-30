@@ -1,0 +1,80 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mamem_perr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_mamem_perr_COV_VRH
+#define INC__TMP_spu_mamem_perr_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in mamem_perr_state:
+ * spu_mactl_perr_set, spu_lsu_unc_error_w2, spu_lsu_ldxa_data_vld_w2,
+ * spu_ifu_mamem_err_w2
+ *
+ */
+
+/*
+ * spu_mamem_perr_cov
+ *
+ * This coverage object checks that we have caused a MAMEM parity error
+ * and then generated a response for it. Here are some notes from the testplan,
+ * and from digging around the rtl.
+ *
+ * When a parity error is detected on a read of MAMEM, mactl sets a signal
+ * called spu_mactl_perr_set. This is cleared on the next write to the MA CTL
+ * register.
+ *
+ * In the INT=0 case, completion is signalled by the ldxa of the StreamSync
+ * register returning (and the CTL.BUSY bit going to 0). In this case,
+ * when the SPU sends the ldxa data back to the LSU it asserts
+ * spu_lsu_unc_error_w2 along with spu_lsu_ldxa_data_vld_w2. The LSU uses this
+ * to generate the precise data_access_error trap. The signal
+ * spu_ifu_mamem_err_w2 is asserted, and the IFU uses this to set some MAU blah
+ * error state. How does the ifu know not to issue a trap in this case? I
+ * think it might be because spu_ifu_int_w2 is deasserted. This signal is
+ * a pulse that is asserted at the same time as spu_{mactl,encctl}_ttype_vld_w2
+ * but only if spu_{mactl,encctl}_int_set is set (which equals the CTL.INT bit).
+ *
+ * In the INT=1 case, completion is normally signalled with a interrupt trap.
+ * But when the MAMEM parity error happens, the spu_mactl_ttype_vld_w2_dly_qual
+ * signal is gated off so the completion interrupt will not be sent. But a
+ * pre-qualified spu_mactl_ttype_vld_w2_dly will cause spu_ifu_mamem_err_w2
+ * to be asserted, and the IFU uses this to generate the distrupting
+ * data_access_error trap. The IFU also sets some MAU blah error state bits.
+ * 
+ *
+ * TODO:
+ * + This probably needs to be refined...
+ */
+
+#endif
+
+sample spu_mamem_perr_sample_bind_C${c}.\$mamem_perr_state {
+  // Declare states to be covered 
+  state s_MAMEM_PERR_INT0     (4'b111x);
+  state s_MAMEM_PERR_INT1     (4'b1xx1);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

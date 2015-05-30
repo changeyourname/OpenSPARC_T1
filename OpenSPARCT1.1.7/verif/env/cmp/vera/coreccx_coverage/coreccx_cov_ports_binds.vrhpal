@@ -1,0 +1,109 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_cov_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "coreccx_cov_inc.pal";
+
+#ifndef INC__CORECCX_COV_PORTS_BINDS_VRH
+#define INC__CORECCX_COV_PORTS_BINDS_VRH
+
+#include "coreccx_cov.if.vrh"
+
+/////////////////////////////////////////////////////////////////
+// Port definitions
+/////////////////////////////////////////////////////////////////
+
+port coreccx_pcx_retry_req_port {
+    coreccx_pcx_retry_req_state;
+}
+
+port coreccx_cpx_consecutive_port {
+    coreccx_cpx_consecutive_state;
+}
+
+port coreccx_pcx_fields_port {
+    coreccx_pcx_fields_state;
+}
+
+port coreccx_cpx_fields_port {
+    coreccx_cpx_fields_state;
+}
+
+port coreccx_inv_vector_port {
+    coreccx_inv_vector_state;
+}
+
+port coreccx_l2addr_port {
+    coreccx_l2addr_state;
+}
+
+
+/////////////////////////////////////////////////////////////////
+// Port binds
+/////////////////////////////////////////////////////////////////
+
+bind coreccx_pcx_retry_req_port coreccx_pcx_retry_req_sample {
+    coreccx_pcx_retry_req_state {
+        coreccx_cov.coreccx_pcx_retry_req_cov
+    };
+}
+
+bind coreccx_cpx_consecutive_port coreccx_cpx_consecutive_sample {
+    coreccx_cpx_consecutive_state {
+        coreccx_cov.cpx_spc0_data_rdy_cx2,
+        coreccx_cov.cpx_spc0_data_cx2[144:123]
+    };
+}
+
+.for($b=0; $b<$BANKS; $b++) {
+
+bind coreccx_pcx_fields_port coreccx_pcx_fields_sample_${b} {
+    coreccx_pcx_fields_state {
+        coreccx_cov.pcx_sctag${b}_data_rdy,
+        coreccx_cov.pcx_sctag${b}_data[123:64]
+    };
+}
+
+bind coreccx_cpx_fields_port coreccx_cpx_fields_sample_${b} {
+    coreccx_cpx_fields_state {
+        coreccx_cov.sctag${b}_cpx_data[144:123]
+    };
+}
+
+bind coreccx_inv_vector_port coreccx_inv_vector_sample_${b} {
+    coreccx_inv_vector_state {
+        coreccx_cov.sctag${b}_cpx_data[144:140],
+        coreccx_cov.sctag${b}_cpx_data[111:0]
+    };
+}
+
+bind coreccx_l2addr_port coreccx_l2addr_sample_${b} {
+    coreccx_l2addr_state {
+        coreccx_cov.arbctl_inst_vld_c2_${b},
+        coreccx_cov.arbctl_inst_diag_c2_${b},
+        coreccx_cov.arbctl_inval_inst_c2_${b},
+        coreccx_cov.decdp_inst_int_c2_${b},
+        coreccx_cov.arbdp_addr_c2_${b}
+    };
+}
+
+.}
+
+#endif
+

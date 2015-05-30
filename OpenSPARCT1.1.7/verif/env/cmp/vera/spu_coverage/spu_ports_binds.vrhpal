@@ -1,0 +1,562 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "spu_cov_inc.pal";
+
+#ifndef __SPU_PORTS_BINDS_VRH__
+#define __SPU_PORTS_BINDS_VRH__
+
+// SPU coverage ports definition
+// sys = $sys, cores = $cores
+
+// For SPU MA REDUCTION
+
+port spu_mared_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_red_state;
+}
+
+// For SPU MA MUL (A<>B case)
+
+port spu_mamul_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_mul_state;
+}
+
+// For SPU MA AEQB (A=B case)
+
+port spu_maaeqb_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_aeqb_state;
+}
+
+// For SPU MA EXP
+
+port spu_maexp_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_exp_state;
+}
+
+// For SPU MA LD
+
+port spu_mald_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_ld_state;
+}
+
+// For SPU MA ST
+
+port spu_mast_cov_port {
+  cmp_clk;
+  cmp_diag_done;
+  ma_st_state;
+}
+
+port spu_simul_mul_req_ack_cov_port {
+  cmp_clk;
+  simul_mul_req_ack_state;
+}
+
+// Used by SPU_TRAP_MON in spu_monitors.
+
+port spu_simul_compl_cov_port {
+  cmp_clk;
+  spu_ifu_ttype_vld_w2;
+  spu_ifu_ttype_tid_w2;
+  spu_ifu_ttype_w2;
+  spu_ifu_unc_err_w1;
+  spu_ifu_mamem_err_w1;
+  ifu_spu_trap_ack;
+  ifu_spu_nceen;
+  simul_compl_state;
+}
+
+port spu_ldst_mon_port {
+  cmp_clk;
+  reset;
+  spu_mald_ldreq;
+  spu_wen_mald_ack;
+  spu_mactl_streq;
+  spu_wen_mast_ack;
+  spu_lsu_load_req;
+  lsu_spu_ldst_ack;
+}
+
+port spu_ill_instr_case_2_cov_port {
+  cmp_clk;
+  ill_instr_case_2_state;
+}
+
+port spu_priv_act_cov_port {
+  cmp_clk;
+  priv_act_state;
+}
+
+port spu_data_acc_case_1_cov_port {
+  cmp_clk;
+  data_acc_case_1_state;
+}
+
+port spu_data_acc_case_2_cov_port {
+  cmp_clk;
+  data_acc_case_2_state;
+}
+
+port spu_mul_mon_port {
+  cmp_clk;
+  reset;
+  spu_mul_req_vld;
+  mul_spu_ack;
+  exu_mul_input_vld;
+  mul_exu_ack;
+}
+
+port spu_mul_permut_cov_port {
+  cmp_clk;
+  mul_permut_state;
+}
+
+port spu_mared_a_vs_n_cov_port {
+  cmp_clk;
+  mared_a_vs_n_state;
+}
+
+port spu_maldst_mon_port {
+  cmp_clk;
+  reset;
+  mald_idle_state;
+  mald_mamemwr_state;
+  mast_idle_state;
+  mast_rdmem_state;
+  spu_maaddr_len_cntr;
+  spu_maaddr_memindx;
+}
+
+port spu_mamul_op_len_cov_port {
+  cmp_clk;
+  mamul_op_len_state;
+}
+
+port spu_asi_stxa_ma_busy_cov_port {
+  cmp_clk;
+  asi_stxa_ma_busy_state;
+}
+
+port spu_ma_abort_fsm_cov_port {
+  cmp_clk;
+  cur_state_00;
+  cur_state_01;
+  cur_state_10;
+  cur_state_11;
+  stxa_2ctl_reg;
+  ma_op_complete_mask;
+  waiting_4stb_tobecome_empty;
+  wait_4stb_tobecome_empty;
+  wait4_trap_ack_set;
+  state_reset;
+  spu_mactl_done;
+  ma_stack_cntr_q;
+  ma_abort_fsm_state;
+}
+
+port spu_ldstxa_mon_port {
+  cmp_clk;
+  lsu_spu_asi_state_e; // decode value 0x40 in mactl
+  ifu_spu_inst_vld_w;
+  ifu_lsu_ld_inst_e;
+  ifu_lsu_st_inst_e;
+  ifu_lsu_alt_space_e;
+  ifu_tlu_thrid_e;
+  exu_lsu_ldst_va_e;   // input to spu
+  exu_lsu_rs3_data_e;  // input to spu
+  spu_lsu_ldxa_data_w2;
+  spu_lsu_ldxa_data_vld_w2;
+  spu_lsu_ldxa_tid_w2;
+  spu_lsu_ldxa_illgl_va_w2;
+  spu_lsu_stxa_ack;    // From spu_encctl_datareg_ack_pre for sdata only (CTL also?)
+  spu_lsu_stxa_ack_tid;
+  all_flush;
+}
+
+port spu_mamem_perr_cov_port {
+  cmp_clk;
+  mamem_perr_state;
+}
+
+port spu_ma_mon_port {
+  cmp_clk;
+}
+
+port spu_mared_mon_port {
+  cmp_clk;
+  spu_mared_idle;
+}
+
+port spu_maexp_mon_port {
+  cmp_clk;
+  spu_maexp_idle;
+}
+
+port spu_mamul_mon_port {
+  cmp_clk;
+  spu_mamul_idle;
+}
+
+port spu_ma_kill_op_cov_port {
+  cmp_clk;
+  ma_kill_op;
+}
+
+port spu_stxa_force_abort_cov_port {
+  cmp_clk;
+  stxa_force_abort;
+}
+
+port spu_perr_set_cov_port {
+  cmp_clk;
+  perr_set;
+}
+
+port spu_wen_ma_unc_err_cov_port {
+  cmp_clk;
+  wen_ma_unc_err;
+}
+. sub coreBindings {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+bind spu_mared_cov_port spu_mared_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_red_state                  {spu_intf.C${c}_mared_idle_state,
+				 spu_intf.C${c}_mared_rdm_state,           
+				 spu_intf.C${c}_mared_rdn_state,            
+				 spu_intf.C${c}_mared_cmpsub_state,
+				 spu_intf.C${c}_mared_wr0tox_state,         
+				 spu_intf.C${c}_mared_wrmtox_state,         
+				 spu_intf.C${c}_mared_wrstox_state,         
+				 spu_intf.C${c}_mared_saveptrs_state,
+				 spu_intf.C${c}_mared_submn_state,       
+				 spu_intf.C${c}_mared_rdmdly_state,         
+				 spu_intf.C${c}_mared_dly_saveptrs_state,
+				 spu_intf.C${c}_mared_twodly_saveptrs_state,
+				 spu_intf.C${c}_mared_red_done_dly1_state,
+				 spu_intf.C${c}_mared_red_done_dly2_state};  
+}
+
+bind spu_mamul_cov_port spu_mamul_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_mul_state	 		{spu_intf.C${c}_mamul_idle_state,
+				 spu_intf.C${c}_mamul_tr2iloopa_frm_idle_dly,
+				 spu_intf.C${c}_mamul_iloopa_state,
+				 spu_intf.C${c}_mamul_iloopb_state,
+				 spu_intf.C${c}_mamul_iloopn_state,
+				 spu_intf.C${c}_mamul_jloopa_state,
+				 spu_intf.C${c}_mamul_jloopb_state,
+				 spu_intf.C${c}_mamul_jloopm_state,
+				 spu_intf.C${c}_mamul_jloopn_state,
+				 spu_intf.C${c}_mamul_mwrite_state,
+				 spu_intf.C${c}_mamul_nprime_state,
+				 spu_intf.C${c}_mamul_accumshft_state,
+				 spu_intf.C${c}_mamul_tr2jloopa_frm_accumshft_dly,
+				 spu_intf.C${c}_mamul_result_c1_state,
+				 spu_intf.C${c}_mamul_result_c2_state,
+				 spu_intf.C${c}_mamul_result_c3_state,
+				 spu_intf.C${c}_mamul_result_c4_state,
+				 spu_intf.C${c}_mamul_result_c5_state,
+				 spu_intf.C${c}_mamul_tr2mwrite_frm_accumshft_state};
+}
+
+bind spu_maaeqb_cov_port spu_maaeqb_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_aeqb_state			{spu_intf.C${c}_maaeqb_idle_state,
+				 spu_intf.C${c}_maaeqb_idle_dly_state,
+				 spu_intf.C${c}_maaeqb_iloopa_state,
+				 spu_intf.C${c}_maaeqb_iloopa1_state,
+				 spu_intf.C${c}_maaeqb_iloopn_state,
+				 spu_intf.C${c}_maaeqb_ijloopa_state,
+				 spu_intf.C${c}_maaeqb_jloopa_state,
+				 spu_intf.C${c}_maaeqb_jloopm_state,
+				 spu_intf.C${c}_maaeqb_jloopn_state,
+				 spu_intf.C${c}_maaeqb_mwrite_state,
+				 spu_intf.C${c}_maaeqb_nprime_state,
+				 spu_intf.C${c}_maaeqb_accumshft_state,
+				 spu_intf.C${c}_maaeqb_tr2jloopa_frm_accumshft_dly_state,
+				 spu_intf.C${c}_maaeqb_tr2iloopa1_frm_accumshft_dly_state,
+				 spu_intf.C${c}_maaeqb_iloopa_dly_state,
+				 spu_intf.C${c}_maaeqb_iloopa1_dly_state,
+				 spu_intf.C${c}_maaeqb_ijloopa_dly_state,
+				 spu_intf.C${c}_maaeqb_result_c1_state,
+				 spu_intf.C${c}_maaeqb_result_c2_state,
+				 spu_intf.C${c}_maaeqb_result_c3_state,
+				 spu_intf.C${c}_maaeqb_result_c4_state,
+				 spu_intf.C${c}_maaeqb_result_c5_state,
+				 spu_intf.C${c}_maaeqb_tr2mwrite_frm_accumshft_state};
+}
+
+bind spu_maexp_cov_port spu_maexp_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_exp_state			{spu_intf.C${c}_maexp_idle_state,
+				 spu_intf.C${c}_maexp_rde_state,
+				 spu_intf.C${c}_maexp_gotomulred1_state,
+				 spu_intf.C${c}_maexp_gotomulred2_state,
+				 spu_intf.C${c}_maexp_echk_state,
+				 spu_intf.C${c}_maexp_esmax_state};
+}
+
+bind spu_mald_cov_port spu_mald_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_ld_state			{spu_intf.C${c}_mald_idle_state,
+				 spu_intf.C${c}_mald_ldreq_state,
+				 spu_intf.C${c}_mald_wait4ln_state,
+				 spu_intf.C${c}_mald_mamemwr_state,
+				 spu_intf.C${c}_mald_chk4mpa1maddr0_state,
+				 spu_intf.C${c}_mald_memwen_dly_state};
+}
+
+bind spu_mast_cov_port spu_mast_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cmp_diag_done			spu_intf.cmp_diag_done;
+  ma_st_state			{spu_intf.C${c}_mast_idle_state,
+				 spu_intf.C${c}_mast_rdmem_state,
+				 spu_intf.C${c}_mast_wait4stdrain_state,
+				 spu_intf.C${c}_mast_laststreq_state,
+				 spu_intf.C${c}_mast_dly_tr2rdmem_frm_idle_state};
+}
+
+bind spu_simul_mul_req_ack_cov_port spu_simul_mul_req_ack_sample_bind_C${c} {
+  cmp_clk                       spu_intf.cmp_clk;
+  simul_mul_req_ack_state	{spu_intf.C${c}_spu_mul_req_vld,
+				 spu_intf.C${c}_mul_spu_ack};
+}
+
+bind spu_simul_compl_cov_port spu_simul_compl_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  spu_ifu_ttype_vld_w2		spu_intf.C${c}_spu_ifu_ttype_vld_w2;
+  spu_ifu_ttype_tid_w2		spu_intf.C${c}_spu_ifu_ttype_tid_w2;
+  spu_ifu_ttype_w2		spu_intf.C${c}_spu_ifu_ttype_w2;
+  spu_ifu_unc_err_w1		spu_intf.C${c}_spu_ifu_unc_err_w1;
+  spu_ifu_mamem_err_w1		spu_intf.C${c}_spu_ifu_mamem_err_w1;
+  ifu_spu_trap_ack		spu_intf.C${c}_ifu_spu_trap_ack;
+  ifu_spu_nceen			spu_intf.C${c}_ifu_spu_nceen;
+  simul_compl_state		{spu_intf.C${c}_spu_ifu_ttype_vld_w2,
+				 spu_intf.C${c}_spu_ifu_ttype_tid_w2,
+				 spu_intf.C${c}_spu_ifu_ttype_w2,
+				 spu_intf.C${c}_ifu_spu_trap_ack};
+}
+
+bind spu_ldst_mon_port C${c}_spu_ldst_mon_bind {
+  cmp_clk			spu_intf.cmp_clk;
+  reset				spu_intf.C${c}_reset;
+  spu_mald_ldreq		spu_intf.C${c}_spu_mald_ldreq;
+  spu_wen_mald_ack		spu_intf.C${c}_spu_wen_mald_ack;
+  spu_mactl_streq		spu_intf.C${c}_spu_mactl_streq;
+  spu_wen_mast_ack		spu_intf.C${c}_spu_wen_mast_ack;
+  spu_lsu_load_req		spu_intf.C${c}_spu_lsu_load_req;
+  lsu_spu_ldst_ack		spu_intf.C${c}_lsu_spu_ldst_ack;
+}
+
+bind spu_ill_instr_case_2_cov_port spu_ill_instr_case_2_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  ill_instr_case_2_state        {spu_intf.C${c}_spu_tlu_rsrv_illgl_m};
+}
+
+bind spu_priv_act_cov_port spu_priv_act_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  priv_act_state		{spu_intf.C${c}_lsu_spu_early_flush_g,
+				 spu_intf.C${c}_tlu_spu_flush_w,
+				 spu_intf.C${c}_ifu_spu_flush_w};
+}
+
+bind spu_data_acc_case_1_cov_port spu_data_acc_case_1_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  data_acc_case_1_state		{spu_intf.C${c}_spu_mactl_flush_g2,
+				 spu_intf.C${c}_spu_mactl_asi40_alt_st_vld_g2,
+				 spu_intf.C${c}_spu_mactl_masync_va_vld_g2};
+}
+
+bind spu_data_acc_case_2_cov_port spu_data_acc_case_2_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  data_acc_case_2_state		{spu_intf.C${c}_spu_lsu_ldxa_data_vld_w2,
+				 spu_intf.C${c}_spu_lsu_ldxa_illgl_va_w2};
+}
+
+bind spu_mul_mon_port C${c}_spu_mul_mon_bind {
+  cmp_clk			spu_intf.cmp_clk;
+  reset				spu_intf.C${c}_reset;
+  spu_mul_req_vld		spu_intf.C${c}_spu_mul_req_vld;
+  mul_spu_ack			spu_intf.C${c}_mul_spu_ack;
+  exu_mul_input_vld		spu_intf.C${c}_exu_mul_input_vld;
+  mul_exu_ack			spu_intf.C${c}_mul_exu_ack;
+}
+
+bind spu_mul_permut_cov_port spu_mul_permut_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  mul_permut_state		{spu_intf.C${c}_mamul_cur_idle_state,
+  				 spu_intf.C${c}_maaeqb_cur_idle_state};
+}
+
+bind spu_mared_a_vs_n_cov_port spu_mared_a_vs_n_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  mared_a_vs_n_state		{spu_intf.C${c}_mared_done_set,
+  				 spu_intf.C${c}_m_gt_n_q,
+  				 spu_intf.C${c}_m_lt_n_q};
+}
+
+bind spu_maldst_mon_port C${c}_spu_maldst_mon_bind {
+  cmp_clk			spu_intf.cmp_clk;
+  reset				spu_intf.C${c}_reset;
+  mald_idle_state		spu_intf.C${c}_mald_idle_state;
+  mald_mamemwr_state		spu_intf.C${c}_mald_mamemwr_state;
+  mast_idle_state		spu_intf.C${c}_mast_idle_state;
+  mast_rdmem_state		spu_intf.C${c}_mast_rdmem_state;
+  spu_maaddr_len_cntr		spu_intf.C${c}_maaddr_len_cntr;
+  spu_maaddr_memindx		spu_intf.C${c}_maaddr_memindx;
+}
+
+bind spu_mamul_op_len_cov_port spu_mamul_op_len_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  mamul_op_len_state		{spu_intf.C${c}_spu_mactl_mactl_wen,
+				 spu_intf.C${c}_spu_mactl_mactl_reg};
+}
+
+bind spu_asi_stxa_ma_busy_cov_port spu_asi_stxa_ma_busy_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  asi_stxa_ma_busy_state	{spu_intf.C${c}_maaeqb_cur_idle_state,
+				 spu_intf.C${c}_maexp_cur_idle_state,
+				 spu_intf.C${c}_mald_cur_idle_state,
+				 spu_intf.C${c}_mamul_cur_idle_state,
+				 spu_intf.C${c}_mared_cur_idle_state,
+				 spu_intf.C${c}_mast_cur_idle_state,
+				 spu_intf.C${c}_mactl_spu_mactl_mpa_wen,
+				 spu_intf.C${c}_mactl_spu_mactl_maaddr_wen,
+				 spu_intf.C${c}_mactl_spu_mactl_manp_wen};
+}
+
+bind spu_ma_abort_fsm_cov_port spu_ma_abort_fsm_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  cur_state_00			spu_intf.C${c}_mactl_cur_state_00;
+  cur_state_01			spu_intf.C${c}_mactl_cur_state_01;
+  cur_state_10			spu_intf.C${c}_mactl_cur_state_10;
+  cur_state_11			spu_intf.C${c}_mactl_cur_state_11;
+  stxa_2ctl_reg			spu_intf.C${c}_mactl_stxa_2ctl_reg;
+  ma_op_complete_mask		spu_intf.C${c}_mactl_ma_op_complete_mask;
+  waiting_4stb_tobecome_empty	spu_intf.C${c}_mactl_waiting_4stb_tobecome_empty;
+  wait_4stb_tobecome_empty	spu_intf.C${c}_mactl_wait_4stb_tobecome_empty;
+  wait4_trap_ack_set		spu_intf.C${c}_mactl_wait4_trap_ack_set;
+  state_reset			spu_intf.C${c}_mactl_state_reset;
+  spu_mactl_done		spu_intf.C${c}_mactl_spu_mactl_done;
+  ma_stack_cntr_q		spu_intf.C${c}_wen_ma_stack_cntr_q;
+  ma_abort_fsm_state		{spu_intf.C${c}_mactl_cur_state_00,
+				 spu_intf.C${c}_mactl_cur_state_01,
+				 spu_intf.C${c}_mactl_cur_state_10,
+				 spu_intf.C${c}_mactl_cur_state_11,
+				 spu_intf.C${c}_mactl_stxa_2ctl_reg,
+				 spu_intf.C${c}_mactl_ma_op_complete_mask,
+				 spu_intf.C${c}_mactl_waiting_4stb_tobecome_empty,
+				 spu_intf.C${c}_mactl_wait_4stb_tobecome_empty};
+}
+
+bind spu_ldstxa_mon_port C${c}_spu_ldstxa_mon_bind {
+  cmp_clk			spu_intf.cmp_clk;
+  lsu_spu_asi_state_e		spu_intf.C${c}_lsu_spu_asi_state_e;
+  ifu_spu_inst_vld_w		spu_intf.C${c}_ifu_spu_inst_vld_w;
+  ifu_lsu_ld_inst_e		spu_intf.C${c}_ifu_lsu_ld_inst_e;
+  ifu_lsu_st_inst_e		spu_intf.C${c}_ifu_lsu_st_inst_e;
+  ifu_lsu_alt_space_e		spu_intf.C${c}_ifu_lsu_alt_space_e;
+  ifu_tlu_thrid_e		spu_intf.C${c}_ifu_tlu_thrid_e;
+  exu_lsu_ldst_va_e		spu_intf.C${c}_exu_lsu_ldst_va_e;
+  exu_lsu_rs3_data_e		spu_intf.C${c}_exu_lsu_rs3_data_e;
+  spu_lsu_ldxa_data_w2		spu_intf.C${c}_spu_lsu_ldxa_data_w2;
+  spu_lsu_ldxa_data_vld_w2	spu_intf.C${c}_spu_lsu_ldxa_data_vld_w2;
+  spu_lsu_ldxa_tid_w2		spu_intf.C${c}_spu_lsu_ldxa_tid_w2;
+  spu_lsu_ldxa_illgl_va_w2      spu_intf.C${c}_spu_lsu_ldxa_illgl_va_w2;
+  spu_lsu_stxa_ack		spu_intf.C${c}_spu_lsu_stxa_ack;
+  spu_lsu_stxa_ack_tid		spu_intf.C${c}_spu_lsu_stxa_ack_tid;
+  all_flush			spu_intf.C${c}_all_flush;
+}
+
+bind spu_mamem_perr_cov_port spu_mamem_perr_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  mamem_perr_state		{spu_intf.C${c}_spu_mactl_perr_set,
+				 spu_intf.C${c}_spu_lsu_unc_error_w2,
+				 spu_intf.C${c}_spu_lsu_ldxa_data_vld_w2,
+				 spu_intf.C${c}_spu_ifu_mamem_err_w2};
+}
+
+bind spu_ma_mon_port spu_ma_mon_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+}
+
+bind spu_mared_mon_port spu_mared_mon_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  spu_mared_idle		spu_intf.C${c}_spu_mared_idle;
+}
+
+bind spu_maexp_mon_port spu_maexp_mon_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  spu_maexp_idle		spu_intf.C${c}_spu_maexp_idle;
+}
+
+bind spu_mamul_mon_port spu_mamul_mon_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  spu_mamul_idle		spu_intf.C${c}_spu_mamul_idle;
+}
+
+bind spu_ma_kill_op_cov_port spu_ma_kill_op_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  ma_kill_op			spu_intf.C${c}_spu_mactl_ma_kill_op;
+}
+
+bind spu_stxa_force_abort_cov_port spu_stxa_force_abort_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  stxa_force_abort		spu_intf.C${c}_spu_mactl_stxa_force_abort;
+}
+
+bind spu_perr_set_cov_port spu_perr_set_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  perr_set			spu_intf.C${c}_spu_mactl_perr_set;
+}
+
+bind spu_wen_ma_unc_err_cov_port spu_wen_ma_unc_err_sample_bind_C${c} {
+  cmp_clk			spu_intf.cmp_clk;
+  wen_ma_unc_err		spu_intf.C${c}_spu_wen_ma_unc_err;
+}
+
+.
+. } # coreBindings
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+#endif

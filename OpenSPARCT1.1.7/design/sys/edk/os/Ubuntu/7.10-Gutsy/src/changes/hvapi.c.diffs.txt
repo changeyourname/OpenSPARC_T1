@@ -1,0 +1,34 @@
+
+
+
+*** hvapi.c	
+--- hvapi.opensparc-t1-fpga.c	
+***************
+*** 11,16 ****
+--- 11,19 ----
+  #include <asm/oplib.h>
+  #include <asm/sstate.h>
+  
++ 
++ #define OPENSPARC_T1_FPGA  1
++ 
+  /* If the hypervisor indicates that the API setting
+   * calls are unsupported, by returning HV_EBADTRAP or
+   * HV_ENOTSUPPORTED, we assume that API groups with the
+***************
+*** 180,185 ****
+--- 183,196 ----
+          if (sun4v_hvapi_register(group, major, &minor))
+                  goto bad;
+  
++ #ifdef OPENSPARC_T1_FPGA
++         group = HV_GRP_INTR;
++         major = 1;
++         minor = 0;
++         if (sun4v_hvapi_register(group, major, &minor))
++                 goto bad;
++ #endif
++ 
+          sun4v_sstate_init();
+  
+          return;

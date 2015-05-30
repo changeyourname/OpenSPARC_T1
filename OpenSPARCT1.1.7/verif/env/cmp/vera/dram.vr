@@ -1,0 +1,4514 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "cmp_defines.vri"
+#include <ListMacros.vrh>
+#include <VeraListProgram.vrh>
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#ifdef DRAM_COVERAGE
+#include "dram_coverage.vri"
+#endif
+
+#ifdef DRAM
+  extern task main();
+#endif
+
+extern event dram_diag_done;
+extern task extract(string str);
+extern bit        fail_flag, time_flag;
+extern string     why;
+extern bit [63:0] mainMem[];
+extern bit        meccMem[];
+extern dram_port  dram_bind[4];
+extern dimm_port  dimm_bind[4];
+extern ucb_port   ucb_bind[2];
+
+
+ExternVeraList(string)
+extern  VeraList_string  str_list ;
+
+//////////////////////////////
+// DRAM initialization states
+//////////////////////////////
+enum INIT_STATES  { DRAM_INIT_START, DRAM_DESEL_NOP, DRAM_PRECHARGE_ALL_1, 
+                    DRAM_E_MODE2_REG_SET, DRAM_E_MODE3_REG_SET,
+                    DRAM_E_MODE1_REG_SET, DRAM_MODE_REG_SET_RDLL,
+                    DRAM_PRECHARGE_ALL_2, DRAM_AUTOREFRESH_1,
+                    DRAM_AUTOREFRESH_2, DRAM_MODE_REG_SET,
+                    DRAM_E_MODE1_OCD_DEFAULT, DRAM_E_MODE1_OCD_EXIT, DRAM_INIT_DONE};
+///////////////////////////////////////////
+//  DRAM request/acknoledge data structures
+////////////////////////////////////////////
+class CONFIG_REQ{
+  string     cmd;
+  bit [39:0] addr;
+  bit [63:0] data;
+}
+class ADDR_REQ{
+  bit [39:0] addr;
+}
+class DRAM_REQ{
+  bit [39:0]  addr;
+  bit         rd;
+  bit         rd_dummy;
+  bit [2:0]   rd_id;
+  bit         wr;
+  bit         vld;
+  bit [63:0]  data[8];
+  bit [7:0]   mecc_err;
+  bit [1:0]   chunk_id;
+  integer     send;
+}
+class DRAM_ACK{
+  bit [127:0] data[4];
+  bit [27:0]  ecc[4];
+  bit [3:0]   mecc_err;        
+  bit [3:0]   secc_err;        
+  bit [2:0]   chunk_cnt;
+}
+
+class REQ_INFO {
+  bit [39:0] addr;
+  bit        rd;
+}
+MakeVeraList(CONFIG_REQ)
+MakeVeraList(ADDR_REQ)
+MakeVeraList(DRAM_REQ)
+MakeVeraList(REQ_INFO)
+
+////////////////////////////
+// DRAM Monitor data structure
+////////////////////////////
+class DRAM_MON {
+  // Private members
+  local bit [1:0]  ch;
+  local bit	   init_done;
+  local integer	   ref_timer_cs0;
+  local integer	   ref_timer_cs1;
+  local integer	   ref_timer_cs2;
+  local integer	   ref_timer_cs3;
+  local bit	   enable_i2c;
+  local integer    open_bank_cntr;
+  bit              blk_new_bank;
+  local bit	   ch01_present;
+  local bit	   ch23_present;
+  local bit	   ch03_present;
+  local bit	   ch12_present;
+  local bit	   rank_present;
+  local bit	   stack_present;
+  local bit [1:0]  dimm_sz_dram_mon;
+  local bit        scrb_ch0_addr_bumpup;
+  local bit        rfrsh_reg_update[4];
+
+  // Config Registers
+  
+  // added remaining registers - rmehta
+  bit  [3:0] REG_CAS_ADDR_WIDTH;
+  bit  [3:0] REG_RAS_ADDR_WIDTH;
+  bit  [2:0] REG_CAS_LAT;
+  bit [11:0] REG_SCRUB_FREQ;
+//bit [15:0] REG_CLK_SCALE;
+//bit        REG_REFRESH_BUNCH;
+  bit        REG_SCRUB_ENABLE;
+  bit  [3:0] REG_TRP;
+  bit  [3:0] REG_TWR;
+  bit  [5:0] REG_TRFC;
+  bit  [1:0] REG_TMRD;
+//bit  [1:0] REG_TSTS;
+  bit  [1:0] REG_TIWTR;
+  bit  [7:0] REG_PRECHARGE_WAIT;
+//bit  [7:0] REG_DIMM_SIZE;
+  bit        REG_DIMM_STACK;
+  bit [14:0] REG_EXT_WR_MODE;
+  bit [14:0] REG_EXT_WR_MODE2;
+  bit [14:0] REG_EXT_WR_MODE3;
+//bit        REG_SPD_READ_CTL;
+  bit        REG_WAIT_CONTROL;
+  bit        REG_RANK1_PRESENT;
+  bit        REG_CHANNEL_DISABLED;
+  bit        REG_SEL_LO_ADDR_BITS;
+  bit        REG_DIMM_INIT;
+  bit        REG_SW_DV_CONTROL;
+  bit  [2:0] REG_SW_DV_COUNT;
+  bit        REG_HW_DMUX_CLK_INV;
+  bit  [4:0] REG_PAD_EN_CLK_INV;
+//bit  [1:0] REG_SPD_READ_STATUS;   // RO
+  bit        REG_MODE_WRITE_STATUS; // RO
+  bit  [3:0] REG_DIMM_PRESENT;  
+  bit        REG_FAILOVER_STATUS;  
+  bit [31:0] REG_FAILOVER_MASK;  
+  bit  [7:0] REG_DBG_TRG_EN;  
+//bit  [6:0] REG_DIMM_SPD_SLAVE_ADDR;  
+//bit  [7:0] REG_DIMM_SPD_DATA;  
+//bit        REG_DIMM_SPD_WRITE_CTL;  
+  bit [63:0] REG_ERROR_STATUS;  
+  bit [39:0] REG_ERROR_ADDR;  
+  bit [63:0] REG_ERROR_INJECT;  
+  bit [17:0] REG_ERROR_COUNTER;  
+  bit [31:0] REG_ERROR_LOCATION;  
+  bit        REG_TEST;  
+  bit  [7:0] REG_PERF_CONTROL;  
+  bit [63:0] REG_PERF_COUNTER;  
+ 
+
+  bit [12:0] REG_REFRESH_FREQ;
+  bit [16:0] REG_OPEN_BANK_MAX;
+  bit [15:0] REG_MAX_TIME;
+  bit  [3:0] REG_RAS_RAS_DELAY_D;
+  bit  [4:0] REG_RAS_RAS_DELAY_S;
+  bit  [3:0] REG_RAS_CAS_DELAY;
+  bit  [3:0] REG_WR_RD_CAS_DELAY;
+  bit  [3:0] REG_RD_WR_CAS_DELAY;
+  bit  [2:0] REG_RD_RD_CAS_DELAY;
+  bit  [3:0] REG_WR_WR_CAS_DELAY;
+  bit        REG_INIT_MEMORY;
+  bit        REG_SELF_REFRESH;
+
+  // Public methods
+  task new ( bit [1:0] ch);
+  task update_dram_reg (bit [11:0] addr, bit[63:0] data);
+  task check_dram_reg (bit [11:0] addr, bit[63:0] data);
+  task mon_refresh ();
+  task mon_2channel ();
+  task mon_dram_init ();
+  task mon_power_throttle ();
+  task mon_mem_init ();
+  task mon_scrub ();
+  task mon_ras_cas_dly ();
+  task mon_cas_cas_dly ();
+  task mon_cas_cas_dly_cs ();
+  task mon_ras_ras_dly ();
+  function integer get_open_bank_cnt() {get_open_bank_cnt = this.open_bank_cntr;}
+}
+
+////////////////////////////////
+// DRAM UCB driver data structure
+////////////////////////////////
+
+class UCB_DRIVER {
+  // public members
+  VeraList_CONFIG_REQ	dram_bucb_list;
+  VeraList_CONFIG_REQ	dram_nbucb_list;
+  DRAM_MON		dram_mon[4];
+
+  // public methods
+  task new (DRAM_MON dram_mon[]) {
+    dram_bucb_list  = new;
+    dram_nbucb_list = new;
+    this.dram_mon[0] = dram_mon[0];
+    this.dram_mon[1] = dram_mon[1];
+    this.dram_mon[2] = dram_mon[2];
+    this.dram_mon[3] = dram_mon[3];
+  }
+  task get_dram_error_count_reg(var bit [63:0] data[]);
+  task set_dram_error_count_reg(bit [63:0] data);
+  task wait_check_i2c_read();
+  task dram_nbucb_traffic(bit ch);
+  task dram_config();
+  task read_dram_init(string file);
+  task dram_init();
+  task ucb_read( integer count, var bit [127:0] data, bit ch, bit check_rd_data);
+  task ucb_write( integer count, bit [127:0] data, bit ch);
+}
+
+///////////////////////////////////////////////////
+// DRAM traffic class/configuration data structure
+///////////////////////////////////////////////////
+class TRAFFIC_CLASS{
+  integer    number;
+  bit        round_robin;
+  bit        direct_inst;
+  bit        direct_addr;
+  bit        depend;
+  bit        enb_mecc_err;
+  bit [39:0] addr;
+  local	bit	     enable_ranks;
+  local	bit	     enable_stack;
+  local	bit [1:0]    dimm_sz;
+  local bit          ch01_prsnt;
+  local bit          ch23_prsnt;
+  local bit          ch03_prsnt;
+  local bit          ch12_prsnt;
+  local bit          ch_prsnt;
+
+  VeraList_CONFIG_REQ instruction[4];
+  VeraList_ADDR_REQ addr_record;
+
+  UCB_DRIVER ucb_driver;
+
+
+  task new(UCB_DRIVER ucb_driver);
+  task set_param() {
+    this.enable_ranks  = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+    this.enable_stack  = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+    this.dimm_sz       = (get_plus_arg (CHECK, "DIMM_SIZE_2G")) ? 2'b11 :
+                         (get_plus_arg (CHECK, "DIMM_SIZE_1G")) ? 2'b10 : 
+                         (get_plus_arg (CHECK, "DIMM_SIZE_512")) ? 2'b01 : 
+                         (get_plus_arg (CHECK, "DIMM_SIZE_256")) ? 2'b00 : 2'b11;
+
+    this.ch01_prsnt    = (get_plus_arg (CHECK, "2CHANNEL_01")) ? 1'b1 : 1'b0;
+    this.ch23_prsnt    = (get_plus_arg (CHECK, "2CHANNEL_23")) ? 1'b1 : 1'b0;
+    this.ch03_prsnt    = (get_plus_arg (CHECK, "2CHANNEL_03")) ? 1'b1 : 1'b0;
+    this.ch12_prsnt    = (get_plus_arg (CHECK, "2CHANNEL_12")) ? 1'b1 : 1'b0;
+    this.ch_prsnt      = this.ch01_prsnt  ||  this.ch23_prsnt ||  this.ch03_prsnt ||
+                         this.ch12_prsnt ;
+
+  }
+  task interpret( 
+		var bit       mem_inst,
+		var bit       bucb_inst,
+		var bit       nbucb_inst,
+		var bit [2:0] bank );
+  task read_grammer(string file);
+  function bit [39:0] gen_rnd_addr(bit [4:0] shift);
+}
+/////////////////////////////
+// Dram error Injector class
+/////////////////////////////
+class DRAM_ERR_INJ {
+  // Private members
+  local bit [39:0]          addr_mem[];
+  local bit                 en_error;
+  local bit [1:0]           ch;
+  local rand integer        delay;
+  local rand integer        err_bit;
+  local integer             min_dly;
+  local integer             max_dly;
+  VeraList_REQ_INFO         req_list;
+
+  // Constraint
+  constraint err_filter {
+    delay >= min_dly;
+    delay <= max_dly;
+    err_bit in {0:127};
+  }
+  
+  // Public methods
+  task new (bit [1:0] ch, (integer min = 10), (integer max = 100) ) {
+    this. req_list = new;
+    this.ch        = ch;
+    this. min_dly  = min;
+    this. max_dly  = max;
+    this. en_error = 1'b0;
+    fork this. inject_error(); join none
+  }
+  task set_delay (integer min = 10, integer max = 100 ) {
+    this. min_dly = min;
+    this. max_dly = max;
+  }
+  task enable_errors (bit en) {this. en_error = en;}
+  task inject_error ();
+}
+
+/////////////////////////////////////
+//  DRAM driver class/data structure
+/////////////////////////////////////
+class DRAM_STUB {
+  //Member variables
+  integer            i, wr_time, recv_num;
+  bit [7:0]          id_pool;
+  bit [1:0]          ch;
+  bit [127:0]        data[4];
+  bit [27:0]         ecc[4];
+  bit [3:0]          mecc_err;
+  bit [39:0]         outstanding[8];
+  bit [39:0]         wr_outstanding;
+  bit                rd_req, wr_req, wr_ack, wr_data;
+  DRAM_ACK           recv[8];
+  DRAM_REQ           send[8], rd_pending, wr_pending;
+  VeraList_DRAM_REQ  send_list, rd_list, wr_list;
+  VeraList_DRAM_REQ  l2c_req_list;
+  DRAM_ERR_INJ       err_inj;  
+  bit                no_bypass;
+  DRAM_MON           dmon;
+  local	bit	     enable_ranks;
+  local	bit	     enable_stack;
+  local	bit [1:0]    dimm_size;
+  VeraListIterator_DRAM_REQ it;
+
+  // Public methods
+  task                 new(bit [1:0] ch, DRAM_MON monitor);
+  task                 dump();
+  task                 send_l2c_req(DRAM_REQ rec, bit rd_wr_n = 1'b1);
+  function  bit [3:0]  get_id();
+  function  bit        read_outstanding(bit [39:0] addr);
+  function bit [6:0]   l2_parity_gen(bit [31:0] data);
+  task                 drive_rd_req();
+  task                 drive_wr_req();
+  task                 drive_wr_data();
+  task                 drive_l2c_req();
+  task                 get_dram_data();
+  task                 check_dram_data(bit [7:0] rd_id);
+  task                 dram_data(bit [63:0] addr);
+  task                 updated_dram(DRAM_REQ rec);
+  task                 updated_data(bit [63:0] addr, DRAM_REQ rec);
+}
+
+////////////////////////////////////////
+// Dram traffic generator data structure
+////////////////////////////////////////
+class DRAM_TG {
+
+  // private members
+  local	bit		enable_ranks;
+  local	bit		enable_stack;
+  local	bit [1:0]       dimm_size;
+  local	bit		low_stack_bit;
+  local	bit		rand_data;
+  local	bit		walk_1_data;
+  local	bit		walk_0_data;
+  local	bit		walk_0a_data;
+  local	bit		walk_a0_data;
+  local	bit		walk_05_data;
+  local	bit		walk_50_data;
+  local	bit		rand_addr;
+  local	bit		walk_1_addr;
+  local	bit		walk_0_addr;
+  local bit [1:0] 	ch; 
+  local bit [63:0]	d_data;
+  local bit [26:0]	d_addr;
+  local TRAFFIC_CLASS	traffic_class;
+  local DRAM_STUB	dram_driver;
+
+  // public methods
+  task new ( 
+		bit [1:0] ch, 
+		TRAFFIC_CLASS traffic_class, 
+		DRAM_STUB dram_driver) {
+    this.ch            = ch;
+    this.traffic_class = traffic_class;
+    this.dram_driver   = dram_driver;
+    this.enable_ranks  = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+    this.enable_stack  = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+    this.dimm_size     = (get_plus_arg (CHECK, "DIMM_SIZE_2G")) ? 2'b11 :
+                         (get_plus_arg (CHECK, "DIMM_SIZE_1G")) ? 2'b10 : 
+                         (get_plus_arg (CHECK, "DIMM_SIZE_512")) ? 2'b01 : 
+                         (get_plus_arg (CHECK, "DIMM_SIZE_256")) ? 2'b00 : 2'b11;
+    this.low_stack_bit = (get_plus_arg (CHECK, "LOW_STACK_BIT")) ? 1'b1 : 1'b0;
+    this.rand_data     = (get_plus_arg (CHECK, "RAND_DATA")) ? 1'b1 : 1'b0;
+    this.walk_1_data   = (get_plus_arg (CHECK, "WALK_1_DATA")) ? 1'b1 : 1'b0;
+    this.walk_0_data   = (get_plus_arg (CHECK, "WALK_0_DATA")) ? 1'b1 : 1'b0;
+    this.walk_0a_data  = (get_plus_arg (CHECK, "WALK_0A_DATA"))? 1'b1 : 1'b0;
+    this.walk_a0_data  = (get_plus_arg (CHECK, "WALK_A0_DATA"))? 1'b1 : 1'b0;
+    this.walk_05_data  = (get_plus_arg (CHECK, "WALK_05_DATA"))? 1'b1 : 1'b0;
+    this.walk_50_data  = (get_plus_arg (CHECK, "WALK_50_DATA"))? 1'b1 : 1'b0;
+    this.rand_addr     = (get_plus_arg (CHECK, "RAND_DATA")) ? 1'b1 : 1'b0;
+    this.walk_1_addr   = (get_plus_arg (CHECK, "WALK_1_ADDR")) ? 1'b1 : 1'b0;
+    this.walk_0_addr   = (get_plus_arg (CHECK, "WALK_0_ADDR")) ? 1'b1 : 1'b0;
+
+    if (this.rand_data)        this.d_data  = {random(), random()};
+    else if (this.walk_1_data) this.d_data  = 64'h0000_0000_0000_0001;
+    else if (this.walk_0_data) this.d_data  = 64'hffff_ffff_ffff_fffe;
+    else if (this.walk_0a_data)this.d_data  = 64'h0a0a_0a0a_0a0a_0a0a;
+    else if (this.walk_a0_data)this.d_data  = 64'ha0a0_a0a0_a0a0_a0a0;
+    else if (this.walk_05_data)this.d_data  = 64'h0505_0505_0505_0505;
+    else if (this.walk_50_data)this.d_data  = 64'h5050_5050_5050_5050;
+    else                       this.d_data  = 64'h1111_1111_bc00_0000;
+    case ({this.rand_addr, this.walk_1_addr, this.walk_0_addr}) {
+      3'b010: this.d_addr = {24'h000000, 3'b001};
+      3'b001: this.d_addr = {24'hffffff, 3'b110};
+      default:this.d_addr = random();
+    }
+  }
+  task dram_traffic();
+  function bit [39:0] gen_dram_addr(bit [1:0] round);
+}
+
+////////////////////////////////////////////////////////////////////
+// Utility task: read mem.image/mem.data and store them into mainMem.
+////////////////////////////////////////////////////////////////////
+task load_vera_mem(string mem_data, bit sht)
+{
+  integer    fdi;
+  string     line, val;
+  bit [39:0] addr;
+  bit [63:0] data;
+  bit [39:0] addr_mask = 40'hffffffffff;
+
+  /*
+  if (get_plus_arg (CHECK, "RANK_DIMM"))
+    if (get_plus_arg (CHECK, "STACK_DIMM")) 
+      addr_mask = 40'h01ffffffff;
+    else addr_mask = 40'h00ffffffff;
+  else
+    if (get_plus_arg (CHECK, "STACK_DIMM")) 
+      addr_mask = 40'h00ffffffff;
+    else addr_mask = 40'h007fffffff;
+  */
+        
+  printf("\n%d: Info->Initializing Vera Memory from: %0s\n", get_time(LO), mem_data);
+  fdi = fopen (mem_data, "r");
+  if (fdi == 0) error ("Can't open input file\n");
+  while (1) {
+    line = freadstr (fdi, SILENT);
+    if (line == null) break;
+    if (line.match("^\s*$"))continue;
+    if (line.match("@(\w+)")){
+      val = line.backref(0);
+      if(sht)addr = val.atohex() >> 3;
+      else   addr = val.atohex();
+      continue;
+    }
+    while(line.match("\s*(\w+)")){
+      val  = line.backref(0);
+      data = val.atohex();
+      mainMem[addr & addr_mask] = data;
+      line = line.postmatch();
+      if(sht)addr++;
+      else addr += 8;
+    }
+  }
+  fclose (fdi);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Dram stand-alone verification environment top level test bench function
+//////////////////////////////////////////////////////////////////////////
+task dram_sat_top()
+{
+  integer	index;
+  integer       seed;
+  DRAM_STUB	dram_driver[4];
+  DRAM_MON	dram_mon[];
+  DRAM_TG	dram_tg[4];
+  TRAFFIC_CLASS	traffic_class;
+  UCB_DRIVER	ucb_driver;
+#ifdef DRAM
+#ifdef DRAM_COVERAGE
+  dram_coverage dram_coverage_obj;
+#endif
+#endif
+
+  bit [6:0]  mem_dat_load_config;
+  string     my_file;
+
+
+  //dram_diag_done = 0;
+
+  //enable_ranks = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+  //enable_stack = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+  //create_dram_binding(dram_bind);
+  //create_dimm_binding(dimm_bind);
+  //read_dram_init("dram_config.doc");
+  //loadMainMemToVera("mem.data", 0);
+    if (get_plus_arg (CHECK, "RANK_DIMM"))
+      mem_dat_load_config[0] = 1;
+    else
+      mem_dat_load_config[0] = 0;
+    if (get_plus_arg (CHECK, "STACK_DIMM"))
+      mem_dat_load_config[1] = 1;
+    else
+      mem_dat_load_config[1] = 0;
+    if (get_plus_arg (CHECK, "DIMM_SIZE_256"))
+      mem_dat_load_config[2] = 1;
+    else
+      mem_dat_load_config[2] = 0;
+    if (get_plus_arg (CHECK, "DIMM_SIZE_512"))
+      mem_dat_load_config[3] = 1;
+    else
+      mem_dat_load_config[3] = 0;
+    if (get_plus_arg (CHECK, "DIMM_SIZE_1G"))
+      mem_dat_load_config[4] = 1;
+    else
+      mem_dat_load_config[4] = 0;
+    if (get_plus_arg (CHECK, "DIMM_SIZE_2G"))
+      mem_dat_load_config[5] = 1;
+    else
+      mem_dat_load_config[5] = 0;
+    if (get_plus_arg (CHECK, "MEM_PARTIAL"))
+      mem_dat_load_config[6] = 1;
+    else
+      mem_dat_load_config[6] = 0;
+
+        //printf("DEBUG : Mem_dat_load_config = %x,\n",mem_dat_load_config);
+
+ case(mem_dat_load_config) {
+      7'b0000001 : my_file  = "mem1.data";
+      7'b0000010 : my_file  = "mem1.data";
+      7'b0000011 : my_file  = "mem2.data";
+      7'b1000001 : my_file  = "mem1_partial.data";
+      7'b1000010 : my_file  = "mem1_partial.data";
+      7'b0000011 : my_file  = "mem2_partial.data";
+      7'b0000101 : my_file  = "mem1_256Mb.data";
+      7'b0000110 : my_file  = "mem1_256Mb.data";
+      7'b0000111 : my_file  = "mem2_256Mb.data";
+      7'b0001001 : my_file  = "mem1_512Mb.data";
+      7'b0001010 : my_file  = "mem1_512Mb.data";
+      7'b0001011 : my_file  = "mem2_512Mb.data";
+      7'b0010001 : my_file  = "mem1_1G.data";
+      7'b0010010 : my_file  = "mem1_1G.data";
+      7'b0010011 : my_file  = "mem2_1G.data";
+      7'b0100001 : my_file  = "mem1.data";
+      7'b0100010 : my_file  = "mem1.data";
+      7'b0100011 : my_file  = "mem2.data";
+      default    : my_file  = "mem.data";
+ }
+      load_vera_mem (my_file, 0);
+
+
+//  if (get_plus_arg (CHECK, "RANK_DIMM")) {
+//    if (get_plus_arg (CHECK, "STACK_DIMM")) { load_vera_mem ("mem2.data", 0); }
+//    else                                    { load_vera_mem ("mem1.data", 0); }
+//  } else {
+//    if (get_plus_arg (CHECK, "STACK_DIMM")) { load_vera_mem ("mem1.data", 0); }
+//    else                                    { load_vera_mem ("mem.data", 0); }
+//  }
+  for (index = 0; index < 4; index++) {
+    dram_bind[index].$sctag_dram_rd_req    = 'h0;
+    dram_bind[index].$sctag_dram_rd_dummy_req    = 'h0;
+    dram_bind[index].$sctag_dram_data_vld  = 'h0;
+    dram_bind[index].$sctag_dram_rd_req_id = 'h0;
+    dram_bind[index].$sctag_dram_wr_req    = 'h0;
+    dram_bind[index].$sctag_dram_addr      = 'hx;
+    dram_bind[index].$sctag_dram_wr_data   = 'hx;
+    dram_bind[index].$sctag_dram_data_mecc = 'b0; // added rmehta
+
+  }
+  //init_signal();
+  cmp_top.rst_l = 1'b0;
+  dram_top.clk_ddr_slfrsh = 1'b0;
+  repeat(40) @(posedge cmp_top.cmp_gclk);
+  cmp_top.rst_l = 1'b1;
+  repeat(8) @(posedge cmp_top.cmp_gclk);
+
+  // @0,100 cmp_top.cmp_grst_l == 1'b1;
+  for (index = 0; index < 4; index++) {
+    dram_mon[index] = new(index);
+  }
+  ucb_driver = new(dram_mon);
+  if (get_plus_arg (CHECK, "DRAM_I2C")) {
+    //create_i2c_binding(i2c_bind);
+    ucb_driver.wait_check_i2c_read();
+  }
+  //for (i=0; i < 4; i++) { dram_mon[i] = new(i); }
+  if (get_plus_arg(CHECK, "CHECK_INIT")) ucb_driver.read_dram_init("dram_config.doc");
+  //set_dram_error_count_reg( dram_errMax);
+
+  // instantiating the coverage object
+    coverage_set_database_file_name("raw_coverage/coverage.db");
+
+#ifdef DRAM
+#ifdef DRAM_COVERAGE
+    if ((get_plus_arg(CHECK, "dram_coverage") ||
+         get_plus_arg(CHECK, "coverage_on")) &&
+        !get_plus_arg(CHECK, "coverage_off")) {
+        printf("Instantiating dram_coverage object\n");
+        dram_coverage_obj = new();
+    }
+#endif
+#endif
+
+  printf ("\n\n%0d: Delaying the traffic generation for 1000 cycles...\n", get_time(LO));
+  repeat(1000) @(posedge cmp_top.cmp_gclk);
+  printf ("Done.\n");
+  printf ("%0d: Starting the traffic generation\n", get_time(LO));
+
+  // Generate & source the SEED for random generator
+  if (get_plus_arg (CHECK, "seed+")) { 
+    seed = get_plus_arg(NUM, "seed+");
+  } else {
+    seed = get_systime();
+  }
+  void = random(seed);
+  printf ("\n==============================================\n");
+  printf ("%d : RANDOM SEED USED: %0d\n", get_time(LO), seed);
+  printf ("\n==============================================\n");
+
+  ////////////////////////////////////////////
+  // Create the dram_driver/L2C interface stub
+  for (index = 0; index < 4; index++) {
+    dram_driver[index] = new(index, dram_mon[0]);
+  }
+
+  if (get_plus_arg (CHECK, "no_tpt")) { 
+    ////////////////////////////
+    // Call the vera diag: main
+#ifdef DRAM
+    main();
+#endif
+  } else {
+    ///////////////////////////////////////////////////////
+    //Create traffic generators & read the template file
+    traffic_class = new(ucb_driver);
+    traffic_class.read_grammer("diag.tpt");
+
+    for (index = 0; index < 4; index++) {
+      dram_tg[index] = new(index, traffic_class, dram_driver[index]);
+    }
+
+    ucb_driver.dram_config();
+    fork
+      ucb_driver.dram_nbucb_traffic(0);
+      ucb_driver.dram_nbucb_traffic(1);
+      dram_tg[0].dram_traffic();
+      dram_tg[1].dram_traffic();
+      dram_tg[2].dram_traffic();
+      dram_tg[3].dram_traffic();
+    join all
+  }
+
+  // Check all the request & sent queues for emptyness
+  for (index = 0; index < 4; index++) {
+    if ( !dram_driver[index].rd_list.empty() ) {
+      printf ("\nERROR: Channel[%0d] Read request list is not empty\n", index);
+      fail_flag = 1;
+      why       = "Read request list is not empty";
+    }
+    if ( !dram_driver[index].wr_list.empty() ){
+      printf ("\nERROR: Channel[%0d] Write request list is not empty\n", index);
+      fail_flag = 1;
+      why       = "Write request list is not empty";
+    }
+    if ( (dram_driver[index].send_list.empty() == 0) && 
+         ((&dram_driver[index].id_pool) == 0) ) {
+      printf ("\nERROR: Channel[%0d] Sent request list is not empty\n", index);
+      fail_flag = 1;
+      why       = "Sent request list is not empty";
+    }
+  }
+
+  // Output the max number of cycle in the read queue.
+  for (index = 0; index < 4; index++) {
+      printf ("\nINFO: Channel[%0d] Max Time in RD Q Entry %d, is %d \n", index,dram_bind[index].$dram_rd_q_cnt_max_entry, dram_bind[index].$dram_rd_q_cnt_max);
+    }
+
+  // Output Performance information for latency 
+      printf ("\n=======================================================");
+      printf ("\nINFO: PERFORMANCE INFORMATION ON RD, WR, RD+WR Q LATENCY");
+      printf ("\n=======================================================");
+  for (index = 0; index < 4; index++) {
+      printf ("\nINFO: Channel[%0d] Rd Latency =  %x", index,dram_bind[index].$dram_rd_q_lat);
+      printf ("\nINFO: Channel[%0d] Wr Latency =  %x", index,dram_bind[index].$dram_wr_q_lat);
+      printf ("\nINFO: Channel[%0d] Rd+Wr Latency =  %x\n", index,dram_bind[index].$dram_rd_wr_q_lat );
+    }
+
+  // dram_diag_done
+  //if (fail_flag !== 1) { dram_diag_done = 1;}
+  if (fail_flag !== 1) {  
+    //printf ("%0d  DRAM DIAG DONE \n",get_time(LO));
+    trigger(dram_diag_done);
+    //printf ("%0d  after trigger DRAM DIAG DONE \n",get_time(LO));
+  }
+
+}
+
+///////////////
+// Inject error
+///////////////
+task DRAM_ERR_INJ::inject_error () 
+{
+  REQ_INFO req;
+  integer status;
+
+  while (!fail_flag) {
+    @(posedge dram_top.cmp_gclk);
+    if ( req_list.size() == 0 ) continue;
+    req =  req_list.front(); req_list.pop_front();
+    if ( assoc_index (CHECK, addr_mem, req.addr) == 1) {
+      if ( !req.rd ) {
+        status = assoc_index (DELETE, addr_mem, req.addr);
+        if (status != 1) 
+          printf ("%0d Error: DRAM[%0d] Could not delete array index 0x%x\n", 
+                  get_time(LO), ch, req.addr);
+        continue; 
+      } // if (write)
+    }
+    else {
+      if ( req.rd ) {
+        addr_mem[req.addr] = 1'b1;
+      }
+    } // if (read)
+  }
+}// task inject_error
+
+/////////////////////////////////
+//  constructor for DRAM driver.
+/////////////////////////////////
+task DRAM_STUB::new(bit [1:0] ch, DRAM_MON monitor)
+{
+  this.ch      = ch;
+  this.l2c_req_list   = new;
+  this.rd_list   = new;
+  this.wr_list   = new;
+  this.send_list = new;
+  this.rd_req    = 0;
+  this.wr_req    = 0;
+  this.wr_data   = 0;
+  this.wr_ack    = 0;
+  this.recv_num  = 0;
+  this.id_pool   = 8'hff;
+  for(i = 0; i < 8; i++){
+    this.recv[i] = new;
+    this.send[i] = new;
+    this.recv[i].chunk_cnt  = 0;
+    this.send[i].vld  = 0;
+  }
+  this.dmon = monitor;
+  this.no_bypass = (get_plus_arg(CHECK, "NO_BYPASS")) ? 1'b1 : 1'b0;
+  this.enable_ranks  = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+  this.enable_stack  = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+  this.dimm_size     = (get_plus_arg (CHECK, "DIMM_SIZE_2G")) ? 2'b11 :
+                       (get_plus_arg (CHECK, "DIMM_SIZE_1G")) ? 2'b10 : 
+                       (get_plus_arg (CHECK, "DIMM_SIZE_512")) ? 2'b01 : 
+                       (get_plus_arg (CHECK, "DIMM_SIZE_256")) ? 2'b00 : 2'b11;
+
+  if (this.no_bypass) { fork  this.drive_l2c_req(); join none }
+  fork
+    this.get_dram_data();
+    this.drive_rd_req();
+    this.drive_wr_req();
+    this.drive_wr_data();
+  join none
+  this.err_inj = new(ch);
+}
+////////////////////////////////////
+//  Dump the pending response list
+////////////////////////////////////
+task DRAM_STUB::dump(){
+  DRAM_REQ  rec;
+  string cmd;
+  this.it = this.send_list.start();
+  printf("*** Pending list Bank(%x) ***\n", ch);
+  repeat(send_list.size()){
+    rec = this.it.data();
+    cmd = rec.rd ? "Read" : "Write";
+    printf("BANK[%0d] Sent Time(%0d) Addr(%x) command(%s)\n", 
+           this.ch, rec.send, rec.addr, cmd);
+    this.it.next();
+  }
+}
+///////////////////////////////////////////////////////////////////////
+//  Add a dram read(1)/write(0) request to the request command queue
+///////////////////////////////////////////////////////////////////////
+task DRAM_STUB::send_l2c_req(DRAM_REQ new_req, bit rd_wr_n)
+{
+  if (this.no_bypass) { this.l2c_req_list.push_back(new_req); }
+  else {
+    if (rd_wr_n) this.rd_list.push_back(new_req);
+    else this.wr_list.push_back(new_req);
+  }
+}
+///////////////////////////////////////////////////////////
+//  Check for any outstanding request for the same address
+///////////////////////////////////////////////////////////
+function bit DRAM_STUB::read_outstanding(bit [39:0] addr)
+{
+  integer i;
+  bit [39:0] t_addr;
+
+  read_outstanding = 1'b0;
+  for (i = 0; i < 8;i++) {
+    if (this.id_pool[i]) { continue; }
+    t_addr = this.outstanding[i];
+    if (t_addr[39:6] == addr[39:6]) {
+      read_outstanding = 1'b1;
+      return;
+    }
+  }
+}
+/////////////////////////
+//  send read request.
+////////////////////////
+task DRAM_STUB::drive_rd_req()
+{
+  integer time_cntr;
+  bit [3:0] new_id;
+  bit priv_dram_clk;
+  bit dummy_rd_req;
+  while(1){
+    @(posedge dram_top.cmp_gclk);
+    dummy_rd_req = (get_plus_arg (CHECK, "NO_DUMMY_READ")) ? 0 : (get_plus_arg (CHECK, "MORE_DUMMY_READ")) ?  (random() % 2 == 0): (random() % 16 == 0) ;
+    //printf("%0d : SUNIL: dummy_rd_req = %x\n", get_time(LO), dummy_rd_req);
+    //if (rd_list.empty()) { continue; }
+    if (this.rd_list.empty() || this.wr_req) { continue; }
+    this.rd_pending = this.rd_list.front();
+    if (this.wr_ack && (this.rd_pending.addr[39:6] == this.wr_outstanding[39:6])) { continue; }
+    new_id = this.get_id();
+    if (new_id[3] == 0) { continue; }
+    this.rd_list.pop_front();
+    this.rd_pending.rd_id = new_id[2:0];
+    this.rd_pending.send                       = get_time(LO);
+    this.rd_req                                = 1;
+    dram_bind[this.ch].$sctag_dram_rd_req      = 1'b1;
+    dram_bind[this.ch].$sctag_dram_rd_dummy_req = dummy_rd_req;
+    this.send_list.push_back(rd_pending);
+    this.send[rd_pending.rd_id].rd_dummy       = dummy_rd_req;
+    this.send[rd_pending.rd_id].addr           = this.rd_pending.addr;
+    this.send[rd_pending.rd_id].chunk_id[1:0]  = {this.rd_pending.addr[5], 1'b0};
+    this.send[rd_pending.rd_id].vld            = 1'b1;
+    this.outstanding[rd_pending.rd_id]         = this.rd_pending.addr;
+    //@(negedge dram_top.cmp_gclk);
+    //this.rd_req                                = 0;
+    //@(posedge dram_top.cmp_gclk);
+    dram_bind[this.ch].$sctag_dram_addr        = this.rd_pending.addr[39:5];
+    dram_bind[this.ch].$sctag_dram_rd_req_id   = this.rd_pending.rd_id;
+    time_cntr = 0;
+    if (dram_bind[this.ch].$dram_sctag_rd_ack === 1'bx) {
+      fail_flag = 1;
+      why       = "The read ack is X";
+      break;
+    }
+    @(negedge dram_top.cmp_gclk);
+    this.rd_req = 0;
+    @(posedge dram_top.cmp_gclk);
+    dram_bind[this.ch].$sctag_dram_rd_req    = 1'b0;
+    dram_bind[this.ch].$sctag_dram_rd_dummy_req    = 1'b0;
+    dram_bind[this.ch].$sctag_dram_rd_req_id = 0;
+
+    fork { // fork of the timer
+      while (dram_bind[this.ch].$dram_sctag_rd_ack == 1'b0) {
+	priv_dram_clk = dram_dimm_top.dram_gclk;
+        @(posedge dram_top.cmp_gclk);
+        if ((priv_dram_clk == 1'b0) && (dram_dimm_top.dram_gclk == 1'b1)) ++time_cntr;
+        if ( ((!this.dmon.blk_new_bank) && (time_cntr > 68)) ||
+	     ((this.dmon.blk_new_bank) && (time_cntr > this.dmon.REG_MAX_TIME + 64)) ) {
+          printf("%0d: ERROR: DRAM_STUB Ch[%0d]: No Read ACK for %0d cycles\n", 
+	         get_time(LO), this.ch, time_cntr);
+          printf("%0d: DRAM_STUB Ch[%0d]: Open Bank: Max (%0d) Vs Count(%0d)\n",
+	         get_time(LO), this.ch, this.dmon.REG_OPEN_BANK_MAX, 
+		 this.dmon.get_open_bank_cnt()); 
+          fail_flag = 1;
+          why       = "No Read ACK";
+          break;
+        }
+        if (fail_flag) break; // Exit if some one else has set the fail_flag  
+      } // while
+      if (!fail_flag) {
+        printf ("%0d: DRAM_STUB Ch[%0d]: Got RD Ack %0d cycles after RD Req\n\n", 
+                get_time(LO), this.ch, time_cntr);
+      }
+    } join none
+    while (dram_bind[this.ch].$dram_sctag_rd_ack == 1'b0) {
+      if (dram_bind[this.ch].$dram_sctag_rd_ack === 1'bx) {
+        fail_flag = 1;
+        why       = "The read ack is X";
+      }
+      if (fail_flag) break; // Exit if some one else has set the fail_flag 
+      @(posedge dram_top.cmp_gclk);
+    }
+    if (fail_flag) break; // Exit if some one else has set the fail_flag  
+    //dram_bind[this.ch].$sctag_dram_rd_req      = 1'b0;
+    printf("%0d: DRAM_STUB Ch(%x): Sent a dram read request addr(%x) req_id(%x)\n",
+           get_time(LO), this.ch, this.rd_pending.addr, this.rd_pending.rd_id);
+  }
+}
+//////////////////////////
+//  send write request.
+//////////////////////////
+task DRAM_STUB::drive_wr_req()
+{
+  integer i, time_cntr = 0;
+  bit	  priv_dram_clk;
+  while(1){
+    @(posedge dram_top.cmp_gclk);
+    //if (wr_list.empty()) { continue; }
+    if (this.wr_list.empty() || this.wr_data || this.rd_req) { continue; }
+    this.wr_pending = this.wr_list.front();
+    if (this.read_outstanding(this.wr_pending.addr)) { continue; }
+    this.wr_list.pop_front();
+    this.wr_pending.send                   = get_time(LO);
+    this.send_list.push_back(wr_pending); 
+    this.wr_req                            = 1;
+    this.wr_outstanding                    = this.wr_pending.addr;
+    dram_bind[this.ch].$sctag_dram_wr_req  = 1'b1;
+    this.wr_ack                            = 1;
+    //@(negedge dram_top.cmp_gclk);
+    //this.wr_req                            = 0;
+    //@(posedge dram_top.cmp_gclk);
+    dram_bind[this.ch].$sctag_dram_addr    = this.wr_pending.addr[39:5];
+    time_cntr = 0;
+
+    fork { // fork of the timer
+      while (dram_bind[this.ch].$dram_sctag_wr_ack == 1'b0) {
+	priv_dram_clk = dram_dimm_top.dram_gclk;
+        @(posedge dram_top.cmp_gclk);
+        if ((priv_dram_clk == 1'b0) && (dram_dimm_top.dram_gclk == 1'b1)) ++time_cntr;
+        if ( ((!this.dmon.blk_new_bank) && (time_cntr > 68)) ||
+	     ((this.dmon.blk_new_bank) && (time_cntr > this.dmon.REG_MAX_TIME + 64)) ) {
+          printf("%0d: ERROR: DRAM_STUB Ch[%0d]: No Write ACK for %0d cycles\n", 
+	         get_time(LO), this.ch, time_cntr);
+          printf("%0d: DRAM_STUB Ch[%0d]: Open Bank: Max (%0d) Vs Count(%0d)\n",
+	         get_time(LO), this.ch, this.dmon.REG_OPEN_BANK_MAX, 
+		 this.dmon.get_open_bank_cnt()); 
+          fail_flag = 1;
+          why       = "No Write ACK";
+          break;
+        }
+        if (fail_flag) break; // Exit if some one else has set the fail_flag  
+      } // while
+      if (!fail_flag) {
+        printf ("%0d: DRAM_STUB Ch[%0d]: Got WR Ack %0d cycles after WR Req\n\n", 
+                get_time(LO), this.ch, time_cntr);
+      }
+    } join none
+
+    @(negedge dram_top.cmp_gclk);
+    this.wr_req  = 0;
+    @(posedge dram_top.cmp_gclk);
+    dram_bind[this.ch].$sctag_dram_wr_req  = 1'b0;
+
+    while (dram_bind[this.ch].$dram_sctag_wr_ack == 1'b0) {
+      @(posedge dram_top.cmp_gclk);
+      if (fail_flag) break; // Exit if some one else has set the fail_flag  
+    }
+    if (fail_flag) break; // Exit if some one else has set the fail_flag  
+    this.recv_num++;
+    this.wr_ack                            = 1'b0;
+    //dram_bind[this.ch].$sctag_dram_wr_req  = 1'b0;
+    //wr_time = (random() & 3) + 5;
+    //this.wr_time = 1;
+    //this.wr_time = 5; // changed from 6 to 5 to reflect rtl change, 07/21/03
+    this.wr_time = 4; // changed from 5 to 4 to reflect rtl change, 07/30/03
+    printf("%0d: DRAM_STUB::drive_wr_req: Ch(%x) Sent a dram write request: addr(%x)", 
+           get_time(LO), this.ch, this.wr_pending.addr);
+    printf(", DATA->");
+    for (i = 0; i < 8;i++) { printf("%x", this.wr_pending.data[i]); } 
+    printf(", MECC->");
+    for (i = 0; i < 8;i++) { printf("%b", this.wr_pending.mecc_err[i]); } 
+    printf("\n");
+    // lets see what happens if the write data is delayed by many clocks
+    //repeat (100) @(posedge dram_top.cmp_gclk);
+    this.wr_data = 1;
+  }
+}
+//////////////////////
+//  send write data
+/////////////////////
+task DRAM_STUB::drive_wr_data()
+{
+  integer i;
+
+  while(1) {
+    @(posedge dram_top.cmp_gclk);
+    if (this.wr_data == 0) { continue; }
+    if (this.wr_time > 0) { this.wr_time--; continue; }
+    for (i = 0; i < 8;i++) {
+      dram_bind[this.ch].$sctag_dram_data_vld = 1'b1;
+      dram_bind[this.ch].$sctag_dram_wr_data  = this.wr_pending.data[i];
+      dram_bind[this.ch].$sctag_dram_data_mecc= this.wr_pending.mecc_err[i];
+      @(posedge dram_top.cmp_gclk);
+    }
+    dram_bind[this.ch].$sctag_dram_data_vld   = 1'b0;
+    // added rmehta, after mecc error the sctag_dram_data_mecc bit should be deasserted
+    dram_bind[this.ch].$sctag_dram_data_mecc= 1'b0;
+    this.wr_data = 0;
+  }
+}
+//////////////////////////////////
+//  send l2c request (rd/wr).
+//////////////////////////////////
+task DRAM_STUB::drive_l2c_req()
+{
+  bit [3:0]   new_id;
+  DRAM_REQ    new_req;
+
+  while (1) {
+    @(posedge dram_top.cmp_gclk);  // delay 1 cycle
+    if (this.l2c_req_list.empty()) { continue; }  // no pending request
+    if (  this.no_bypass && 
+         (this.rd_req || this.wr_req || this.wr_ack ||this.wr_data)) { continue; }
+    new_req = this.l2c_req_list.front();
+    this.l2c_req_list.pop_front();
+    if (new_req.rd) {
+      //if (wr_req) { continue; }
+      //if (wr_ack && (rd_pending.addr[35:3] == wr_outstanding[35:3])) { continue; }
+      //new_id = get_id();
+      //if (new_id[3] == 0) continue;
+      //new_req.rd_id = new_id[2:0];
+      //drive_rd_req(new_req);
+      printf ("%0d: DRAM_STUB::drive_l2c_req: Scheduling new read request\n", get_time(LO));
+      this.rd_list.push_back(new_req);
+    } else if (new_req.wr) {
+      //if (wr_data || rd_req) { continue; }
+      //if (read_outstanding(new_req.addr)) { continue; }
+      //drive_wr_req(new_req);
+      printf ("%0d: DRAM_STUB::drive_l2c_req: Scheduling new write request\n", get_time(LO)); 
+      this.wr_list.push_back(new_req);
+    } else {
+      printf ("%0d: ERROR: DRAM_STUB::drive_l2c_req: Unknown L2C request\n", 
+              get_time(LO));
+    }
+  }
+}
+//////////////////////////
+//  make comarsion data.
+//////////////////////////
+task DRAM_STUB::dram_data(bit [63:0] addr)
+{
+  integer     i;
+  bit [127:0] sixteen;
+  bit         ecc0, ecc1;
+  bit [6:0]   parity3, parity2, parity1, parity0;
+  
+  for (i = 0; i < 4; i++) {
+    sixteen[127:64] = mainMem[addr];
+    ecc0            = assoc_index(CHECK, meccMem, addr) ? meccMem[addr] : 0;
+    addr           += 8;
+    sixteen[63:0]   = mainMem[addr];
+    ecc1            = assoc_index(CHECK, meccMem, addr) ? meccMem[addr] : 0;
+    addr           += 8;
+    this.mecc_err[i]    = ecc0 | ecc1;
+    this.data[i]    = sixteen;
+    parity3 = l2_parity_gen(sixteen[127:96]); 
+    parity2 = l2_parity_gen(sixteen[95:64]);
+    parity1 = l2_parity_gen(sixteen[63:32]); 
+    parity0 = l2_parity_gen(sixteen[31:0]);
+    this.ecc[i] = {parity3, parity2, parity1, parity0};
+  }
+}
+
+function bit [6:0] DRAM_STUB::l2_parity_gen(bit [31:0] data)
+{
+    bit [6:0] parity;
+    	parity[0] =  data[0] ^ data[1] ^ data[3] ^ data[4] ^ data[6] ^ data[8] ^
+               data[10] ^ data[11] ^ data[13] ^ data[15] ^ data[17] ^ data[19] ^
+                data[21] ^ data[23] ^ data[25] ^ data[26] ^ data[28] ^ data[30];
+
+	parity[1] = data[0] ^ data[2] ^ data[3] ^ data[5] ^ data[6] ^ data[9] ^
+               data[10] ^ data[12] ^ data[13] ^ data[16] ^ data[17] ^ data[20] ^
+                data[21] ^ data[24] ^ data[25] ^ data[27] ^ data[28] ^ data[31];
+
+	parity[2] = data[1] ^ data[2] ^ data[3] ^ data[7] ^ data[8] ^ data[9] ^
+               data[10] ^ data[14] ^ data[15] ^ data[16] ^ data[17] ^ data[22] ^
+                data[23] ^ data[24] ^ data[25] ^ data[29] ^ data[30] ^ data[31];
+
+	parity[3] = data[4] ^ data[5] ^data[6] ^data[7] ^data[8] ^data[9] ^
+		data[10] ^ data[18] ^data[19] ^data[20] ^data[21] ^data[22] ^
+		data[23] ^ data[24] ^ data[25];
+
+	parity[4] = data[11] ^ data[12] ^ data[13] ^ data[14] ^ data[15] ^ 
+		data[16] ^ data[17] ^ data[18] ^ data[19] ^ data[20] ^ 
+		data[21] ^ data[22] ^ data[23] ^ data[24] ^ data[25];
+
+	parity[5] = data[26] ^ data[27] ^ data[28] ^ data[29] ^ data[30] ^ 
+			data[31];
+
+	parity[6] = ^{parity[5:0],data[31:0]};
+        l2_parity_gen = parity;
+}
+
+///////////////////////////
+//  make comparsion data.
+///////////////////////////
+task DRAM_STUB::updated_data(bit [63:0] t_addr, DRAM_REQ rec)
+{
+  integer     i, index;
+  bit [127:0] sixteen;
+  bit         ecc0, ecc1;
+  bit [6:0]   parity3, parity2, parity1, parity0;
+  index             = 0;
+
+  for (i = 0; i < 4; i++) {
+    sixteen[127:64] = rec.data[index];
+    ecc0            = rec.mecc_err[index];
+    index++;
+    sixteen[63:0]   = rec.data[index];
+    ecc1            = rec.mecc_err[index];
+    index++;
+    this.data[i]    = sixteen;
+    this.mecc_err[i]    = ecc0 | ecc1;
+    parity3 = l2_parity_gen(sixteen[127:96]); 
+    parity2 = l2_parity_gen(sixteen[95:64]);
+    parity1 = l2_parity_gen(sixteen[63:32]); 
+    parity0 = l2_parity_gen(sixteen[31:0]);
+    this.ecc[i] = {parity3, parity2, parity1, parity0};
+  }
+}
+/////////////////////////////
+//  update memory image.
+/////////////////////////////
+task DRAM_STUB::updated_dram(DRAM_REQ rec)
+{
+  integer     i;
+  bit out_of_bound = 1'b0;
+  bit [63:0] addr = rec.addr;
+  addr[5:0]       = 6'b00_0000;
+  case (this.dimm_size) {
+    2'b11:
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: out_of_bound = (|addr[39:37]);
+        2'b10: out_of_bound = (|addr[39:36]); 
+        2'b01: out_of_bound = (|addr[39:36]);
+        2'b00: out_of_bound = (|addr[39:35]);
+      }
+    2'b10:
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: out_of_bound = (|addr[39:36]);
+        2'b10: out_of_bound = (|addr[39:35]); 
+        2'b01: out_of_bound = (|addr[39:35]);
+        2'b00: out_of_bound = (|addr[39:34]);
+      }
+    2'b01:
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: out_of_bound = (|addr[39:35]);
+        2'b10: out_of_bound = (|addr[39:34]); 
+        2'b01: out_of_bound = (|addr[39:34]);
+        2'b00: out_of_bound = (|addr[39:33]);
+      }
+    2'b00:
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: out_of_bound = (|addr[39:34]);
+        2'b10: out_of_bound = (|addr[39:33]); 
+        2'b01: out_of_bound = (|addr[39:33]);
+        2'b00: out_of_bound = (|addr[39:32]);
+      }
+  }
+  if (!out_of_bound) {
+    printf("%0d:Info -> updated dram memory image addr(%x) data-> ", get_time(LO), rec.addr);
+    for (i = 0; i < 8; i++) {
+      mainMem[addr] = rec.data[i];
+      meccMem[addr] = rec.mecc_err[i];
+      addr         += 8;
+      printf("%x",rec.data[i]); 
+    }
+    printf("\n");
+  }
+}
+///////////////////////
+//  check DRAM data.
+///////////////////////
+task DRAM_STUB::check_dram_data(bit [7:0] rd_id)
+{
+  DRAM_REQ rec;
+  bit [63:0] t_addr, s_addr;
+  bit done = 1'b1, out_of_bound = 1'b0;
+  integer j;
+  integer mecc_flag;
+  bit [39:0] oob_addr;
+  
+  mecc_flag = 1'b0;
+  if (this.send[rd_id].vld == 0) {
+    fail_flag = 1'b1;
+    why       = "Received extra data from dram contol";
+    printf("%0d : Error received extra data ->");
+    for (i = 0; i < 8; i++) { printf("\t\t%x\n", recv[rd_id].data[i]); }
+    return;
+  }
+  this.it     = this.send_list.start();
+  t_addr      = this.send[rd_id].addr;
+  t_addr[5:0] = 6'b00_0000;
+  //if ((enable_ranks) && (enable_stack)) { t_addr[39:33] = 7'h0; }
+  //if (enable_ranks)                     { t_addr[39:32] = 8'h0; }
+  //if (enable_stack)                     { t_addr[39:32] = 8'h0; }
+  //else                                  { t_addr[39:31] = 9'h0; }
+  this.dram_data(t_addr);
+  repeat (this.send_list.size()) {
+    rec  = this.it.data();
+    if (rec.rd == 0) {
+      if (done) {
+        this.updated_dram(rec);
+        this.it = this.send_list.erase(it);
+      }
+      else { this.it.next(); }
+      s_addr      = rec.addr;
+      s_addr[5:0] = 6'b00_0000;
+      //if ((enable_ranks) && (enable_stack)) { s_addr[39:33] = 7'h0; }
+      //if (enable_ranks)                     { s_addr[39:32] = 8'h0; }
+      //if (enable_stack)                     { s_addr[39:32] = 8'h0; }
+      //else                                  { s_addr[39:31] = 9'h0; }
+      if (s_addr != t_addr) { continue; }
+      this.updated_data(t_addr, rec);
+      continue;
+    }
+    done = 0;
+    if (rec.rd_id != rd_id){//read
+      this.it.next();
+      continue;
+    }
+
+  // If the read req is dummy, then the expected data is 0.
+  if(this.send[rd_id].rd_dummy) 
+    	for (i = 0; i < 4; i++) {
+		this.data[i] = 128'h0;
+		this.ecc[i] = 128'h0;
+	}
+
+    out_of_bound = 1'b0;
+    case (this.dimm_size) {
+      2'b11:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: out_of_bound = (|send[rd_id].addr[39:37]);
+          2'b10: out_of_bound = (|send[rd_id].addr[39:36]); 
+          2'b01: out_of_bound = (|send[rd_id].addr[39:36]);
+          2'b00: out_of_bound = (|send[rd_id].addr[39:35]);
+        }
+      2'b10:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: out_of_bound = (|send[rd_id].addr[39:36]);
+          2'b10: out_of_bound = (|send[rd_id].addr[39:35]); 
+          2'b01: out_of_bound = (|send[rd_id].addr[39:35]);
+          2'b00: out_of_bound = (|send[rd_id].addr[39:34]);
+        }
+      2'b01:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: out_of_bound = (|send[rd_id].addr[39:35]);
+          2'b10: out_of_bound = (|send[rd_id].addr[39:34]); 
+          2'b01: out_of_bound = (|send[rd_id].addr[39:34]);
+          2'b00: out_of_bound = (|send[rd_id].addr[39:33]);
+        }
+      2'b00:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: out_of_bound = (|send[rd_id].addr[39:34]);
+          2'b10: out_of_bound = (|send[rd_id].addr[39:33]); 
+          2'b01: out_of_bound = (|send[rd_id].addr[39:33]);
+          2'b00: out_of_bound = (|send[rd_id].addr[39:32]);
+        }
+    }
+
+   oob_addr = this.send[rd_id].addr;
+  // added by rmehta
+  // If the read req is dummy, then mecc bit would not be set for out_of_bound cases
+  //if(this.send[rd_id].rd_dummy)
+  //  out_of_bound = 1'b0;
+
+  // if out of bound address read the data from the aliased address
+  // drop the top address bits which cause it to go out of bound. -- rmehta
+  if (out_of_bound == 1) {
+    case (this.dimm_size) {
+      2'b11:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: this.send[rd_id].addr[39:37] = 0;
+          2'b10: this.send[rd_id].addr[39:36] = 0; 
+          2'b01: this.send[rd_id].addr[39:36] = 0;
+          2'b00: this.send[rd_id].addr[39:35] = 0;
+        }
+      2'b10:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: this.send[rd_id].addr[39:36] = 0;
+          2'b10: this.send[rd_id].addr[39:35] = 0; 
+          2'b01: this.send[rd_id].addr[39:35] = 0;
+          2'b00: this.send[rd_id].addr[39:34] = 0;
+        }
+      2'b01:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: this.send[rd_id].addr[39:35] = 0;
+          2'b10: this.send[rd_id].addr[39:34] = 0; 
+          2'b01: this.send[rd_id].addr[39:34] = 0;
+          2'b00: this.send[rd_id].addr[39:33] = 0;
+        }
+      2'b00:
+        case ({this.enable_ranks, this.enable_stack}) {
+          2'b11: this.send[rd_id].addr[39:34] = 0;
+          2'b10: this.send[rd_id].addr[39:33] = 0; 
+          2'b01: this.send[rd_id].addr[39:33] = 0;
+          2'b00: this.send[rd_id].addr[39:32] = 0;
+        }
+    }
+    // get the data from the aliased address
+    this.dram_data(this.send[rd_id].addr);
+    this.send[rd_id].addr = (out_of_bound) ? oob_addr : this.send[rd_id].addr;
+
+   }
+
+    for (i = 0; i < 4;i++) {
+      // if mecc error there is no point checking the data, since data is corrupted anyways
+      // and we will get a mismatch. -- rmehta
+      // mecc error can be SAT injected or coz of out of bound address
+      if ((((this.data[i] !== this.recv[rd_id].data[i] || 
+	  this.ecc[i]  !== this.recv[rd_id].ecc[i] )) && 
+	  (!(recv[rd_id].mecc_err[i] || this.mecc_err[i] ))) && ! out_of_bound)  {
+        printf("%0d : ERROR -> MISMATCH: Bank(%x) Addr(%x) reqId(%x)\n",
+               get_time(LO), this.ch, this.send[rd_id].addr, rd_id);
+        printf("Expected DATA=> ");
+        for (i = 0; i < 4; i++)  
+		printf(" %x %x ", this.ecc[i], this.data[i]); 
+	printf("\n");
+        printf("Received DATA=> ");
+        for (i = 0; i < 4; i++) 
+	    printf(" %x %x ", this.recv[rd_id].ecc[i], this.recv[rd_id].data[i]); 
+        printf("\n");
+        fail_flag = 1'b1;
+        why       = "Dram DATA Mismatch";
+        this.dump();
+        break;
+      } // data mismatch
+      // Just print Data Mismatch due to MECC error , for record/reference -- rmehta
+      if (((this.data[i] !== this.recv[rd_id].data[i] ||
+	  this.ecc[i]  !== this.recv[rd_id].ecc[i] )) && 
+	  ((recv[rd_id].mecc_err[i] || this.mecc_err[i] )))  {
+
+        printf("   MECC compare: Data not same as Expected :\n ");
+        printf("%0d : MISMATCH: Bank(%x) Addr(%x) reqId(%x)\n",
+               get_time(LO), this.ch, this.send[rd_id].addr, rd_id);
+        printf("Expected DATA=> ");
+        for (j = 0; j < 4; j++)  
+		printf(" %x %x ", this.ecc[j], this.data[j]); 
+	printf("\n");
+        printf("Received DATA=> ");
+        for (j = 0; j < 4; j++) 
+	    printf(" %x %x ", this.recv[rd_id].ecc[j], this.recv[rd_id].data[j]); 
+        printf("\n");
+        printf("Received DATA not same, as expected, Due to MECC \n");
+        printf("\n");
+        fail_flag = 1'b0;
+        mecc_flag = 1'b1;
+        //why       = "Dram DATA Mismatch";
+        //this.dump();
+         // Print an out of bound mecc detect or error if no mecc on OOB adr. -rmehta
+	 if(!this.mecc_err[i] && out_of_bound && recv[rd_id].mecc_err[i] ) 
+          printf("   MECC compare: Addr Out of bound Correctly detected!\n");
+	 if(!this.mecc_err[i] && out_of_bound && !recv[rd_id].mecc_err[i] ) {
+          printf("Addr Out of Bound/MECC compre: Addr Out of bound and MECC not asserted ");
+          fail_flag = 1'b1;
+          why       = "Addr Out of Bound and MECC not asserted";
+          this.dump();
+          }
+        break;
+      } // data mismatch
+      if (out_of_bound) {
+        if (recv[rd_id].mecc_err[i] !== 1'b1) {
+          printf("%0d : ERROR -> MECC_ERR not asserted: Bank(%x) Addr(%x) reqId(%x)\n",
+                 get_time(LO), this.ch, this.send[rd_id].addr, rd_id);
+          fail_flag = 1'b1;
+          why = "No MECC-ERR for Read out-of-bound Address";
+          dump();
+          break;
+        }
+      } else if ((this.mecc_err[i] !== recv[rd_id].mecc_err[i]) && (!this.send[rd_id].rd_dummy)) {
+        printf("%0d : ERROR -> MECC-MISMATCH: Bank(%x) Addr(%x) reqId(%x)\n",
+               get_time(LO), this.ch, this.send[rd_id].addr, rd_id);
+        printf("expected data-> ");
+        for(i = 0; i < 4; i++)printf("%x", this.mecc_err[i]);printf("\n");
+        printf("Received DATA=> ");
+        for (i = 0; i < 4; i++) { printf("%x", this.recv[rd_id].mecc_err[i]); } 
+        printf("\n");
+        fail_flag = 1'b1;
+        why       = "Dram MECC Mismatch";
+        dump();
+        break;
+      } // mecc-mismatch
+    } // for
+    if (fail_flag) { break; }
+    if (!mecc_flag) {
+    printf("%0d : DRAM-Read-MATCH(%0d): Bank(%x) Addr(%x) reqId(%x) DATA=> ",
+           get_time(LO), this.recv_num, this.ch, this.send[rd_id].addr, rd_id);
+    for (i = 0; i < 4; i++) { printf("%x", this.data[i]); } printf("\n");
+       }
+
+    if (fail_flag) { break; }
+    this.recv[rd_id].chunk_cnt = 0;
+    this.send[rd_id].vld = 0;
+    this.id_pool[rd_id]  = 1'b1;
+    this.it = this.send_list.erase(it);
+    break;
+  } // repeat
+}
+/////////////////////////////////////
+//  Receive read responses from dram
+/////////////////////////////////////
+task DRAM_STUB::get_dram_data()
+{
+ 
+  bit  [7:0]  req_id_0 = 8'h0, req_id_1 = 8'h0, req_id_2 = 8'h0;
+  bit  [1:0]  chunk_id_0 = 2'h0, chunk_id_1 = 2'h0, chunk_id_2 = 2'h0;
+  integer     time_cntr = 0;
+  bit  data_vld_0 = 1'b0, data_vld_1  = 1'b0, data_vld_2 = 1'b0;
+  //dram_port dp         = dram_bind[ch];
+
+  while(1){
+    @(posedge dram_top.cmp_gclk);
+    if (fail_flag) { break; }
+    if ( (time_cntr > DRAM_TIMEOUT) && 
+         ((&this.id_pool) == 0) && (this.send_list.empty() == 0)) {
+      fail_flag = 1'b1;
+      why       = "TIMEOUT";
+      printf ("%0d: DRAM[%0d]::get_dram_data TIMEOUT\n", get_time(LO), this.ch);
+      dump();
+      break;
+    }
+    if(data_vld_2 == 1'b1){
+      time_cntr = 0;
+      this.recv[req_id_2].data[chunk_id_2] = dram_bind[this.ch].$dram_sctag_data;
+      this.recv[req_id_2].ecc[chunk_id_2] = dram_bind[this.ch].$dram_sctag_ecc;
+      this.recv[req_id_2].mecc_err[chunk_id_2] = dram_bind[this.ch].$dram_sctag_mecc_err;
+      this.recv[req_id_2].secc_err[chunk_id_2] = dram_bind[this.ch].$dram_sctag_secc_err;
+      if ( chunk_id_2 !== this.send[req_id_2].chunk_id ) {
+        fail_flag = 1'b1;
+        why       = "ChunkID Mismatch";
+        printf ("%0d: DRAM[%0d]::get_dram_data: Expected chunkId %h Got %h\n", 
+                get_time(LO), this.ch, this.send[req_id_2].chunk_id, chunk_id_2);
+        dump();
+        break;
+      }
+      if (this.recv[req_id_2].chunk_cnt == 3'h3) {
+        this.check_dram_data(req_id_2);
+        this.recv_num++;
+      } else {
+        this.send[req_id_2].chunk_id += 1'b1; 
+        this.recv[req_id_2].chunk_cnt += 1'b1;
+      }
+    } else {
+      time_cntr++;
+    }
+    data_vld_2 = data_vld_1;
+    req_id_2 =  req_id_1;
+    chunk_id_2 = chunk_id_1;
+    data_vld_1 = data_vld_0;
+    req_id_1 =  req_id_0;
+    chunk_id_1 = chunk_id_0;
+    data_vld_0 = dram_bind[this.ch].$dram_data_vld;
+    req_id_0 = dram_bind[this.ch].$dram_sctag_rd_req_id;
+    chunk_id_0 = dram_bind[this.ch].$dram_chunk_id;
+  } // while(1)
+}
+////////////////////////////////////
+//  get req id (round robin way)
+////////////////////////////////////
+function bit [3:0] DRAM_STUB::get_id()
+{
+  bit [3:0] i;
+  for (i = 0; i < 8; i++) {
+    if (this.id_pool[i] == 0) continue;
+    this.id_pool[i]  = 0;
+    get_id = {1'b1, i[2:0]};
+    return;
+  }
+  get_id = 0;
+}
+
+
+///////////////////////////////////
+// dram monitor class constructor
+///////////////////////////////////
+task DRAM_MON::new(bit [1:0] ch) 
+{
+  integer i;
+  this.ch = ch;
+  this.init_done = 1'b0;
+  this.ref_timer_cs0 = 0;
+  this.ref_timer_cs1 = 0;
+  this.ref_timer_cs2 = 0;
+  this.ref_timer_cs3 = 0;
+  this.open_bank_cntr = 0;
+  this.blk_new_bank = 1'b0;
+
+  this.ch01_present  = (get_plus_arg (CHECK, "2CHANNEL_01")) ? 1'b1 : 1'b0;
+  this.ch23_present  = (get_plus_arg (CHECK, "2CHANNEL_23")) ? 1'b1 : 1'b0;
+  this.ch03_present  = (get_plus_arg (CHECK, "2CHANNEL_03")) ? 1'b1 : 1'b0;
+  this.ch12_present  = (get_plus_arg (CHECK, "2CHANNEL_12")) ? 1'b1 : 1'b0;
+  this.rank_present  = (get_plus_arg (CHECK, "RANK_DIMM")) ? 1'b1 : 1'b0;
+  this.stack_present  = (get_plus_arg (CHECK, "STACK_DIMM")) ? 1'b1 : 1'b0;
+  this.dimm_sz_dram_mon = (get_plus_arg (CHECK, "DIMM_SIZE_2G")) ? 2'b11 :
+                          (get_plus_arg (CHECK, "DIMM_SIZE_1G")) ? 2'b10 :
+                         (get_plus_arg (CHECK, "DIMM_SIZE_512")) ? 2'b01 :
+                         (get_plus_arg (CHECK, "DIMM_SIZE_256")) ? 2'b00 : 2'b11;
+
+  this.scrb_ch0_addr_bumpup = (get_plus_arg (CHECK, "SCRB_ADDR_BUMPUP")) ? 1'b1 : 1'b0;
+
+
+  enable_i2c = (get_plus_arg (CHECK, "DRAM_I2C")) ? 1'b1 : 1'b0;
+
+  // Default register values
+  this.REG_CAS_ADDR_WIDTH  = 4'hb;
+  this.REG_RAS_ADDR_WIDTH  = 4'hf;
+  this.REG_CAS_LAT         = 3'h3;
+  this.REG_SCRUB_FREQ      = 12'hfff;
+  this.REG_REFRESH_FREQ    = 13'h514;
+  this.REG_OPEN_BANK_MAX   = 17'h1ffff;
+  //this.REG_CLK_SCALE       = 16'h1f4;
+  //this.REG_REFRESH_BUNCH   = 1'b0;
+  this.REG_SCRUB_ENABLE    = 1'b0;
+  this.REG_MAX_TIME        = 16'hffff;
+  this.REG_RAS_RAS_DELAY_D = 4'h2;
+  this.REG_RAS_RAS_DELAY_S = 5'hc;
+  this.REG_RAS_CAS_DELAY   = 4'h3;
+  this.REG_WR_RD_CAS_DELAY = 4'h0;
+  this.REG_RD_WR_CAS_DELAY = 4'h0;
+  this.REG_RD_RD_CAS_DELAY = 3'h2;
+  this.REG_WR_WR_CAS_DELAY = 4'h9;
+  this.REG_TRP             = 4'h3;
+  this.REG_TWR             = 4'h3;
+  this.REG_TRFC            = 6'h27;
+  this.REG_TMRD            = 2'h2;
+  //this.REG_TSTS            = 2'h1;
+  this.REG_TIWTR           = 2'h2;
+  this.REG_PRECHARGE_WAIT  = 8'h55;
+  //this.REG_DIMM_SIZE       = 8'h0;
+  this.REG_DIMM_STACK      = 1'b0;
+  this.REG_EXT_WR_MODE     = 15'h400;
+  this.REG_EXT_WR_MODE2    = 15'h000;
+  this.REG_EXT_WR_MODE3    = 15'h000;
+  //this.REG_SPD_READ_CTL    = 1'b1;
+  this.REG_WAIT_CONTROL    = 1'b1;
+  this.REG_RANK1_PRESENT   = 1'b0;
+  this.REG_CHANNEL_DISABLED= 1'b0;
+  this.REG_SEL_LO_ADDR_BITS= 1'b0;
+  //this.REG_INIT_MEMORY   = 1'b0;
+  this.REG_SELF_REFRESH    = 1'b0;
+  this.REG_SW_DV_CONTROL   = 1'b1;
+  this.REG_SW_DV_COUNT     = 3'h1;
+  this.REG_HW_DMUX_CLK_INV = 1'b0;
+  this.REG_PAD_EN_CLK_INV  = 5'hc;
+  this.REG_DIMM_PRESENT    = 4'h3;
+
+  this.REG_FAILOVER_STATUS = 1'b0;
+  this.REG_FAILOVER_MASK   = 32'h0;
+  this.REG_DBG_TRG_EN   = 8'ha8;
+  //this.REG_DIMM_SPD_SLAVE_ADDR   = 7'h0;
+  //this.REG_DIMM_SPD_DATA         = 8'h0;
+  //this.REG_DIMM_SPD_WRITE_CTL    = 1'b1;
+  this.REG_ERROR_STATUS          = 64'h0;
+  this.REG_ERROR_ADDR[39:0]      = 40'h0;
+  this.REG_ERROR_INJECT[31:30]   = 2'h0;
+  this.REG_ERROR_INJECT[15:0]    = 16'h0;
+  this.REG_ERROR_COUNTER[17:0]   = 18'h0;
+  this.REG_ERROR_LOCATION        = 32'h0;
+  this.REG_TEST                  = 1'b0;
+  this.REG_DIMM_INIT             = 1'b0;
+  this.REG_PERF_CONTROL          = 1'b0;
+  this.REG_PERF_COUNTER          = 1'b0;
+
+
+
+  fork
+    this.mon_dram_init();
+    this.mon_refresh();
+    this.mon_2channel();
+    this.mon_power_throttle();
+    this.mon_cas_cas_dly_cs();
+    //this.mon_ras_cas_dly ();
+    //this.mon_cas_cas_dly ();
+    //this.mon_ras_ras_dly ();
+  join none
+}
+
+////////////////////////////////
+// update dram monitor register
+////////////////////////////////
+task DRAM_MON::update_dram_reg (bit [11:0] addr, bit[63:0] data)
+{
+  integer i;
+  bit [5:0] fail_pos;
+  printf ("%0d: DRAM_MON[%0d] updating register[%0x] to %0x\n", 
+          get_time(LO), ch, addr, data);
+  case (addr) {
+    12'h000: this.REG_CAS_ADDR_WIDTH  = data[3:0];
+    12'h008: this.REG_RAS_ADDR_WIDTH  = data[3:0];
+    12'h010: this.REG_CAS_LAT         = data[2:0];
+    12'h018: this.REG_SCRUB_FREQ      = data[11:0];
+    12'h020: {this.REG_REFRESH_FREQ    = data[12:0]; this.rfrsh_reg_update[ch] = 1'b1;}
+    12'h028: this.REG_OPEN_BANK_MAX   = data[16:0];
+    //12'h030: this.REG_CLK_SCALE       = data[15:0];
+    //12'h038: this.REG_REFRESH_BUNCH   = data[0];
+    12'h040: { 
+       this.REG_SCRUB_ENABLE    = data[0];
+      if (get_plus_arg (CHECK, "NO_SCRUB_MON")) { } 
+      else {
+       if (data[0]) 
+        fork this.mon_scrub(); join none
+       }
+      }
+    12'h048: this.REG_MAX_TIME        = data[15:0];
+    12'h080: this.REG_RAS_RAS_DELAY_D = data[3:0];
+    12'h088: this.REG_RAS_RAS_DELAY_S = data[4:0];
+    12'h090: this.REG_RAS_CAS_DELAY   = data[3:0];
+    12'h098: this.REG_WR_RD_CAS_DELAY = data[3:0];
+    12'h0a0: this.REG_RD_WR_CAS_DELAY = data[3:0];
+    12'h0a8: this.REG_RD_RD_CAS_DELAY = data[2:0];
+    12'h0b0: { this.REG_WR_WR_CAS_DELAY = data[3:0];
+               this.REG_RAS_RAS_DELAY_S = this.REG_TRP + this.REG_WR_WR_CAS_DELAY;
+             }
+    12'h0b8: { this.REG_TRP             = data[3:0];
+               this.REG_RAS_RAS_DELAY_S = this.REG_TRP + this.REG_WR_WR_CAS_DELAY;
+             }
+    12'h0c0: this.REG_TWR             = data[3:0];
+    12'h0c8: this.REG_TRFC            = data[5:0];
+    12'h0d0: this.REG_TMRD            = data[1:0];
+    //12'h0d8: this.REG_TSTS            = data[1:0];
+    12'h0e0: this.REG_TIWTR           = data[1:0];
+    12'h0e8: this.REG_PRECHARGE_WAIT  = data[7:0];
+    //12'h100: this.REG_DIMM_SIZE       = data[7:0];
+    12'h108: this.REG_DIMM_STACK      = data[0];
+    12'h110: this.REG_EXT_WR_MODE2    = data[14:0];
+    12'h118: this.REG_EXT_WR_MODE     = data[14:0];
+    12'h120: this.REG_EXT_WR_MODE3    = data[14:0];
+    //12'h120: this.REG_SPD_READ_CTL    = data[0];
+    12'h128: this.REG_WAIT_CONTROL    = data[0];
+    12'h130: this.REG_RANK1_PRESENT   = data[0];
+    12'h138: this.REG_CHANNEL_DISABLED= data[0];
+    12'h140: this.REG_SEL_LO_ADDR_BITS= data[0];
+    //12'h180: this.REG_INIT_MEMORY   = data[0];
+    12'h198: this.REG_SELF_REFRESH    = data[0];
+    //12'h1a8: this.REG_SW_DV_CONTROL   = data[0];
+    12'h1b0: this.REG_SW_DV_COUNT     = data[2:0];
+    12'h1b8: this.REG_HW_DMUX_CLK_INV = data[0];
+    12'h1c0: this.REG_PAD_EN_CLK_INV  = data[4:0];
+    12'h218: this.REG_DIMM_PRESENT    = data[3:0];
+    12'h220: { 
+             this.REG_FAILOVER_STATUS = data[0];
+             dimm_bind[ch].$DRAM_FAIL_OVER    = data[0]; 
+             }
+    12'h228: { 
+             this.REG_FAILOVER_MASK   = data[31:0];
+      fail_pos = 6'h0;
+      for ( i = 0; i < 32; i++) if (data[i]) break; else fail_pos += 1;
+      dimm_bind[ch].$DRAM_FAIL_PART   = fail_pos;
+    }
+    12'h230: this.REG_DBG_TRG_EN[7:2]   = data[7:2];
+    //12'h238: this.REG_DIMM_SPD_SLAVE_ADDR   = data[6:0];
+    //12'h240: this.REG_DIMM_SPD_DATA         = data[7:0];
+    //12'h248: this.REG_DIMM_SPD_WRITE_CTL    = data[0];
+    // These are not defined on POR
+    12'h280: { 
+             this.REG_ERROR_STATUS[15:0]   = data[15:0];
+      for ( i = 57; i < 64; i++) if (data[i]) REG_ERROR_STATUS[i] = 1'b0; }
+    12'h288: this.REG_ERROR_ADDR[39:4]      = data[39:4];
+    12'h290: { 
+             this.REG_ERROR_INJECT[31:30]   = data[31:30]; 
+             this.REG_ERROR_INJECT[15:0]    = data[15:0]; 
+             }
+    12'h298: { 
+             this.REG_ERROR_COUNTER[17]     = data[17]; 
+             this.REG_ERROR_COUNTER[15:0]   = data[15:0]; 
+             }
+    12'h2a0: this.REG_ERROR_LOCATION        = data[31:0];
+    12'h300: this.REG_TEST                  = data[0];
+    12'h400: this.REG_PERF_CONTROL          = data[7:0];
+    12'h408: this.REG_PERF_COUNTER          = data[63:0];
+    12'h1a0: {
+             this.REG_DIMM_INIT       = data[0];
+      if (data[0]) { 
+        this.init_done = 1'b0; 
+        fork this.mon_dram_init(); join none
+        if (this.REG_INIT_MEMORY) this.mon_mem_init(); 
+      }
+    } // 12'h1a0 - reg init_dram 
+  } // case 
+}
+
+////////////////////////////////
+// check dram register
+////////////////////////////////
+task DRAM_MON::check_dram_reg (bit [11:0] addr, bit[63:0] data)
+{
+  integer i;
+  integer reg_match;
+  bit [63:0] exp_data;
+  bit [5:0] fail_pos;
+  printf ("%0d: DRAM_MON[%0d] checking register[%0x] Data received = %0x\n", 
+          get_time(LO), ch, addr, data);
+  reg_match = 0;
+  case (addr) {
+    12'h000: if (this.REG_CAS_ADDR_WIDTH  == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_CAS_ADDR_WIDTH;}
+    12'h008: if (this.REG_RAS_ADDR_WIDTH  == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RAS_ADDR_WIDTH;}
+    12'h010: if (this.REG_CAS_LAT         == data[2:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_CAS_LAT;}
+    12'h018: if (this.REG_SCRUB_FREQ      == data[11:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_SCRUB_FREQ;}
+    12'h020: if (this.REG_REFRESH_FREQ    == data[12:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_REFRESH_FREQ;}
+    12'h028: if (this.REG_OPEN_BANK_MAX   == data[16:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_OPEN_BANK_MAX;}
+    //12'h030: if (this.REG_CLK_SCALE       == data[15:0]) { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_CLK_SCALE;}
+    //12'h038: if (this.REG_REFRESH_BUNCH   == data[0])    { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_REFRESH_BUNCH;}
+    12'h040: if (this.REG_SCRUB_ENABLE    == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_SCRUB_ENABLE;}
+    12'h048: if (this.REG_MAX_TIME        == data[15:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_MAX_TIME;}
+    12'h080: if (this.REG_RAS_RAS_DELAY_D == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RAS_RAS_DELAY_D;}
+    12'h088: if (this.REG_RAS_RAS_DELAY_S == data[4:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RAS_RAS_DELAY_S;}
+    12'h090: if (this.REG_RAS_CAS_DELAY   == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RAS_CAS_DELAY;}
+    12'h098: if (this.REG_WR_RD_CAS_DELAY == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_WR_RD_CAS_DELAY;}
+    12'h0a0: if (this.REG_RD_WR_CAS_DELAY == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RD_WR_CAS_DELAY;}
+    12'h0a8: if (this.REG_RD_RD_CAS_DELAY == data[2:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RD_RD_CAS_DELAY;}
+    12'h0b0: if (this.REG_WR_WR_CAS_DELAY == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_WR_WR_CAS_DELAY;}
+    12'h0b8: if (this.REG_TRP             == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TRP;}
+    12'h0c0: if (this.REG_TWR             == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TWR;}
+    12'h0c8: if (this.REG_TRFC            == data[5:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TRFC;}
+    12'h0d0: if (this.REG_TMRD            == data[1:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TMRD;}
+    //12'h0d8: if (this.REG_TSTS            == data[1:0])  { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_TSTS;}
+    12'h0e0: if (this.REG_TIWTR           == data[1:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TIWTR;}
+    12'h0e8: if (this.REG_PRECHARGE_WAIT  == data[7:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_PRECHARGE_WAIT;}
+    //12'h100: if (this.REG_DIMM_SIZE       == data[7:0])  { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_DIMM_SIZE;}
+    12'h108: if (this.REG_DIMM_STACK      == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_DIMM_STACK;}
+    12'h110: if (this.REG_EXT_WR_MODE2     == data[14:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_EXT_WR_MODE2;}
+    12'h118: if (this.REG_EXT_WR_MODE     == data[14:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_EXT_WR_MODE;}
+    12'h120: if (this.REG_EXT_WR_MODE3    == data[14:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_EXT_WR_MODE3;}
+    //12'h120: if (this.REG_SPD_READ_CTL    == data[0])    { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_SPD_READ_CTL;}
+    12'h128: if (this.REG_WAIT_CONTROL    == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_WAIT_CONTROL;}
+    12'h130: if (this.REG_RANK1_PRESENT   == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_RANK1_PRESENT;}
+    12'h138: if (this.REG_CHANNEL_DISABLED== data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_CHANNEL_DISABLED;}
+    12'h140: if (this.REG_SEL_LO_ADDR_BITS== data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_SEL_LO_ADDR_BITS;}
+    //12'h180: if (this.REG_INIT_MEMORY   == data[0])    { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_INIT_MEMORY;}
+    12'h198: if (this.REG_SELF_REFRESH    == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_SELF_REFRESH;}
+    //12'h1a8: if (this.REG_SW_DV_CONTROL   == data[0])    { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_SW_DV_CONTROL;}
+    12'h1b0: if (this.REG_SW_DV_COUNT     == data[2:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_SW_DV_COUNT;}
+    12'h1b8: if (this.REG_HW_DMUX_CLK_INV == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_HW_DMUX_CLK_INV;}
+    12'h1c0: if (this.REG_PAD_EN_CLK_INV  == data[4:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_PAD_EN_CLK_INV;}
+    12'h218: if (this.REG_DIMM_PRESENT    == data[3:0])  { reg_match = 1; } 
+                                                    else { exp_data = this.REG_DIMM_PRESENT ;}
+    12'h220: if (this.REG_FAILOVER_STATUS == data[0])    { reg_match = 1; } 
+                                                    else { exp_data = this.REG_FAILOVER_STATUS;}
+    12'h228: if (this.REG_FAILOVER_MASK   == data[31:0]) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_FAILOVER_MASK;}
+    12'h230: if (this.REG_DBG_TRG_EN[7:3]   == data[7:3])  { reg_match = 1; } 
+                                                  else { exp_data = this.REG_DBG_TRG_EN;}
+    //12'h238: if (this.REG_DIMM_SPD_SLAVE_ADDR   == data[6:0])   { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_DIMM_SPD_SLAVE_ADDR;}
+    //12'h240: if (this.REG_DIMM_SPD_DATA         == data[7:0])   { reg_match = 1; } 
+    //                                              else { exp_data = this.REG_DIMM_SPD_DATA;}
+    //12'h248: if (this.REG_DIMM_SPD_WRITE_CTL    == data[0])     { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_DIMM_SPD_WRITE_CTL;}
+    // Undefined during POR
+    //12'h280: if (this.REG_ERROR_STATUS[15:0]    == data[15:0])  { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_ERROR_STATUS;}
+    //12'h288: if (this.REG_ERROR_ADDR[39:4]      == data[39:4])  { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_ERROR_ADDR;}
+    12'h290: { 
+             if ((this.REG_ERROR_INJECT[31:30]  == data[31:30]) && 
+                (this.REG_ERROR_INJECT[15:0]    == data[15:0])) { reg_match = 1; } 
+                                                    else { exp_data = this.REG_ERROR_INJECT;} 
+             }
+    // These are updated by hw and model has no way of knowing the update
+    //12'h298: if (this.REG_ERROR_COUNTER[17:0]   == data[17:0])  { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_ERROR_COUNTER;} 
+    //12'h2a0: if (this.REG_ERROR_LOCATION        == data[31:0])  { reg_match = 1; } 
+    //                                                else { exp_data = this.REG_ERROR_LOCATION;}
+    12'h300: if (this.REG_TEST                  == data[0])     { reg_match = 1; } 
+                                                    else { exp_data = this.REG_TEST;}
+    12'h400: if (this.REG_PERF_CONTROL          == data[7:0])     { reg_match = 1; } 
+                                                    else { exp_data = this.REG_PERF_CONTROL;}
+    12'h408: if (this.REG_PERF_COUNTER          == data[63:0])     { reg_match = 1; } 
+                                                    else { exp_data = this.REG_PERF_COUNTER;}
+    12'h1a0: if (this.REG_DIMM_INIT             == data[0])     { reg_match = 1; } 
+                                                    else { exp_data = this.REG_DIMM_INIT;}
+    default: reg_match = 1;
+  } // case 
+
+  if (reg_match == 1 ) 
+    {  printf ("%0d: DRAM_MON[%0d] Data received correctly on register[%0x] data %0x\n",
+          get_time(LO), ch, addr, data); } 
+  else 
+    {  printf (":****ERROR : REGISTER DATA MISMATCH : *****\n"); 
+       printf ("%0d:DRAM_MON[%0d] Wrong Data received on register[%0x] data %0x, Expected = %0x \n",
+          get_time(LO), ch, addr, data,exp_data); } 
+
+}
+///////////////////////////////
+// monitor autorefresh cycles
+///////////////////////////////
+task DRAM_MON::mon_refresh ()
+{
+  //if (this.enable_i2c) repeat (550000) @(posedge dram_top.cmp_gclk);
+  while (1) {
+
+    while (!this.init_done)  @(posedge dimm_bind[this.ch].$clk);  
+
+    @(posedge dimm_bind[this.ch].$clk);
+    if (this.REG_SELF_REFRESH | (dram_top.clk_ddr_slfrsh == 1'b1)) continue;
+
+    // when the refresh register gets updated then the ref_timer resets
+   
+    if (this.rfrsh_reg_update[ch] == 1'b1) {
+       this.rfrsh_reg_update[ch] = 0; 
+	 printf ("%0d INFO : DRAM[%0d] autorefresh counter cleared for channel \n", get_time(LO), ch);
+        this.ref_timer_cs0 = 0; 
+        this.ref_timer_cs1 = 0; 
+        this.ref_timer_cs2 = 0; 
+        this.ref_timer_cs3 = 0; 
+    }
+
+    if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L && 
+         dimm_bind[this.ch].$DRAM_WE_L && !dimm_bind[this.ch].$DRAM_CAS_L) 
+	{ printf ("%0d INFO : DRAM[%0d] autorefresh issued to CS0\n", get_time(LO), ch);
+		this.ref_timer_cs0 = 0; }
+    else if (dimm_bind[this.ch].$DRAM_RST_L) this.ref_timer_cs0 += 1;
+    if ( !dimm_bind[this.ch].$DRAM_CS_L[1] && !dimm_bind[this.ch].$DRAM_RAS_L && 
+         dimm_bind[this.ch].$DRAM_WE_L && !dimm_bind[this.ch].$DRAM_CAS_L) 
+	{ printf ("%0d INFO : DRAM[%0d] autorefresh issued to CS1\n", get_time(LO), ch);
+		this.ref_timer_cs1 = 0; }
+    else if (dimm_bind[this.ch].$DRAM_RST_L) this.ref_timer_cs1 += 1;
+    if ( !dimm_bind[this.ch].$DRAM_CS_L[2] && !dimm_bind[this.ch].$DRAM_RAS_L && 
+         dimm_bind[this.ch].$DRAM_WE_L && !dimm_bind[this.ch].$DRAM_CAS_L) 
+	{ printf ("%0d INFO : DRAM[%0d] autorefresh issued to CS2\n", get_time(LO), ch);
+		this.ref_timer_cs2 = 0; }
+    else if (dimm_bind[this.ch].$DRAM_RST_L) this.ref_timer_cs2 += 1;
+    if ( !dimm_bind[this.ch].$DRAM_CS_L[3] && !dimm_bind[this.ch].$DRAM_RAS_L && 
+         dimm_bind[this.ch].$DRAM_WE_L && !dimm_bind[this.ch].$DRAM_CAS_L) 
+	{ printf ("%0d INFO : DRAM[%0d] autorefresh issued to CS3\n", get_time(LO), ch);
+		this.ref_timer_cs3 = 0; }
+    else if (dimm_bind[this.ch].$DRAM_RST_L) this.ref_timer_cs3 += 1;
+
+    //printf ("%0d DEBUG : DRAM[%0d] refresh counter 0 %x \n", get_time(LO), ch,this.ref_timer_cs0);
+
+    // add some clock before the refresh is actually issued.
+    if ( ( (this.ref_timer_cs0 > this.REG_REFRESH_FREQ + 40)  ||
+    	  (this.ref_timer_cs1 > this.REG_REFRESH_FREQ + 40) && this.stack_present ||
+    	  (this.ref_timer_cs2 > this.REG_REFRESH_FREQ + 40) && this.rank_present ||
+    	  (this.ref_timer_cs3 > this.REG_REFRESH_FREQ + 40) && this.stack_present && 
+		this.rank_present) && (
+		this.ch01_present && (this.ch == 0 || this.ch == 1) || 
+		this.ch12_present && (this.ch == 1 || this.ch == 2) || 
+		this.ch03_present && (this.ch == 0 || this.ch == 3) || 
+		this.ch23_present && (this.ch == 2 || this.ch == 3) )) {
+      printf ("%0d : DRAM[%0d] autorefresh timer = actual %x, register %x \n", get_time(LO), ch, this.ref_timer_cs0,this.REG_REFRESH_FREQ);
+      printf ("%0d : DRAM[%0d] autorefresh timer = actual %x, register %x \n", get_time(LO), ch, this.ref_timer_cs1,this.REG_REFRESH_FREQ);
+      printf ("%0d : DRAM[%0d] autorefresh timer = actual %x, register %x \n", get_time(LO), ch, this.ref_timer_cs2,this.REG_REFRESH_FREQ);
+      printf ("%0d : DRAM[%0d] autorefresh timer = actual %x, register %x \n", get_time(LO), ch, this.ref_timer_cs3,this.REG_REFRESH_FREQ);
+      printf ("%0d Error: %v : DRAM[%0d] autorefresh time has expired\n", get_time(LO), ch);
+      why       = " DRAM autorefresh time has expired";
+      fail_flag = 1'b0;
+      break;
+    }
+  } // While (1)
+}
+
+
+///////////////////////////////
+// monitor 2 channel mode and other channels not active
+///////////////////////////////
+task DRAM_MON::mon_2channel ()
+{ 
+ integer first_time;
+  while (1) {
+
+    while (!this.init_done)  {@(posedge dimm_bind[this.ch].$clk); first_time = 1;} 
+
+    // Wait for extra clock for the cs to be inactive
+    if(first_time) {
+    @(posedge dimm_bind[this.ch].$clk);   
+    first_time = 0;
+    }
+
+    @(posedge dimm_bind[this.ch].$clk);
+    if (this.REG_SELF_REFRESH | (dram_top.clk_ddr_slfrsh == 1'b1)) continue;
+          //printf ("%0d debug: %v : DRAM[%0d] Activity on channel which is disabled \n", get_time(LO), ch);
+
+      if ( this.ch01_present && (this.ch == 2 || this.ch == 3) ||
+	   this.ch12_present && (this.ch == 0 || this.ch == 3)||
+  	   this.ch03_present && (this.ch == 1 || this.ch == 2)||
+  	   this.ch23_present && (this.ch == 0 || this.ch == 1)) {
+
+       if (  (dimm_bind[this.ch].$DRAM_CS_L  != 4'hf) ||
+             (!dimm_bind[this.ch].$DRAM_RAS_L) ||
+             (!dimm_bind[this.ch].$DRAM_CAS_L) ||
+             (!dimm_bind[this.ch].$DRAM_WE_L)) { 
+          printf ("%0d Error: %v : DRAM[%0d] Activity on channel which is disabled \n", get_time(LO), ch);
+          why       = " DRAM 2 channel mode violated";
+          fail_flag = 1'b1;
+          break;
+        }
+     }
+  } // While (1)
+}
+
+/////////////////////////////////////////
+// monitor dram initialization sequence
+/////////////////////////////////////////
+task DRAM_MON::mon_dram_init ()
+{
+  INIT_STATES dram_st;
+  integer time_cntr;
+
+  if (this.enable_i2c) return; //Remove this hack later
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  printf ("%0d: DRAM[%0d] entering DRAM_INIT_START state\n", get_time(LO), ch);
+  dram_st = DRAM_INIT_START;
+  @(posedge dimm_bind[this.ch].$clk);
+  printf ("%0d: DRAM[%0d] entering DRAM_DESEL_NOP state\n", get_time(LO), ch);
+  dram_st = DRAM_DESEL_NOP;
+  time_cntr = 0;
+
+  while (dram_st != DRAM_INIT_DONE) {
+    @(posedge dimm_bind[this.ch].$clk);
+    case (dram_st) {
+      DRAM_INIT_START: {
+        dram_st = DRAM_DESEL_NOP;
+        time_cntr = 0;
+        printf ("%0d: DRAM[%0d] entering DRAM_DESEL_NOP state\n", get_time(LO), ch);
+      }
+      DRAM_DESEL_NOP: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && dimm_bind[this.ch].$DRAM_RAS_L &&
+             dimm_bind[this.ch].$DRAM_CAS_L && dimm_bind[this.ch].$DRAM_WE_L ) {
+          dram_st = DRAM_PRECHARGE_ALL_1;
+          time_cntr = 0;
+          printf ("%0d: DRAM[%0d] entering DRAM_PRECHARGE_ALL_1 state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      } 
+      DRAM_PRECHARGE_ALL_1: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L ) {
+          dram_st = DRAM_E_MODE2_REG_SET;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_E_MODE2_REG_SET state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_E_MODE2_REG_SET: {
+        if (( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b10) )  ||
+           ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b11) )) {
+          dram_st = DRAM_E_MODE3_REG_SET;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_E_MODE3_REG_SET state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_E_MODE3_REG_SET: {
+        if (( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b10) )  ||
+           ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b11) )) {
+          dram_st = DRAM_E_MODE1_REG_SET;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_E_MODE1_REG_SET state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_E_MODE1_REG_SET: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b01) ) {
+          dram_st = DRAM_MODE_REG_SET_RDLL;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_MODE_REG_SET_RDLL state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_MODE_REG_SET_RDLL: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b00) && 
+             (dimm_bind[this.ch].$DRAM_ADDR[8:7] === 2'b10) ) {
+          dram_st = DRAM_PRECHARGE_ALL_2;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_PRECHARGE_ALL_2 state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_PRECHARGE_ALL_2: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L ) {
+          dram_st = DRAM_AUTOREFRESH_1;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_AUTOREFRESH_1 state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_AUTOREFRESH_1: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && dimm_bind[this.ch].$DRAM_WE_L ) {
+          dram_st = DRAM_AUTOREFRESH_2;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_AUTOREFRESH_2 state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_AUTOREFRESH_2: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && dimm_bind[this.ch].$DRAM_WE_L ) {
+          dram_st = DRAM_MODE_REG_SET;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_MODE_REG_SET state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_MODE_REG_SET: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b00) && 
+             (dimm_bind[this.ch].$DRAM_ADDR[8:7] === 2'b00) ) {
+          dram_st = DRAM_E_MODE1_OCD_DEFAULT;
+          time_cntr = 0; 
+          printf ("%0d: DRAM[%0d] entering DRAM_E_MODE1_OCD_DEFAULT state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_E_MODE1_OCD_DEFAULT: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b01) ) {
+          dram_st = DRAM_E_MODE1_OCD_EXIT;
+          time_cntr = 0;
+          printf ("%0d: DRAM[%0d] entering DRAM_E_MODE1_OCD_EXIT state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_E_MODE1_OCD_EXIT: {
+        if ( !dimm_bind[this.ch].$DRAM_CS_L[0] && !dimm_bind[this.ch].$DRAM_RAS_L &&
+             !dimm_bind[this.ch].$DRAM_CAS_L && !dimm_bind[this.ch].$DRAM_WE_L &&
+             (dimm_bind[this.ch].$DRAM_BA[1:0] === 2'b01) ) {
+          dram_st = DRAM_INIT_DONE;
+          time_cntr = 0;
+          this.init_done = 1'b1;
+          printf ("%0d: DRAM[%0d] entering DRAM_INIT_DONE state\n", get_time(LO), ch);
+        }
+        else time_cntr += 1;
+      }
+      DRAM_INIT_DONE: {
+        time_cntr = 0; 
+        dram_st = DRAM_INIT_DONE;
+        this.init_done = 1'b1;
+        printf ("%0d: DRAM[%0d] is in DRAM_INIT_DONE state\n", get_time(LO), ch);
+      }
+      default: 
+      {
+        printf ("%0d Error: DRAM[%0d] has entered unkonwn state\n", get_time(LO), ch);
+        dram_st = DRAM_INIT_DONE;
+      }
+    } // case (dram_st)
+    if (time_cntr > DRAM_TIMEOUT) {
+      printf ("%0d Error: %v : DRAM[%0d] initialization time_cntr\n", get_time(LO), ch);
+      fail_flag = 1'b1;
+      why = "Initialization time_cntr";
+      break;
+    }
+  } // while
+}
+//////////////////////////////////////////////////////////////////
+// monitor number of maximum open dram banks at any point of time
+//////////////////////////////////////////////////////////////////
+task DRAM_MON::mon_power_throttle ()
+{
+  integer i;
+  bit [15:0] time_cntr = 0;
+
+  if (this.ch != 0) return;
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  time_cntr = 0;
+  while (!this.init_done) { @(posedge dimm_bind[this.ch].$clk);  
+                              if (time_cntr >= this.REG_MAX_TIME) {
+                                time_cntr = 16'h0;
+                              } else { time_cntr += 1'b1; }
+                          }
+  this.open_bank_cntr = 0;
+  //time_cntr = 0;
+  while (1) {
+    @(posedge dimm_bind[this.ch].$clk);
+    //for (i = 0; i < 4; i++) {
+    //  if (dimm_bind[i].$DRAM_RAS_L === 1'b0) this.open_bank_cntr++;
+    //  if (dimm_bind[i].$DRAM_CAS_L === 1'b0) this.open_bank_cntr--;
+    //}
+    if (time_cntr >= this.REG_MAX_TIME) {
+      time_cntr  = 16'h0;
+      this.open_bank_cntr = 0;
+      //printf ("%0d: DRAM_MON[%0d]: Resetting the time counter \n", get_time(LO), ch); 
+    } else {
+      time_cntr += 1'b1;
+      //printf ("%0d: DRAM_MON[%0d]: Time counter = %0x \n", get_time(LO), ch,time_cntr); 
+      for (i = 0; i < 4; i++) {
+        if ((dimm_bind[i].$DRAM_RAS_L === 1'b0) &&
+	    (dimm_bind[i].$DRAM_CAS_L !== 1'b0) ) { this.open_bank_cntr++; 
+            //printf ("%0d: DRAM_MON[%0d]: Opened a new bank;Total open banks = (%0x) at time counter = %0x, i = %0d \n", get_time(LO),ch, this.open_bank_cntr, time_cntr,i); 
+       }
+      }
+    }
+
+    this.blk_new_bank = (this.open_bank_cntr >= this.REG_OPEN_BANK_MAX) ? 1'b1 : 1'b0;
+
+    // Had to add 4 to MAX OPEN BANKS because there is an extra cycle 
+    // for open banks to travel to the distributed controllers.
+    // made it +6 since the timers are distributed, they may reset at 
+    // different points causing more banks to open.6 is the max
+    // shift this could cause.
+    if (this.open_bank_cntr > this.REG_OPEN_BANK_MAX + 4 + 2) {
+      fail_flag = 1'b1;
+      why = "Number of open dram banks are more than programed max";
+      printf ("%0d: DRAM_MON: Max. Time (%0d) Max. Banks (%0d) Vs Opened Banks(%0d)\n",
+              get_time(LO), this.REG_MAX_TIME, this.REG_OPEN_BANK_MAX,
+	      this.open_bank_cntr);
+      break;
+    }
+  } // while (1)
+}
+
+//////////////////////////////////////
+// monitor dram memory initialization
+//////////////////////////////////////
+task DRAM_MON::mon_mem_init () {
+  bit        mem_init_done = 1'b0;
+  bit  [3:0] cs_l = 4'b1110;
+  bit  [1:0] ba   = 2'b00;
+  bit [11:0] row  = 12'h000;
+  bit [10:0] col  = 12'h000;
+
+  printf ("%0d: DRAM_MON[%0d] Starting the dram memory initialization monitor\n", get_time(LO), ch);
+  while (!mem_init_done) {
+    @(negedge dimm_bind[ch].$DRAM_RAS_L) ;
+    if ( !dimm_bind[ch].$DRAM_CAS_L || !dimm_bind[ch].$DRAM_WE_L ) continue;
+    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+    //if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || 
+         (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+      printf ("%0d: Error dram [channel %0d] memory initialization:\n", get_time(LO), ch);
+      printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+      printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+              dimm_bind[ch].$DRAM_ADDR);
+      fail_flag = 1;
+      why = "dram memory initialization";
+      break;
+    }
+    @(negedge dimm_bind[ch].$DRAM_CAS_L) ;
+    if ( !dimm_bind[ch].$DRAM_RAS_L || dimm_bind[ch].$DRAM_WE_L ) continue;
+    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+    //if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || 
+         ({dimm_bind[ch].$DRAM_ADDR[11], dimm_bind[ch].$DRAM_ADDR[9:0]} !== col) ) {
+      printf ("%0d: Error dram [channel %0d] memory initialization:\n", get_time(LO), ch);
+      printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+      printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+              dimm_bind[ch].$DRAM_ADDR);
+      fail_flag = 1;
+      why = "dram memory initialization";
+      break;
+    }
+    if ( (row == 12'hfff) && (col == 11'h7ff) && (ba == 2'b11) ) {
+      mem_init_done = 1'b1;
+      printf ("%0d: DRAM_MON[%0d] dram memory initialization done\n", get_time(LO), ch);
+      break;
+    }
+    ba += 1'b1;  
+    if (ba == 2'b00) col += 4'h8;
+    if ((ba == 2'b00) && (col == 11'h000)) { 
+      printf ("%0d: DRAM_MON[%0d] dram memory initialization done row: %x \n", get_time(LO), ch, row);
+      row += 1'b1;
+    }
+  }
+}
+
+/////////////////////scrubbing/////////////////
+// monitor dram scrubbing
+//////////////////////////////////////
+//task DRAM_MON::mon_scrub () {
+//  bit        scrub_done = 1'b0;
+//  bit  [3:0] cs_l = 4'b1110;
+//  bit  [2:0] ba   = 3'b000;
+//  bit [14:0] row  = 15'h0000;
+//  bit [10:0] col  = 12'h000;
+//
+//  integer    scrb_write;
+//  integer    ras_count;
+//  integer    update_ras_cnt;
+//  bit  [2:0] ba_end   = 3'b011;
+//  bit [14:0] row_end  = 15'h1fff;
+//  bit  [3:0] cs_en    = 4'b0001;
+//  bit        que_scrb_rd;
+//  bit        que_scrb_wr;
+//  bit        scrb_rd_already_detected = 1'b0;
+//  bit        scrb_rd_ras_already_detected = 1'b0;
+//  bit        scrb_rd_cas_valid_already_detected = 1'b0;
+//  bit        scrb_rd_cas_already_detected = 1'b0;
+//  bit        scrb_wr_already_detected = 1'b0;
+//  bit        scrb_wr_ras_already_detected = 1'b0;
+//  bit        scrb_wr_cas_valid_already_detected = 1'b0;
+//  bit        scrb_wr_cas_already_detected = 1'b0;
+//  bit  [2:0] scrb_rd_ba   = 3'b000;
+//
+//  case (this.dimm_sz_dram_mon) {
+//    2'b11: {
+//      row_end = 15'h7fff;
+//      ba_end  = 3'b111;
+//    }
+//    2'b10: {
+//      row_end = 15'h3fff;
+//      ba_end  = 3'b111;
+//    }
+//    2'b01: {
+//      row_end = 15'h3fff;
+//      ba_end  = 3'b011;
+//    }
+//    2'b00: {
+//      row_end = 15'h1fff;
+//      ba_end  = 3'b011;
+//    }
+//  }
+//
+//  // a '1' in cs_en means that that cs_l should be tested
+//  case ({this.rank_present, this.stack_present}) {
+//        2'b11: cs_en = 4'b1111; 
+//        2'b10: cs_en = 4'b0101; 
+//        2'b01: cs_en = 4'b0011;
+//        2'b00: cs_en = 4'b0001;
+//      }
+//
+//  // cs_en to keep track of the chip_selects done,
+//  // cs_en[0] will always be done.
+//  cs_en = {cs_en[3:1], 1'b0};
+//
+//
+//  printf ("%0d: DRAM_MON[%0d] Starting the dram memory scrubbing monitor\n", get_time(LO), ch);
+//  while (!scrub_done) {
+//    ras_count = (ras_count > 0) ?  ras_count : 0;
+//    update_ras_cnt= 1;
+//
+/////////////////////
+//// READ SCRUB 
+/////////////////////
+//
+//   if (scrb_rd_already_detected != 1'b1) { 
+//    while(update_ras_cnt) {
+//     @(posedge dram_bind[ch].$que_scrb_picked or negedge dimm_bind[ch].$DRAM_RAS_L or negedge dimm_bind[ch].$DRAM_CAS_L); 
+//      printf ("%0d:  update_ras_cnt loop triggered in channel %0d :\n", get_time(LO), ch); 
+//      if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) 
+//        break;
+//      else { if (dimm_bind[ch].$DRAM_RAS_L == 1'b0) {
+//               // RAS, CAS = 0 auto refresh, so dont increment the count
+//               if (dimm_bind[ch].$DRAM_CAS_L != 1'b0) { // new RAS
+//                ras_count = ras_count+1;
+//                printf ("%0d:  ras_count incremented, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); }}
+//             else // if (dimm_bind[ch].$DRAM_CAS_L == 1'b0)  i.e. new CAS
+//              { ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//              printf ("%0d:  ras_count decremented 1, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); }
+//      }
+//     }
+//    }
+//   scrb_rd_already_detected = 1'b0;
+//
+//    //@(posedge dram_bind[ch].$que_scrb_picked);
+//       printf ("%0d:  Read scrb que_scrb_picked in  channel %0d :\n", get_time(LO), ch);
+//
+//// short form of below
+////  while (1) {
+////    @(negedge dimm_bind[ch].$DRAM_RAS_L or negedge dimm_bind[ch].$DRAM_CAS_L) ;
+////     if (dimm_bind[ch].$DRAM_CAS_L == 1'b0) {
+////      if (dimm_bind[ch].$DRAM_RAS_L != 1'b0) { // if not auto refresh
+////       ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+////       printf ("%0d:  ras_count decremented 2, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+////       } 
+////      } else { 
+////       printf ("%0d:  Read RAS in  channel %0d :\n", get_time(LO), ch);
+////       scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+////    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+////         (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+////      printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+////      printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+////      printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+////              dimm_bind[ch].$DRAM_ADDR);
+////      fail_flag = 1;
+////      why = "Dram Memory Scrubbing Read RAS Phase";
+////      break;
+////    }
+////    break;
+////   }
+////  }
+//
+//
+//   if (scrb_rd_ras_already_detected != 1'b1) { 
+//    @(negedge dimm_bind[ch].$DRAM_RAS_L or negedge dimm_bind[ch].$DRAM_CAS_L) ;
+//     if (dimm_bind[ch].$DRAM_CAS_L == 1'b0) {
+//      if (dimm_bind[ch].$DRAM_RAS_L != 1'b0) { // if not auto refresh
+//       ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//       printf ("%0d:  ras_count decremented 2, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+//        @(negedge dimm_bind[ch].$DRAM_RAS_L);
+//           scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+//           printf ("%0d:  Read RAS in  channel %0d :\n", get_time(LO), ch);
+//           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//                     dimm_bind[ch].$DRAM_ADDR);
+//             fail_flag = 1;
+//             why = "Dram Memory Scrubbing Read RAS Phase";
+//             break;
+//           }
+//         }
+//       else {
+//       // refresh 
+//        @(negedge dimm_bind[ch].$DRAM_RAS_L);
+//           scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+//           printf ("%0d:  Read RAS in  channel %0d :\n", get_time(LO), ch);
+//           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//                     dimm_bind[ch].$DRAM_ADDR);
+//             fail_flag = 1;
+//             why = "Dram Memory Scrubbing Read RAS Phase";
+//             break;
+//           }
+//        }
+//      }
+//     else {
+//      
+//       printf ("%0d:  Read RAS in  channel %0d :\n", get_time(LO), ch);
+//       scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+//    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//         (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//      printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//      printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//      printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//              dimm_bind[ch].$DRAM_ADDR);
+//      fail_flag = 1;
+//      why = "Dram Memory Scrubbing Read RAS Phase";
+//      break;
+//    }
+//   }
+//  }
+//
+//   scrb_rd_ras_already_detected = 1'b0;
+//
+//
+//    //while(ras_count != 0) {
+//    //@(negedge dimm_bind[ch].$DRAM_CAS_L) ;
+//    //ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//    //printf ("%0d:  ras_count decremented 3, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+//    // }
+//
+//   if (scrb_rd_cas_valid_already_detected != 1'b1) {
+//    while(1) {
+//    @(negedge dimm_bind[ch].$DRAM_CAS_L or posedge dram_bind[ch].$que_cas_picked or negedge dimm_bind[ch].$DRAM_RAS_L or dram_bind[ch].$que_scrb_picked);
+//
+//     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) {
+//      scrb_wr_already_detected = 1'b1;
+//     }
+//
+//     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+//      scrb_wr_ras_already_detected = 1'b1;
+//     }
+//
+//     if ((dram_bind[ch].$que_scrb_write_req == 1'b1) &&  scrb_wr_ras_already_detected) {
+//      scrb_wr_cas_valid_already_detected = 1'b1;
+//     }
+//
+//     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) &&  scrb_wr_cas_valid_already_detected) {
+//      scrb_wr_cas_already_detected = 1'b1;
+//     }
+//
+//     if (dram_bind[ch].$que_l2_send_id_4 == 1'b1 ) {
+//      printf("%0d:  detected que_cas_picked & que_l2_send_id_4 channel %0d :\n", get_time(LO), ch);
+//      break;
+//     } else {
+//     // what about the auto refresh case?
+//     // if CAS/RAS comes after 1/2 cycle of que_cas_picked then this may miss -- see
+//     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) && !dram_bind[ch].$que_cas_picked && !dram_bind[ch].$que_scrb_picked) {
+//      ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//      printf ("%0d:  ras_count decremented 00, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+//     } else {
+//       // if a RAS comes in between the Scrb Wr Ras and Scrb Wr CAS indicator.
+//       if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) && !dram_bind[ch].$que_cas_picked && !dram_bind[ch].$que_scrb_picked)  {
+//        ras_count = ras_count+1;
+//        printf ("%0d:  ras_count incremented, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch);
+//       }
+//      }
+//     }
+//     }
+//    }
+//   scrb_rd_cas_valid_already_detected = 1'b0;
+//
+//  if (scrb_rd_cas_already_detected != 1'b1) {
+//    @(negedge dimm_bind[ch].$DRAM_CAS_L) ;
+//       printf ("%0d:  Read CAS in  channel %0d :\n", get_time(LO), ch);
+//    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//         ({dimm_bind[ch].$DRAM_ADDR[11], dimm_bind[ch].$DRAM_ADDR[9:0]} !== col) ) {
+//      printf ("%0d: Error dram [channel %0d] memory scrubbing:\n", get_time(LO), ch);
+//      printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+//      printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//              dimm_bind[ch].$DRAM_ADDR);
+//      fail_flag = 1;
+//      why = "Dram Memory Scrubbing Read CAS Phase";
+//      break;
+//    }
+//   }
+//  scrb_rd_cas_already_detected = 1'b0;
+//
+//
+//
+/////////////////////
+//// WRITE SCRUB 
+/////////////////////
+//
+//    ras_count = 0;
+//    update_ras_cnt= 1;
+//
+//     // To monitor if there is a request in between scrub read and scrub write.
+//     // ( There can be a request to a different bank in between scrub read and write)
+////     scrb_write = 0;
+////     while (!scrb_write) {
+////       @(posedge dram_bind[ch].$que_scrb_picked or negedge dimm_bind[ch].$DRAM_RAS_L);
+////      if (dram_bind[ch].$que_scrb_picked == 1'b1) 
+////       break;
+////      else {
+////       //printf ("%0d:  scrb_write as read in sampling block %0d in  channel %0d :\n", get_time(LO),scrb_write, ch);
+////       // Scrub read should be followed by scrub write with no RAS/CAS request in between
+////       // refresh can be inserted in between Scrb Read and Write
+////       if ( dimm_bind[ch].$DRAM_CAS_L != 1'b0) {
+////       if ( !dimm_bind[ch].$DRAM_CAS_L || !dimm_bind[ch].$DRAM_RAS_L ) {
+////         printf ("%0d: Error dram [channel %0d] memory scrubbing: New Request inserted in between Scrub Read and Scrub Write \n", get_time(LO), ch);
+////         printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+////         printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA,
+////                 dimm_bind[ch].$DRAM_ADDR);
+////         fail_flag = 1;
+////         why = "Dram Memory Request in between Scrubbing Read Write Phase";
+////         break;
+////        }
+////       }
+////       }
+////      }
+//
+//   if (scrb_wr_already_detected != 1'b1) {
+//    while(update_ras_cnt) {
+//     @(posedge dram_bind[ch].$que_scrb_picked or negedge dimm_bind[ch].$DRAM_RAS_L or negedge dimm_bind[ch].$DRAM_CAS_L); 
+//      printf ("%0d:  update_ras_cnt loop triggered in channel %0d :\n", get_time(LO), ch); 
+//      //if ( dram_bind[ch].$que_scrb_picked == 1'b1) 
+//      if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) 
+//        break;
+//      else { if (dimm_bind[ch].$DRAM_RAS_L == 1'b0) {
+//               // RAS, CAS = 0 auto refresh
+//               if (dimm_bind[ch].$DRAM_CAS_L != 1'b0) {
+//                //if (dimm_bind[ch].$DRAM_BA == scrb_rd_ba ) {
+//                // request cant be issued to the same bank while scrb write is pending.
+//                //printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//                //printf ("%0d: Request cant be issued to the same bank while scrb write is pending : dram [channel %0d] :\n", get_time(LO), ch);
+//                //fail_flag = 1;
+//                //why = "Dram Memory Scrubbing Write RAS Phase";
+//                //break;
+//                //} else {
+//                //ras_count = ras_count+1;
+//                //printf ("%0d:  ras_count incremented, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); }
+//                }}
+//             else // if (dimm_bind[ch].$DRAM_CAS_L == 1'b0)  
+//              { ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//              printf ("%0d:  ras_count decremented 4, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); }
+//      }
+//     }
+//   }
+//
+//scrb_wr_already_detected = 1'b0;
+//
+//
+//
+// if (scrb_wr_ras_already_detected != 1'b1) {
+//    //@(posedge dram_bind[ch].$que_scrb_picked);
+//       printf ("%0d:  Write scrb que_scrb_picked in  channel %0d :\n", get_time(LO), ch);
+//
+//    @(negedge dimm_bind[ch].$DRAM_RAS_L or negedge dimm_bind[ch].$DRAM_CAS_L) ;
+//     if (dimm_bind[ch].$DRAM_CAS_L == 1'b0) {
+//      if (dimm_bind[ch].$DRAM_RAS_L != 1'b0) { // if not auto refresh
+//       ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//       printf ("%0d:  ras_count decremented 4, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+//        @(negedge dimm_bind[ch].$DRAM_RAS_L);
+//           printf ("%0d:  Write RAS in  channel %0d :\n", get_time(LO), ch);
+//           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//                     dimm_bind[ch].$DRAM_ADDR);
+//             fail_flag = 1;
+//             why = "Dram Memory Scrubbing Write RAS Phase";
+//             break;
+//           }
+//         }
+//       else {
+//       // refresh 
+//        @(negedge dimm_bind[ch].$DRAM_RAS_L);
+//           printf ("%0d:  Write RAS in  channel %0d :\n", get_time(LO), ch);
+//           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//                     dimm_bind[ch].$DRAM_ADDR);
+//             fail_flag = 1;
+//             why = "Dram Memory Scrubbing Write RAS Phase";
+//             break;
+//           }
+//        }
+//      }
+//     else {
+//      
+//       printf ("%0d:  Write RAS in  channel %0d :\n", get_time(LO), ch);
+//    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//         (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+//      printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+//      printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+//      printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//              dimm_bind[ch].$DRAM_ADDR);
+//      fail_flag = 1;
+//      why = "Dram Memory Scrubbing Write RAS Phase";
+//      break;
+//    }
+//   }
+//  } 
+//   scrb_wr_ras_already_detected = 1'b0;
+//
+//   if (scrb_wr_cas_valid_already_detected != 1'b1) {
+//    // even if ras_count is equal to 0 we need to get the Scrb CAS qualifiers to break
+//    //while(ras_count != 0) {
+//    while(1) {
+//    @(negedge dimm_bind[ch].$DRAM_CAS_L or posedge dram_bind[ch].$que_cas_picked or negedge dimm_bind[ch].$DRAM_RAS_L or  posedge dram_bind[ch].$que_scrb_picked or dram_bind[ch].$que_l2_send_id_4 );
+//    
+//     if (dram_bind[ch].$que_scrb_picked == 1'b1) {
+//       printf("%0d:  detected scrb_rd_already_detected channel %0d :\n", get_time(LO), ch);
+//       scrb_rd_already_detected = 1'b1;
+//      }
+//
+//     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) && scrb_rd_already_detected) {
+//      scrb_rd_ras_already_detected = 1'b1;
+//       printf("%0d:  detected scrb_rd_ras_already_detected channel %0d :\n", get_time(LO), ch);
+//      }
+//     if ((dram_bind[ch].$que_l2_send_id_4 == 1'b1) && scrb_rd_ras_already_detected) {
+//      scrb_rd_cas_valid_already_detected = 1'b1;
+//       printf("%0d:  detected scrb_rd_cas_valid_already_detected channel %0d :\n", get_time(LO), ch);
+//      }
+//     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) && scrb_rd_cas_valid_already_detected) {
+//       printf("%0d:  detected scrb_rd_cas_already_detected channel %0d :\n", get_time(LO), ch);
+//      scrb_rd_cas_already_detected = 1'b1;
+//      }
+//
+//     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1) && scrb_rd_cas_already_detected) {
+//      scrb_wr_already_detected = 1'b1;
+//       printf("%0d:  detected scrb_wr_already_detected channel %0d :\n", get_time(LO), ch);
+//     }
+//
+//     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+//      scrb_wr_ras_already_detected = 1'b1;
+//     }
+//
+//     if ((dram_bind[ch].$que_scrb_write_req == 1'b1) &&  scrb_wr_ras_already_detected) {
+//      scrb_wr_cas_valid_already_detected = 1'b1;
+//     }
+//
+//     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) &&  scrb_wr_cas_valid_already_detected) {
+//      scrb_wr_cas_already_detected = 1'b1;
+//     }
+//
+//
+//     if (dram_bind[ch].$que_scrb_write_req == 1'b1 ) {
+//      printf("%0d:  detected que_cas_picked & que_scrb_write_req channel %0d :\n", get_time(LO), ch);
+//      break;
+//     } else {
+//     // what about the auto refresh case?
+//     // if CAS/RAS comes after 1/2 cycle of que_cas_picked then this may miss -- see
+//     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) && !dram_bind[ch].$que_cas_picked) {
+//      ras_count = (ras_count > 0) ?  ras_count-1 : 0;
+//      printf ("%0d:  ras_count decremented 6, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch); 
+//     } else {
+//       // if a RAS comes in between the Scrb Wr Ras and Scrb Wr CAS indicator.
+//       if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) && !dram_bind[ch].$que_cas_picked)  {
+//        ras_count = ras_count+1;
+//        printf ("%0d:  ras_count incremented, current ras count =  %0d in channel %0d :\n", get_time(LO),ras_count, ch);
+//       }
+//      }
+//     }
+//     }
+//   }
+//   scrb_wr_cas_valid_already_detected = 1'b0;
+//
+//if (scrb_wr_cas_already_detected != 1'b1) {
+//   while (1) {
+//    // if while waiting for the CAS there is a queue scrb picked then mark it so that we wait for RAS directly
+//    @(negedge dimm_bind[ch].$DRAM_CAS_L or negedge dimm_bind[ch].$DRAM_RAS_L or posedge dram_bind[ch].$que_scrb_picked ) ;
+//    if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1) && !scrb_rd_already_detected) {
+//      scrb_rd_already_detected = 1'b1;
+//      printf("%0d:  detected scrb_rd_already_detected channel %0d :\n", get_time(LO), ch);
+//     } else {
+//      if (dimm_bind[ch].$DRAM_RAS_L == 1'b0 ) {
+//        ras_count = ras_count + 1;
+//      } else {
+//       printf ("%0d:  Write CAS in  channel %0d :\n", get_time(LO), ch);
+//    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+//         ({dimm_bind[ch].$DRAM_ADDR[11], dimm_bind[ch].$DRAM_ADDR[9:0]} !== col) ) {
+//      printf ("%0d: Error dram [channel %0d] memory scrubbing:\n", get_time(LO), ch);
+//      printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+//      printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+//              dimm_bind[ch].$DRAM_ADDR);
+//      fail_flag = 1;
+//      why = "Dram Memory Scrubbing Write CAS Phase";
+//      break;
+//    }
+//     break;
+//    }
+//    }
+//   }
+//  }
+//   scrb_wr_cas_already_detected = 1'b0;
+//
+//
+//    //if ( (row == 15'h7fff) && (col == 11'h7ff) && (ba == 3'b111) ) 
+//    if ( (row == row_end) && (col == 11'h7ff) && (ba == ba_end) ) {
+//       if(|cs_en) {
+//        scrub_done = 1'b1;
+//        printf ("%0d: DRAM_MON[%0d] dram memory scrubbing done\n", get_time(LO), ch);
+//        break;
+//       } else 
+//        if (cs_en[1] == 1'b1) {
+//          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b0010\n", get_time(LO), ch); 
+//          cs_l = 4'b1101;
+//          cs_en[1] = 1'b0; 
+//       } else 
+//        if (cs_en[2] == 1'b1) {
+//          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b0100\n", get_time(LO), ch); 
+//          cs_l = 4'b1011;
+//          cs_en[2] = 1'b0; 
+//       } else 
+//        if (cs_en[3] == 1'b1) {
+//          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b1000\n", get_time(LO), ch); 
+//          cs_l = 4'b0111;
+//          cs_en[3] = 1'b0; 
+//       }
+//      }
+//    ba += 1'b1;  
+//    //if (ba == 3'b000) col += 4'h8;
+//    if (ba == 3'b000) col += 4'h4; // chunk id is 2 bits now
+//    if ((ba == 3'b000) && (col == 11'h000)) { 
+//      printf ("%0d: DRAM_MON[%0d] dram memory scrubbing monitor done row: %x \n", get_time(LO), ch, row);
+//      row += 1'b1;
+//    }
+//  }
+//}
+
+
+/////////////////////scrubbing/////////////////
+// monitor dram scrubbing
+//////////////////////////////////////
+task DRAM_MON::mon_scrub () {
+  bit        scrub_done = 1'b0;
+  bit  [3:0] cs_l = 4'b1110;
+  bit  [2:0] ba   = 3'b000;
+  bit [14:0] row  = 15'h0000;
+  bit [10:0] col  = 12'h000;
+
+  integer    scrb_write;
+  integer    ras_count;
+  integer    update_ras_cnt;
+  bit  [2:0] ba_end   = 3'b011;
+  bit [14:0] row_end  = 15'h1fff;
+  bit  [3:0] cs_en    = 4'b0001;
+  bit        que_scrb_rd;
+  bit        que_scrb_wr;
+  bit        scrb_rd_already_detected = 1'b0;
+  bit        scrb_rd_ras_already_detected = 1'b0;
+  bit        scrb_rd_cas_valid_already_detected = 1'b0;
+  bit        scrb_rd_cas_already_detected = 1'b0;
+  bit        scrb_wr_already_detected = 1'b0;
+  bit        scrb_wr_ras_already_detected = 1'b0;
+  bit        scrb_wr_cas_valid_already_detected = 1'b0;
+  bit        scrb_wr_cas_already_detected = 1'b0;
+  bit  [2:0] scrb_rd_ba   = 3'b000;
+
+  case (this.dimm_sz_dram_mon) {
+    2'b11: {
+      row_end = 15'h7fff;
+      ba_end  = 3'b111;
+    }
+    2'b10: {
+      row_end = 15'h3fff;
+      ba_end  = 3'b111;
+    }
+    2'b01: {
+      row_end = 15'h3fff;
+      ba_end  = 3'b011;
+    }
+    2'b00: {
+      row_end = 15'h1fff;
+      ba_end  = 3'b011;
+    }
+  }
+
+  // a '1' in cs_en means that that cs_l should be tested
+  case ({this.rank_present, this.stack_present}) {
+        2'b11: cs_en = 4'b1111; 
+        2'b10: cs_en = 4'b0101; 
+        2'b01: cs_en = 4'b0011;
+        2'b00: cs_en = 4'b0001;
+      }
+
+  // cs_en to keep track of the chip_selects done,
+  // cs_en[0] will always be done.
+  cs_en = {cs_en[3:1], 1'b0};
+
+
+  printf ("%0d: DRAM_MON[%0d] Starting the dram memory scrubbing monitor\n", get_time(LO), ch);
+  while (!scrub_done) {
+
+///////////////////
+// READ SCRUB 
+///////////////////
+
+   if (scrb_rd_already_detected != 1'b1) { 
+    while(1) {
+     @(posedge dram_bind[ch].$que_scrb_picked); 
+      printf ("%0d:  update_ras_cnt loop triggered in channel %0d :\n", get_time(LO), ch); 
+      if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) 
+        break;
+       }
+    }
+   scrb_rd_already_detected = 1'b0;
+
+   printf ("%0d:  Read scrb que_scrb_picked in  channel %0d :\n", get_time(LO), ch);
+   
+   if (scrb_rd_ras_already_detected != 1'b1) { 
+    //@(negedge dram_dimm_top.dram_gclk); see if this is needed?
+    while (1) {
+    // In a case RAS-AR-RAS causing no negedge of RAS, so added posedge of CAS
+    @(negedge dimm_bind[ch].$DRAM_RAS_L or posedge dimm_bind[ch].$DRAM_CAS_L) ;
+    //@(negedge dimm_bind[ch].$DRAM_RAS_L) ;
+     //printf ("%0d:  Read RAS in channel %0d :\n", get_time(LO), ch);
+     if ((dimm_bind[ch].$DRAM_CAS_L != 1'b0) && (dimm_bind[ch].$DRAM_RAS_L == 1'b0)) {
+           scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+           printf ("%0d:  Read RAS in  channel %0d :\n", get_time(LO), ch);
+           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+                     dimm_bind[ch].$DRAM_ADDR);
+             fail_flag = 1;
+             why = "Dram Memory Scrubbing Read RAS Phase";
+             break;
+           }
+         }
+       // though this can be executed due to Neg RAS or Pos CAS but break only on RAS
+       if (dimm_bind[ch].$DRAM_RAS_L == 1'b0) break;
+       //break;
+  } // end while
+ }
+ 
+
+   scrb_rd_ras_already_detected = 1'b0;
+
+
+   if (scrb_rd_cas_valid_already_detected != 1'b1) {
+    while(1) {
+    @(negedge dimm_bind[ch].$DRAM_CAS_L or posedge dram_bind[ch].$que_cas_picked or negedge dimm_bind[ch].$DRAM_RAS_L or dram_bind[ch].$que_scrb_picked);
+     // It may happen that autorefresh is going on the bus and que_l2_send_id_4 comes, we still want to break!
+     if (dram_bind[ch].$que_l2_send_id_4 == 1'b1 ) {
+      printf("%0d:  detected que_cas_picked & que_l2_send_id_4 channel %0d :\n", get_time(LO), ch);
+      break;
+     }
+    if (!((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  (dimm_bind[ch].$DRAM_CAS_L == 1'b0))) {
+
+     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) &&  scrb_wr_cas_valid_already_detected) {
+      scrb_wr_cas_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_cas_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+ 
+     if ((dram_bind[ch].$que_scrb_write_req == 1'b1) &&  scrb_wr_ras_already_detected) {
+      scrb_wr_cas_valid_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_cas_valid_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+      scrb_wr_ras_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_ras_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) {
+      scrb_wr_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+
+
+     // rd_alredy and read_ras_already can also be detected , but no cas_valid and +
+
+     if (dram_bind[ch].$que_l2_send_id_4 == 1'b1 ) {
+      printf("%0d:  detected que_cas_picked & que_l2_send_id_4 channel %0d :\n", get_time(LO), ch);
+      break;
+     }
+   }
+   } // ras = 0, cas = 0
+  }
+   scrb_rd_cas_valid_already_detected = 1'b0;
+
+  if (scrb_rd_cas_already_detected != 1'b1) {
+   while (1) {
+    // added posedge dimm_bind[ch].$DRAM_RAS_L in the case when the autorefresh CAS and Rd CAS are back to back
+    // and otherwise there is no pulse to detect Rd CAS
+    @(negedge dimm_bind[ch].$DRAM_CAS_L or posedge dram_bind[ch].$que_cas_picked or negedge dimm_bind[ch].$DRAM_RAS_L or dram_bind[ch].$que_scrb_picked or posedge dimm_bind[ch].$DRAM_RAS_L ) ;
+
+     if (!((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  (dimm_bind[ch].$DRAM_CAS_L == 1'b0))) {
+
+     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) &&  scrb_wr_cas_valid_already_detected) {
+      scrb_wr_cas_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_cas_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dram_bind[ch].$que_scrb_write_req == 1'b1) &&  scrb_wr_ras_already_detected) {
+      scrb_wr_cas_valid_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_cas_valid_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+      scrb_wr_ras_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_ras_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) {
+      scrb_wr_already_detected = 1'b1;
+      printf("%0d:  detected scrb_wr_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+
+    if (dimm_bind[ch].$DRAM_CAS_L == 1'b0 ) {
+     printf ("%0d:  Read CAS in  channel %0d :\n", get_time(LO), ch);
+    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+         ({dimm_bind[ch].$DRAM_ADDR[11], dimm_bind[ch].$DRAM_ADDR[9:0]} !== col) ) {
+      printf ("%0d: Error dram [channel %0d] memory scrubbing:\n", get_time(LO), ch);
+      printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+      printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+              dimm_bind[ch].$DRAM_ADDR);
+      fail_flag = 1;
+      why = "Dram Memory Scrubbing Read CAS Phase";
+      break;
+    }
+   break;
+   }
+  } // RAS =0, CAS = 0
+  }
+ }
+  scrb_rd_cas_already_detected = 1'b0;
+
+
+
+///////////////////
+// WRITE SCRUB 
+///////////////////
+
+   if (scrb_wr_already_detected != 1'b1) {
+    while(1) {
+     @(posedge dram_bind[ch].$que_scrb_picked ); 
+      printf ("%0d:  update_ras_cnt loop triggered in channel %0d :\n", get_time(LO), ch); 
+      if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1)) 
+        break;
+     }
+   }
+
+scrb_wr_already_detected = 1'b0;
+
+
+
+ printf ("%0d:  Write scrb que_scrb_picked in  channel %0d :\n", get_time(LO), ch);
+
+ if (scrb_wr_ras_already_detected != 1'b1) {
+    while (1) {
+    // In a case RAS-AR-RAS causing no negedge of RAS, so added posedge of CAS
+    @(negedge dimm_bind[ch].$DRAM_RAS_L or posedge dimm_bind[ch].$DRAM_CAS_L) ;
+     printf ("%0d:  Write RAS in  channel %0d :\n", get_time(LO), ch);
+     // compare only on RAS valid
+     if ((dimm_bind[ch].$DRAM_CAS_L != 1'b0) && (dimm_bind[ch].$DRAM_RAS_L == 1'b0)) {
+           //scrb_rd_ba = dimm_bind[ch].$DRAM_BA;
+           if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+                (dimm_bind[ch].$DRAM_ADDR !== row) ) {
+             printf ("%0d: Error dram [channel %0d] Scrubbing :\n", get_time(LO), ch);
+             printf ("Expected: CS_L: %x, BA: %x, ROW: %x\n", cs_l, ba, row);
+             printf ("Got: CS_L: %x, BA: %x, ROW: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA,
+                     dimm_bind[ch].$DRAM_ADDR);
+             fail_flag = 1;
+             why = "Dram Memory Scrubbing Write RAS Phase";
+             break;
+           }
+         }
+       // though this can be executed due to Neg RAS or Pos CAS but break only on RAS
+       if (dimm_bind[ch].$DRAM_RAS_L == 1'b0) break;
+  } // end while
+ }
+   scrb_wr_ras_already_detected = 1'b0;
+
+   if (scrb_wr_cas_valid_already_detected != 1'b1) {
+    while(1) {
+    @(negedge dimm_bind[ch].$DRAM_CAS_L or posedge dram_bind[ch].$que_cas_picked or negedge dimm_bind[ch].$DRAM_RAS_L or  posedge dram_bind[ch].$que_scrb_picked or dram_bind[ch].$que_l2_send_id_4 );
+     // same reason as Read case, autorefresh happening and que_scrb_write_req comes.
+     if (dram_bind[ch].$que_scrb_write_req == 1'b1 ) {
+      printf("%0d:  detected que_cas_picked & que_scrb_write_req channel %0d :\n", get_time(LO), ch);
+      break;
+     } 
+    if (!((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  (dimm_bind[ch].$DRAM_CAS_L == 1'b0))) {
+    
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+      scrb_wr_ras_already_detected = 1'b1;
+      printf("%0d:  detected in Write scrb_wr_ras_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1) && scrb_rd_cas_already_detected) {
+      scrb_wr_already_detected = 1'b1;
+       printf("%0d:  detected in Write scrb_wr_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) && scrb_rd_cas_valid_already_detected) {
+       printf("%0d:  detected in Write scrb_rd_cas_already_detected channel %0d :\n", get_time(LO), ch);
+      scrb_rd_cas_already_detected = 1'b1;
+      }
+
+     if ((dram_bind[ch].$que_l2_send_id_4 == 1'b1) && scrb_rd_ras_already_detected) {
+      scrb_rd_cas_valid_already_detected = 1'b1;
+       printf("%0d:  detected in Write scrb_rd_cas_valid_already_detected channel %0d :\n", get_time(LO), ch);
+      }
+
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) && scrb_rd_already_detected) {
+      scrb_rd_ras_already_detected = 1'b1;
+       printf("%0d:  detected in Write scrb_rd_ras_already_detected channel %0d :\n", get_time(LO), ch);
+      }
+
+     if (dram_bind[ch].$que_scrb_picked == 1'b1) {
+       printf("%0d:  detected in Write scrb_rd_already_detected channel %0d :\n", get_time(LO), ch);
+       scrb_rd_already_detected = 1'b1;
+      }
+
+     // This should not happen since more than 1 Wr CAS cant be pending
+     //if ((dram_bind[ch].$que_scrb_write_req == 1'b1) &&  scrb_wr_ras_already_detected) {
+     // scrb_wr_cas_valid_already_detected = 1'b1;
+     //}
+
+     //if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) &&  scrb_wr_cas_valid_already_detected) {
+     // scrb_wr_cas_already_detected = 1'b1;
+     // }
+
+
+     if (dram_bind[ch].$que_scrb_write_req == 1'b1 ) {
+      printf("%0d:  detected que_cas_picked & que_scrb_write_req channel %0d :\n", get_time(LO), ch);
+      break;
+     } 
+    }
+    } // ras = 0, cas = 0
+   }
+
+   scrb_wr_cas_valid_already_detected = 1'b0;
+
+if (scrb_wr_cas_already_detected != 1'b1) {
+   while (1) {
+    // if while waiting for the CAS there is a queue scrb picked then mark it so that we wait for RAS directly
+    @(negedge dimm_bind[ch].$DRAM_CAS_L or negedge dimm_bind[ch].$DRAM_RAS_L or posedge dram_bind[ch].$que_scrb_picked or negedge dimm_bind[ch].$DRAM_WE_L ) ;
+    if (!((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  (dimm_bind[ch].$DRAM_CAS_L == 1'b0))) {
+
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) &&  scrb_wr_already_detected) {
+      scrb_wr_ras_already_detected = 1'b1;
+      printf("%0d:  detected in Write scrb_wr_ras_already_detected channel %0d :\n", get_time(LO), ch);
+     }
+
+     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1) && scrb_rd_cas_already_detected) {
+      scrb_wr_already_detected = 1'b1;
+       printf("%0d:  detected in Write scrb_wr_already_detected channel %0d :\n", get_time(LO), ch);
+      }
+
+     if ((dimm_bind[ch].$DRAM_CAS_L == 1'b0) && scrb_rd_cas_valid_already_detected) {
+       printf("%0d:  detected scrb_rd_cas_already_detected channel %0d :\n", get_time(LO), ch);
+      scrb_rd_cas_already_detected = 1'b1;
+      }
+
+     if ((dram_bind[ch].$que_l2_send_id_4 == 1'b1) && scrb_rd_ras_already_detected) {
+      scrb_rd_cas_valid_already_detected = 1'b1;
+       printf("%0d:  detected scrb_rd_cas_valid_already_detected channel %0d :\n", get_time(LO), ch);
+      }
+
+     if ((dimm_bind[ch].$DRAM_RAS_L == 1'b0) && scrb_rd_already_detected) {
+      scrb_rd_ras_already_detected = 1'b1;
+       printf("%0d:  detected scrb_rd_ras_already_detected channel %0d :\n", get_time(LO), ch);
+      }
+
+     if ((dram_bind[ch].$que_scrb_picked == 1'b1) &&  (dram_bind[ch].$que_ras_bank_picked_en == 1'b1) && !scrb_rd_already_detected) {
+      scrb_rd_already_detected = 1'b1;
+      printf("%0d:  detected scrb_rd_already_detected channel %0d :\n", get_time(LO), ch);
+      } 
+
+
+    if (dimm_bind[ch].$DRAM_CAS_L == 1'b0 ) {
+       printf ("%0d:  Write CAS in  channel %0d :\n", get_time(LO), ch);
+    if ( (dimm_bind[ch].$DRAM_CS_L !== cs_l) || (dimm_bind[ch].$DRAM_BA !== ba) ||
+         ({dimm_bind[ch].$DRAM_ADDR[11], dimm_bind[ch].$DRAM_ADDR[9:0]} !== col) ) {
+      printf ("%0d: Error dram [channel %0d] memory scrubbing:\n", get_time(LO), ch);
+      printf ("Expected: CS_L: %x, BA: %x, COL: %x\n", cs_l, ba, {col[10], 1'b1, col[9:0]});
+      printf ("Got: CS_L: %x, BA: %x, COL: %x\n", dimm_bind[ch].$DRAM_CS_L, dimm_bind[ch].$DRAM_BA, 
+              dimm_bind[ch].$DRAM_ADDR);
+      fail_flag = 1;
+      why = "Dram Memory Scrubbing Write CAS Phase";
+      break;
+      }
+     break;
+     }
+    }
+    } // ras = 0 , cas = 0
+   }
+
+   scrb_wr_cas_already_detected = 1'b0;
+
+
+   printf ("%0d: DRAM_MON[%0d] dram memory row,col,ba before increment row = %x, col = %x, bank = %x \n", get_time(LO), ch, row,col,ba);
+
+    //if ( (row == 15'h7fff) && (col == 11'h7ff) && (ba == 3'b111) ) 
+    //if ( (row == row_end) && (col == 11'h7ff) && (ba == ba_end) ) {
+    // The maximum col will go is 11'h7fc. ( since rest is critical order chunk id )
+    if ( (row == row_end) && (col == 11'h7fc) && (ba == ba_end) ) {
+       //printf ("%0d: DRAM_MON[%0d] dram memory row,col,ba in final scrub row = %x, col = %x, bank = %x, cs_en  = %x \n", get_time(LO), ch, row,col,ba,cs_en);
+       if(~(|cs_en)) {
+        scrub_done = 1'b1;
+        printf ("%0d: DRAM_MON[%0d] dram memory scrubbing done\n", get_time(LO), ch);
+        break;
+       } else 
+        if (cs_en[1] == 1'b1) {
+          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b0010\n", get_time(LO), ch); 
+          cs_l = 4'b1101;
+          cs_en[1] = 1'b0; 
+       } else 
+        if (cs_en[2] == 1'b1) {
+          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b0100\n", get_time(LO), ch); 
+          cs_l = 4'b1011;
+          cs_en[2] = 1'b0; 
+       } else 
+        if (cs_en[3] == 1'b1) {
+          printf ("%0d: DRAM_MON[%0d] Start monitoring memory scrubbing for CS_L = 4'b1000\n", get_time(LO), ch); 
+          cs_l = 4'b0111;
+          cs_en[3] = 1'b0; 
+       }
+      }
+   //printf ("%0d: DRAM_MON[%0d] dram memory row,col,ba before bank increment row = %x, col = %x, bank = %x \n", get_time(LO), ch, row,col,ba);
+    if (ba != ba_end) {
+     ba += 1'b1;  } else {
+     ba  = 3'b000;  }
+   //printf ("%0d: DRAM_MON[%0d] dram memory row,col,ba after bank increment row = %x, col = %x, bank = %x \n", get_time(LO), ch, row,col,ba);
+ 
+    //if (ba == 3'b000) col += 4'h8;
+    //if (ba == 3'b000) col += 4'h4; // chunk id is 2 bits now , correct 
+    // modifying for address bumpup
+    if (ba == 3'b000) {
+      printf ("%0d: DRAM_MON[%0d] dram memory scrubbing done for col : %x \n", get_time(LO), ch, col);
+     if (ch != 0) {
+      col += 4'h4; // chunk id is 2 bits now
+      } else {
+        if (this.scrb_ch0_addr_bumpup == 1'b1) {
+         if (col == 11'h000 ) {col = 11'h7f8; } else {col +=4'h4; }
+        } else { col +=4'h4; }
+      }
+     }
+    if ((ba == 3'b000) && (col == 11'h000)) { 
+      printf ("%0d: DRAM_MON[%0d] dram memory scrubbing monitor done row: %x \n", get_time(LO), ch, row);
+     // row += 1'b1; , correct
+     // for address bumpup
+     if (ch != 0) {
+      row += 1'b1; 
+      } else {
+        if (this.scrb_ch0_addr_bumpup == 1'b1) {
+         if (row == 15'h0001 ) { row = 15'h7ffe; } else { row += 1'b1; }
+        } else { row += 1'b1; }
+      }
+    }
+  }
+}
+
+//////////////////////////////////////
+//  monitor RAS to CAS dealy (Trcd)
+//////////////////////////////////////
+task DRAM_MON::mon_ras_cas_dly ()
+{
+  integer   i;
+  integer   dly_cnt[16];
+  bit [3:0] bank;
+
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  while (!this.init_done) @(posedge dimm_bind[this.ch].$clk);
+  for (i = 0; i < 16; i++) dly_cnt[i] = 0;
+  while (1) {
+    @(posedge dimm_bind[this.ch].$clk);
+    if (!this.init_done) continue;
+    if (this.REG_SELF_REFRESH) continue;
+    if ( (dimm_bind[this.ch].$DRAM_CS_L === 4'b0000) && 
+         (dimm_bind[this.ch].$DRAM_RAS_L === 1'b0) && 
+         (dimm_bind[this.ch].$DRAM_CAS_L === 1'b0) ) { continue; }
+    for (i = 0; i < 16; i++) dly_cnt[i]++;
+    if (dimm_bind[this.ch].$DRAM_RAS_L === 1'b0) {
+      case (dimm_bind[ch].$DRAM_CS_L) {
+        4'b1110: bank[3:2] = 2'b00;
+        4'b1101: bank[3:2] = 2'b01;
+        4'b1011: bank[3:2] = 2'b10;
+        4'b0111: bank[3:2] = 2'b11;
+      }
+      bank[1:0] = dimm_bind[ch].$DRAM_BA;
+      dly_cnt[bank] = 0;
+    } // RAS
+    else if (dimm_bind[this.ch].$DRAM_CAS_L === 1'b0) {
+      case (dimm_bind[ch].$DRAM_CS_L) {
+        4'b1110: bank[3:2] = 2'b00;
+        4'b1101: bank[3:2] = 2'b01;
+        4'b1011: bank[3:2] = 2'b10;
+        4'b0111: bank[3:2] = 2'b11;
+      }
+      bank[1:0] = dimm_bind[ch].$DRAM_BA;
+      if (dly_cnt[bank] < this.REG_RAS_CAS_DELAY) {
+        fail_flag = 1'b1;
+        why = "RAS to CAS delay violation";
+        printf ("%0d: DRAM_MON[%0d]: RAS to CAS delay violation of (%0d) %0d\n",
+                get_time(LO), this.ch, this.REG_RAS_CAS_DELAY, 
+                (this.REG_RAS_CAS_DELAY-dly_cnt[bank]));
+        break;
+      }
+    } // CAS
+  } // while (1)
+}
+/////////////////////////////////////////////////////
+// monitor CAS to CAS dealys (Twtw, Twtr, Trtw, Trtr)
+/////////////////////////////////////////////////////
+task DRAM_MON::mon_cas_cas_dly ()
+{
+  integer i;
+  integer dly_cnt[4]; //dly_cnt[0]:Twtw, dly_cnt[1]:Twtr, 
+                      //dly_cnt[2]:Trtw, dly_cnt[3]:Trtr
+
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  while (!this.init_done) @(posedge dimm_bind[this.ch].$clk);
+  for (i = 0; i < 4; i++) dly_cnt[i] = 0;
+  while (1) {
+    @(posedge dimm_bind[this.ch].$clk);
+    if (!this.init_done) continue;
+    if (this.REG_SELF_REFRESH) continue;
+    for (i = 0; i < 4; i++) dly_cnt[i]++;
+    if (dimm_bind[ch].$DRAM_CAS_L !== 1'b0 || 
+				dimm_bind[ch].$DRAM_RAS_L == 1'b0) continue;
+    case (dimm_bind[ch].$DRAM_WE_L) {
+      1'b0: { // WRITE
+        if (dly_cnt[0] < this.REG_WR_WR_CAS_DELAY) {
+          fail_flag = 1'b1;
+          why = "WRITE to WRITE CAS delay violation";
+          printf ("%0d: DRAM_MON[%0d]: WRITE to WRITE CAS delay violation of (%0d) %0d\n",
+                  get_time(LO), this.ch, this.REG_WR_WR_CAS_DELAY, 
+                  (this.REG_WR_WR_CAS_DELAY - dly_cnt[0]));
+          break;
+        }
+        if (dly_cnt[2] < this.REG_RD_WR_CAS_DELAY) {
+          fail_flag = 1'b1;
+          why = "READ to WRITE CAS delay violation";
+          printf ("%0d: DRAM_MON[%0d]: READ to WRITE CAS delay violation of (%0d) %0d\n",
+                  get_time(LO), this.ch, this.REG_RD_WR_CAS_DELAY, 
+                  (this.REG_RD_WR_CAS_DELAY - dly_cnt[2]));
+          break;
+        }
+        dly_cnt[0] = 0; dly_cnt[1] = 0;
+      } // WRITE
+      1'b1: { // READ
+        if (dly_cnt[1] < this.REG_WR_RD_CAS_DELAY) {
+          fail_flag = 1'b1;
+          why = "WRITE to READ CAS delay violation";
+          printf ("%0d: DRAM_MON[%0d]: WRITE to READ CAS delay violation of (%0d) %0d\n",
+                  get_time(LO), this.ch, this.REG_WR_RD_CAS_DELAY, 
+                  (this.REG_WR_RD_CAS_DELAY - dly_cnt[1]));
+          break;
+        }
+        if (dly_cnt[3] < this.REG_RD_RD_CAS_DELAY) {
+          fail_flag = 1'b1;
+          why = "READ to READ CAS delay violation";
+          printf ("%0d: DRAM_MON[%0d]: READ to READ CAS delay violation of (%0d) %0d\n",
+                  get_time(LO), this.ch, this.REG_RD_RD_CAS_DELAY, 
+                  (this.REG_RD_RD_CAS_DELAY - dly_cnt[3]));
+          break;
+        }
+        dly_cnt[2] = 0; dly_cnt[3] = 0;
+      } // READ
+    } // case (we_l)
+  } // while (1)
+}
+
+
+
+////////////////////////////////////
+// monitor RAS to CAS dealy (Trcd)
+////////////////////////////////////
+task DRAM_MON::mon_ras_ras_dly ()
+{
+  integer   i;
+  integer   dly_cnt = 0;
+  bit [3:0] pre_bank;
+  bit [3:0] cur_bank;
+
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  while (!this.init_done) @(posedge dimm_bind[this.ch].$clk);
+  while (1) {
+    @(posedge dimm_bind[this.ch].$clk); dly_cnt++;
+    if (!this.init_done) continue;
+    if (this.REG_SELF_REFRESH) continue;
+    if (dimm_bind[this.ch].$DRAM_RAS_L !== 1'b0 || 
+		dimm_bind[this.ch].$DRAM_CAS_L == 1'b0) continue;
+    case (dimm_bind[ch].$DRAM_CS_L) {
+      4'b1110: cur_bank[3:2] = 2'b00;
+      4'b1101: cur_bank[3:2] = 2'b01;
+      4'b1011: cur_bank[3:2] = 2'b10;
+      4'b0111: cur_bank[3:2] = 2'b11;
+    }
+    cur_bank[1:0] = dimm_bind[ch].$DRAM_BA;
+    if (cur_bank == pre_bank) {
+      if (dly_cnt < this.REG_RAS_RAS_DELAY_S) {
+        fail_flag = 1'b1;
+        why = "RAS to RAS delay violation to same bank";
+        printf ("%0d: DRAM_MON[%0d]: RAS to RAS delay violation of (%0d) %0d to same bank\n",
+                get_time(LO), this.ch, this.REG_RAS_RAS_DELAY_S, 
+                (this.REG_RAS_RAS_DELAY_S - dly_cnt));
+        break;
+      }
+    } // Same bank
+    else { 
+      if (dly_cnt < this.REG_RAS_RAS_DELAY_D) {
+        fail_flag = 1'b1;
+        why = "RAS to RAS delay violation to different bank";
+        printf ("%0d: DRAM_MON[%0d]: RAS to RAS delay violation of (%0d) %0d to different bank\n",
+                get_time(LO), this.ch, this.REG_RAS_RAS_DELAY_D, 
+                (this.REG_RAS_RAS_DELAY_D - dly_cnt));
+        break;
+      }
+    } // different bank
+    dly_cnt = 0;
+    pre_bank = cur_bank;
+  } // while (1)
+}
+//
+//
+///////////////////////////////////////////////////////
+//// monitor CAS to CAS dealys for different cs and same cs
+//// for same CS = 2+ , for different CS = 3+
+///////////////////////////////////////////////////////
+//task DRAM_MON::mon_cas_cas_dly_cs ()
+//{
+//  integer i;
+//  integer cs_ptr;
+//  integer dly_cnt; 
+//  bit  [3:0] curr_cs[20];
+//
+//  for(i=0;i<20;i++) 
+//  curr_cs[i] = 4'hf;
+//  dly_cnt = 0;
+//  cs_ptr  = 0;
+//
+//  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+//  while (!this.init_done) @(posedge dimm_bind[this.ch].$clk);
+//
+//  while (1) {
+//    @(posedge dimm_bind[this.ch].$clk);
+//    if (!this.init_done) continue;
+//    if (this.REG_SELF_REFRESH) continue;
+//
+//    if (dimm_bind[ch].$DRAM_CAS_L === 1'b0 && dimm_bind[ch].$DRAM_RAS_L !== 1'b0 &&
+//        dimm_bind[ch].$DRAM_WE_L  === 1'b0) {
+//        //cs_ptr = (cs_ptr>0) ? cs_ptr - 1 : 0;
+//        if(curr_cs[cs_ptr] != 4'hf) { // if this is a valid entry
+//        if(curr_cs[cs_ptr] != curr_cs[((cs_ptr>0) ? cs_ptr-1: 0)]) {
+//         if (dly_cnt < 3) {
+//          fail_flag = 1'b1;
+//          why = "WRITE to WRITE CAS delay violation for different CS";
+//          printf ("%0d: DRAM_MON[%0d]: WRITE to WRITE CAS delay violation expected (%0d) got %0d\n",
+//                  get_time(LO), this.ch, 3, dly_cnt );
+//          printf ("%0d: DRAM_MON[%0d]: Chip selects are curr = %0x, prev = %0x\n",
+//                  get_time(LO), this.ch, curr_cs[cs_ptr], curr_cs[((cs_ptr>0) ? cs_ptr-1: 0)] );
+//          for(i=0;i<20;i++) {
+//          printf ("%0d: DRAM_MON[%0d]: curr_cs[%0d] =  %0x and pointer curr_cs = %d  \n",
+//                  get_time(LO), this.ch, i, curr_cs[i],cs_ptr );
+//          }
+//          break;
+//        }
+//       } else {
+//         if (dly_cnt < 2) {
+//          fail_flag = 1'b1;
+//          why = "WRITE to WRITE CAS delay violation for different CS";
+//          printf ("%0d: DRAM_MON[%0d]: WRITE to WRITE CAS delay violation expected (%0d) got %0d\n",
+//                  get_time(LO), this.ch, 2, dly_cnt );
+//          printf ("%0d: DRAM_MON[%0d]: Chip selects are curr = %0x, prev = %0x\n",
+//                  get_time(LO), this.ch, curr_cs[cs_ptr], curr_cs[((cs_ptr>0) ? cs_ptr-1: 0)]);
+//          for(i=0;i<20;i++) {
+//          printf ("%0d: DRAM_MON[%0d]: curr_cs[%0d] =  %0x and pointer curr_cs = %d  \n",
+//                  get_time(LO), this.ch, i, curr_cs[i],cs_ptr );
+//          }
+//          break;
+//        }
+//       }
+//     } // if valid entry
+//     printf ("%0d: DRAM_MON[%0d]: before reset delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+//     dly_cnt = 1;
+//     cs_ptr = (cs_ptr > 0) ? cs_ptr-1 : 0;
+//     printf ("%0d: DRAM_MON[%0d]: decrementing cs_ptr =  %d\n", get_time(LO), this.ch, cs_ptr);
+//     printf ("%0d: DRAM_MON[%0d]: reset delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+//    } else {
+//     printf ("%0d: DRAM_MON[%0d]: before incr delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+//     dly_cnt = dly_cnt + 1;
+//     printf ("%0d: DRAM_MON[%0d]: after  incr delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+//     }
+//    if (!((dimm_bind[ch].$DRAM_CAS_L === 1'b0) && (dimm_bind[ch].$DRAM_RAS_L === 1'b0))) {  // ignore autorefresh
+//    if ((dimm_bind[this.ch].$DRAM_CS_L[3:0] !== 4'hf) && (dimm_bind[this.ch].$DRAM_CS_L[3:0] !== 4'h0)) {
+//        printf ("%0d: DRAM_MON[%0d]: DRAM_CS_L = %0x\n",  get_time(LO), this.ch,  dimm_bind[this.ch].$DRAM_CS_L[3:0] );
+//        for (i=((curr_cs[cs_ptr] != 4'hf) ? cs_ptr+1 : cs_ptr); i > 0; i--) {
+//         curr_cs[i+1] = curr_cs[i];
+//        }
+//        curr_cs[0] = dimm_bind[this.ch].$DRAM_CS_L[3:0];
+//        cs_ptr = cs_ptr+1;
+//        printf ("%0d: DRAM_MON[%0d]: incrementing cs_ptr =  %d\n", get_time(LO), this.ch, cs_ptr);
+//        for(i=((curr_cs[cs_ptr] != 4'hf) ? cs_ptr+1 : cs_ptr); i <20; i++) {
+//         curr_cs[i] = 4'hf; // invalid
+//        }
+//        printf ("%0d: DRAM_MON[%0d]: CS =  are curr = %0x, prev = %0x\n",  get_time(LO), this.ch, curr_cs[cs_ptr], curr_cs[((cs_ptr>0) ? cs_ptr-1: 0)] );
+//     }
+//    }
+//  } // while (1)
+//}
+
+
+
+/////////////////////////////////////////////////////
+// monitor CAS to CAS dealys for different cs and same cs
+// for same CS = 2+ , for different CS = 3+
+/////////////////////////////////////////////////////
+task DRAM_MON::mon_cas_cas_dly_cs ()
+{
+  integer i;
+  integer dly_cnt; 
+  bit  [3:0] curr_cs;
+  bit  [3:0] prev_cs;
+
+  curr_cs = 4'hf;
+  prev_cs = 4'hf;
+  dly_cnt = 0;
+
+  while (!dimm_bind[this.ch].$DRAM_RST_L) @(posedge dimm_bind[this.ch].$clk);
+  while (!this.init_done) @(posedge dimm_bind[this.ch].$clk);
+
+  while (1) {
+    @(posedge dimm_bind[this.ch].$clk);
+    if (!this.init_done) continue;
+    if (this.REG_SELF_REFRESH) continue;
+
+    if (dimm_bind[ch].$DRAM_CAS_L === 1'b0 && dimm_bind[ch].$DRAM_RAS_L !== 1'b0 &&
+        dimm_bind[ch].$DRAM_WE_L  === 1'b0) {
+        prev_cs = curr_cs;
+        curr_cs = dimm_bind[this.ch].$DRAM_CS_L[3:0];
+        if(curr_cs != prev_cs) {
+         if (dly_cnt < 3) {
+          fail_flag = 1'b1;
+          why = "WRITE to WRITE CAS delay violation for different CS";
+          printf ("%0d: DRAM_MON[%0d]: WRITE to WRITE CAS delay violation expected (%0d) got %0d\n",
+                  get_time(LO), this.ch, 3, dly_cnt );
+          printf ("%0d: DRAM_MON[%0d]: Chip selects are curr = %0x, prev = %0x\n",
+                  get_time(LO), this.ch, curr_cs, prev_cs );
+          break;
+        }
+       } else {
+         if (dly_cnt < 2) {
+          fail_flag = 1'b1;
+          why = "WRITE to WRITE CAS delay violation for different CS";
+          printf ("%0d: DRAM_MON[%0d]: WRITE to WRITE CAS delay violation expected (%0d) got %0d\n",
+                  get_time(LO), this.ch, 2, dly_cnt );
+          printf ("%0d: DRAM_MON[%0d]: Chip selects are curr = %0x, prev = %0x\n",
+                  get_time(LO), this.ch, curr_cs, prev_cs);
+          break;
+        }
+       }
+     //printf ("%0d: DRAM_MON[%0d]: before reset delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+     dly_cnt = 1;
+     //printf ("%0d: DRAM_MON[%0d]: reset delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+     //prev_cs = curr_cs;
+     //curr_cs = dimm_bind[this.ch].$DRAM_CS_L[3:0];
+    } else {
+     //printf ("%0d: DRAM_MON[%0d]: before incr delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+     dly_cnt = dly_cnt + 1;
+     //printf ("%0d: DRAM_MON[%0d]: after  incr delay_cnt = %d\n", get_time(LO), this.ch, dly_cnt);
+     }
+  } // while (1)
+}
+
+//////////////////////////////////
+//  Methods of TRAFFIC_CLASS
+//////////////////////////////////
+task TRAFFIC_CLASS::new(UCB_DRIVER ucb_driver) { 
+  integer i;
+
+  this.ucb_driver = ucb_driver;
+  for (i = 0; i < 4; i++) instruction[i] = new;
+  number = 1;
+  round_robin = 0;
+  direct_inst = 0;
+  direct_addr = 0;
+  depend      = 0;
+  enb_mecc_err    = 0;
+}
+
+////////////////////////////////////////////////////////
+// DRAM traffic generator: method to interpret tpt fields
+////////////////////////////////////////////////////////
+task TRAFFIC_CLASS::interpret(
+               var bit       mem_inst,
+               var bit       bucb_inst,
+               var bit       nbucb_inst,
+               var bit [2:0] channel)
+{
+  string      str;
+  CONFIG_REQ  cmd;
+  integer     i, args;
+  bit [31:0]  seed;
+  bit [6:0]   part;
+  VeraListIterator_ADDR_REQ it;
+  integer     j,numb_inst;
+  ADDR_REQ    req;
+  bit [39:0]  rnd_addr;
+  integer       fp;
+  string        file;
+  bit [4:0]   shift;
+  bit         cmd_rnd;
+  integer     loop_sz;
+
+  file = "rnd_diag.tpt";
+
+
+  while (str_list.size()) {
+    str = str_list.front();str_list.pop_front();
+    case(str){
+      "NUMBER" : {
+        str    = str_list.front();str_list.pop_front();
+        this.number = str.atohex();
+      }
+      "ROUND_ROBIN" : this.round_robin     = 1;
+      "DIRECT_INST" : this.direct_inst     = 1;
+      "DIRECT_ADDR" : this.direct_addr     = 1;
+      "DEPENCE_ADDR" : {
+        str         = str_list.front();str_list.pop_front();
+        this.addr   = str.atohex();
+        this.depend = 1;
+      }
+      "ENB_MECC_ERR"    : enb_mecc_err   = 1'b1;
+      "ENB_ERRORS" : {
+        if (!get_plus_arg (CHECK, "DENALI_ERROR")) {
+          dimm_bind[0].$DRAM_ENB_ERROR = 1'b1;
+          dimm_bind[1].$DRAM_ENB_ERROR = 1'b1;
+          dimm_bind[2].$DRAM_ENB_ERROR = 1'b1;
+          dimm_bind[3].$DRAM_ENB_ERROR = 1'b1;
+          //enb_errors (0, 0, 0, 1);
+        }
+      }
+      "FAIL_OVER" : {
+        str            = str_list.front();str_list.pop_front();
+        part           = str.atohex();
+        /*
+        dimm_bind[0].$DRAM_FAIL_PART = part;
+        dimm_bind[1].$DRAM_FAIL_PART = part;
+        dimm_bind[2].$DRAM_FAIL_PART = part;
+        dimm_bind[3].$DRAM_FAIL_PART = part;
+        dimm_bind[0].$DRAM_FAIL_OVER = 1'b1;
+        dimm_bind[1].$DRAM_FAIL_OVER = 1'b1;
+        dimm_bind[2].$DRAM_FAIL_OVER = 1'b1;
+        dimm_bind[3].$DRAM_FAIL_OVER = 1'b1;
+        */
+      }
+      "MEMORY_INST" : mem_inst = 1;
+      "END_MEMORY"  : mem_inst = 0;
+      "BLOCK_UCB_INST"  : bucb_inst  = 1;
+      "END_BLOCK_UCB"   : bucb_inst  = 0;
+      "NBLOCK_UCB_INST" : nbucb_inst = 1;
+      "END_NBLOCK_UCB"  : nbucb_inst = 0;
+      "BANK" : {
+        str              = str_list.front();str_list.pop_front();
+        channel          = str.atohex();
+      }
+      "RANDOM" : {
+
+
+
+        addr_record = new;
+
+        str    = str_list.front();str_list.pop_front();
+        numb_inst = str.atohex();
+
+        // if this is a random then the number of instructions = 2*rnd_num + 1
+        // WRITE + READ + 10 READ/WRITE + 50*(20 or numb_inst, whichever is less)
+        this.number = 5*numb_inst + 2 + (((numb_inst < 20) ? numb_inst : 20)*10);
+
+          if (channel == 0) {
+            fp = fopen(file, "w");
+          } else {
+            fp = fopen(file, "a");
+          }
+          if (fp == 0) error ("Can't open input file %s\n", file);
+          if (channel == 0) {
+          fprintf(fp,"DIRECT_INST\n");
+          fprintf(fp,"DIRECT_ADDR\n");
+          fprintf(fp,"NUMBER  %d\n",this.number);
+          }
+          fprintf(fp,"# -----------------------\n");
+          fprintf(fp,"# Channel %d instructions\n",channel);
+          fprintf(fp,"# -----------------------\n");
+          fprintf(fp,"MEMORY_INST BANK %d \n",channel);
+
+
+        //printf("\n%d: ->number of instr =  %0d, for channel = %d\n", get_time(LO), numb_inst,channel);
+
+         // create numb_inst READ with random address
+         for(j=0, shift = 29; j<  numb_inst; j++, shift--) {
+          cmd      = new;
+          cmd.cmd  = "WRITE";
+          rnd_addr = gen_rnd_addr(shift);
+          cmd.addr = rnd_addr;
+        //printf("\n%d: ->pushing addr for WRITE =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"WRITE %0x\n",rnd_addr);
+          this.instruction[channel].push_back(cmd);
+          req = new;
+          req.addr = rnd_addr;
+          addr_record.push_back(req);
+        }
+
+          // insert WAIT command
+          cmd      = new;
+          cmd.cmd  = "WAIT";
+          cmd.addr = 40'h00_0000_0400; // WAIT 1000 cycles.
+        //printf("\n%d: ->pushing WAIT =  %0x\n", get_time(LO),  cmd.addr);
+        fprintf(fp,"WAIT  %0x\n",cmd.addr);
+          this.instruction[channel].push_back(cmd);
+
+          // create numb_inst WRITE commands
+          it = addr_record.start();
+          repeat(addr_record.size()){
+            req = it.data();
+            rnd_addr = req.addr;
+            cmd      = new;
+            cmd.cmd  = "READ";
+            cmd.addr = rnd_addr;
+        //printf("\n%d: ->pushing addr for READ =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"READ  %0x\n",rnd_addr);
+            this.instruction[channel].push_back(cmd);
+            it.next();
+          }
+
+          // insert WAIT command
+          cmd      = new;
+          cmd.cmd  = "WAIT";
+          cmd.addr = 40'h00_0000_0040; // WAIT 64 cycles.
+        //printf("\n%d: ->pushing WAIT =  %0x\n", get_time(LO),  cmd.addr);
+        fprintf(fp,"WAIT  %0x\n",cmd.addr);
+          this.instruction[channel].push_back(cmd);
+
+          // create 10*numb_inst random READ/WRITE commands
+          it = addr_record.start();
+          repeat(addr_record.size()){
+            req = it.data();
+           // introduce 10 random READ WRITES for the same address
+           for (i = 0; i < 3; i++){
+            rnd_addr = req.addr;
+            cmd      = new;
+            cmd_rnd  = random() & 1'b1;
+            cmd.cmd  = (cmd_rnd) ? "READ" : "WRITE";
+            cmd.addr = rnd_addr;
+        //printf("\n%d: ->pushing addr for READ =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"%s  %0x\n",cmd.cmd, rnd_addr);
+            this.instruction[channel].push_back(cmd);
+            }
+            it.next();
+          }
+
+          // create numb_inst SCHMOO commands
+          it = addr_record.start();
+          loop_sz = ((addr_record.size() < 20 ) ? addr_record.size() : 20);
+          //printf("loop_sz ******* = %d",loop_sz);
+          repeat(loop_sz){
+            req = it.data();
+           // introduce 10 random READ WRITES for the same address
+           for (i = 0; i < 10; i++){
+            rnd_addr = req.addr;
+            cmd      = new;
+            cmd_rnd  = random() & 1'b1;
+            cmd.cmd  = (cmd_rnd) ? "READ" : "WRITE";
+            cmd.addr = (cmd_rnd) ? rnd_addr : (rnd_addr + ((random() & 1'b1) ? 10'h3ff & random() : 0 ));
+        //printf("\n%d: ->pushing addr for READ =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"%s  %0x\n",cmd.cmd, cmd.addr);
+            this.instruction[channel].push_back(cmd);
+            }
+            it.next();
+          }
+
+
+      fprintf(fp,"END_MEMORY\n");
+      fclose(fp);
+      }
+
+
+      // This has been included in the random, but if needed to run separately it can be used.
+      "RANDOM_SMALL_SET" : {
+
+        addr_record = new;
+
+        str    = str_list.front();str_list.pop_front();
+        numb_inst = str.atohex();
+
+        // if this is a random then the number of instructions = 2*rnd_num + 1
+        // WRITE + READ + 10 READ/WRITE
+        this.number = 51*numb_inst + 1;
+
+          if (channel == 0) {
+            fp = fopen(file, "w");
+          } else {
+            fp = fopen(file, "a");
+          }
+          if (fp == 0) error ("Can't open input file %s\n", file);
+          if (channel == 0) {
+          fprintf(fp,"DIRECT_INST\n");
+          fprintf(fp,"DIRECT_ADDR\n");
+          fprintf(fp,"NUMBER  %d\n",this.number);
+          }
+          fprintf(fp,"# -----------------------\n");
+          fprintf(fp,"# Channel %d instructions\n",channel);
+          fprintf(fp,"# -----------------------\n");
+          fprintf(fp,"MEMORY_INST BANK %d \n",channel);
+
+
+        //printf("\n%d: ->number of instr =  %0d, for channel = %d\n", get_time(LO), numb_inst,channel);
+
+         // create numb_inst READ with random address
+         for(j=0, shift = 0; j<  numb_inst; j++, shift++) {
+          cmd      = new;
+          cmd.cmd  = "WRITE";
+          rnd_addr = gen_rnd_addr(shift);
+          cmd.addr = rnd_addr;
+        //printf("\n%d: ->pushing addr for WRITE =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"WRITE %0x\n",rnd_addr);
+          this.instruction[channel].push_back(cmd);
+          req = new;
+          req.addr = rnd_addr;
+          addr_record.push_back(req);
+        }
+
+          // insert WAIT command
+          cmd      = new;
+          cmd.cmd  = "WAIT";
+          cmd.addr = 40'h00_0000_0400; // WAIT 1000 cycles.
+        //printf("\n%d: ->pushing WAIT =  %0x\n", get_time(LO),  cmd.addr);
+        fprintf(fp,"WAIT  %0x\n",cmd.addr);
+          this.instruction[channel].push_back(cmd);
+
+          // create numb_inst SCHMOO commands
+          it = addr_record.start();
+          repeat(addr_record.size()){
+            req = it.data();
+           // introduce 10 random READ WRITES for the same address
+           for (i = 0; i < 50; i++){
+            rnd_addr = req.addr;
+            cmd      = new;
+            cmd_rnd  = random() & 1'b1;
+            cmd.cmd  = (cmd_rnd) ? "READ" : "WRITE";
+            cmd.addr = (cmd_rnd) ? rnd_addr : (rnd_addr + ((random() & 1'b1) ? 10'h3ff & random() : 0 ));
+        //printf("\n%d: ->pushing addr for READ =  %0x\n", get_time(LO), rnd_addr);
+        fprintf(fp,"%s  %0x\n",cmd.cmd, cmd.addr);
+            this.instruction[channel].push_back(cmd);
+            }
+            it.next();
+          }
+
+      fprintf(fp,"END_MEMORY\n");
+      fclose(fp);
+      }
+      default : {
+        if(mem_inst){
+          cmd      = new;
+          cmd.cmd  = str;
+          cmd.addr = 40'hff_ffff_ffff;
+          if(str_list.size()){
+            str            = str_list.front();str_list.pop_front();
+            cmd.addr       = str.atohex();
+            // hack -- for 2 channel case : not change diag
+         if (get_plus_arg (CHECK, "SHIFT_AD_BY_1"))
+             cmd.addr =  cmd.addr >> 1;
+
+          }
+          this.instruction[channel].push_back(cmd);
+        }
+        else if (bucb_inst){
+          cmd      = new;
+          cmd.cmd  = str;
+          cmd.addr = 40'hff_ffff_ffff;
+          args = str_list.size();
+          for (i = 0; i < args; i++){
+            str = str_list.front();str_list.pop_front();
+            if (i == 0) cmd.addr = str.atohex();
+            if (i == 1) cmd.data = str.atohex();
+          }
+          ucb_driver.dram_bucb_list.push_back(cmd);
+        }
+        else if (nbucb_inst){
+          cmd      = new;
+          cmd.cmd  = str;
+          cmd.addr = 40'hff_ffff_ffff;
+          args = str_list.size();
+          //printf("\n%d: ->Pushing the data  %0s\n", get_time(LO), str_list);
+          for (i = 0; i < args; i++){
+            str = str_list.front();str_list.pop_front();
+            if (i == 0) cmd.addr = str.atohex();
+            //printf("\n%d: ->Pushing the data  %0s\n", get_time(LO), str);
+            //printf("\n%d: ->Pushing the data  %0x\n", get_time(LO), str.atohex());
+            if (i == 1) cmd.data = str.atohex();
+            //printf("\n%d: ->after Pushing the data  %0x\n", get_time(LO), cmd.data);
+          }
+          ucb_driver.dram_nbucb_list.push_back(cmd);
+        }
+      } // default
+    }
+  }
+ 
+}
+
+
+////////////////////////////////////////////////////////
+// DRAM traffic generator random address generation method.
+////////////////////////////////////////////////////////
+//function bit [39:0] TRAFFIC_CLASS::gen_rnd_addr()
+function bit [39:0] TRAFFIC_CLASS::gen_rnd_addr(bit [4:0] shift)
+{
+  bit [39:0] addr   = 40'h0000000000;
+  //bit [3:0]  round_robin = {round[1:0], round[1:0]};
+
+  set_param();
+ 
+  addr[31:30] = random();
+  addr[29:28] = random();
+  addr[27:23] = random(); 
+  addr[23:20] = random(); 
+  addr[19:16] = random(); 
+  addr[15:12] = random(); 
+  addr[11:8]  = random(); 
+  addr[7:4]   = random(); 
+
+    addr[31:0]  = addr[31:0] >> shift;
+
+  // Randomize the upper most stack/rank bits
+  case (this.dimm_sz) {
+    2'b11: {
+      addr[39:35] = 5'h0;
+      addr[34]    = random();
+      addr[33:32] = random();
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[36:35] =  random() & 3;
+        2'b10: addr[35] =  random() & 1;
+        2'b01: addr[35] =  random() & 1;
+      }
+    }
+    2'b10: {
+      addr[39:34] = 6'h0;
+      addr[33:32] = random();
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[35:34] =  random() & 3;
+        2'b10: addr[34] =  random() & 1;
+        2'b01: addr[34] =  random() & 1;
+      }
+    }
+    2'b01: {
+      addr[39:33] = 7'h0;
+      addr[32]    = random();
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[34:33] =  random() & 3;
+        2'b10: addr[33] =  random() & 1;
+        2'b01: addr[33] =  random() & 1;
+      }
+    }
+    2'b00: {
+      addr[39:32] = 8'h0;
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[33:32] =  random() & 3;
+        2'b10: addr[32] =  random() & 1;
+        2'b01: addr[32] =  random() & 1;
+      }
+    }
+  }
+
+ if (this.ch_prsnt) {
+   addr = addr >> 1;
+ }
+
+  // Set the upper most bit od 256MB DIMM
+  //addr[31] = 1'b1;
+
+  // Mask the bit 4 -- some L2 optimization
+  addr[4]  = 1'b0;
+
+  // Return the final address
+  gen_rnd_addr = addr;
+}
+
+///////////////////////////////////////////////////////////////////////////
+// DRAM traffic generator: method to read diag/template file and configure
+// the traffic class
+///////////////////////////////////////////////////////////////////////////
+task TRAFFIC_CLASS::read_grammer(string file)
+{
+  integer       fp;
+  bit           mem_inst, bucb_inst, nbucb_inst; 
+  bit [2:0]     channel;
+  string        line;
+  
+  mem_inst    = 0;
+  bucb_inst   = 0;
+  nbucb_inst  = 0;
+  channel     = 0;
+  fp = fopen(file, "r");
+  if (fp == 0) error ("Can't open input file %s\n", file);
+  while(1){
+    line  = freadstr(fp, SILENT);
+    if(line == null)break;
+    if(line.match("^\s*$|^\#"))continue;
+    extract(line);
+    interpret ( mem_inst, bucb_inst, nbucb_inst, channel);
+  }
+  fclose(fp); 
+}
+// vera task for dram traffic control.
+
+////////////////////////////////////////////////////////
+// DRAM traffic generator address generation method.
+////////////////////////////////////////////////////////
+function bit [39:0] DRAM_TG::gen_dram_addr(bit [1:0] round)
+{
+  bit [39:0] addr   = 40'h0000160000;
+  bit [3:0]  round_robin = {round[1:0], round[1:0]};
+  
+  case ({rand_addr, walk_1_addr, walk_0_addr}) {
+    3'b100: 
+      { addr[31:0] = random(); }
+    3'b010:
+      { addr[30:4] = d_addr; d_addr = {d_addr[25:0], d_addr[26]}; }
+    3'b001:
+      { addr[30:4] = d_addr; d_addr = {d_addr[25:0], d_addr[26]}; }
+    default: {
+      addr += (round_robin[3:0] << 16);
+      addr |= random() & 16'h7ff0;
+    } // default
+  } // case ({rand_addr, walk_1_addr, walk_0_addr}) 
+
+  // Round robin the bank bits, and lower stack & rank bits
+  addr[11:8] = round_robin;
+
+  // Randomize the upper most stack/rank bits
+  case (this.dimm_size) {
+    2'b11: {
+      addr[39:35] = 5'h0;
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[36:35] =  random() & 3;
+        2'b10: addr[35] =  random() & 1;
+        2'b01: addr[35] =  random() & 1;
+      }
+    }
+    2'b10: {
+      addr[39:34] = 6'h0;
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[35:34] =  random() & 3;
+        2'b10: addr[34] =  random() & 1;
+        2'b01: addr[34] =  random() & 1;
+      }
+    }
+    2'b01: {
+      addr[39:33] = 7'h0;
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[34:33] =  random() & 3;
+        2'b10: addr[33] =  random() & 1;
+        2'b01: addr[33] =  random() & 1;
+      }
+    }
+    2'b00: {
+      addr[39:32] = 8'h0;
+      case ({this.enable_ranks, this.enable_stack}) {
+        2'b11: addr[33:32] =  random() & 3;
+        2'b10: addr[32] =  random() & 1;
+        2'b01: addr[32] =  random() & 1;
+      }
+    }
+  }
+  // Use the base address specified in template
+  if (traffic_class.depend) addr = traffic_class.addr;
+
+  // Set the upper most bit od 256MB DIMM
+  addr[31] = 1'b1;
+
+  // Mask the bit 4 -- some L2 optimization
+  addr[4]  = 1'b0;
+
+  // Return the final address
+  gen_dram_addr = addr;
+}
+///////////////////////////////////////////////
+// DRAM traffic generator method definition
+///////////////////////////////////////////////
+task DRAM_TG::dram_traffic()
+{
+  DRAM_REQ   new_req;
+  CONFIG_REQ c_rec;
+  bit [39:0] addr;
+  string     cmd;
+  bit [1:0]  round;
+  integer    i, j, num;
+  VeraListIterator_CONFIG_REQ it;
+ 
+  //dram_inst[ch] = new(ch, global_conf[ch].number);
+
+  num = traffic_class.instruction[this.ch].size();
+  it = traffic_class.instruction[this.ch].start();
+  for (i = 0, round = 0; i < traffic_class.number; i++, round++ ){
+    @(posedge dram_top.cmp_gclk);
+    if(fail_flag)break;
+    if (num <= 0) continue;
+
+    // Generate instruction & address
+    cmd  = (random()&1) ? "READ" : "WRITE";
+    addr = gen_dram_addr(round);
+
+    // Use the direct address supplied by template instruction
+    if (traffic_class.direct_inst) {
+      c_rec = it.data();
+      cmd   = c_rec.cmd;
+      if (traffic_class.direct_addr) addr = c_rec.addr;
+    }
+    // Over write the channel bits correctly
+    addr[7:6]  = ch;
+
+    case (cmd){
+      "READ": {
+        new_req      = new;
+        new_req.addr = addr[39:0]; 
+        new_req.rd   = 1'b1;
+        new_req.wr   = 1'b0;
+        dram_driver.send_l2c_req(new_req, 1'b1);
+      }
+      "WRITE": {
+        new_req       = new;
+        new_req.addr  = addr[39:0]; 
+        new_req.rd    = 1'b0;
+        new_req.wr    = 1'b1;
+        for (j = 0; j < 8; j++){ // Generate 128 bytes of write data
+          case ({rand_data, walk_1_data, walk_0_data}) {
+            3'b100:
+              { new_req.data[j] = {random(), random()}; }
+            3'b010:
+              { new_req.data[j] = d_data; d_data = {d_data[62:0], d_data[63]}; }
+            3'b001:
+              { new_req.data[j] = d_data; d_data = {d_data[62:0], d_data[63]}; }
+            default:
+              { new_req.data[j] = this.d_data++; }
+          } // case ({rand_data, walk_1_data, walk_0_data})
+          new_req.mecc_err[j] = (traffic_class.enb_mecc_err) ? random()&1 : 0;
+        } // for (j = 0; j < 16; j++)
+        dram_driver.send_l2c_req(new_req, 1'b0);
+      } // case (cmd)
+      "WAIT": {
+        repeat (c_rec.addr) @(posedge dram_top.cmp_gclk);
+        dram_driver.recv_num++;
+      }
+    } // case (cmd)
+    if (traffic_class.direct_inst) { //not random instructions
+      it.next();
+      if ( --num == 0) {
+        it  = traffic_class.instruction[this.ch].start();
+        num = traffic_class.instruction[this.ch].size();
+      }
+    }
+  }
+  if ( traffic_class.instruction[this.ch].size() > 0) {
+    while(1){
+      if ( dram_driver.rd_list.empty() && dram_driver.wr_list.empty() &&
+           (traffic_class.number == dram_driver.recv_num) ) { break; }
+      if (fail_flag) { break; }
+      repeat (1) @(posedge dram_top.cmp_gclk);
+    }
+  }
+  if (fail_flag == 0) { repeat(2000) @(posedge cmp_top.cmp_gclk); }
+  printf ("%0d: Stopping dram[%0d] traffic generator\n", get_time(LO), ch);
+}
+
+//////////////////////////////////////////
+// DRAM UCB driver method definitions
+//////////////////////////////////////////
+task UCB_DRIVER::ucb_write( integer count,
+                bit [127:0] data,
+                bit ch)
+{
+  integer i, time_cntr;
+  
+  @(posedge ucb_bind[ch].$clk);
+  ucb_bind[ch].$iob_ucb_stall = 1'b0;
+  // Wair for the stall to go away
+  time_cntr = 0;
+  while (ucb_bind[ch].$ucb_iob_stall !== 0) {
+    @(posedge ucb_bind[ch].$clk); 
+    if (time_cntr++ > DRAM_UCB_TIMEOUT) {
+      fail_flag = 1'b1;
+      why       = "TIMEOUT";
+      printf("%0d: Error -> UCB stalled for %0d cycles\n", time_cntr);
+      break;
+    }
+  }
+  // Send write request
+  for(i = 0; i < count;i++){
+    ucb_bind[ch].$iob_ucb_vld  = 1'b1;
+    ucb_bind[ch].$iob_ucb_data = data[(i+1)*4-1:i*4];
+    @(posedge ucb_bind[ch].$clk);
+    time_cntr = 0;
+    while (ucb_bind[ch].$ucb_iob_stall !== 0) {
+    @(posedge ucb_bind[ch].$clk); 
+      if (time_cntr++ > DRAM_UCB_TIMEOUT) {
+        fail_flag = 1'b1;
+        why       = "TIMEOUT";
+        printf("%0d: Error -> UCB stalled for %0d cycles\n", time_cntr);
+        break;
+      }
+    }
+  }
+  ucb_bind[ch].$iob_ucb_vld  = 1'b0;
+}
+/////////////////////////
+// 4 bits ucb driver.
+/////////////////////////
+task UCB_DRIVER::ucb_read( integer count,
+               var bit [127:0] data,
+               bit ch, bit check_rd_data)
+{
+  integer i, time_cntr;
+  bit [63:0]  exp_data;
+  
+  exp_data = data[127:64];
+  @(posedge ucb_bind[ch].$clk);
+  ucb_bind[ch].$iob_ucb_stall = 1'b0;
+  // Wair for the stall to go away
+  //while (ucb_bind[ch].$ucb_iob_stall !== 0) @(posedge ucb_bind[ch].$clk);
+  time_cntr = 0;
+  while (ucb_bind[ch].$ucb_iob_stall !== 0) {
+    @(posedge ucb_bind[ch].$clk);
+    if (time_cntr++ > DRAM_UCB_TIMEOUT) {
+      fail_flag = 1'b1;
+      why       = "TIMEOUT";
+      printf("%0d: Error -> UCB stalled for %0d cycles\n", time_cntr);
+      break;
+    }
+  }
+  // Send write request
+  for(i = 0; i < (count - 16);i++){
+    ucb_bind[ch].$iob_ucb_vld  = 1'b1;
+    ucb_bind[ch].$iob_ucb_data = data[(i+1)*4-1:i*4];
+    @(posedge ucb_bind[ch].$clk);
+    time_cntr = 0;
+    while (ucb_bind[ch].$ucb_iob_stall !== 0) {
+      @(posedge ucb_bind[ch].$clk);
+      if (time_cntr++ > DRAM_UCB_TIMEOUT) {
+        fail_flag = 1'b1;
+        why       = "TIMEOUT";
+        printf("%0d: Error -> UCB stalled for %0d cycles\n", time_cntr);
+        break;
+      }
+    }
+  }
+  ucb_bind[ch].$iob_ucb_vld  = 1'b0;
+  // Wait for the read ack & collect the read data
+  time_cntr = 0;
+  while (ucb_bind[ch].$ucb_iob_vld !== 1) {
+    @(posedge ucb_bind[ch].$clk); 
+    if (time_cntr++ > DRAM_UCB_TIMEOUT) {
+      fail_flag = 1'b1;
+      why       = "TIMEOUT";
+      printf("%0d: Error -> NO UCB read ack\n", get_time(LO));
+      break;
+    }
+  }
+  if (!fail_flag) {
+    for(i = 0; i < count;i++){
+      if (i > 15) data[(i+1)*4-1:i*4] = ucb_bind[ch].$ucb_iob_data;
+      @(posedge ucb_bind[ch].$clk);
+    }
+    if(check_rd_data) {
+    if( exp_data != data[127:64]) {
+	fail_flag = 1'b1;
+      	why       = "UCB READ MISMATCH";
+      	printf("%0d: Error -> in CHANNEL = %x FOR ADDR = 0x%x EXP = 0x%x and READ OUT = 0x%x\n", get_time(LO), data[28:27], data[26:15], exp_data, data[127:64]); 
+    }else 
+   	printf("%0d: UCB READ MATCH in CHANNEL = %x FOR ADDR = 0x%x EXP = 0x%x and READ OUT = 0x%x\n", get_time(LO), data[28:27], data[26:15], exp_data, data[127:64]);
+    } // if check_rd_data
+  }
+}
+
+//////////////////////////////////////////////
+// Initialize dram register.
+// {addr, size, buffer_id, cpu_id, request}
+// size : 3'b011
+//////////////////////////////////////////////
+task UCB_DRIVER::dram_init()
+{
+  CONFIG_REQ new_req;
+  VeraListIterator_CONFIG_REQ it;
+  bit [127:0] data;
+  bit [2:0]   i;
+  bit [13:0]  addr;
+  bit [39:0]  ucb_addr;
+
+  // Read the default/reset values
+  for(i =0 ; i < 4;i++){
+    it = dram_bucb_list.start();
+    repeat(dram_bucb_list.size()){
+      new_req      = it.data();
+      addr[11:0]   = new_req.addr[11:0];
+      addr[13:12]  = i[1:0];
+      ucb_addr     = {8'hd7, 18'h0, addr};
+      data[63:0]   = {9'h000, ucb_addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+      data[127:64] = new_req.data;
+      ucb_read(32, data, i[0], 1);
+      //printf ("DRAM Bank[%0d]: Reg[0x%0x] = 0x%x\n", i, data[54:15], data[127:64]);
+      it.next();
+    }
+  }
+
+  // Do dram configuration writes
+  for(i =0 ; i < 4;i++){
+    it = dram_bucb_list.start();
+    repeat(dram_bucb_list.size()){
+      new_req          = it.data();
+      addr[11:0]   = new_req.addr[11:0];
+      addr[13:12]  = i[1:0];
+      ucb_addr     = {8'hd7, 18'h0, addr};
+      data[63:0]   = {9'h000, ucb_addr, 3'b011, 2'b00, 6'b00_000, UCB_WRITE_REQ};
+      data[127:64] = new_req.data;
+      printf ("DRAM Bank[%0d]: writting 0x%0x to Reg[%0x]\n", i, data[127:64], 
+              data[54:15]);
+      ucb_write(32, data, i[0]);
+      it.next();
+    }
+  }
+}
+
+////////////////////
+// read dram config.
+////////////////////
+task UCB_DRIVER::read_dram_init(string file){
+  integer    fp;
+  string     line, str;
+  CONFIG_REQ new_req;
+  
+  fp = fopen(file, "r");
+  while(1){
+    line    = freadstr(fp, SILENT);
+    if(line == null)break;
+    if(line.match("^\s*$|^\#"))continue;
+    extract(line);
+    if(str_list.empty())continue;
+    new_req      = new;
+    str          = str_list.front();str_list.pop_front();
+    new_req.addr = str.atohex();
+    str          = str_list.front();str_list.pop_front();
+    new_req.data = str.atohex();
+    dram_bucb_list.push_back(new_req);
+  }
+  fclose(fp);
+  dram_init();
+}
+
+///////////////////////////////////////////////
+// read/write dram configuration register.
+// {addr, size, buffer_id, cpu_id, request}
+// size : 3'b011
+///////////////////////////////////////////////
+task UCB_DRIVER::dram_config()
+{
+  CONFIG_REQ req;
+  VeraListIterator_CONFIG_REQ it;
+  bit [127:0] data;
+
+  it = dram_bucb_list.start();
+  repeat(dram_bucb_list.size()){
+    req = it.data();
+    case(req.cmd){
+      "READ" : {
+        data[63:0]   = {9'h000, req.addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+        data[127:64] = 64'h0;
+        ucb_read(32, data, req.addr[12], 0);
+        // added the register checker - rmehta
+        if (~(|data[46:31]))  // update only DRAM address space registers
+        dram_mon[data[28:27]].check_dram_reg(data[26:15], data[127:64]);
+        printf ("DRAM Bank[%0d]: Reg[0x%0x] = 0x%x\n", data[28:27], data[54:15], 
+                data[127:64]);
+      } // read
+      "WRITE": {
+        data[63:0]   = {9'h000, req.addr, 3'b011, 2'b00, 6'b00_000, UCB_WRITE_REQ};
+        data[127:64] = req.data;
+        printf ("DRAM Bank[%0d]: writting 0x%0x to Reg[%0x]\n", data[28:27], 
+                data[127:64], data[54:15]);
+        ucb_write(32, data, req.addr[12]);
+        if (~(|data[46:31]))  // update only DRAM address space registers
+        dram_mon[data[28:27]].update_dram_reg(data[26:15], data[127:64]);
+      } // write
+      "WAIT": repeat (req.addr) @(posedge dram_top.cmp_gclk);
+      default:printf ("%0d: Warning: unknown blocking ucb command: %s\n", get_time(LO), req.cmd); 
+    } // config cmd
+    it.next();
+  }
+}
+////////////////////////////////////////////////////
+// read/write dram configuration register.
+// {addr, size, buffer_id, cpu_id, request}
+// size : 3'b011
+////////////////////////////////////////////////////
+task UCB_DRIVER::dram_nbucb_traffic(bit ch)
+{
+  CONFIG_REQ req;
+  VeraListIterator_CONFIG_REQ it;
+  bit [127:0] data;
+  bit [63:0]  exp_data1;
+
+  printf ("%0d: Starting NON-BLOCKING UCB traffic generator\n", get_time(LO));
+  it = dram_nbucb_list.start();
+  repeat(dram_nbucb_list.size()){
+    req = it.data();
+    it.next();
+    if (fail_flag) break; // Exit if some one else has set the fail_flag 
+    case(req.cmd){
+      "READ" : {
+        if (req.addr[12] != ch) continue;
+        data[63:0]   = {9'h000, req.addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+        data[127:64] = 64'h0;
+
+       if (get_plus_arg (CHECK, "SYNDROME_TEST")) { 
+        data[127:64] = req.data;
+        ucb_read(32, data, req.addr[12], 1);
+       } else { 
+        // check data for performance counters
+        if (req.addr[11:0] == 12'h408) {
+        data[127:64] = req.data;
+        ucb_read(32, data, req.addr[12], 1);
+        } else {
+        ucb_read(32, data, req.addr[12], 0); 
+        if ( data[26:15] == 12'h280)
+          printf ("%0d: Non-Blocking DRAM UCB Read: Bank[%0d]: Reg[0x%0x] = 64'b%b\n", 
+                  get_time(LO), data[28:27], data[54:15], data[127:64]);
+          if  (data[127] == 1'b1)  {
+           printf("Bit 63 : Multiple Uncorrected er bit(MEU) set\n"); }
+          if  (data[126] == 1'b1)  {
+           printf("Bit 62 : Multiple Corrected er bit(MEC) set\n"); }
+          if  (data[125] == 1'b1)  {
+           printf("Bit 61 : Correcable er bit(DAC) set\n"); }
+          if  (data[124] == 1'b1)  {
+           printf("Bit 60 : Uncorrectable er bit(DAU) set\n"); }
+          if  (data[123] == 1'b1)  {
+           printf("Bit 59 : Scrub Correctable er bit(DSC) set\n"); }
+          if  (data[122] == 1'b1)  {
+           printf("Bit 58 : Scrub Uncorrectable er bit(DSU) set\n"); }
+          if  (data[121] == 1'b1)  {
+           printf("Bit 57 : Access to Out of bound bit set (DBU)\n"); }
+        else 
+          // added the register checker - rmehta
+        if (~(|data[46:31]))  // update only DRAM address space registers
+          dram_mon[data[28:27]].check_dram_reg(data[26:15], data[127:64]);
+          printf ("%0d: Non-Blocking DRAM UCB Read: Bank[%0d]: Reg[0x%0x] = 0x%x\n", 
+                  get_time(LO), data[28:27], data[54:15], data[127:64]);
+       }
+      }
+     } // read
+      "READ_CHECK" : {
+        if (req.addr[12] != ch) continue;
+        data[63:0]   = {9'h000, req.addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+        exp_data1[63:0] = req.data;
+        //printf("EXP DATA READ = %x \n",exp_data1[63:0]); 
+        data[127:64] = 64'h0;
+        ucb_read(32, data, req.addr[12], 0);
+        if ( data[26:15] == 12'h280) 
+          printf ("%0d: Non-Blocking DRAM UCB Read: Bank[%0d]: Reg[0x%0x] = 64'b%b\n", 
+                  get_time(LO), data[28:27], data[54:15], data[127:64]);
+          if  (data[127] == 1'b1)  {
+           printf("Bit 63 : Multiple Uncorrected er bit(MEU) set\n"); }
+          if  (data[126] == 1'b1)  {
+           printf("Bit 62 : Multiple Corrected er bit(MEC) set\n"); }
+          if  (data[125] == 1'b1)  {
+           printf("Bit 61 : Correcable er bit(DAC) set\n"); }
+          if  (data[124] == 1'b1)  {
+           printf("Bit 60 : Uncorrectable er bit(DAU) set\n"); }
+          if  (data[123] == 1'b1)  {
+           printf("Bit 59 : Scrub Correctable er bit(DSC) set\n"); }
+          if  (data[122] == 1'b1)  {
+           printf("Bit 58 : Scrub Uncorrectable er bit(DSU) set\n"); }
+          if  (data[121] == 1'b1)  {
+           printf("Bit 57 : Access to Out of bound bit set (DBU)\n"); } 
+        else  
+          // added the register checker - rmehta
+        if (~(|data[46:31]))  // update only DRAM address space registers
+          dram_mon[data[28:27]].check_dram_reg(data[26:15], data[127:64]);
+          printf ("%0d: Non-Blocking DRAM UCB Read: Bank[%0d]: Reg[0x%0x] = 0x%x\n", 
+                  get_time(LO), data[28:27], data[54:15], data[127:64]);
+
+        // DATA CHECK For Error register
+        //printf("EXP DATA READ before comparision = %x \n",exp_data1[63:0]); 
+        if (data[127:121] != exp_data1[63:57]) {
+          printf (":****READ_CHECK ERROR : REGISTER DATA MISMATCH : *****\n");
+          printf ("%0d: DRAM_MON[%0d] Wrong Data received on register[%0x] data %0x, Expected = %0x \n", 
+                  get_time(LO), data[28:27], data[54:15], data[127:64], exp_data1[63:0]);
+          fail_flag = 1;
+          why       = "READ_CHECK ERROR : ERROR STATUS REGISTER DATA MISMATCH";
+          break;
+
+        } else {
+          printf (":****READ_CHECK MATCH*****\n");
+          printf ("%0d: DRAM_MON[%0d] Data received correctly on register[%0x] data %0x\n",
+          get_time(LO), data[28:27], data[54:15], data[127:64]); }
+      } // read_check
+      "WRITE": {
+        if (req.addr[12] != ch) continue;
+        data[63:0]   = {9'h000, req.addr, 3'b011, 2'b00, 6'b00_000, UCB_WRITE_REQ};
+        data[127:64] = req.data;
+        printf ("DRAM Bank[%0d]: writting 0x%0x to Reg[%0x]\n", data[28:27], 
+                data[127:64], data[54:15]);
+        ucb_write(32, data, req.addr[12]);
+        if (~(|data[46:31]))  // update only DRAM address space registers
+        dram_mon[data[28:27]].update_dram_reg(data[26:15], data[127:64]);
+      } // write
+      "FORCE_ERR": {
+       if (req.addr[4] == ch ) {   // ucb0, ch02
+        if (req.addr == 0 ) {
+          dimm_bind[0].$DRAM_SYND_ECC_INJ = req.data;
+          dimm_bind[2].$DRAM_SYND_ECC_INJ = req.data;
+          printf ("DRAM SYND_ECC_INJ = %d \n", req.data);
+	} else if (req.addr == 1 ) {
+          dimm_bind[0].$DRAM_SYND_ERR_POS = req.data;
+          dimm_bind[2].$DRAM_SYND_ERR_POS = req.data;
+          printf ("DRAM SYND_ECC_POS = %d \n", req.data);
+	} else if (req.addr == 2 ) {
+          dimm_bind[0].$DRAM_SYND_ERR_BITS = req.data;
+          dimm_bind[2].$DRAM_SYND_ERR_BITS = req.data;
+          printf ("DRAM SYND_ECC_BITS = %d \n", req.data);
+	}
+       } else {
+        if (req.addr == 0 ) {   // ucb1, ch13
+          dimm_bind[1].$DRAM_SYND_ECC_INJ = req.data;
+          dimm_bind[3].$DRAM_SYND_ECC_INJ = req.data;
+          printf ("DRAM SYND_ECC_INJ ucb 1 = %d \n", req.data);
+	} else if (req.addr == 1 ) {
+          dimm_bind[1].$DRAM_SYND_ERR_POS = req.data;
+          dimm_bind[3].$DRAM_SYND_ERR_POS = req.data;
+          printf ("DRAM SYND_ECC_POS ucb 1 = %d \n", req.data);
+	} else if (req.addr == 2 ) {
+          dimm_bind[1].$DRAM_SYND_ERR_BITS = req.data;
+          dimm_bind[3].$DRAM_SYND_ERR_BITS = req.data;
+          printf ("DRAM SYND_ECC_BITS ucb 1 = %d \n", req.data);
+	}
+       }
+      } // force_error
+      "WAIT": repeat (req.addr) @(posedge dram_top.cmp_gclk);
+      "ASSERT_SELF_REF": {
+        if (req.addr[12] != ch) continue;
+        printf ("%0d: Non-blocking UCB[%0d]: Asserting DRAM Self Regresh Signal\n", get_time(LO), ch);
+        dram_top.clk_ddr_slfrsh = 1'b1;
+      }
+      "DEASSERT_SELF_REF": {
+        if (req.addr[12] != ch) continue;
+        printf ("%0d: Non-blocking UCB[%0d]: Deasserting DRAM Self Regresh Signal\n", get_time(LO), ch);
+        dram_top.clk_ddr_slfrsh = 1'b0;
+      }
+      default:printf ("%0d: Warning: unknown non-blocking ucb command: %s\n", get_time(LO), req.cmd); 
+    } // config cmd
+  }
+  printf ("%0d: Stopping NON-BLOCKING UCB[%0d] traffic generator\n", get_time(LO), ch);
+}
+
+task UCB_DRIVER::wait_check_i2c_read()
+{
+  bit [127:0] data;
+  bit  [39:0] addr;
+  bit   [2:0] i2c_done = 0;
+  integer i ;
+
+  printf("%0d: Waiting for the DRAM I2C read completion\n", get_time(LO));
+  while (i2c_done < 4) {
+    repeat (1000) @(posedge dram_top.cmp_gclk);
+    i2c_done = 0; 
+    addr = 40'hd700000200;
+    for (i = 0; i < 4; i++) {
+      data[63:0]   = {9'h000, addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+      data[127:64] = 64'h0;
+      ucb_read(32, data, addr[12], 0);
+      i2c_done += data[64]; 
+      addr += 13'h1000;
+    }
+  }
+  printf("%0d: DRAM I2C read complete\n", get_time(LO));
+  printf("%0d: Reading DIMM Present Registers ...\n", get_time(LO));
+  addr = 40'hd700000218;
+  for (i = 0; i < 4; i++) {
+    data[63:0]   = {9'h000, addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+    data[127:64] = 64'h0;
+    ucb_read(32, data, addr[12], 0);
+    printf ("DRAM Bank[%0d]: Reg[0x%0x] = 0x%x\n", data[28:27], data[54:15], data[127:64]);
+    if ((data[67] == 1'b0) || (data[66] == 1'b0)) {
+      fail_flag = 1;
+      why = "DIMM does not present";
+      printf("%0d: Couldn't find DiMM%0d on Channel%0d \n", get_time(LO), 
+             ((data[67]) ? 1 : 0), addr[13:12]);
+      break;
+    }
+    addr += 13'h1000;
+  }
+}
+ 
+task UCB_DRIVER::set_dram_error_count_reg(bit [63:0] data)
+{
+  bit [127:0] ucb_data;
+  bit  [39:0] addr;
+  integer i ;
+
+  addr = 40'hd700000298;
+  for (i = 0; i < 4; i++) {
+    ucb_data[63:0]   = {9'h000, addr, 3'b011, 2'b00, 6'b00_000, UCB_WRITE_REQ};
+    ucb_data[127:64] = data;
+    printf ("DRAM Bank[%0d]: Setting Error Count Reg[%0x] to 0x%x\n", ucb_data[28:27],
+            ucb_data[54:15], ucb_data[127:64]);
+    ucb_write(32, ucb_data, addr[12]);
+    dram_mon[ucb_data[28:27]].update_dram_reg(ucb_data[26:15], ucb_data[127:64]);
+    addr += 13'h1000;
+  }
+}
+
+task UCB_DRIVER::get_dram_error_count_reg(var bit [63:0] data[])
+{
+  bit [127:0] ucb_data;
+  bit  [39:0] addr;
+  integer i ;
+
+  printf("%0d: Reading dram error count Registers ...\n", get_time(LO));
+  addr = 40'hd700000298;
+  for (i = 0; i < 4; i++) {
+    ucb_data[63:0]   = {9'h000, addr, 3'b011, 2'b00, 6'b00_000, UCB_READ_REQ};
+    ucb_data[127:64] = 64'h0;
+    ucb_read(32, ucb_data, addr[12], 0);
+    printf ("DRAM Bank[%0d]: Error Count Reg[0x%0x] = 0x%x\n", 
+            ucb_data[28:27], ucb_data[54:15], ucb_data[127:64]);
+    data[i] = ucb_data[127:64];
+    addr += 13'h1000;
+  }
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~ T H E  E N D ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//

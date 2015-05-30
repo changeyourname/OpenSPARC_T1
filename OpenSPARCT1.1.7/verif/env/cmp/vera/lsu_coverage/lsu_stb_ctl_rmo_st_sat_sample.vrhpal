@@ -1,0 +1,31 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_rmo_st_sat_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for store buffer rmo st issue stalled because of rmo counter saturated
+
+wildcard state s_RMO_STALLED_0 ({1'b1,8'bxxxxxxx1,8'bxxxxxxx1,8'b00000001});
+wildcard state s_RMO_STALLED_1 ({1'b1,8'bxxxxxx1x,8'bxxxxxx1x,8'b00000010});
+wildcard state s_RMO_STALLED_2 ({1'b1,8'bxxxxx1xx,8'bxxxxx1xx,8'b00000100});
+wildcard state s_RMO_STALLED_3 ({1'b1,8'bxxxx1xxx,8'bxxxx1xxx,8'b00001000});
+wildcard state s_RMO_STALLED_4 ({1'b1,8'bxxx1xxxx,8'bxxx1xxxx,8'b00010000});
+wildcard state s_RMO_STALLED_5 ({1'b1,8'bxx1xxxxx,8'bxx1xxxxx,8'b00100000});
+wildcard state s_RMO_STALLED_6 ({1'b1,8'bx1xxxxxx,8'bx1xxxxxx,8'b01000000});
+wildcard state s_RMO_STALLED_7 ({1'b1,8'b1xxxxxxx,8'b1xxxxxxx,8'b10000000});
+

@@ -1,0 +1,2383 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "lsu_cov_inc.pal";
+#ifndef __LSU_PORTS_BINDS_VRH__
+#define __LSU_PORTS_BINDS_VRH__
+
+// LSU coverage ports definition
+
+// load state machine coverage port definition
+port load_qctl_port {
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread ld buf
+ T${t}_load_qctl_state;
+.} # for $t
+}
+
+// store buffer coverage port definition
+port stb_state_port {   // store buffer port for binding
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread stb
+.		for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+.			$b = $t * 8 + $e;
+T${t}_lsu_stb_state_${e};
+.}
+.}
+} 
+
+// load ooo coverage port definition
+port ldooo_state_port {   
+	ld_ooo;
+} 
+
+port ldeqi_state_port {
+ lsu_ldeqi_state;
+} 
+
+// load picker coverage port definition
+//port ldpick_state_port {   // load picker port for binding
+// lsu_ldpick_state;
+//} 
+
+// store picker coverage port definition
+//port stpick_state_port {   // load picker port for binding
+// lsu_stpick_state;
+//} 
+
+// misc picker coverage port definition
+//port miscpick_state_port {   // misc picker port for binding
+// lsu_mpick_state;
+//} 
+
+// all picker coverage port definition
+//port allpick_state_port {   // all picker port for binding
+// lsu_apick_state;
+//} 
+
+// final picker coverage port definition
+//port finalpick_state_port {   // all picker port for binding
+// lsu_fpick_state;
+//} 
+
+// raw coverage
+port ldraw_state_port {   // all picker port for binding
+  lsu_ldraw_state;
+} 
+
+// raw st ack window
+port rawwin_state_port {   // all picker port for binding
+ lsu_rawwin_state;
+} 
+
+port rawwin_state_portx {   // all picker port for binding
+.   for ( $t = 1; $t < 8; $t++ ) {
+ lsu_rawwin_state_${t};
+.}
+} 
+
+// raw st ack window
+port rawwin_state_port1 {   // all picker port for binding
+ lsu_rawwin1_state;
+} 
+
+// l1 way port
+port way_state_port {   
+  lsu_way_state;
+} 
+
+port bld_hit_port {
+ lsu_bld_state;
+}
+
+// qfull coverage
+port qfull_state_port {   // all picker port for binding
+ lsu_qfull_state;
+} 
+
+// ldst cmplt
+port ldstcmplt_state_port {   // all picker port for binding
+ lsu_ldstcmplt_state;
+} 
+
+port ldstcmplt_ext_state_port {   // all picker port for binding
+ lsu_ldstcmplt_ext_state;
+} 
+
+port exp_state_port {   // all picker port for binding
+ lsu_exp_state;
+} 
+
+port exu_state_port {   // all picker port for binding
+ lsu_exu_state;
+} 
+
+port iack_state_port {   // all picker port for binding
+ lsu_iack_state;
+} 
+
+port fack_state_port {   // all picker port for binding
+ lsu_fack_state;
+} 
+
+port fwd_state_port {   
+ lsu_fwd_state;
+} 
+
+port inack_state_port {   
+ lsu_inack_state;
+} 
+
+
+// load interface coverage
+port ld_inf1_port {
+  lsu_ld_inf1_state;
+}
+
+port ld_inf2_port {
+  lsu_ld_inf2_state;
+}
+
+
+// store/store dbl interface coverage
+port st_inf_port {
+  lsu_st_inf_state;
+}
+
+
+// store buffer valid reset coverage
+port stb_vld_rst_port {
+. for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+  lsu_stb_vld_rst_state_e${e};
+.}
+} 
+
+
+// b2b stores flush coverage
+port b2b_st_flush_port {
+  lsu_b2b_st_flush_state;
+}
+
+
+// flush/signaling interface coverage
+port flush_inf_port {
+  lsu_flush_inf_state;
+}
+
+port flush_inf2_port {
+  lsu_flush_inf2_state;
+}
+
+port flush_inf3_port {
+  lsu_flush_inf3_state;
+}
+
+// block store interface coverage
+port bst_inf_port {
+  lsu_bst_inf_state;
+}
+
+// exu_lsu_ldst_va_e
+port ldst_va_inf_port {
+  lsu_ldst_va_inf_state;
+}
+
+// lsu_ifu_ldst_miss_w fanin
+port ifu_ldst_miss_port {
+  lsu_ifu_ldst_miss_state;
+}
+
+
+// lsu_exu_ldst_miss_w2 fanin
+port ldst_miss_port {
+  lsu_ldst_miss_state;
+}
+
+
+// lsu_ifu_dc_parity_error_w2 fanin coverage
+port dc_parity_error_port {
+  lsu_dc_parity_error_state;
+}
+
+
+// *********************************************************************
+// begin dctl objects 
+// *********************************************************************
+
+// tlb cam
+port dctl_tlbcam_port {
+  lsu_dctl_tlbcam_state;
+}
+
+// tlb r->p translation
+port dctl_tlbr2p_port {
+  lsu_dctl_tlbr2p_state;
+}
+
+// address masking enabled
+port dctl_addrmask_port {
+  lsu_dctl_addrmask_state;
+}
+
+// tlb access
+port dctl_tlbaccess_port {
+  lsu_dctl_tlbaccess_state;
+}
+
+// update of asi register by done/retry instruction
+port dctl_asiupdate_port {
+  lsu_dctl_asiupdate_state;
+}
+
+// coverage of illegal-va detection
+port dctl_illva_port {
+  lsu_dctl_illva_state;
+}
+
+// setting of lsu_ctl_reg thru various events
+port dctl_ctlreg_port {
+  lsu_dctl_ctlreg_state;
+}
+
+// disabling the dcache
+port dctl_dcache_port {
+  lsu_dctl_dcache_state;
+}
+
+// crossproduct of dcache enable/disable and dtlb enable/disable
+port dctl_dcache_dtlb_port {
+  lsu_dctl_dcache_dtlb_state;
+}
+
+// ignore cache hit when cache disabled
+port dctl_ignorehit_port {
+  lsu_dctl_ignorehit_state;
+}
+
+// detect tte-data parity errors
+port dctl_tteparity_port {
+  lsu_dctl_tteparity_state;
+}
+
+// elaborate cases for writes to dcache
+port dctl_dcachewr_port {
+  lsu_dctl_dcachewr_state;
+}
+
+// selective writes to dcache on stores
+port dctl_dcache_st_port {
+  lsu_dctl_dcache_st_state;
+}
+
+// elaborate writes to dva
+port dctl_dvawr_port {
+  lsu_dctl_dvawr_state;
+}
+
+// completing a stxa wr to thread
+port dctl_stxawr_cmplt_port {
+  lsu_dctl_stxawr_cmplt_state;
+}
+
+// tlb asi queue - initiating action
+port dctl_asiqueue_init_port {
+  lsu_dctl_asiqueue_init_state;
+}
+
+// tlb asi queue - sequencing events 
+port dctl_asiqueue_seq_port {
+  lsu_dctl_asiqueue_seq_state;
+}
+
+// bus sharing between tlu and mmu
+port dctl_tlb_st_datasel_port {
+  lsu_dctl_tlb_st_datasel_state;
+}
+
+// diagnostic write conflicts with pipeline ld/st, dfq op
+port dctl_diagwr_port {
+  lsu_dctl_diagwr_state;
+}
+
+// membar/flush reset
+port dctl_mbarrst_port {
+  lsu_dctl_mbarrst_state;
+}
+
+// rmo store ack count
+port dctl_rmo_stackcnt_port {
+  lsu_dctl_rmo_stackcnt_state;
+}
+
+// dcache data parity error
+port dctl_dcache_perror_port {
+  lsu_dctl_dcache_perror_state;
+}
+
+// bypass queues - b2b enabling
+port dctl_bypassq_b2ben_port {
+  lsu_dctl_bypassq_b2ben_state;
+}
+
+// bypass queues - test for simultaneous vld entries
+port dctl_bypassq_vld_port {
+  lsu_dctl_bypassq_vld_state;
+}
+
+// bypass queues - test for b2b reset
+port dctl_bypassq_b2brst_port {
+  lsu_dctl_bypassq_b2brst_state;
+}
+
+// bypass queues - squashing bypass/cmplt to irf/ifu
+port dctl_bypassq_squash_port {
+  lsu_dctl_bypassq_squash_state;
+}
+
+// bypass queues - detect ldbyp_vld and ldbyp_vld_en
+port dctl_bypassq_vld_en_port {
+  lsu_dctl_bypassq_vld_en_state;
+}
+
+// deferred trap
+port dctl_deftrap_port {
+  lsu_dctl_deftrap_state;
+}
+
+// completing stxa with fixed delay
+port dctl_stxacmplt_port {
+  lsu_dctl_stxacmplt_state;
+}
+
+// direct map mode
+port dctl_directmap_port {
+  lsu_dctl_directmap_state;
+}
+
+// writes to cache
+port dctl_dcachemask_port {
+  lsu_dctl_dcachemask_state;
+}
+
+// prefetch counter
+port dctl_prefcntr_port {
+  lsu_dctl_prefcntr_state;
+}
+
+// tlb asiqueue
+port dctl_asiqueue_port {
+  lsu_dctl_asiqueue_state;
+}
+
+// *********************************************************************
+// end of dctl objects
+// *********************************************************************
+
+// *********************************************************************
+// begin qctl objects 
+// *********************************************************************
+
+port cpx_packets_port {
+    lsu_cpx_packets_state;
+}
+
+port cpx_ack_evict_port {
+    lsu_cpx_ack_evict_state;
+}
+
+port ifu_cpxpkt_ifubusy_port {
+    lsu_ifu_cpxpkt_ifubusy_state;
+}
+
+port dfqout_cpxpkt_port {
+    lsu_dfqout_cpxpkt_state;
+}
+
+port dfqbyp_cpxpkt_port {
+    lsu_dfqbyp_cpxpkt_state;
+}
+
+port dfq_out_byp_cpxpkts_port {
+    lsu_dfq_out_byp_cpxpkts_state;
+}
+
+port dfq_stalls_port {
+    lsu_dfq_stalls_state;
+}
+
+port dfq_stalls_2ormore_entries_port {
+    lsu_dfq_stalls_2ormore_entries_state;
+}
+
+port dfq_inv_flush_port {
+    lsu_dfq_inv_flush_state;
+}
+
+port dfq_int_rdadv_port {
+    lsu_dfq_int_rdadv_state;
+}
+
+port qctl_lddfpld_port {
+    lsu_qctl_lddfpld_state;
+}
+
+port strmack_cmplt_port {
+    lsu_strmack_cmplt_state;
+}
+
+port qctl_l2cache_rq_port {
+    lsu_qctl_l2cache_rq_state;
+}
+
+port dva_rdwr_sameaddr_port {
+    lsu_dva_rdwr_sameaddr_state;
+}
+
+port traps_port {
+    lsu_traps_state;
+}
+
+port sechit_port {
+    lsu_sechit_state;
+}
+
+port ld_rawhit_st_port {
+    lsu_ld_rawhit_st_state;
+}
+
+port pick_status_port {
+    lsu_pick_status_state;
+}
+
+port picker1_port {
+    lsu_picker1_state;
+}
+
+port picker2_port {
+    lsu_picker2_state;
+}
+
+port fill_ld_b2b_sameaddr_port {
+    lsu_fill_ld_b2b_sameaddr_state;
+}
+
+port spu_stxa_ack_port {
+    lsu_spu_stxa_ack_state;
+}
+
+// *********************************************************************
+// end qctl objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin stb_ctl objects
+// *********************************************************************
+port stb_ctl_inflight_tlbmiss_port {
+    lsu_stb_ctl_inflight_tlbmiss_state;
+}
+
+port stb_ctl_inflight_issue_port {
+    lsu_stb_ctl_inflight_issue_state;
+}
+
+port stb_ctl_issue_oldest_nowrap_port {
+  lsu_stb_ctl_issue_oldest_nowrap_state;
+}
+
+port stb_ctl_issue_oldest_wrap_port {
+  lsu_stb_ctl_issue_oldest_wrap_state;
+}
+
+port stb_ctl_trans_all_states_port {
+  lsu_stb_ctl_trans_all_states_state;
+}
+
+port stb_ctl_rmo_st_sat_port {
+  lsu_stb_ctl_rmo_st_sat_state;
+}
+
+port stb_ctl_st_kill_port {
+  lsu_stb_ctl_st_kill_state;
+}
+
+port stb_ctl_st_squash_port {
+  lsu_stb_ctl_st_squash_state;
+}
+
+port stb_ctl_rmo_dq_port {
+  lsu_stb_ctl_rmo_dq_state;
+}
+
+port stb_ctl_st_dq_ld_hit_port {
+  lsu_stb_ctl_st_dq_ld_hit_state;
+}
+
+port stb_ctl_pend_rmo_port {
+  lsu_stb_ctl_pend_rmo_state;
+}
+
+port stb_ctl_spec_squash_port {
+  lsu_stb_ctl_spec_squash_state;
+}
+
+port stb_rwctl_st_wr_cancel_port {
+  lsu_stb_rwctl_st_wr_cancel_state;
+}
+
+port stb_rwctl_pcx_stb_rd_cancel_port {
+  lsu_stb_rwctl_pcx_stb_rd_cancel_state;
+}
+
+port stb_rwctl_byte_mask_port {
+  lsu_stb_rwctl_byte_mask_state;
+}
+
+port stb_rwctl_quad_ld_hit_stb_port {
+  lsu_stb_rwctl_quad_ld_hit_stb_state;
+}
+
+port stb_rwctl_blk_ld_hit_stb_port {
+  lsu_stb_rwctl_blk_ld_hit_stb_state;
+}
+
+port stb_rwctl_atomics_hit_stb_port {
+  lsu_stb_rwctl_atomics_hit_stb_state;
+}
+
+port stb_rwctl_praw_detect_port {
+  lsu_stb_rwctl_praw_detect_state;
+}
+
+// *********************************************************************
+// end stb_ctl objects
+// *********************************************************************
+
+// *********************************************************************
+// begin errors objects
+// *********************************************************************
+port error_tte_data_perr_port {
+  lsu_error_tte_data_perr_state;
+}
+
+port error_tte_data_perr_asi_port {
+  lsu_error_tte_data_perr_asi_state;
+}
+
+port error_tte_tag_perr_asi_port {
+  lsu_error_tte_tag_perr_asi_state;
+}
+
+port error_dcache_tag_perr_port {
+  lsu_error_dcache_tag_perr_state;
+}
+
+port error_dcache_data_perr_port {
+  lsu_error_dcache_data_perr_state;
+}
+
+port error_matrix_port {
+  lsu_error_matrix_state;
+}
+
+port error_async_ttype_port {
+  lsu_error_async_ttype_state;
+}
+
+port error_b2b_async_trap_port {
+  lsu_error_b2b_async_trap_state;
+}
+
+port error_defr_trap_port {
+  lsu_error_defr_trap_state;
+}
+
+port error_defr_vs_async_trap_port {
+  lsu_error_defr_vs_async_trap_state;
+}
+
+port error_ldbypass_port {
+  lsu_error_ldbypass_state;
+}
+
+port error_l2_error_port {
+  lsu_error_l2_error_state;
+}
+
+port error_ifu_l2_error_port {
+  lsu_error_ifu_l2_error_state;
+}
+
+port error_ifu_io_error_port {
+  lsu_error_ifu_io_error_state;
+}
+
+
+// *********************************************************************
+// end errors objects
+// *********************************************************************
+
+// *********************************************************************
+// begin cmplt extend objects
+// *********************************************************************
+
+port cmplt_extended_port {
+     stxa_internal_d2;
+     thread0_w3;
+     thread1_w3;
+     thread2_w3;
+     thread3_w3;
+     stxa_stall_wr_cmplt0_d1;
+     stxa_stall_wr_cmplt1_d1;
+     stxa_stall_wr_cmplt2_d1;
+     stxa_stall_wr_cmplt3_d1;
+     l2fill_vld_e;
+     ignore_fill;
+     l2fill_fpld_e;
+     lsu_cpx_pkt_atm_st_cmplt;
+
+     lsu_cpx_pkt_ld_err;
+     lsu_nceen_d1;
+
+     dfill_thread0;
+     dfill_thread1;
+     dfill_thread2;
+     dfill_thread3;
+     intld_byp_cmplt;
+
+     atm_st_cmplt0;
+     atm_st_cmplt1;
+     atm_st_cmplt2;
+     atm_st_cmplt3;
+
+     pend_atm_ld_ue;
+     bsync0_reset;
+     bsync1_reset;
+     bsync2_reset;
+     bsync3_reset;
+     lsu_intrpt_cmplt;
+
+     diag_wr_cmplt0;
+     diag_wr_cmplt1;
+     diag_wr_cmplt2;
+     diag_wr_cmplt3;
+
+     ldxa_illgl_va_cmplt_d1;
+     pref_tlbmiss_cmplt_d2;
+     lsu_pcx_pref_issue;
+}
+
+// *********************************************************************
+// end cmplt extend objects
+// *********************************************************************
+
+
+
+
+
+
+
+. sub coreBindings {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+// binding for all load state machine signals for thread $t
+bind load_qctl_port lsu_load_qctl_sample_C${c} {
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread ld buf
+T${t}_load_qctl_state  { 
+  		  lsu_cov_top.C${c}T${t}_ld_pkt_vld_tmp_d,
+		  lsu_cov_top.C${c}T${t}_ld_rawp_disabled,
+		  lsu_cov_top.C${c}T${t}_ld_is_sec_w2,
+		  lsu_cov_top.C${c}T${t}_ldbyp_vld
+  		};
+.} # for $t
+}
+.
+
+
+
+
+bind stb_state_port lsu_stb_sample_C${c} {
+
+// binding for STB$i signals to PORTs
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread stb
+.		for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+.			$b = $t * 8 + $e;
+T${t}_lsu_stb_state_${e}   {
+		   lsu_cov_top.C${c}T${t}_stb_state_vld[$e],
+		   lsu_cov_top.C${c}T${t}_stb_state_ack[$e],
+		   lsu_cov_top.C${c}T${t}_stb_state_ced[$e]
+		};
+
+.		} # for $e
+.	} # for $t
+
+}
+
+
+.
+//bind ldpick_state_port lsu_ldpick_sample_C${c} {
+//  lsu_ldpick_state {
+//		   lsu_cov_top.C${c}_ld0_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_ld1_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_ld2_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_ld3_pcx_rq_vld
+//		   };
+//}
+bind ldooo_state_port lsu_ldooo_sample_C${c} {
+  ld_ooo lsu_cov_top.C${c}_ldooo;
+}
+bind ldooo_state_port lsu_stooo_sample_C${c} {
+  ld_ooo lsu_cov_top.C${c}_stooo;
+}
+
+bind bld_hit_port lsu_bld_sample_C${c} {
+ lsu_bld_state	   {
+		   lsu_cov_top.C${c}_bld_vld,
+		   lsu_cov_top.C${c}_bld_hit,
+		   lsu_cov_top.C${c}_bld_raw,
+		   lsu_cov_top.C${c}_ld0_sec_hit_w2,
+		   lsu_cov_top.C${c}_ld1_sec_hit_w2,
+		   lsu_cov_top.C${c}_ld2_sec_hit_w2,
+		   lsu_cov_top.C${c}_ld3_sec_hit_w2
+		   };
+}
+
+bind way_state_port lsu_way_sample_C${c} {
+  lsu_way_state {
+		lsu_cov_top.C${c}_ld_miss,
+   		lsu_cov_top.C${c}_l1_way
+		};
+}
+
+//bind stpick_state_port lsu_stpick_sample_C${c} {
+// lsu_stpick_state  {
+//		   lsu_cov_top.C${c}_st0_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_st1_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_st2_pcx_rq_vld,
+//		   lsu_cov_top.C${c}_st3_pcx_rq_vld
+//   		   };	
+//}
+
+//bind miscpick_state_port lsu_miscpick_sample_C${c} {
+// lsu_mpick_state  	{
+//   			lsu_cov_top.C${c}_strm_pcx_rq_vld,
+//			lsu_cov_top.C${c}_fpop_pcx_rq_vld,
+//   			lsu_cov_top.C${c}_intrpt_pcx_rq_vld,
+//   			lsu_cov_top.C${c}_fwdpkt_rq_vld
+//			};
+//}
+
+//bind allpick_state_port lsu_allpick_sample_C${c} {
+//  lsu_apick_state {
+//		   lsu_cov_top.C${c}_misc_pcx_rq_all,
+//		   lsu_cov_top.C${c}_st_pcx_rq_all,
+//		   lsu_cov_top.C${c}_ld_pcx_rq_all,
+//		   lsu_cov_top.C${c}_imiss_pcx_rq_vld
+//		  };
+//}
+
+//bind finalpick_state_port lsu_finalpick_sample_C${c} {
+//  lsu_fpick_state 	{
+//			lsu_cov_top.C${c}_misc_pcx_rq_all,
+//   			lsu_cov_top.C${c}_st_pcx_rq_all,
+//   			lsu_cov_top.C${c}_ld_pcx_rq_all,
+//   			lsu_cov_top.C${c}_imiss_pcx_rq_vld,
+//   			lsu_cov_top.C${c}_all_pcx_rq_pick
+//			};
+//}
+
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread per core
+bind ldraw_state_port lsu_ldraw_sample_C${c}T${t} {
+  lsu_ldraw_state 	{
+            lsu_cov_top.C${c}_ld${t}_inst_vld_g,
+   			lsu_cov_top.C${c}_stb_mhit,
+   			lsu_cov_top.C${c}_stb_ld_full_raw,
+   			lsu_cov_top.C${c}_stb_ld_partial_raw
+			};
+}
+.	} # for $t
+
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread per core
+bind rawwin_state_port lsu_rawwin_sample_C${c}T${t} {
+  lsu_rawwin_state 	{
+			lsu_cov_top.C${c}T${t}_ack_capture,
+   			lsu_cov_top.C${c}T${t}_ack_cntr
+			};
+}
+.	} # for $t
+
+bind qfull_state_port lsu_qfull_sample_C${c} {
+lsu_qfull_state  	{
+ 			lsu_cov_top.C${c}_dfq_full,
+ 			lsu_cov_top.C${c}T3_stb_full,
+ 			lsu_cov_top.C${c}T2_stb_full,
+ 			lsu_cov_top.C${c}T1_stb_full,
+ 			lsu_cov_top.C${c}T0_stb_full,
+ 			lsu_cov_top.C${c}T3_lmq_full,
+ 			lsu_cov_top.C${c}T2_lmq_full,
+ 			lsu_cov_top.C${c}T1_lmq_full,
+ 			lsu_cov_top.C${c}T0_lmq_full
+			};
+}
+
+bind ldstcmplt_state_port lsu_ldstcmplt_sample_C${c} {
+lsu_ldstcmplt_state  	{
+ 			lsu_cov_top.C${c}_ldstcmplt
+			};
+}
+
+bind ldstcmplt_ext_state_port lsu_ldstcmplt_ext_sample_C${c} {
+lsu_ldstcmplt_ext_state  	{
+ 			lsu_cov_top.C${c}_ldstcmplt
+			};
+}
+
+bind exp_state_port lsu_exp_sample_C${c} {
+lsu_exp_state  	{
+ 			lsu_cov_top.C${c}_exp
+			};
+}
+
+bind exu_state_port lsu_exu_sample_C${c} {
+lsu_exu_state  	{
+ 			lsu_cov_top.C${c}_exu
+			};
+}
+
+bind iack_state_port lsu_iack_sample_C${c} {
+lsu_iack_state  	{
+ 			lsu_cov_top.C${c}_ireq,
+ 			lsu_cov_top.C${c}_iack
+			};
+}
+
+bind fack_state_port lsu_fack_sample_C${c} {
+lsu_fack_state  	{
+ 			lsu_cov_top.C${c}_fstreq,
+ 			lsu_cov_top.C${c}_freq,
+ 			lsu_cov_top.C${c}_fack
+			};
+}
+
+bind fwd_state_port lsu_fwd_sample_C${c} {
+lsu_fwd_state  		{
+ 			lsu_cov_top.C${c}_fwdsel
+			};
+}
+
+bind inack_state_port lsu_inack_sample_C${c} {
+lsu_inack_state  	{
+ 			lsu_cov_top.C${c}_inclr,
+ 			lsu_cov_top.C${c}_inack,
+ 			lsu_cov_top.C${c}_inreq
+			};
+}
+
+bind rawwin_state_port lsu_dfqfull_win_sample_C${c} {
+  lsu_rawwin_state 	{
+			lsu_cov_top.C${c}_dfq_full_capture,
+   			lsu_cov_top.C${c}_dfq_full_cntr
+			};
+}
+
+bind rawwin_state_portx lsu_dfqfull_win_sample_C${c}1 {
+.   for ( $t = 1; $t < 8; $t++ ) {
+lsu_rawwin_state_${t}	{
+   			lsu_cov_top.C${c}_dfq_full_capture${t},
+   			lsu_cov_top.C${c}_dfq_full_cntr${t}
+			};
+.}
+}
+
+
+bind rawwin_state_port lsu_vld2inv_win_sample_C${c} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}_vld2inv_capture,
+   lsu_cov_top.C${c}_vld2inv_cntr };
+}
+
+bind rawwin_state_port lsu_inv2vld_win_sample_C${c} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}_inv2vld_capture,
+   lsu_cov_top.C${c}_inv2vld_cntr };
+}
+
+bind rawwin_state_port lsu_vld2lkup_win_sample_C${c} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}_vld2lkup_capture,
+   lsu_cov_top.C${c}_vld2lkup_cntr };
+}
+
+bind rawwin_state_port lsu_invld2lkup_win_sample_C${c} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}_invld2lkup_capture,
+   lsu_cov_top.C${c}_invld2lkup_cntr };
+}
+
+bind rawwin_state_port1 lsu_invld2lkuperr_win_sample_C${c} {
+  lsu_rawwin1_state {  lsu_cov_top.C${c}_invld2lkup_capture,
+   lsu_cov_top.C${c}_invlderr,
+   lsu_cov_top.C${c}_invld2lkup_cntr };
+}
+
+
+.	for ( $t = 0; $t < 4; $t++ ) {		## per thread per core
+bind rawwin_state_port lsu_lmqfull_win_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_lmq_full_capture,
+   lsu_cov_top.C${c}T${t}_lmq_full_cntr };
+}
+bind rawwin_state_port lsu_stbfull_win_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_stb_full_capture,
+   lsu_cov_top.C${c}T${t}_stb_full_cntr };
+}
+bind rawwin_state_port lsu_stbced_win_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_stb_ced_capture,
+   lsu_cov_top.C${c}T${t}_stb_ced_cntr };
+}
+bind rawwin_state_port lsu_mbar_win_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_mbar_capture,
+   lsu_cov_top.C${c}T${t}_mbar_cntr };
+}
+bind rawwin_state_port lsu_flsh_win_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_flsh_capture,
+   lsu_cov_top.C${c}T${t}_flsh_cntr };
+}
+bind rawwin_state_port lsu_atm_intr_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_atm_intr_capture,
+   lsu_cov_top.C${c}T${t}_atomic_cntr };
+}
+bind rawwin_state_port lsu_atm_b4intr_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_atm_b4intr_capture,
+   lsu_cov_top.C${c}T${t}_atomic_cntr };
+}
+
+bind rawwin_state_port lsu_atm_ldmiss_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_atm_ldmiss_capture,
+   lsu_cov_top.C${c}T${t}_atomic_cntr };
+}
+
+bind rawwin_state_port lsu_atm_imiss_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_atm_imiss_capture,
+   lsu_cov_top.C${c}T${t}_atomic_cntr };
+}
+
+bind rawwin_state_port lsu_atm_inv_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_atm_inv_capture,
+   lsu_cov_top.C${c}T${t}_atomic_cntr };
+}
+
+bind rawwin_state_port lsu_bld_helper_sample_C${c}T${t} {
+  lsu_rawwin_state {  lsu_cov_top.C${c}T${t}_bld_capture,
+   lsu_cov_top.C${c}T${t}_bld_cntr };
+}
+
+bind ldeqi_state_port lsu_ldeqi_sample_C${c}T${t} {
+ lsu_ldeqi_state  { lsu_cov_top.C${c}T${t}_ldeqi_vld
+   };
+}
+.	} # for $t
+
+
+// binding for load interface signals
+bind ld_inf1_port lsu_ld_inf1_sample_C${c} {
+  lsu_ld_inf1_state {
+.   for ( $t = 0; $t < 4; $t++ ) {
+    lsu_cov_top.C${c}_ld${t}_inst_vld_g,
+.   }
+    lsu_cov_top.C${c}_fp_ldst_g,    
+    lsu_cov_top.C${c}_ldst_miss_w,
+    lsu_cov_top.C${c}_stb_cam_hit
+  };
+}
+
+bind ld_inf2_port lsu_ld_inf2_sample_C${c} {
+  lsu_ld_inf2_state {
+.for ( $t = 0; $t < 4; $t++ ) {
+    lsu_cov_top.C${c}_ld${t}_inst_vld_w2,
+.}
+    lsu_cov_top.C${c}_fp_ldst_w2,    
+    lsu_cov_top.C${c}_ldst_miss_w2,
+    lsu_cov_top.C${c}_dc_parity_error_w2
+  };
+}
+
+
+// binding for store interface signals
+bind st_inf_port lsu_st_inf_sample_C${c} {
+  lsu_st_inf_state  { 
+    lsu_cov_top.C${c}_inst_vld_e,
+    lsu_cov_top.C${c}_st_inst_e,
+    lsu_cov_top.C${c}_ldst_dbl_e,
+    lsu_cov_top.C${c}_ldst_fp_e,
+    lsu_cov_top.C${c}_thrid_e
+  };
+}
+
+
+// binding for store buffer valid/reset signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_vld_rst_port lsu_stb_vld_rst_sample_C${c}T${t} {
+.for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+  lsu_stb_vld_rst_state_e${e} {
+    lsu_cov_top.C${c}T${t}_stb_state_vld_din[$e],
+    lsu_cov_top.C${c}T${t}_stb_state_rst[$e]
+  };
+.} # for $e
+}
+.} # for $t
+
+
+// b2b stores flush signals
+bind b2b_st_flush_port lsu_b2b_st_flush_sample_C${c} {
+  lsu_b2b_st_flush_state {
+    lsu_cov_top.C${c}_inst_vld_m,
+    lsu_cov_top.C${c}_excpctl_st_inst_m,
+    lsu_cov_top.C${c}_thread0_m,
+    lsu_cov_top.C${c}_thread1_m,
+    lsu_cov_top.C${c}_thread2_m,
+    lsu_cov_top.C${c}_thread3_m,
+    lsu_cov_top.C${c}_excpctl_flush_pipe_w
+  };
+}
+
+
+// binding for flush/signaling interface signals
+bind flush_inf_port lsu_flush_inf_sample_C${c} {
+  lsu_flush_inf_state {
+    lsu_cov_top.C${c}_flush_pipe_w,
+    lsu_cov_top.C${c}_inst_vld_m,
+    lsu_cov_top.C${c}_thrid_m,
+    lsu_cov_top.C${c}_inst_vld_e,
+    lsu_cov_top.C${c}_ld_inst_e,
+    lsu_cov_top.C${c}_st_inst_e
+  };
+}
+
+bind flush_inf2_port lsu_flush_inf2_sample_C${c} {
+  lsu_flush_inf2_state {
+    lsu_cov_top.C${c}_flush_pipe_w,
+.   for ( $t = 0; $t < 4; $t++ ) {
+    lsu_cov_top.C${c}_ld${t}_inst_vld_g,
+.   }
+    lsu_cov_top.C${c}_dc_parity_error_w2,
+    lsu_cov_top.C${c}_inst_vld_e,
+    lsu_cov_top.C${c}_ld_inst_e,
+    lsu_cov_top.C${c}_st_inst_e,
+    lsu_cov_top.C${c}_flush_m
+  };
+}
+
+bind flush_inf3_port lsu_flush_inf3_sample_C${c} {
+  lsu_flush_inf3_state {
+    lsu_cov_top.C${c}_inst_vld_m,
+    lsu_cov_top.C${c}_ld_stb_full_raw_w3,
+    lsu_cov_top.C${c}_ld_inst_m,
+    lsu_cov_top.C${c}_st_inst_m,
+    lsu_cov_top.C${c}_casa_m,
+    lsu_cov_top.C${c}_ldstub_m,
+    lsu_cov_top.C${c}_swap_m,
+    lsu_cov_top.C${c}_flsh_inst_m,
+    lsu_cov_top.C${c}_pref_inst_m,
+    lsu_cov_top.C${c}_blk_asi_m,
+    lsu_cov_top2.C${c}_qctl1_bld_g
+  };
+}
+
+// binding for block store interface signals
+bind bst_inf_port lsu_bst_inf_sample_C${c} {
+  lsu_bst_inf_state  { 
+    lsu_cov_top.C${c}_blk_st_m,
+    lsu_cov_top.C${c}_blk_st_tid_m,
+    lsu_cov_top.C${c}_inst_vld_m,
+    lsu_cov_top.C${c}_thrid_m,
+    lsu_cov_top.C${c}_ld_inst_m,
+    lsu_cov_top.C${c}_st_inst_m,
+    lsu_cov_top.C${c}_casa_m,
+    lsu_cov_top.C${c}_ldstub_m,
+    lsu_cov_top.C${c}_swap_m,
+    lsu_cov_top.C${c}_flsh_inst_m
+  };
+}
+
+// exu_lsu_ldst_va_e
+bind ldst_va_inf_port lsu_ldst_va_inf_sample_C${c} {
+  lsu_ldst_va_inf_state  {
+    lsu_cov_top.C${c}_ldst_va_e,
+    lsu_cov_top.C${c}_inst_vld_e,
+    lsu_cov_top.C${c}_ld_inst_e,
+    lsu_cov_top.C${c}_st_inst_e,
+    lsu_cov_top2.C${c}_casa_e,
+    lsu_cov_top2.C${c}_ldstub_e,
+    lsu_cov_top2.C${c}_swap_e,
+    lsu_cov_top2.C${c}_pref_e,
+    lsu_cov_top.C${c}_flsh_inst_e
+  };
+}
+
+// binding for lsu_ifu_ldst_miss_w fanin
+bind ifu_ldst_miss_port lsu_ifu_ldst_miss_sample_C${c} {
+  lsu_ifu_ldst_miss_state  { 
+    lsu_cov_top.C${c}_common_ldst_miss_w,
+    lsu_cov_top.C${c}_ldxa_internal_swo_g,
+    lsu_cov_top.C${c}_lsu_inst_vld_w,
+    lsu_cov_top.C${c}_ld_inst_vld_unflushed
+  };
+}
+
+
+// binding for lsu_exu_ldst_miss_w2 fanin
+bind ldst_miss_port lsu_ldst_miss_sample_C${c} {
+  lsu_ldst_miss_state  { 
+    lsu_cov_top.C${c}_common_ldst_miss_w,
+    lsu_cov_top.C${c}_ldxa_internal_swo_g,
+    lsu_cov_top.C${c}_endian_mispred_g,
+    lsu_cov_top.C${c}_atomic_g,
+    lsu_cov_top.C${c}_stb_cam_hit,
+    lsu_cov_top.C${c}_dcache_rd_parity_error,
+    lsu_cov_top.C${c}_dtag_perror_g,
+    lsu_cov_top.C${c}_tte_data_perror_unc_en,
+    lsu_cov_top.C${c}_pref_inst_g,
+    lsu_cov_top.C${c}_ld_inst_vld_unflushed,
+    lsu_cov_top.C${c}_lsu_inst_vld_w
+  };
+}
+
+
+// binding for lsu_ifu_dc_parity_error_w2 fanin
+bind dc_parity_error_port lsu_dc_parity_error_sample_C${c} {
+  lsu_dc_parity_error_state  { 
+    lsu_cov_top.C${c}_stb_cam_hit,
+    lsu_cov_top.C${c}_dcache_rd_parity_error,
+    lsu_cov_top.C${c}_dtag_perror_g,
+    lsu_cov_top.C${c}_endian_mispred_g,
+    lsu_cov_top.C${c}_tte_data_perror_unc_en,
+    lsu_cov_top.C${c}_lsu_inst_vld_w,
+    lsu_cov_top.C${c}_ld_inst_vld_unflushed,
+    lsu_cov_top.C${c}_dctl_flush_pipe_w
+  };
+}
+
+
+// *********************************************************************
+// begin dctl objects 
+// *********************************************************************
+
+// tlb cam
+bind dctl_tlbcam_port lsu_dctl_tlbcam_sample_C${c} {
+  lsu_dctl_tlbcam_state  { 
+    lsu_cov_top2.C${c}_memref_e,
+    lsu_cov_top2.C${c}_ld_inst_e,
+    lsu_cov_top2.C${c}_st_inst_e,
+    lsu_cov_top2.C${c}_casa_e,
+    lsu_cov_top2.C${c}_ldstub_e,
+    lsu_cov_top2.C${c}_swap_e,
+    lsu_cov_top2.C${c}_pref_e,
+    lsu_cov_top2.C${c}_dtlb_bypass_e,
+    lsu_cov_top2.C${c}_asi_internal_e,
+    lsu_cov_top2.C${c}_alt_space_e
+  };
+}
+
+// tlb r->p translation
+bind dctl_tlbr2p_port lsu_dctl_tlbr2p_sample_C${c} {
+  lsu_dctl_tlbr2p_state  {
+    lsu_cov_top2.C${c}_lsuctl_dtlb_byp_e,
+    lsu_cov_top2.C${c}_hpv_priv_e,
+    lsu_cov_top2.C${c}_hpstate_en_e,
+    lsu_cov_top2.C${c}_altspace_ldst_e,
+    lsu_cov_top2.C${c}_phy_byp_ec_asi_e,
+    lsu_cov_top2.C${c}_phy_use_ec_asi_e,
+    lsu_cov_top2.C${c}_quad_ldd_real_e,
+    lsu_cov_top2.C${c}_quad_ldd_real_little_e
+  };
+}
+
+// address masking enabled
+bind dctl_addrmask_port lsu_dctl_addrmask_sample_C${c} {
+  lsu_dctl_addrmask_state  {
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_thread${t}_e,
+.   }
+    lsu_cov_top2.C${c}_lsu_dtlb_addr_mask_l_e,
+    lsu_cov_top2.C${c}_dtlb_bypass_e,
+    lsu_cov_top2.C${c}_tlb_ldst_cam_vld,
+    lsu_cov_top2.C${c}_lsu_dtlb_cam_real_e
+  };
+}
+
+// tlb access
+bind dctl_tlbaccess_port lsu_dctl_tlbaccess_sample_C${c} {
+  lsu_dctl_tlbaccess_state  { 
+    lsu_cov_top2.C${c}_local_dtlb_wr_vld_g,
+    lsu_cov_top2.C${c}_dtlb_tag_rd_g,
+    lsu_cov_top2.C${c}_dtlb_data_rd_g,
+    lsu_cov_top2.C${c}_dtlb_dmp_vld_g,
+    lsu_cov_top2.C${c}_dtlb_rw_index_vld_g,
+    lsu_cov_top2.C${c}_memref_e,
+    lsu_cov_top2.C${c}_dtlb_wr_init_d1,
+    lsu_cov_top2.C${c}_dtlb_wr_init_d2,
+    lsu_cov_top2.C${c}_dtlb_done_d1,
+    lsu_cov_top2.C${c}_dtlb_done_d2
+  };
+}
+
+// update of asi register by done/retry instruction
+bind dctl_asiupdate_port lsu_dctl_asiupdate_sample_C${c} {
+  lsu_dctl_asiupdate_state  {
+    lsu_cov_top2.C${c}_asi_state_wr_en,
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_thread${t}_g,
+.   }
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_tsa_update_asi${t},
+.   }
+    lsu_cov_top2.C${c}_lsu_inst_vld_w,
+    lsu_cov_top2.C${c}_dctl_early_flush_w
+  };
+}
+
+// coverage of illegal-va detection
+bind dctl_illva_port lsu_dctl_illva_sample_C${c} {
+  lsu_dctl_illva_state  {
+    lsu_cov_top2.C${c}_pscxt_ldxa_illgl_va_decode,
+    lsu_cov_top2.C${c}_lsuctl_illgl_va_decode,
+    lsu_cov_top2.C${c}_mrgnctl_illgl_va_decode,
+    lsu_cov_top2.C${c}_asi42_illgl_va_decode,
+    lsu_cov_top2.C${c}_pctxt_va_vld,
+    lsu_cov_top2.C${c}_sctxt_va_vld,
+    lsu_cov_top2.C${c}_lsuctl_va_vld,
+    lsu_cov_top2.C${c}_mrgnctl_va_vld,
+    lsu_cov_top2.C${c}_ldiagctl_va_vld,
+    lsu_cov_top2.C${c}_bistctl_va_vld,
+    lsu_cov_top2.C${c}_instmsk_va_vld,
+    lsu_cov_top2.C${c}_ldxa_illgl_va_cmplt_d1
+  };
+}
+
+// setting of lsu_ctl_reg thru various events
+bind dctl_ctlreg_port lsu_dctl_ctlreg_sample_C${c} {
+  lsu_dctl_ctlreg_state  {
+    lsu_cov_top2.C${c}_lsu_ctl_state_wr_en,
+    lsu_cov_top2.C${c}_dfture_tap_wr_en,
+    lsu_cov_top2.C${c}_redmode_rst
+  };
+}
+
+// disabling the dcache
+bind dctl_dcache_port lsu_dctl_dcache_sample_C${c} {
+  lsu_dctl_dcache_state  {
+.   for ( $t = 0; $t < 3; $t++ ) {
+    lsu_cov_top2.C${c}_lsu_ctl_reg${t}_b1,
+    lsu_cov_top2.C${c}_thread${t}_e,
+.   }
+    lsu_cov_top2.C${c}_lsu_ctl_reg3_b1,
+    lsu_cov_top2.C${c}_thread3_e
+  };
+}
+
+// crossproduct of dcache enable/disable and dtlb enable/disable
+bind dctl_dcache_dtlb_port lsu_dctl_dcache_dtlb_sample_C${c} {
+  lsu_dctl_dcache_dtlb_state  {
+    lsu_cov_top2.C${c}_inst_vld_e,
+    lsu_cov_top2.C${c}_ld_inst_e,
+    lsu_cov_top2.C${c}_thrid_e,
+    lsu_cov_top2.C${c}_dcache_enable_e,
+    lsu_cov_top2.C${c}_dtlb_bypass_e
+  };
+}
+
+// ignore cache hit when cache disabled
+bind dctl_ignorehit_port lsu_dctl_ignorehit_sample_C${c} {
+  lsu_dctl_ignorehit_state  {
+    lsu_cov_top2.C${c}_lsu_inst_vld_w, 
+    lsu_cov_top2.C${c}_lsu_exu_flush_pipe_w,
+    lsu_cov_top2.C${c}_ifu_lsu_flush_w,
+    lsu_cov_top2.C${c}_cache_way_hit_buf1,
+    lsu_cov_top2.C${c}_dcache_enable_g,
+    lsu_cov_top2.C${c}_ld0_l2cache_rq_g,
+    lsu_cov_top2.C${c}_ld1_l2cache_rq_g,
+    lsu_cov_top2.C${c}_ld2_l2cache_rq_g,
+    lsu_cov_top2.C${c}_ld3_l2cache_rq_g,
+    lsu_cov_top2.C${c}_ld0_ldbl_rq_w2,
+    lsu_cov_top2.C${c}_ld1_ldbl_rq_w2,
+    lsu_cov_top2.C${c}_ld2_ldbl_rq_w2,
+    lsu_cov_top2.C${c}_ld3_ldbl_rq_w2
+  };
+}
+
+// detect tte-data parity errors
+bind dctl_tteparity_port lsu_dctl_tteparity_sample_C${c} {
+  lsu_dctl_tteparity_state  {
+    lsu_cov_top2.C${c}_ld_inst_vld_unflushed,
+    lsu_cov_top2.C${c}_st_inst_vld_unflushed,
+    lsu_cov_top2.C${c}_tte_data_perror_unc,
+    lsu_cov_top2.C${c}_nceen_pipe_g          
+  };
+}
+
+// elaborate cases for writes to dcache
+bind dctl_dcachewr_port lsu_dctl_dcachewr_sample_C${c} {
+  lsu_dctl_dcachewr_state  {
+    lsu_cov_top2.C${c}_l2fill_vld_e,
+    lsu_cov_top2.C${c}_ignore_fill,
+    lsu_cov_top2.C${c}_atomic_ld_squash_e,
+    lsu_cov_top2.C${c}_ld_sec_active,
+    lsu_cov_top2.C${c}_lsu_ncache_ld_e
+  };
+}
+
+// selective writes to dcache on stores
+bind dctl_dcache_st_port lsu_dctl_dcache_st_sample_C${c} {
+  lsu_dctl_dcache_st_state  {
+    lsu_cov_top2.C${c}_dva_svld_e,
+    lsu_cov_top2.C${c}_lsu_dtagv_wr_vld_e,
+    lsu_cov_top2.C${c}_dva_snp_bit_wr_en_e,
+    lsu_cov_top2.C${c}_lsu_dtag_wr_vld_e_tmp,
+    lsu_cov_top2.C${c}_dva_fill_bit_wr_en_e
+  };
+}
+
+// elaborate writes to dva
+bind dctl_dvawr_port lsu_dctl_dvawr_sample_C${c} {
+  lsu_dctl_dvawr_state  {
+    lsu_cov_top2.C${c}_lsu_dtagv_wr_vld_e,
+    lsu_cov_top2.C${c}_dva_bit_wr_en_e
+  };
+}
+
+// completing a stxa wr to thread
+bind dctl_stxawr_cmplt_port lsu_dctl_stxawr_cmplt_sample_C${c} {
+  lsu_dctl_stxawr_cmplt_state  {
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_stxa_stall_wr_cmplt${t},
+.   }
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_spu_stxa_thread${t},
+.   }
+    lsu_cov_top2.C${c}_spu_lsu_stxa_ack
+  };
+}
+
+// tlb asi queue - initiating action
+bind dctl_asiqueue_init_port lsu_dctl_asiqueue_init_sample_C${c} {
+  lsu_dctl_asiqueue_init_state  {
+    lsu_cov_top2.C${c}_tlb_access_en0_g,
+    lsu_cov_top2.C${c}_tlb_access_en1_g,
+    lsu_cov_top2.C${c}_tlb_access_en2_g,
+    lsu_cov_top2.C${c}_tlb_access_en3_g
+  };
+}
+
+// tlb asi queue - sequencing events 
+bind dctl_asiqueue_seq_port lsu_dctl_asiqueue_seq_sample_C${c} {
+  lsu_dctl_asiqueue_seq_state  {
+    lsu_cov_top2.C${c}_tlb_access_rst0,
+    lsu_cov_top2.C${c}_tlb_access_rst1,
+    lsu_cov_top2.C${c}_tlb_access_rst2,
+    lsu_cov_top2.C${c}_tlb_access_rst3,
+    lsu_cov_top2.C${c}_tlb_access_sel_thrd0,
+    lsu_cov_top2.C${c}_tlb_access_sel_thrd1,
+    lsu_cov_top2.C${c}_tlb_access_sel_thrd2,
+    lsu_cov_top2.C${c}_tlb_access_sel_thrd3
+  };
+}
+
+// bus sharing between tlu and mmu
+bind dctl_tlb_st_datasel_port lsu_dctl_tlb_st_datasel_sample_C${c} {
+  lsu_dctl_tlb_st_datasel_state  {
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_tlb_access_sel_thrd${t},
+.   }
+    lsu_cov_top2.C${c}_st_sqsh_m
+  };
+}
+
+// diagnostic write conflicts with pipeline ld/st, dfq op
+bind dctl_diagwr_port lsu_dctl_diagwr_sample_C${c} {
+  lsu_dctl_diagwr_state  {
+    lsu_cov_top2.C${c}_diag_wr_src_d2,
+    lsu_cov_top2.C${c}_memref_e,
+    lsu_cov_top2.C${c}_thrid_e,
+    lsu_cov_top2.C${c}_lsu_dfq_vld
+  };
+}
+
+// membar/flush reset
+bind dctl_mbarrst_port lsu_dctl_mbarrst_sample_C${c} {
+  lsu_dctl_mbarrst_state  {
+    lsu_cov_top2.C${c}_mbar_vld3,
+    lsu_cov_top2.C${c}_mbar_vld2,
+    lsu_cov_top2.C${c}_mbar_vld1,
+    lsu_cov_top2.C${c}_mbar_vld0,
+    lsu_cov_top2.C${c}_lsu_stb_empty,
+    lsu_cov_top2.C${c}_no_spc_rmo_st
+  };
+}
+
+// rmo store ack count
+bind dctl_rmo_stackcnt_port lsu_dctl_rmo_stackcnt_sample_C${c} {
+  lsu_dctl_rmo_stackcnt_state  {
+    lsu_cov_top2.C${c}_lsu_stb_rmo_st_issue,
+    lsu_cov_top2.C${c}_lsu_cpx_rmo_st_ack,
+    lsu_cov_top2.C${c}_ackcnt0,
+    lsu_cov_top2.C${c}_ackcnt1,
+    lsu_cov_top2.C${c}_ackcnt2,
+    lsu_cov_top2.C${c}_ackcnt3
+  };
+}
+
+// dcache data parity error
+bind dctl_dcache_perror_port lsu_dctl_dcache_perror_sample_C${c} {
+  lsu_dctl_dcache_perror_state  {
+    lsu_cov_top2.C${c}_dcache_rparity_err_wb,
+    lsu_cov_top2.C${c}_dcache_rd_parity_error,
+    lsu_cov_top2.C${c}_ld_inst_vld_unflushed,
+    lsu_cov_top2.C${c}_lsu_inst_vld_w,
+    lsu_cov_top2.C${c}_dtag_perror_g,
+    lsu_cov_top2.C${c}_dcache_enable_g,
+    lsu_cov_top2.C${c}_asi_internal_g,
+    lsu_cov_top2.C${c}_lsu_alt_space_g,
+    lsu_cov_top2.C${c}_atomic_g,
+    lsu_cov_top2.C${c}_lsu_exu_flush_pipe_w
+  };
+}
+
+// bypass queues - b2b enabling
+bind dctl_bypassq_b2ben_port lsu_dctl_bypassq_b2ben_sample_C${c} {
+  lsu_dctl_bypassq_b2ben_state  {
+    lsu_cov_top2.C${c}_dctl_ldbyp0_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp1_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp2_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp3_vld_en
+  };
+}
+
+// bypass queues - test for simultaneous vld entries
+bind dctl_bypassq_vld_port lsu_dctl_bypassq_vld_sample_C${c} {
+  lsu_dctl_bypassq_vld_state  {
+    lsu_cov_top2.C${c}_ldbyp0_vld,
+    lsu_cov_top2.C${c}_ldbyp1_vld,
+    lsu_cov_top2.C${c}_ldbyp2_vld,
+    lsu_cov_top2.C${c}_ldbyp3_vld
+  };
+}
+
+// bypass queues - test for b2b reset
+bind dctl_bypassq_b2brst_port lsu_dctl_bypassq_b2brst_sample_C${c} {
+  lsu_dctl_bypassq_b2brst_state  {
+    lsu_cov_top2.C${c}_ldbyp0_vld_rst,
+    lsu_cov_top2.C${c}_ldbyp1_vld_rst,
+    lsu_cov_top2.C${c}_ldbyp2_vld_rst,
+    lsu_cov_top2.C${c}_ldbyp3_vld_rst
+  };
+}
+
+// bypass queues - squashing bypass/cmplt to irf/ifu
+bind dctl_bypassq_squash_port lsu_dctl_bypassq_squash_sample_C${c} {
+  lsu_dctl_bypassq_squash_state  {
+    lsu_cov_top2.C${c}_ld_thrd_byp_sel_e,
+    lsu_cov_top2.C${c}_lsu_nceen_d1,
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_ldbyp${t}_fpld,
+    lsu_cov_top2.C${c}_spubyp${t}_trap,
+    lsu_cov_top2.C${c}_cam_perr_unc${t},
+    lsu_cov_top2.C${c}_asi_data_perr${t},
+    lsu_cov_top2.C${c}_asi_tag_perr${t},
+    lsu_cov_top2.C${c}_ifu_unc_err${t},
+.   }
+    lsu_cov_top2.C${c}_pend_atm_ld_ue
+  };
+}
+
+// bypass queues - detect ldbyp_vld and ldbyp_vld_en
+bind dctl_bypassq_vld_en_port lsu_dctl_bypassq_vld_en_sample_C${c} {
+  lsu_dctl_bypassq_vld_en_state  {
+    lsu_cov_top2.C${c}_ldbyp0_vld,
+    lsu_cov_top2.C${c}_ldbyp1_vld,
+    lsu_cov_top2.C${c}_ldbyp2_vld,
+    lsu_cov_top2.C${c}_ldbyp3_vld,
+    lsu_cov_top2.C${c}_dctl_ldbyp0_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp1_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp2_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp3_vld_en
+  };
+}
+
+// deferred trap
+bind dctl_deftrap_port lsu_dctl_deftrap_sample_C${c} {
+  lsu_dctl_deftrap_state  {
+    lsu_cov_top2.C${c}_excpctl_tte_data_parity_error, 
+    lsu_cov_top2.C${c}_excpctl_tlb_tte_vld_g, 
+    lsu_cov_top2.C${c}_excpctl_lsu_inst_vld_w, 
+    lsu_cov_top2.C${c}_excpctl_ld_inst_vld_unflushed, 
+    lsu_cov_top2.C${c}_excpctl_st_inst_vld_unflushed, 
+    lsu_cov_top2.C${c}_excpctl_lsu_flush_pipe_w
+  };
+}
+
+// completing stxa with fixed delay
+bind dctl_stxacmplt_port lsu_dctl_stxacmplt_sample_C${c} {
+  lsu_dctl_stxacmplt_state  {
+    lsu_cov_top2.C${c}_stxa_internal,
+    lsu_cov_top2.C${c}_lsu_inst_vld_w,
+    lsu_cov_top2.C${c}_dctl_early_flush_w,
+    lsu_cov_top2.C${c}_intrpt_disp_asi_g,
+    lsu_cov_top2.C${c}_stxa_stall_asi_g,
+    lsu_cov_top2.C${c}_ifu_nontlb_asi_g,
+    lsu_cov_top2.C${c}_ifu_asi42_flush_g,
+    lsu_cov_top2.C${c}_tlb_lng_ltncy_asi_g
+  };
+}
+
+// direct map mode
+bind dctl_directmap_port lsu_dctl_directmap_sample_C${c} {
+  lsu_dctl_directmap_state  {
+    lsu_cov_top2.C${c}_dc_direct_map,
+    lsu_cov_top2.C${c}_ld_inst_e,
+    lsu_cov_top2.C${c}_st_inst_e
+  };
+}
+
+// writes to cache
+bind dctl_dcachemask_port lsu_dctl_dcachemask_sample_C${c} {
+  lsu_dctl_dcachemask_state  {
+    lsu_cov_top2.C${c}_dcache_byte_wr_en_e
+  };
+}
+
+// prefetch counter
+bind dctl_prefcntr_port lsu_dctl_prefcntr_sample_C${c} {
+  lsu_dctl_prefcntr_state  {
+    lsu_cov_top2.C${c}_lsu_pcx_pref_issue,
+    lsu_cov_top2.C${c}_lsu_cpx_pref_ack,
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+    lsu_cov_top2.C${c}_pref_ackcnt${t},
+.   }
+    lsu_cov_top2.C${c}_pref_e
+  };
+}
+
+// tlb asiqueue
+bind dctl_asiqueue_port lsu_dctl_asiqueue_sample_C${c} {
+  lsu_dctl_asiqueue_state  {
+    lsu_cov_top2.C${c}_asi_fifo0_vld,
+    lsu_cov_top2.C${c}_asi_fifo1_vld,
+    lsu_cov_top2.C${c}_asi_fifo2_vld,
+    lsu_cov_top2.C${c}_asi_fifo3_vld,
+    lsu_cov_top2.C${c}_fifo_wr,
+    lsu_cov_top2.C${c}_fifo_shift,
+    lsu_cov_top2.C${c}_dctl_reset
+  };
+}
+
+// *********************************************************************
+// end of dctl objects
+// *********************************************************************
+
+// *********************************************************************
+// begin qctl objects 
+// *********************************************************************
+
+bind cpx_packets_port lsu_cpx_packets_sample_C${c} {
+    lsu_cpx_packets_state {
+        lsu_cov_top.C${c}_cpx_spc_data_rdy_cx2,
+        lsu_cov_top.C${c}_cpx_spc_data_cx2[144:96]
+    };
+}
+
+bind cpx_ack_evict_port lsu_cpx_ack_evict_sample_C${c} {
+    lsu_cpx_ack_evict_state {
+        lsu_cov_top.C${c}_cpx_spc_data_rdy_cx2,
+        lsu_cov_top.C${c}_cpx_spc_data_cx2_local,
+        lsu_cov_top.C${c}_cpx_spc_data_cx2_Dinv,
+        lsu_cov_top.C${c}_cpx_spc_data_cx2_Iinv,
+        lsu_cov_top.C${c}_cpx_spc_data_cx2[144:123]
+    };
+}
+
+bind ifu_cpxpkt_ifubusy_port lsu_ifu_cpxpkt_ifubusy_sample_C${c} {
+    lsu_ifu_cpxpkt_ifubusy_state {
+        lsu_cov_top.C${c}_ifu_lsu_ibuf_busy,
+        lsu_cov_top.C${c}_lsu_ifu_cpxpkt_vld_i1,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind dfqout_cpxpkt_port lsu_dfqout_cpxpkt_sample_C${c} {
+    lsu_dfqout_cpxpkt_state {
+        lsu_cov_top.C${c}_dfq_rd_advance,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind dfqbyp_cpxpkt_port lsu_dfqbyp_cpxpkt_sample_C${c} {
+    lsu_dfqbyp_cpxpkt_state {
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_wr_en,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata[151],
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_local,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Dinv,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Iinv,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata[144:96]
+    };
+}
+
+bind dfq_out_byp_cpxpkts_port lsu_dfq_out_byp_cpxpkts_sample_C${c} {
+    lsu_dfq_out_byp_cpxpkts_state {
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_wr_en,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96],
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata[151],
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_local,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Dinv,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Iinv,
+        lsu_cov_top.C${c}_dfq_cpx_raw_wdata[144:96]
+    };
+}
+
+bind dfq_stalls_port lsu_dfq_stalls_sample_C${c} {
+    lsu_dfq_stalls_state {
+        lsu_cov_top.C${c}_ifu_lsu_ibuf_busy,
+        lsu_cov_top.C${c}_dfq_byp_ff_en,
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind dfq_stalls_2ormore_entries_port lsu_dfq_stalls_2ormore_entries_sample_C${c} {
+    lsu_dfq_stalls_2ormore_entries_state {
+        lsu_cov_top.C${c}_ifu_lsu_ibuf_busy,
+        lsu_cov_top.C${c}_dfq_byp_ff_en,
+        lsu_cov_top.C${c}_dfq_2ormore_vld_entries,
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind dfq_inv_flush_port lsu_dfq_inv_flush_sample_C${c} {
+    lsu_dfq_inv_flush_state {
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_rd_advance,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind dfq_int_rdadv_port lsu_dfq_int_rdadv_sample_C${c} {
+    lsu_dfq_int_rdadv_state {
+        lsu_cov_top.C${c}_ifu_lsu_ibuf_busy,
+        lsu_cov_top.C${c}_dfq_byp_ff_en,
+        lsu_cov_top.C${c}_inv_clear_d1,
+        lsu_cov_top.C${c}_dfq_rd_advance_d1,
+        lsu_cov_top.C${c}_dfq_stall_d1,
+        lsu_cov_top.C${c}_dfq_rd_vld_d1,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[151],
+        lsu_cov_top.C${c}_dfq_byp_mx_data_local,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_mx_data[144:96]
+    };
+}
+
+bind qctl_lddfpld_port lsu_qctl_lddfpld_sample_C${c} {
+    lsu_qctl_lddfpld_state {
+        lsu_cov_top.C${c}_memref_e,
+        lsu_cov_top.C${c}_lmq_ldd_vld,
+        lsu_cov_top.C${c}_ldd_in_dfq_out,
+        lsu_cov_top.C${c}_dfq_ld_vld,
+        lsu_cov_top.C${c}_lsu_cpx_pkt_prefetch,
+        lsu_cov_top.C${c}_lsu_l2fill_fpld_e
+    };
+}
+
+bind strmack_cmplt_port lsu_strmack_cmplt_sample_C${c} {
+    lsu_strmack_cmplt_state {
+        lsu_cov_top.C${c}_lsu_spu_strm_ack_cmplt,
+        lsu_cov_top.C${c}_strmack_cmplt1_d1,
+        lsu_cov_top.C${c}_strmack_cmplt2_d1,
+        lsu_cov_top.C${c}_strmack_cmplt3_d1
+    };
+}
+        
+bind qctl_l2cache_rq_port lsu_qctl_l2cache_rq_sample_C${c} {
+    lsu_qctl_l2cache_rq_state {
+        lsu_cov_top.C${c}_ld3_inst_vld_g,
+        lsu_cov_top.C${c}_ld2_inst_vld_g,
+        lsu_cov_top.C${c}_ld1_inst_vld_g,
+        lsu_cov_top.C${c}_ld0_inst_vld_g,
+        lsu_cov_top.C${c}_ld3_l2cache_rq_g,
+        lsu_cov_top.C${c}_ld2_l2cache_rq_g,
+        lsu_cov_top.C${c}_ld1_l2cache_rq_g,
+        lsu_cov_top.C${c}_ld0_l2cache_rq_g,
+        lsu_cov_top.C${c}_lsu_ld_miss_g,
+        lsu_cov_top.C${c}_ld3_inst_vld_w2,
+        lsu_cov_top.C${c}_ld2_inst_vld_w2,
+        lsu_cov_top.C${c}_ld1_inst_vld_w2,
+        lsu_cov_top.C${c}_ld0_inst_vld_w2,
+        lsu_cov_top.C${c}_ld3_ldbl_rq_w2,
+        lsu_cov_top.C${c}_ld2_ldbl_rq_w2,
+        lsu_cov_top.C${c}_ld1_ldbl_rq_w2,
+        lsu_cov_top.C${c}_ld0_ldbl_rq_w2,
+        lsu_cov_top.C${c}_ld_stb_full_raw_w2,
+        lsu_cov_top.C${c}_ld_stb_partial_raw_w2,
+        lsu_cov_top.C${c}_ld3_l2cache_rq_kill,
+        lsu_cov_top.C${c}_ld2_l2cache_rq_kill,
+        lsu_cov_top.C${c}_ld1_l2cache_rq_kill,
+        lsu_cov_top.C${c}_ld0_l2cache_rq_kill,
+        lsu_cov_top.C${c}_perr_ld_rq_kill_w2
+    };
+}
+
+bind dva_rdwr_sameaddr_port lsu_dva_rdwr_sameaddr_sample_C${c} {
+    lsu_dva_rdwr_sameaddr_state {
+        lsu_cov_top.C${c}_ifu_lsu_ld_inst_m,
+        lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e_d2,
+        lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e_d1,
+        lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e,
+        lsu_cov_top.C${c}_dva_rdwr_sameline_diffvalue,
+        lsu_cov_top.C${c}_dva_rd_wr_sameline_diffvalue,
+        lsu_cov_top.C${c}_dva_wr_rd_sameline_diffvalue,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_local_d2,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv_d2,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv_d2,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_d2[144:123],
+        lsu_cov_top.C${c}_dfq_byp_ff_data_local_d1,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv_d1,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv_d1,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_d1[144:123],
+        lsu_cov_top.C${c}_dfq_byp_ff_data_local,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv,
+        lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv,
+        lsu_cov_top.C${c}_dfq_byp_ff_data[144:123]    
+    };
+}
+
+bind traps_port lsu_traps_sample_C${c} {
+    lsu_traps_state {
+        lsu_cov_top.C${c}_ifu_tlu_inst_vld_w,
+        lsu_cov_top.C${c}_ifu_lsu_ld_inst_w,
+        lsu_cov_top.C${c}_ifu_lsu_st_inst_w,
+        lsu_cov_top.C${c}_ifu_tlu_flush_w,
+        lsu_cov_top.C${c}_ifu_mmu_trap_w,
+//        lsu_cov_top.C${c}_spu_tlu_rsrv_illgl_w,
+        lsu_cov_top.C${c}_exu_lsu_priority_trap_w,
+        lsu_cov_top.C${c}_ffu_tlu_ill_inst_w,
+        lsu_cov_top.C${c}_lsu_tlu_wtchpt_trp_g,
+        lsu_cov_top.C${c}_lsu_tlu_dmmu_miss_g,
+        lsu_cov_top.C${c}_early_trap_vld_g,
+        lsu_cov_top.C${c}_lsu_tlu_daccess_excptn_g,
+        lsu_cov_top.C${c}_lsu_tlu_daccess_prot_g,
+        lsu_cov_top.C${c}_lsu_tlu_priv_action_g,
+        lsu_cov_top.C${c}_ifu_tlu_immu_miss_w,
+        lsu_cov_top.C${c}_ifu_tlu_priv_violtn_w,
+        lsu_cov_top.C${c}_exu_ifu_va_oor_w
+    };
+}
+
+bind sechit_port lsu_sechit_sample_C${c} {
+   lsu_sechit_state {
+       lsu_cov_top.C${c}_ld3_inst_vld_w2,
+       lsu_cov_top.C${c}_ld2_inst_vld_w2,
+       lsu_cov_top.C${c}_ld1_inst_vld_w2,
+       lsu_cov_top.C${c}_ld0_inst_vld_w2,
+       lsu_cov_top.C${c}_ld3_sec_hit_w2,
+       lsu_cov_top.C${c}_ld2_sec_hit_w2,
+       lsu_cov_top.C${c}_ld1_sec_hit_w2,
+       lsu_cov_top.C${c}_ld0_sec_hit_w2,
+       lsu_cov_top.C${c}_lsu_way_hit_or_w2,
+       lsu_cov_top.C${c}_ncache_pcx_rq_w2
+   };
+}
+
+.for ( $t = 0; $t < 4; $t++ ) {
+bind ld_rawhit_st_port lsu_ld_rawhit_st_sample_C${c}T${t} {
+    lsu_ld_rawhit_st_state {
+       lsu_cov_top.C${c}_t${t}_ld_st_partialraw_hit,
+       lsu_cov_top.C${c}_t${t}_ld_st_fullraw_hit,
+       lsu_cov_top.C${c}_t${t}_st_ld_partialraw_hit,
+       lsu_cov_top.C${c}_t${t}_st_ld_fullraw_hit,
+       lsu_cov_top.C${c}_ld${t}_inst_vld_w4,
+       lsu_cov_top.C${c}_ld${t}_inst_vld_w2,
+       lsu_cov_top.C${c}_io_ld_w4,
+       lsu_cov_top.C${c}_io_ld_w2,
+       lsu_cov_top.C${c}_stb_cam_mhit_w4,
+       lsu_cov_top.C${c}_stb_cam_mhit_w2,
+       lsu_cov_top.C${c}_st${t}_pcx_rq_sel_d1,
+       lsu_cov_top.C${c}_pcx_req_squash
+    };
+}
+.}
+
+bind pick_status_port lsu_pick_status_sample_C${c} {
+    lsu_pick_status_state {
+        lsu_cov_top.C${c}_pick_status
+    };
+}
+
+bind picker1_port lsu_picker1_sample_C${c} {
+    lsu_picker1_state {
+        lsu_cov_top.C${c}_pick_presented,
+        lsu_cov_top.C${c}_pick_destbusy,
+        lsu_cov_top.C${c}_pick_atompend
+    };
+}
+
+bind picker2_port lsu_picker2_sample_C${c} {
+    lsu_picker2_state {
+        lsu_cov_top.C${c}_pick_presented_count,
+        lsu_cov_top.C${c}_pick_destbusy_count,
+        lsu_cov_top.C${c}_pick_atompend_count
+    };
+}
+
+bind fill_ld_b2b_sameaddr_port lsu_fill_ld_b2b_sameaddr_sample_C${c} {
+    lsu_fill_ld_b2b_sameaddr_state {
+        lsu_cov_top.C${c}_filladdrw_eq_ldaddrm,
+        lsu_cov_top.C${c}_ld3_fill_reset_w,
+        lsu_cov_top.C${c}_ld2_fill_reset_w,
+        lsu_cov_top.C${c}_ld1_fill_reset_w,
+        lsu_cov_top.C${c}_ld0_fill_reset_w,
+        lsu_cov_top.C${c}_ld3_inst_vld_m,
+        lsu_cov_top.C${c}_ld2_inst_vld_m,
+        lsu_cov_top.C${c}_ld1_inst_vld_m,
+        lsu_cov_top.C${c}_ld0_inst_vld_m
+    };
+}
+
+bind spu_stxa_ack_port lsu_spu_stxa_ack_sample_C${c} {
+    lsu_spu_stxa_ack_state {
+        lsu_cov_top.C${c}_st_inst_vld_g,
+        lsu_cov_top.C${c}_stxa_stall_asi_g,
+        lsu_cov_top.C${c}_thrid_g,
+        lsu_cov_top.C${c}_lsu_spu_stb_empty
+    };
+}
+
+// *********************************************************************
+// end qctl objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin stb_ctl objects
+// *********************************************************************
+// binding for store buffer inflight tlb miss signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_inflight_tlbmiss_port lsu_stb_ctl_inflight_tlbmiss_sample_C${c}T${t} {
+    lsu_stb_ctl_inflight_tlbmiss_state {
+        lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_vld_g,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_7,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_6,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_5,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_4,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_3,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_2,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_1,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_0,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_tlb_hit_g
+    };
+}
+.} # for $t
+
+// binding for store buffer inflight issue signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_inflight_issue_port lsu_stb_ctl_inflight_issue_sample_C${c}T${t} {
+    lsu_stb_ctl_inflight_issue_state {
+        lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_issue_g,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_7,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_6,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_5,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_4,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_3,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_2,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_1,
+        lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_0
+    };
+}
+.} # for $t
+
+// binding for store buffer issue oldest store with no wraparound signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_issue_oldest_nowrap_port lsu_stb_ctl_issue_oldest_nowrap_sample_C${c}T${t} {
+  lsu_stb_ctl_issue_oldest_nowrap_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_dfq,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_issue_g
+  };
+}
+.} # for $t
+
+// binding for store buffer issue oldest store with wraparound signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_issue_oldest_wrap_port lsu_stb_ctl_issue_oldest_wrap_sample_C${c}T${t} {
+  lsu_stb_ctl_issue_oldest_wrap_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_dfq,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_issue_g,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_ack
+  };
+}
+.} # for $t
+
+// binding for store buffer older store transition through all states signals
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_trans_all_states_port lsu_stb_ctl_trans_all_states_sample_C${c}T${t} {
+  lsu_stb_ctl_trans_all_states_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_ced_spec,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_ack
+  };
+}
+.} # for $t
+
+// binding for store buffer rmo st issue stalled because of rmo counter saturated
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_rmo_st_sat_port lsu_stb_ctl_rmo_st_sat_sample_C${c}T${t} {
+  lsu_stb_ctl_rmo_st_sat_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_rmo_st_sat,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rmo,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx_noced
+  };
+}
+.} # for $t
+
+// binding for store buffer inflight store killed
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_st_kill_port lsu_stb_ctl_st_kill_sample_C${c}T${t} {
+  lsu_stb_ctl_st_kill_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_issue_g,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_st_dtlb_perr_g,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_full_flush_st_g
+  };
+}
+.} # for $t
+
+// binding for store buffer store squashed
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_st_squash_port lsu_stb_ctl_st_squash_sample_C${c}T${t} {
+  lsu_stb_ctl_st_squash_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_vld_g,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_st_dtlb_perr_g,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_full_flush_st_g
+  };
+}
+.} # for $t
+
+// binding for store buffer rmo dequeue
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_rmo_dq_port lsu_stb_ctl_rmo_dq_sample_C${c}T${t} {
+  lsu_stb_ctl_rmo_dq_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_dq_rmo,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_dfq
+  };
+}
+.} # for $t
+
+// binding for store buffer load hits dequeuing store
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_st_dq_ld_hit_port lsu_stb_ctl_st_dq_ld_hit_sample_C${c}T${t} {
+  lsu_stb_ctl_st_dq_ld_hit_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_st_dq1_ld_hit,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_st_dq2_ld_hit
+  };
+}
+.} # for $t
+
+// binding for store buffer rmo pending until previous regular store is dequeued
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_pend_rmo_port lsu_stb_ctl_pend_rmo_sample_C${c}T${t} {
+  lsu_stb_ctl_pend_rmo_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_stb_dq_rmo_dfq_ptr
+  };
+}
+.} # for $t
+
+// binding for store buffer speculative issued squashed
+.for ( $t = 0; $t < 4; $t++ ) {
+bind stb_ctl_spec_squash_port lsu_stb_ctl_spec_squash_sample_C${c}T${t} {
+  lsu_stb_ctl_spec_squash_state {
+    lsu_cov_top2.C${c}T${t}_stb_ctl_dec_ackptr,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_pcx_rq_for_stb_d2,
+    lsu_cov_top2.C${c}T${t}_stb_ctl_pcx_req_squash_d2
+  };
+}
+.} # for $t
+
+// binding for store write cancelled because preceeding store from same
+// thread is flushed
+bind stb_rwctl_st_wr_cancel_port lsu_stb_rwctl_st_wr_cancel_sample_C${c} {
+  lsu_stb_rwctl_st_wr_cancel_state {
+    lsu_cov_top2.C${c}_stb_rwctl_st_atm_blkst_vld,
+    lsu_cov_top2.C${c}_stb_rwctl_flush_st_g,
+    lsu_cov_top2.C${c}_stb_rwctl_b2b_st_detect,
+    lsu_cov_top2.C${c}_stb_rwctl_thread0_m,
+    lsu_cov_top2.C${c}_stb_rwctl_thread1_m,
+    lsu_cov_top2.C${c}_stb_rwctl_thread2_m,
+    lsu_cov_top2.C${c}_stb_rwctl_thread3_m
+  };
+}
+
+// binding for store buffer read from pcx cancelled because of stb hit by load
+bind stb_rwctl_pcx_stb_rd_cancel_port lsu_stb_rwctl_pcx_stb_rd_cancel_sample_C${c} {
+  lsu_stb_rwctl_pcx_stb_rd_cancel_state {
+    lsu_cov_top2.C${c}_stb_rwctl_lsu_st_pcx_rq_vld,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_hit_w2,
+    lsu_cov_top2.C${c}_stb_rwctl_thrid_w2,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_hit_ptr_w2
+  };
+}
+
+// binding for store buffer byte_mask
+bind stb_rwctl_byte_mask_port lsu_stb_rwctl_byte_mask_sample_C${c} {
+  lsu_stb_rwctl_byte_mask_state {
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_vld,
+    lsu_cov_top2.C${c}_stb_rwctl_ldst_byte_mask
+  };
+}
+
+// binding for quad/binit ld hits stb
+bind stb_rwctl_quad_ld_hit_stb_port lsu_stb_rwctl_quad_ld_hit_stb_sample_C${c} {
+  lsu_stb_rwctl_quad_ld_hit_stb_state {
+    lsu_cov_top2.C${c}_stb_rwctl_ldquad_inst_g,
+    lsu_cov_top2.C${c}_stb_rwctl_thrid_g,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_mhit,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_full_raw,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_partial_raw
+  };
+}
+
+// binding for blk ld hits stb
+bind stb_rwctl_blk_ld_hit_stb_port lsu_stb_rwctl_blk_ld_hit_stb_sample_C${c} {
+  lsu_stb_rwctl_blk_ld_hit_stb_state {
+    lsu_cov_top2.C${c}_lsu_ld_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_blk_asi_g,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_mhit,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_full_raw,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_partial_raw
+  };
+}
+
+// binding for atomics hit stb
+bind stb_rwctl_atomics_hit_stb_port lsu_stb_rwctl_atomics_hit_stb_sample_C${c} {
+  lsu_stb_rwctl_atomics_hit_stb_state {
+    lsu_cov_top2.C${c}_qctl1_lsu_inst_vld_w,
+    lsu_cov_top2.C${c}_qctl1_atomic_g,
+    lsu_cov_top2.C${c}_stb_rwctl_thrid_g,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_cam_mhit,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_full_raw,
+    lsu_cov_top2.C${c}_stb_rwctl_stb_ld_partial_raw
+  };
+}
+
+// binding for store buffer partial raw detection
+bind stb_rwctl_praw_detect_port lsu_stb_rwctl_praw_detect_sample_C${c} {
+  lsu_stb_rwctl_praw_detect_state {
+    lsu_cov_top2.C${c}_stb_rwctl_ld_rawp_st_ced_w2,
+    lsu_cov_top2.C${c}_qctl1_casa_w2,
+    lsu_cov_top2.C${c}_qctl1_stb_cam_mhit_w2,
+    lsu_cov_top2.C${c}_qctl1_io_ld_w2,
+    lsu_cov_top2.C${c}_qctl1_stb_not_empty_w2,
+    lsu_cov_top2.C${c}_qctl1_ld_stb_partial_raw_w2,
+    lsu_cov_top2.C${c}_qctl1_partial_raw_w2,
+    lsu_cov_top2.C${c}_qctl1_ldq_hit_w2
+  };
+}
+
+
+// *********************************************************************
+// end stb_ctl objects
+// *********************************************************************
+
+// *********************************************************************
+// begin errors objects
+// *********************************************************************
+bind error_tte_data_perr_port lsu_error_tte_data_perr_sample_C${c} {
+  lsu_error_tte_data_perr_state {
+    lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc,
+    lsu_cov_top2.C${c}_dctl_ld_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_st_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_casa_g,
+    lsu_cov_top2.C${c}_dctl_swap_g,
+    lsu_cov_top2.C${c}_dctl_ldstub_g,
+    lsu_cov_top2.C${c}_qctl1_bld_g,
+    lsu_cov_top2.C${c}_dctl_blkst_g,
+    lsu_cov_top2.C${c}_qctl1_ldquad_inst_g,
+    lsu_cov_top2.C${c}_dctl_pref_inst_g,
+    lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc_wo_vld,
+    lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc_w_flush
+  };
+}
+
+bind error_tte_data_perr_asi_port lsu_error_tte_data_perr_asi_sample_C${c} {
+  lsu_error_tte_data_perr_asi_state {
+    lsu_cov_top2.C${c}_excpctl_asi_tte_data_perror
+  };
+}
+
+bind error_tte_tag_perr_asi_port lsu_error_tte_tag_perr_asi_sample_C${c} {
+  lsu_error_tte_tag_perr_asi_state {
+    lsu_cov_top2.C${c}_excpctl_asi_tte_tag_perror
+  };
+}
+
+bind error_dcache_tag_perr_port lsu_error_dcache_tag_perr_sample_C${c} {
+  lsu_error_dcache_tag_perr_state {
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g,
+    lsu_cov_top2.C${c}_dctl_dtag_parity_error,
+    lsu_cov_top2.C${c}_dctl_ld_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_st_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_casa_g,
+    lsu_cov_top2.C${c}_dctl_swap_g,
+    lsu_cov_top2.C${c}_dctl_ldstub_g,
+    lsu_cov_top2.C${c}_qctl1_bld_g,
+    lsu_cov_top2.C${c}_dctl_blkst_g,
+    lsu_cov_top2.C${c}_qctl1_ldquad_inst_g,
+    lsu_cov_top2.C${c}_dctl_pref_inst_g,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_blkasi,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_w_bypass,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_wo_bypass,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_atomic
+  };
+}
+
+bind error_dcache_data_perr_port lsu_error_dcache_data_perr_sample_C${c} {
+  lsu_error_dcache_data_perr_state {
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g,
+    lsu_cov_top2.C${c}_dctl_ld_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_st_inst_vld_g,
+    lsu_cov_top2.C${c}_dctl_casa_g,
+    lsu_cov_top2.C${c}_dctl_swap_g,
+    lsu_cov_top2.C${c}_dctl_ldstub_g,
+    lsu_cov_top2.C${c}_qctl1_bld_g,
+    lsu_cov_top2.C${c}_dctl_blkst_g,
+    lsu_cov_top2.C${c}_qctl1_ldquad_inst_g,
+    lsu_cov_top2.C${c}_dctl_pref_inst_g,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_wo_cacheenable,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_dtag_perror,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_w_altspace,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_w_atomic
+  };
+}
+
+bind error_matrix_port lsu_error_matrix_sample_C${c} {
+  lsu_error_matrix_state {
+    lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc,
+    lsu_cov_top2.C${c}_excpctl_asi_tte_data_perror,
+    lsu_cov_top2.C${c}_excpctl_asi_tte_tag_perror,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g,
+    lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g,
+    lsu_cov_top.C${c}_dcache_rd_parity_error,
+    lsu_cov_top2.C${c}_ld_inst_vld_unflushed,
+    lsu_cov_top.C${c}_lsu_inst_vld_w
+  };
+}
+
+bind error_async_ttype_port lsu_error_async_ttype_sample_C${c} {
+  lsu_error_async_ttype_state {
+    lsu_cov_top2.C${c}_dctl_async_ttype_vld_g,
+    lsu_cov_top2.C${c}_dctl_cam_perr_unc_g,
+    lsu_cov_top2.C${c}_dctl_asi_data_perr_g,
+    lsu_cov_top2.C${c}_dctl_asi_tag_perr_g,
+    lsu_cov_top2.C${c}_dctl_ifu_unc_err_g,
+    lsu_cov_top2.C${c}_dctl_nceen_g,
+    lsu_cov_top2.C${c}_dctl_pmem_unc_error_g,
+    lsu_cov_top2.C${c}_dctl_pmem_unc_error_tmp,
+    lsu_cov_top2.C${c}_dctl_bld_unc_err_pend_g,
+    lsu_cov_top2.C${c}_dctl_bld_squash_err_g,
+    lsu_cov_top2.C${c}_dctl_nceen_dfq_g,
+    lsu_cov_top2.C${c}_dctl_atm_st_unc_err_g,
+    lsu_cov_top2.C${c}_dctl_spubyp_trap_active_g
+  };
+}
+
+bind error_b2b_async_trap_port lsu_error_b2b_async_trap_sample_C${c} {
+  lsu_error_b2b_async_trap_state {
+    lsu_cov_top2.C${c}_dctl_async_ttype_vld_g,
+    lsu_cov_top2.C${c}_dctl_async_tid_g
+  };
+}
+
+bind error_defr_trap_port lsu_error_defr_trap_sample_C${c} {
+  lsu_error_defr_trap_state {
+    lsu_cov_top2.C${c}_excpctl_defr_trp_taken_m,
+    lsu_cov_top2.C${c}_excpctl_defr_trp_taken_byp,
+    lsu_cov_top2.C${c}_excpctl_thread0_m,
+    lsu_cov_top2.C${c}_excpctl_thread1_m,
+    lsu_cov_top2.C${c}_excpctl_thread2_m,
+    lsu_cov_top2.C${c}_excpctl_thread3_m
+  };
+}
+
+bind error_defr_vs_async_trap_port lsu_error_defr_vs_async_trap_sample_C${c} {
+  lsu_error_defr_vs_async_trap_state {
+    lsu_cov_top2.C${c}_excpctl_lsu_defr_trp_taken_g,
+    lsu_cov_top2.C${c}_excpctl_thread0_g,
+    lsu_cov_top2.C${c}_excpctl_thread1_g,
+    lsu_cov_top2.C${c}_excpctl_thread2_g,
+    lsu_cov_top2.C${c}_excpctl_thread3_g,
+    lsu_cov_top2.C${c}_dctl_async_ttype_vld_g,
+    lsu_cov_top2.C${c}_dctl_async_tid_g
+  };
+}
+
+bind error_ldbypass_port lsu_error_ldbypass_sample_C${c} {
+  lsu_error_ldbypass_state {
+    lsu_cov_top2.C${c}_dctl_ldbyp0_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp1_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp2_vld_en,
+    lsu_cov_top2.C${c}_dctl_ldbyp3_vld_en,
+    lsu_cov_top2.C${c}_dctl_fp_ldst_thrd0_w5,
+    lsu_cov_top2.C${c}_dctl_fp_ldst_thrd1_w5,
+    lsu_cov_top2.C${c}_dctl_fp_ldst_thrd2_w5,
+    lsu_cov_top2.C${c}_dctl_fp_ldst_thrd3_w5,
+    lsu_cov_top2.C${c}_dctl_spu_trap,
+    lsu_cov_top2.C${c}_dctl_tte_data_perror_unc_w2,
+    lsu_cov_top2.C${c}_dctl_atm_ld_w_uerr,
+    lsu_cov_top2.C${c}_dctl_asi_tte_data_perror_w2,
+    lsu_cov_top2.C${c}_dctl_asi_tte_tag_perror_w2,
+    lsu_cov_top2.C${c}_dctl_ifu_lsu_asi_rd_unc
+  };
+}
+
+bind error_l2_error_port lsu_error_l2_error_sample_C${c} {
+  lsu_error_l2_error_state {
+     lsu_cov_top2.C${c}_dctl_l2_unc_error_e,
+     lsu_cov_top2.C${c}_dctl_l2_corr_error_e,
+     lsu_cov_top2.C${c}_dctl_lsu_cpx_pkt_ld_err,
+     lsu_cov_top2.C${c}_dctl_l2fill_vld_e,
+     lsu_cov_top2.C${c}_dctl_ignore_fill
+  };
+}
+
+bind error_ifu_l2_error_port lsu_error_ifu_l2_error_sample_C${c} {
+  lsu_error_ifu_l2_error_state {
+     lsu_cov_top2.C${c}_dctl_lsu_ifu_l2_unc_error,
+     lsu_cov_top2.C${c}_dctl_l2_unc_error_w2,
+     lsu_cov_top2.C${c}_dctl_bld_unc_err_pend_w2,
+     lsu_cov_top2.C${c}_dctl_lsu_ifu_err_addr_b39,
+     lsu_cov_top2.C${c}_dctl_bld_squash_err_w2,
+     lsu_cov_top2.C${c}_dctl_lsu_ifu_l2_corr_error,
+     lsu_cov_top2.C${c}_dctl_l2_corr_error_w2,
+     lsu_cov_top2.C${c}_dctl_bld_corr_err_pend_w2
+  };
+}
+
+bind error_ifu_io_error_port lsu_error_ifu_io_error_sample_C${c} {
+  lsu_error_ifu_io_error_state {
+     lsu_cov_top2.C${c}_dctl_lsu_ifu_io_error,
+     lsu_cov_top2.C${c}_dctl_l2_unc_error_w2,
+     lsu_cov_top2.C${c}_dctl_bld_unc_err_pend_w2,
+     lsu_cov_top2.C${c}_dctl_lsu_ifu_err_addr_b39,
+     lsu_cov_top2.C${c}_dctl_bld_squash_err_w2
+  };
+}
+
+
+// *********************************************************************
+// end errors objects
+// *********************************************************************
+
+bind cmplt_extended_port lsu_cmplt_extended_bind_C${c} {
+     stxa_internal_d2                     lsu_cov_top2.C${c}_stxa_internal_d2;
+
+     thread0_w3                           lsu_cov_top2.C${c}_thread0_w3;
+     thread1_w3                           lsu_cov_top2.C${c}_thread1_w3;
+     thread2_w3                           lsu_cov_top2.C${c}_thread2_w3;
+     thread3_w3                           lsu_cov_top2.C${c}_thread3_w3;
+
+     stxa_stall_wr_cmplt0_d1              lsu_cov_top2.C${c}_stxa_stall_wr_cmplt0_d1;
+     stxa_stall_wr_cmplt1_d1              lsu_cov_top2.C${c}_stxa_stall_wr_cmplt1_d1;
+     stxa_stall_wr_cmplt2_d1              lsu_cov_top2.C${c}_stxa_stall_wr_cmplt2_d1;
+     stxa_stall_wr_cmplt3_d1              lsu_cov_top2.C${c}_stxa_stall_wr_cmplt3_d1;
+
+     l2fill_vld_e                         lsu_cov_top2.C${c}_l2fill_vld_e;
+     ignore_fill                          lsu_cov_top2.C${c}_ignore_fill;
+     l2fill_fpld_e                        lsu_cov_top2.C${c}_l2fill_fpld_e;
+     lsu_cpx_pkt_atm_st_cmplt             lsu_cov_top2.C${c}_lsu_cpx_pkt_atm_st_cmplt;
+
+     lsu_cpx_pkt_ld_err                   lsu_cov_top2.C${c}_lsu_cpx_pkt_ld_err;
+     lsu_nceen_d1                         lsu_cov_top2.C${c}_lsu_nceen_d1;
+
+     dfill_thread0                        lsu_cov_top2.C${c}_dfill_thread0;
+     dfill_thread1                        lsu_cov_top2.C${c}_dfill_thread1;
+     dfill_thread2                        lsu_cov_top2.C${c}_dfill_thread2;
+     dfill_thread3                        lsu_cov_top2.C${c}_dfill_thread3;
+
+     intld_byp_cmplt                      lsu_cov_top2.C${c}_intld_byp_cmplt;
+
+     atm_st_cmplt0                        lsu_cov_top2.C${c}_atm_st_cmplt0;
+     atm_st_cmplt1                        lsu_cov_top2.C${c}_atm_st_cmplt1;
+     atm_st_cmplt2                        lsu_cov_top2.C${c}_atm_st_cmplt2;
+     atm_st_cmplt3                        lsu_cov_top2.C${c}_atm_st_cmplt3;
+
+     pend_atm_ld_ue                       lsu_cov_top2.C${c}_pend_atm_ld_ue;
+
+     bsync0_reset                         lsu_cov_top2.C${c}_bsync0_reset;
+     bsync1_reset                         lsu_cov_top2.C${c}_bsync1_reset;
+     bsync2_reset                         lsu_cov_top2.C${c}_bsync2_reset;
+     bsync3_reset                         lsu_cov_top2.C${c}_bsync3_reset;
+
+     lsu_intrpt_cmplt                     lsu_cov_top2.C${c}_lsu_intrpt_cmplt;
+
+     diag_wr_cmplt0                       lsu_cov_top2.C${c}_diag_wr_cmplt0;
+     diag_wr_cmplt1                       lsu_cov_top2.C${c}_diag_wr_cmplt1;
+     diag_wr_cmplt2                       lsu_cov_top2.C${c}_diag_wr_cmplt2;
+     diag_wr_cmplt3                       lsu_cov_top2.C${c}_diag_wr_cmplt3;
+
+     ldxa_illgl_va_cmplt_d1               lsu_cov_top2.C${c}_ldxa_illgl_va_cmplt_d1;
+     pref_tlbmiss_cmplt_d2                lsu_cov_top2.C${c}_pref_tlbmiss_cmplt_d2;
+     lsu_pcx_pref_issue                   lsu_cov_top2.C${c}_lsu_pcx_pref_issue;
+}
+
+
+.
+. } # coreBindings
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+
+#endif

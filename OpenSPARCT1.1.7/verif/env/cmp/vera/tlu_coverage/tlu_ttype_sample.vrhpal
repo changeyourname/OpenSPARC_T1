@@ -1,0 +1,188 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the synchronous trap types reported by ifu.
+//***************************************************************************
+
+
+// coverage_def TLU_SYNC_IFU_TTYPE (bit [11:0] tlu_sync_ifu_ttype_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_TLU_TTYPE_1		(TLU_TTYPE_1);
+  wildcard state s_TLU_TTYPE_2		(TLU_TTYPE_2);
+  wildcard state s_TLU_TTYPE_3		(TLU_TTYPE_3);
+  wildcard state s_TLU_TTYPE_4		(TLU_TTYPE_4);
+  wildcard state s_TLU_TTYPE_5		(TLU_TTYPE_5);
+  wildcard state s_TLU_TTYPE_8		(TLU_TTYPE_8);
+  wildcard state s_TLU_TTYPE_a		(TLU_TTYPE_a);
+  wildcard state s_TLU_TTYPE_10		(TLU_TTYPE_10);
+  wildcard state s_TLU_TTYPE_11		(TLU_TTYPE_11);
+  wildcard state s_TLU_TTYPE_20		(TLU_TTYPE_20);
+  wildcard state s_TLU_TTYPE_21		(TLU_TTYPE_21);
+  wildcard state s_TLU_TTYPE_22		(TLU_TTYPE_22);
+  wildcard state s_TLU_TTYPE_23		(TLU_TTYPE_23);
+  wildcard state s_TLU_TTYPE_24_27	(TLU_TTYPE_24, TLU_TTYPE_25, TLU_TTYPE_26, TLU_TTYPE_27);
+  wildcard state s_TLU_TTYPE_28		(TLU_TTYPE_28);
+  wildcard state s_TLU_TTYPE_29		(TLU_TTYPE_29);
+  wildcard state s_TLU_TTYPE_30		(TLU_TTYPE_30);
+  wildcard state s_TLU_TTYPE_32		(TLU_TTYPE_32);
+  wildcard state s_TLU_TTYPE_34		(TLU_TTYPE_34);
+  wildcard state s_TLU_TTYPE_35		(TLU_TTYPE_35);
+  wildcard state s_TLU_TTYPE_36		(TLU_TTYPE_36);
+  wildcard state s_TLU_TTYPE_37		(TLU_TTYPE_37);
+  wildcard state s_TLU_TTYPE_3e		(TLU_TTYPE_3e);
+  wildcard state s_TLU_TTYPE_3f		(TLU_TTYPE_3f);
+  wildcard state s_TLU_TTYPE_41_4d	(TLU_TTYPE_41, TLU_TTYPE_42, TLU_TTYPE_43, TLU_TTYPE_44,
+				 	 TLU_TTYPE_45, TLU_TTYPE_46, TLU_TTYPE_47, TLU_TTYPE_48,
+					 TLU_TTYPE_49, TLU_TTYPE_4a, TLU_TTYPE_4b, TLU_TTYPE_4c,
+					 TLU_TTYPE_4d
+					);
+  wildcard state s_TLU_TTYPE_4e		(TLU_TTYPE_4e);
+  wildcard state s_TLU_TTYPE_4f		(TLU_TTYPE_4f);
+  wildcard state s_TLU_TTYPE_5e		(TLU_TTYPE_5e);
+  wildcard state s_TLU_TTYPE_5f		(TLU_TTYPE_5f);
+  wildcard state s_TLU_TTYPE_60		(TLU_TTYPE_60);
+  wildcard state s_TLU_TTYPE_62		(TLU_TTYPE_62);
+  wildcard state s_TLU_TTYPE_63		(TLU_TTYPE_63);
+  wildcard state s_TLU_TTYPE_64_67	(TLU_TTYPE_64, TLU_TTYPE_65, TLU_TTYPE_66, TLU_TTYPE_67);
+  wildcard state s_TLU_TTYPE_68_6b	(TLU_TTYPE_68, TLU_TTYPE_69, TLU_TTYPE_6a, TLU_TTYPE_6b);
+  wildcard state s_TLU_TTYPE_6c_6f	(TLU_TTYPE_6c, TLU_TTYPE_6d, TLU_TTYPE_6e, TLU_TTYPE_6f);
+  wildcard state s_TLU_TTYPE_74		(TLU_TTYPE_74);
+  wildcard state s_TLU_TTYPE_76		(TLU_TTYPE_76);
+  wildcard state s_TLU_TTYPE_78		(TLU_TTYPE_78);
+  wildcard state s_TLU_TTYPE_7c		(TLU_TTYPE_7c);
+  wildcard state s_TLU_TTYPE_7d		(TLU_TTYPE_7d);
+  wildcard state s_TLU_TTYPE_7e		(TLU_TTYPE_7e);
+  //wildcard state s_TLU_TTYPE_7f		(TLU_TTYPE_7f);
+  wildcard state s_TLU_TTYPE_80_9f	(TLU_TTYPE_80, TLU_TTYPE_81, TLU_TTYPE_82, TLU_TTYPE_83,
+					 TLU_TTYPE_84, TLU_TTYPE_85, TLU_TTYPE_86, TLU_TTYPE_87,
+					 TLU_TTYPE_88, TLU_TTYPE_89, TLU_TTYPE_8a, TLU_TTYPE_8b,
+					 TLU_TTYPE_8c, TLU_TTYPE_8d, TLU_TTYPE_8e, TLU_TTYPE_8f,
+  					 TLU_TTYPE_90, TLU_TTYPE_91, TLU_TTYPE_92, TLU_TTYPE_93,
+					 TLU_TTYPE_94, TLU_TTYPE_95, TLU_TTYPE_96, TLU_TTYPE_97,
+					 TLU_TTYPE_98, TLU_TTYPE_99, TLU_TTYPE_9a, TLU_TTYPE_9b,
+					 TLU_TTYPE_9c, TLU_TTYPE_9d, TLU_TTYPE_9e, TLU_TTYPE_9f
+					);
+  wildcard state s_TLU_TTYPE_a0_bf	(TLU_TTYPE_a0, TLU_TTYPE_a1, TLU_TTYPE_a2, TLU_TTYPE_a3,
+					 TLU_TTYPE_a4, TLU_TTYPE_a5, TLU_TTYPE_a6, TLU_TTYPE_a7,
+					 TLU_TTYPE_a8, TLU_TTYPE_a9, TLU_TTYPE_aa, TLU_TTYPE_ab,
+					 TLU_TTYPE_ac, TLU_TTYPE_ad, TLU_TTYPE_ae, TLU_TTYPE_af,
+  					 TLU_TTYPE_b0, TLU_TTYPE_b1, TLU_TTYPE_b2, TLU_TTYPE_b3,
+					 TLU_TTYPE_b4, TLU_TTYPE_b5, TLU_TTYPE_b6, TLU_TTYPE_b7,
+					 TLU_TTYPE_b8, TLU_TTYPE_b9, TLU_TTYPE_ba, TLU_TTYPE_bb,
+					 TLU_TTYPE_bc, TLU_TTYPE_bd, TLU_TTYPE_be, TLU_TTYPE_bf
+					);
+  wildcard state s_TLU_TTYPE_c0_df	(TLU_TTYPE_c0, TLU_TTYPE_c1, TLU_TTYPE_c2, TLU_TTYPE_c3,
+					 TLU_TTYPE_c4, TLU_TTYPE_c5, TLU_TTYPE_c6, TLU_TTYPE_c7,
+					 TLU_TTYPE_c8, TLU_TTYPE_c9, TLU_TTYPE_ca, TLU_TTYPE_cb,
+					 TLU_TTYPE_cc, TLU_TTYPE_cd, TLU_TTYPE_ce, TLU_TTYPE_cf,
+  					 TLU_TTYPE_d0, TLU_TTYPE_d1, TLU_TTYPE_d2, TLU_TTYPE_d3,
+					 TLU_TTYPE_d4, TLU_TTYPE_d5, TLU_TTYPE_d6, TLU_TTYPE_d7,
+					 TLU_TTYPE_d8, TLU_TTYPE_d9, TLU_TTYPE_da, TLU_TTYPE_db,
+					 TLU_TTYPE_dc, TLU_TTYPE_dd, TLU_TTYPE_de, TLU_TTYPE_df
+					);
+  wildcard state s_TLU_TTYPE_e0_ff	(TLU_TTYPE_e0, TLU_TTYPE_e1, TLU_TTYPE_e2, TLU_TTYPE_e3,
+					 TLU_TTYPE_e4, TLU_TTYPE_e5, TLU_TTYPE_e6, TLU_TTYPE_e7,
+					 TLU_TTYPE_e8, TLU_TTYPE_e9, TLU_TTYPE_ea, TLU_TTYPE_eb,
+					 TLU_TTYPE_ec, TLU_TTYPE_ed, TLU_TTYPE_ee, TLU_TTYPE_ef,
+  					 TLU_TTYPE_f0, TLU_TTYPE_f1, TLU_TTYPE_f2, TLU_TTYPE_f3,
+					 TLU_TTYPE_f4, TLU_TTYPE_f5, TLU_TTYPE_f6, TLU_TTYPE_f7,
+					 TLU_TTYPE_f8, TLU_TTYPE_f9, TLU_TTYPE_fa, TLU_TTYPE_fb,
+					 TLU_TTYPE_fc, TLU_TTYPE_fd, TLU_TTYPE_fe, TLU_TTYPE_ff
+					);
+  wildcard state s_TLU_TTYPE_100_17f	(TLU_TTYPE_100_17f);
+  wildcard state s_TLU_TTYPE_180_1ff	(TLU_TTYPE_180_1ff);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_TLU_TTYPE_0		(TLU_TTYPE_0);
+  wildcard bad_state s_TLU_TTYPE_6		(TLU_TTYPE_6);
+  wildcard bad_state s_TLU_TTYPE_7		(TLU_TTYPE_7);
+  wildcard bad_state s_TLU_TTYPE_9		(TLU_TTYPE_9);
+  wildcard bad_state s_TLU_TTYPE_b		(TLU_TTYPE_b);
+  wildcard bad_state s_TLU_TTYPE_c		(TLU_TTYPE_c);
+  wildcard bad_state s_TLU_TTYPE_d		(TLU_TTYPE_d);
+  wildcard bad_state s_TLU_TTYPE_e		(TLU_TTYPE_e);
+  wildcard bad_state s_TLU_TTYPE_f		(TLU_TTYPE_f);
+  wildcard bad_state s_TLU_TTYPE_12		(TLU_TTYPE_12);
+  wildcard bad_state s_TLU_TTYPE_13		(TLU_TTYPE_13);
+  wildcard bad_state s_TLU_TTYPE_14		(TLU_TTYPE_14);
+  wildcard bad_state s_TLU_TTYPE_15		(TLU_TTYPE_15);
+  wildcard bad_state s_TLU_TTYPE_16		(TLU_TTYPE_16);
+  wildcard bad_state s_TLU_TTYPE_17		(TLU_TTYPE_17);
+  wildcard bad_state s_TLU_TTYPE_18		(TLU_TTYPE_18);
+  wildcard bad_state s_TLU_TTYPE_19		(TLU_TTYPE_19);
+  wildcard bad_state s_TLU_TTYPE_1a		(TLU_TTYPE_1a);
+  wildcard bad_state s_TLU_TTYPE_1b		(TLU_TTYPE_1b);
+  wildcard bad_state s_TLU_TTYPE_1c		(TLU_TTYPE_1c);
+  wildcard bad_state s_TLU_TTYPE_1d		(TLU_TTYPE_1d);
+  wildcard bad_state s_TLU_TTYPE_1e		(TLU_TTYPE_1e);
+  wildcard bad_state s_TLU_TTYPE_1f		(TLU_TTYPE_1f);
+  wildcard bad_state s_TLU_TTYPE_2a		(TLU_TTYPE_2a);
+  wildcard bad_state s_TLU_TTYPE_2b		(TLU_TTYPE_2b);
+  wildcard bad_state s_TLU_TTYPE_2c		(TLU_TTYPE_2c);
+  wildcard bad_state s_TLU_TTYPE_2d		(TLU_TTYPE_2d);
+  wildcard bad_state s_TLU_TTYPE_2e		(TLU_TTYPE_2e);
+  wildcard bad_state s_TLU_TTYPE_2f		(TLU_TTYPE_2f);
+  wildcard bad_state s_TLU_TTYPE_31		(TLU_TTYPE_31);
+  wildcard bad_state s_TLU_TTYPE_33		(TLU_TTYPE_33);
+  wildcard bad_state s_TLU_TTYPE_38		(TLU_TTYPE_38);
+  wildcard bad_state s_TLU_TTYPE_39		(TLU_TTYPE_39);
+  wildcard bad_state s_TLU_TTYPE_3a		(TLU_TTYPE_3a);
+  wildcard bad_state s_TLU_TTYPE_3b		(TLU_TTYPE_3b);
+  wildcard bad_state s_TLU_TTYPE_3c		(TLU_TTYPE_3c);
+  wildcard bad_state s_TLU_TTYPE_3d		(TLU_TTYPE_3d);
+  wildcard bad_state s_TLU_TTYPE_40		(TLU_TTYPE_40);
+  wildcard bad_state s_TLU_TTYPE_50		(TLU_TTYPE_50);
+  wildcard bad_state s_TLU_TTYPE_51		(TLU_TTYPE_51);
+  wildcard bad_state s_TLU_TTYPE_52		(TLU_TTYPE_52);
+  wildcard bad_state s_TLU_TTYPE_53		(TLU_TTYPE_53);
+  wildcard bad_state s_TLU_TTYPE_54		(TLU_TTYPE_54);
+  wildcard bad_state s_TLU_TTYPE_55		(TLU_TTYPE_55);
+  wildcard bad_state s_TLU_TTYPE_56		(TLU_TTYPE_56);
+  wildcard bad_state s_TLU_TTYPE_57		(TLU_TTYPE_57);
+  wildcard bad_state s_TLU_TTYPE_58		(TLU_TTYPE_58);
+  wildcard bad_state s_TLU_TTYPE_59		(TLU_TTYPE_59);
+  wildcard bad_state s_TLU_TTYPE_5a		(TLU_TTYPE_5a);
+  wildcard bad_state s_TLU_TTYPE_5b		(TLU_TTYPE_5b);
+  wildcard bad_state s_TLU_TTYPE_5c		(TLU_TTYPE_5c);
+  wildcard bad_state s_TLU_TTYPE_5d		(TLU_TTYPE_5d);
+  wildcard bad_state s_TLU_TTYPE_61		(TLU_TTYPE_61);
+  wildcard bad_state s_TLU_TTYPE_70		(TLU_TTYPE_70);
+  wildcard bad_state s_TLU_TTYPE_71		(TLU_TTYPE_71);
+  wildcard bad_state s_TLU_TTYPE_72		(TLU_TTYPE_72);
+  wildcard bad_state s_TLU_TTYPE_73		(TLU_TTYPE_73);
+  wildcard bad_state s_TLU_TTYPE_75		(TLU_TTYPE_75);
+  wildcard bad_state s_TLU_TTYPE_77		(TLU_TTYPE_77);
+  wildcard bad_state s_TLU_TTYPE_79		(TLU_TTYPE_79);
+  wildcard bad_state s_TLU_TTYPE_7a		(TLU_TTYPE_7a);
+  wildcard bad_state s_TLU_TTYPE_7b		(TLU_TTYPE_7b);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

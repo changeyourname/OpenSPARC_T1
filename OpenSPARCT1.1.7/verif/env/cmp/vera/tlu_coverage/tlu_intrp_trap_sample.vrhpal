@@ -1,0 +1,81 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_intrp_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU: simultanous/back-to-back Intterrupts and
+// other sync/async traps
+//
+//***************************************************************************
+ 
+
+// coverage_def TLU_INTRP_TRAP_COV (bit [13:0] tlu_intrp_trap_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_LSU_ASYNC_TRAP_HW_INTR	(LSU_ASYNC_TRAP_HW_INTR);
+  wildcard state s_LSU_ASYNC_TRAP_SW_INTR	(LSU_ASYNC_TRAP_SW_INTR);
+  wildcard state s_LSU_ASYNC_TRAP_RST_INTR	(LSU_ASYNC_TRAP_RST_INTR);
+
+  wildcard state s_B2B_LSU_ASYNC_TRAP_HW_INTR	(B2B_LSU_ASYNC_TRAP_HW_INTR);
+  wildcard state s_B2B_LSU_ASYNC_TRAP_SW_INTR	(B2B_LSU_ASYNC_TRAP_SW_INTR);
+  wildcard state s_B2B_LSU_ASYNC_TRAP_RST_INTR	(B2B_LSU_ASYNC_TRAP_RST_INTR);
+
+  wildcard state s_ASYNC_TRAP_HW_INTR		(ASYNC_TRAP_HW_INTR);
+  wildcard state s_ASYNC_TRAP_SW_INTR		(ASYNC_TRAP_SW_INTR);
+  wildcard state s_ASYNC_TRAP_RST_INTR		(ASYNC_TRAP_RST_INTR);
+  wildcard state s_ASYNC_CWP_CMPLT_HW_INTR	(ASYNC_CWP_CMPLT_HW_INTR);
+  wildcard state s_ASYNC_CWP_CMPLT_SW_INTR	(ASYNC_CWP_CMPLT_SW_INTR);
+  wildcard state s_ASYNC_CWP_CMPLT_RST_INTR	(ASYNC_CWP_CMPLT_RST_INTR);
+
+  wildcard state s_B2B_HW_INTR_SYNC_TRAP	(B2B_HW_INTR_SYNC_TRAP);
+  wildcard state s_B2B_SW_INTR_SYNC_TRAP	(B2B_SW_INTR_SYNC_TRAP);
+  wildcard state s_B2B_RST_INTR_SYNC_TRAP	(B2B_RST_INTR_SYNC_TRAP);
+
+  wildcard state s_B2B_SYNC_TRAP_HW_INTR	(B2B_SYNC_TRAP_HW_INTR);
+  wildcard state s_B2B_SYNC_TRAP_SW_INTR	(B2B_SYNC_TRAP_SW_INTR);
+  wildcard state s_B2B_SYNC_TRAP_RST_INTR	(B2B_SYNC_TRAP_RST_INTR);
+
+  wildcard state s_B2B_HW_INTR_SW_INTR	(B2B_HW_INTR_SW_INTR);
+  wildcard state s_B2B_HW_INTR_RST_INTR	(B2B_HW_INTR_RST_INTR);
+  wildcard state s_B2B_SW_INTR_RST_INTR	(B2B_SW_INTR_RST_INTR);
+  wildcard state s_B2B_SW_INTR_HW_INTR	(B2B_SW_INTR_HW_INTR);
+  wildcard state s_B2B_RST_INTR_HW_INTR	(B2B_RST_INTR_HW_INTR);
+  wildcard state s_B2B_RST_INTR_SW_INTR	(B2B_RST_INTR_SW_INTR);
+
+  wildcard state s_VEC_INTR_HW_INTR		(VEC_INTR_HW_INTR);
+  wildcard state s_VEC_INTR_SW_INTR		(VEC_INTR_SW_INTR);
+  wildcard state s_VEC_INTR_RST_INTR		(VEC_INTR_RST_INTR);
+  wildcard state s_VEC_INTR_SYNC_TRAP		(VEC_INTR_SYNC_TRAP);
+  wildcard state s_VEC_INTR_ASYNC_TRAP		(VEC_INTR_ASYNC_TRAP);
+  wildcard state s_VEC_INTR_ASYNC_CWP_CMPLT	(VEC_INTR_ASYNC_CWP_CMPLT);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

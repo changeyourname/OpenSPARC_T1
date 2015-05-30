@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_cpx_ack_evict_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// CPX packet (only Store, Stream Store, and Evict) received by the Core (LSU)
+
+// lsu_cpx_ack_evict_state = {cpx_spc_data_rdy_cx2, cpx_spc_data_cx2_local, cpx_spc_data_cx2_Dinv,
+//                            cpx_spc_data_cx2_Iinv, cpx_spc_data_cx2[144:123]};
+
+//                                     rdy   local Dinv  Iinv  vld   reqtype           at pf  data[127:123]
+wildcard state store_local_noupdate ( {1'b1, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00000} );
+wildcard state store_local_Dupdate  ( {1'b1, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00000} );
+wildcard state store_local_Iinv     ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00000} );
+wildcard state store_foreign_Dinv   ( {1'b1, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00000} );
+wildcard state store_foreign_Iinv   ( {1'b1, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00000} );
+wildcard state blkst_local_noupdate ( {1'b1, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00100} );
+wildcard state blkst_local_Dupdate  ( {1'b1, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00100} );
+wildcard state blkst_local_Iinv     ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00100} );
+wildcard state blkst_foreign_Dinv   ( {1'b1, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00100} );
+wildcard state blkst_foreign_Iinv   ( {1'b1, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b00, 5'b00100} );
+wildcard state atomic_local_noupdate( {1'b1, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b10, 5'b00000} );
+wildcard state atomic_local_Dupdate ( {1'b1, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b10, 5'b00000} );
+wildcard state atomic_local_Iinv    ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b10, 5'b00000} );
+wildcard state atomic_foreign_Dinv  ( {1'b1, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    10'bx, 2'b10, 5'b00000} );
+wildcard state atomic_foreign_Iinv  ( {1'b1, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    10'bx, 2'b10, 5'b00000} );
+wildcard state strst_local_noupdate ( {1'b1, 1'b1, 1'b0, 1'b0, 1'b1, STRST_ACK, 10'bx, 2'bx0, 5'b00000} );
+wildcard state strst_local_Dupdate  ( {1'b1, 1'b1, 1'b1, 1'b0, 1'b1, STRST_ACK, 10'bx, 2'bx0, 5'b00000} );
+wildcard state strst_local_Iinv     ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b1, STRST_ACK, 10'bx, 2'bx0, 5'b00000} );
+wildcard state strst_foreign_Dinv   ( {1'b1, 1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK, 10'bx, 2'bx0, 5'b00000} );
+wildcard state strst_foreign_Iinv   ( {1'b1, 1'b0, 1'b0, 1'b1, 1'b1, STRST_ACK, 10'bx, 2'bx0, 5'b00000} );
+wildcard state evict_Dinv           ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1, EVICT_REQ, 10'bx, 2'bx0, 5'b00000} );
+wildcard state evict_Iinv           ( {1'b1, 1'bx, 1'b0, 1'b1, 1'b1, EVICT_REQ, 10'bx, 2'bx0, 5'b00000} );
+wildcard state evict_IandDinv       ( {1'b1, 1'bx, 1'b1, 1'b1, 1'b1, EVICT_REQ, 10'bx, 2'bx0, 5'b00000} );

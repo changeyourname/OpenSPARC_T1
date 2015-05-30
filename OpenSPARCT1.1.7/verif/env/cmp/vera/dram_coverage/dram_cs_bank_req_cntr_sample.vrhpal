@@ -1,0 +1,41 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_cs_bank_req_cntr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_cs_bank_req_cntr_sample.vrh
+// Description:
+// Coverage object to observe traffic pattern on the DRAM Channels.
+// This observes the number of requests in particular CS and BA
+// This can be fine tuned depending on the pattern.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_cs_bank_req_cntr_sample (bit [10:0] cntr)
+// {
+     state s_cnt_0             (0);
+     state s_cnt_1             (1);
+     state s_cnt_2_10          (2:10);
+     state s_cnt_11_200        (11:200);
+     state s_cnt_201_2047      (201:2047);
+
+// }
+// }

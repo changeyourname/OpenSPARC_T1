@@ -1,0 +1,149 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spd_single_dimm.data
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+0 80
+1 08
+2 07
+3 0c
+4 0b
+5 01
+6 48
+7 00
+8 04 
+9 70
+a 75
+b 02
+c 40
+d 04
+e 04
+f 01
+10 0e
+11 04
+12 0c
+13 01
+14 02
+15 26
+16 00
+17 75
+18 75
+19 00
+1a 00
+1b 3c
+1c 3c
+1d 3c
+1e 2d
+1f 40
+20 90
+21 90
+22 50
+23 50
+24 00
+25 00
+26 00
+27 00
+28 00
+29 00
+2a 00
+2b 00
+2c 00
+2d 00
+2e 00
+2f 00
+30 00
+31 00
+32 00
+33 00
+34 00
+35 00
+36 00
+37 00
+38 00
+39 00
+3a 00
+3b 00
+3c 00
+3d 00
+3e 00
+3f 75
+40 2c
+41 00
+42 00
+43 00
+44 00
+45 00
+46 00
+47 00
+48 01
+49 00
+4a 00
+4b 00
+4c 00
+4d 00
+4e 00
+4f 00
+50 00
+51 00
+52 00
+53 00
+54 00
+55 00
+56 00
+57 00
+58 00
+59 00
+5a 00
+5b 01
+5c 00
+5d 00
+5e 00
+5f 00
+60 00
+61 00
+62 00
+63 00
+64 00
+65 00
+66 00
+67 00
+68 00
+69 00
+6a 00
+6b 00
+6c 00
+6d 00
+6e 00
+6f 00
+70 00
+71 00
+72 00
+73 00
+74 00
+75 00
+76 00
+77 00
+78 00
+79 00
+7a 00
+7b 00
+7c 00
+7d 00
+7e 00
+7f 00
+7f 00

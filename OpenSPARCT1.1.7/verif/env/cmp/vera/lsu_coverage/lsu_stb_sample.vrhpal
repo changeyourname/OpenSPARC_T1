@@ -1,0 +1,89 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// coverage_def LSU_STB_COV (bit [2:0] lsu_stb_state)
+// {
+  // state declarations
+
+  state s_STB_STATE_INVLD     	(STB_STATE_INVLD);
+  state s_STB_STATE_VLD     	(STB_STATE_VLD);
+  state s_STB_STATE_CED     	(STB_STATE_CED);
+  state s_STB_STATE_ACK     	(STB_STATE_ACK);
+  bad_state s_not_STB_STATE (not state);
+
+  // transitions 
+
+  trans t_STB_STATE_INVLD_TO_s_STB_STATE_INVLD (STB_STATE_INVLD -> STB_STATE_INVLD);
+  trans t_STB_STATE_VLD_TO_s_STB_STATE_VLD (STB_STATE_VLD -> STB_STATE_VLD);
+  trans t_STB_STATE_CED_TO_s_STB_STATE_CED (STB_STATE_CED -> STB_STATE_CED);
+  trans t_STB_STATE_ACK_TO_s_STB_STATE_ACK (STB_STATE_ACK -> STB_STATE_ACK);
+  
+  // needs constraint signal for STDouble 
+  trans t_STB_STATE_CED_TO_s_STB_STATE_INVLD ( STB_STATE_CED -> STB_STATE_INVLD);
+
+  trans t_STB_STATE_INVLD_TO_s_STB_STATE_VLD (STB_STATE_INVLD -> STB_STATE_VLD);
+  // trans t_STB_STATE_INVLD_TO_s_STB_STATE_CED (STB_STATE_INVLD -> STB_STATE_CED);
+  trans t_STB_STATE_VLD_TO_STB_STATE_CED (STB_STATE_VLD -> STB_STATE_CED);
+  trans t_STB_STATE_CED_TO_STB_STATE_ACK (STB_STATE_CED -> STB_STATE_ACK);
+  trans t_STB_STATE_ACK_TO_STB_STATE_INVLD (STB_STATE_ACK -> STB_STATE_INVLD);
+
+  trans t_STB_STATE_1 (
+	STB_STATE_INVLD ->
+	STB_STATE_VLD [.1:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_VLD [.0:64.] ->
+	STB_STATE_CED [.1:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_CED [.0:64.] ->
+	STB_STATE_ACK [.1:64.] ->
+	STB_STATE_ACK [.0:64.] ->
+	STB_STATE_INVLD 
+  );
+
+  //trans t_STB_STATE_2 (
+  //	STB_STATE_INVLD ->
+  //	STB_STATE_CED [.1:64.] ->
+  //	STB_STATE_CED [.0:64.] ->
+  //	STB_STATE_CED [.0:64.] ->
+  //	STB_STATE_CED [.0:64.] ->
+  //	STB_STATE_CED [.0:64.] ->
+  //	STB_STATE_ACK [.1:64.] ->
+  //	STB_STATE_INVLD 
+  //);
+
+  // bad transitions 
+
+
+// }

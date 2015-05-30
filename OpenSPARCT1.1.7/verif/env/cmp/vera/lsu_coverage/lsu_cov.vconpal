@@ -1,0 +1,864 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "lsu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// lsu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+connect input lsu_cov_top.lsu_gclk = "cmp_top.iop.sparc0.rclk" iskew -1 
+connect input lsu_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1 
+
+. sub connectInstance {
+.	my ( $instancePath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+// TODO: rename signals
+connect input lsu_cov_top.C${c}T${t}_ld_pkt_vld_unmasked = "cmp_top.monitor.lsu_mon0.spc${c}_ld${t}_pkt_vld_unmasked_d" iskew -1 
+
+connect input lsu_cov_top.C${c}T${t}_ld_pkt_vld_tmp_d = "cmp_top.monitor.lsu_mon2.spc${c}_ld${t}_pkt_vld_tmp_d" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_ld_rawp_disabled = "${instancePath}.qctl1.ld${t}_rawp_disabled" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_ld_is_sec_w2     = "cmp_top.monitor.lsu_mon2.spc${c}_ld${t}_is_sec_w2" iskew -1
+connect input lsu_cov_top.C${c}T${t}_ldbyp_vld        = "${instancePath}.dctl.ldbyp${t}_vld" iskew -1 
+. }
+.
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+
+connect input lsu_cov_top.C${c}T${t}_stb_state_vld = "${instancePath}.stb_ctl${t}.stb_state_vld" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_stb_state_ack = "${instancePath}.stb_ctl${t}.stb_state_ack" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_stb_state_ced = "${instancePath}.stb_ctl${t}.stb_state_ced" iskew -1 
+. }
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+.
+connect input lsu_cov_top.C${c}T${t}_tlb_ld_inst = "${instancePath}.dctl.tlb_ld_inst${t}" iskew -1
+. }
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+.
+connect input lsu_cov_top.C${c}T${t}_tlb_st_inst = "${instancePath}.dctl.tlb_st_inst${t}" iskew -1
+. }
+
+connect input lsu_cov_top.C${c}_tlb_access_pending = "${instancePath}.dctl.tlb_access_pending" iskew -1
+connect input lsu_cov_top.C${c}_ifu_tlu_thrid_e = "${instancePath}.ifu_tlu_thrid_e" iskew -1
+
+//connect input lsu_cov_top.C${c}_ld0_pcx_rq_vld = "${instancePath}.qctl1.ld0_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_ld1_pcx_rq_vld = "${instancePath}.qctl1.ld1_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_ld2_pcx_rq_vld = "${instancePath}.qctl1.ld2_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_ld3_pcx_rq_vld = "${instancePath}.qctl1.ld3_pcx_rq_vld" iskew -1
+
+//connect input lsu_cov_top.C${c}_st0_pcx_rq_vld = "${instancePath}.qctl1.st0_pkt_vld" iskew -1
+//connect input lsu_cov_top.C${c}_st1_pcx_rq_vld = "${instancePath}.qctl1.st1_pkt_vld" iskew -1
+//connect input lsu_cov_top.C${c}_st2_pcx_rq_vld = "${instancePath}.qctl1.st2_pkt_vld" iskew -1
+//connect input lsu_cov_top.C${c}_st3_pcx_rq_vld = "${instancePath}.qctl1.st3_pkt_vld" iskew -1
+
+//connect input lsu_cov_top.C${c}_strm_pcx_rq_vld = "${instancePath}.qctl1.strm_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_fpop_pcx_rq_vld = "${instancePath}.qctl1.fpop_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_intrpt_pcx_rq_vld = "${instancePath}.qctl1.intrpt_pcx_rq_vld" iskew -1
+//connect input lsu_cov_top.C${c}_fwdpkt_rq_vld = "${instancePath}.qctl1.fwdpkt_rq_vld" iskew -1
+
+//connect input lsu_cov_top.C${c}_misc_pcx_rq_all = "${instancePath}.qctl1.misc_pcx_rq_all" iskew -1
+//connect input lsu_cov_top.C${c}_st_pcx_rq_all = "${instancePath}.qctl1.st_pcx_rq_all" iskew -1
+//connect input lsu_cov_top.C${c}_ld_pcx_rq_all = "${instancePath}.qctl1.ld_pcx_rq_all" iskew -1
+//connect input lsu_cov_top.C${c}_imiss_pcx_rq_vld = "${instancePath}.qctl1.imiss_pcx_rq_vld" iskew -1
+
+//connect input lsu_cov_top.C${c}_all_pcx_rq_pick = "${instancePath}.qctl1.all_pcx_rq_pick" iskew -1
+connect input lsu_cov_top.C${c}_ld_raw_g = "1'b0" iskew -1
+
+connect input lsu_cov_top.C${c}_stb_mhit           = "${instancePath}.stb_cam_mhit" iskew -1
+connect input lsu_cov_top.C${c}_stb_ld_full_raw    = "${instancePath}.stb_ld_full_raw" iskew -1
+connect input lsu_cov_top.C${c}_stb_ld_partial_raw = "${instancePath}.stb_ld_partial_raw" iskew -1
+
+connect input lsu_cov_top.C${c}_dfq_full = "${instancePath}.qctl2.dfq_stall" iskew -1  
+connect input lsu_cov_top.C${c}_dfq_full_capture = "cmp_top.monitor.lsu_mon0.spc${c}_dfq_full_capture" iskew -1
+connect input lsu_cov_top.C${c}_dfq_full_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_dfq_full_cntr" iskew -1  
+connect input lsu_cov_top.C${c}_ld_miss = "cmp_top.monitor.lsu_mon0.spc${c}_ld_miss_capture" iskew -1
+connect input lsu_cov_top.C${c}_l1_way = "${instancePath}.dctl.lsu_dcache_rand" iskew -1
+
+.   for ( $t = 1; $t < 8; $t++ ) {
+connect input lsu_cov_top.C${c}_dfq_full_capture${t} = "cmp_top.monitor.lsu_mon0.spc${c}_dfq_full_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}_dfq_full_cntr${t} = "cmp_top.monitor.lsu_mon0.spc${c}_dfq_full_cntr${t}" iskew -1  
+.}
+
+connect input lsu_cov_top.C${c}_vld2inv_capture = "cmp_top.monitor.lsu_mon0.spc${c}_dva_full_capture" iskew -1
+connect input lsu_cov_top.C${c}_vld2inv_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_dva_full_cntr" iskew -1  
+
+connect input lsu_cov_top.C${c}_inv2vld_capture = "cmp_top.monitor.lsu_mon0.spc${c}_dva_vfull_capture" iskew -1
+connect input lsu_cov_top.C${c}_inv2vld_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_dva_vfull_cntr" iskew -1  
+
+connect input lsu_cov_top.C${c}_vld2lkup_capture = "cmp_top.monitor.lsu_mon0.spc${c}_dva_vld2lkup" iskew -1
+connect input lsu_cov_top.C${c}_vld2lkup_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_dva_vfull_cntr" iskew -1  
+
+connect input lsu_cov_top.C${c}_invld2lkup_capture = "cmp_top.monitor.lsu_mon0.spc${c}_dva_invld2lkup" iskew -1
+connect input lsu_cov_top.C${c}_invld2lkup_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_dva_full_cntr" iskew -1  
+connect input lsu_cov_top.C${c}_invlderr = "cmp_top.monitor.lsu_mon0.spc${c}_dva_invld_err" iskew -1  
+connect input lsu_cov_top.C${c}_bld_vld = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_bld_vld_w2" iskew -1
+connect input lsu_cov_top.C${c}_bld_hit = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_bld_hit_w2" iskew -1
+connect input lsu_cov_top.C${c}_bld_raw = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_bld_raw_w2" iskew -1
+connect input lsu_cov_top.C${c}_ldooo = "cmp_top.monitor.lsu_mon0.spc${c}_ld_ooo_ret" iskew -1    
+connect input lsu_cov_top.C${c}_stooo = "cmp_top.monitor.lsu_mon0.spc${c}_st_ooo_ret" iskew -1    
+connect input lsu_cov_top.C${c}_ldstcmplt = "cmp_top.monitor.lsu_mon0.spc${c}_ldstcond_cmplt_d" iskew -1  
+connect input lsu_cov_top.C${c}_exp = "cmp_top.monitor.lsu_mon2.spc${c}_exp" iskew -1  
+connect input lsu_cov_top.C${c}_exu = "cmp_top.monitor.lsu_mon2.spc${c}_exu" iskew -1  
+
+connect input lsu_cov_top.C${c}_ireq = "${instancePath}.qctl1.ifu_lsu_pcxreq_d" iskew -1
+connect input lsu_cov_top.C${c}_iack = "${instancePath}.qctl1.lsu_ifu_pcxpkt_ack_d" iskew -1
+connect input lsu_cov_top.C${c}_freq = "${instancePath}.qctl1.ffu_lsu_fpop_rq_vld" iskew -1
+connect input lsu_cov_top.C${c}_fstreq = "${instancePath}.qctl1.fpst_vld_g" iskew -1
+connect input lsu_cov_top.C${c}_fack = "${instancePath}.qctl1.lsu_ffu_ack" iskew -1
+connect input lsu_cov_top.C${c}_fwdsel = "${instancePath}.qctl2.lsu_iobrdge_rply_data_sel" iskew -1
+connect input lsu_cov_top.C${c}_inreq = "${instancePath}.qctl1.tlu_lsu_pcxpkt_vld" iskew -1
+connect input lsu_cov_top.C${c}_inack = "${instancePath}.qctl1.lsu_tlu_pcxpkt_ack" iskew -1
+connect input lsu_cov_top.C${c}_inclr = "${instancePath}.qctl1.intrpt_clr" iskew -1
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top.C${c}_ld${t}_inst_vld_g = "${instancePath}.qctl1.ld${t}_inst_vld_g" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_sec_hit_w2 = "${instancePath}.qctl1.ld${t}_sec_hit_w2" iskew -1
+
+connect input lsu_cov_top.C${c}T${t}_ack_capture = "cmp_top.monitor.lsu_mon0.spc${c}_raw_ack_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_ack_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_stb_ack_cntr${t}" iskew -1
+
+connect input lsu_cov_top.C${c}T${t}_stb_full = "${instancePath}.stb_ctl${t}.stb_full" iskew -1  
+connect input lsu_cov_top.C${c}T${t}_stb_full_capture = "cmp_top.monitor.lsu_mon0.spc${c}_stb_full_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_stb_full_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_stb_full_cntr${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_lmq_full = "${instancePath}.qctl1.ld${t}_pkt_vld_unmasked" iskew -1  
+connect input lsu_cov_top.C${c}T${t}_lmq_full_capture = "cmp_top.monitor.lsu_mon0.spc${c}_lmq_full_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_lmq_full_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_lmq_full_cntr${t}" iskew -1  
+connect input lsu_cov_top.C${c}T${t}_stb_ced_capture = "cmp_top.monitor.lsu_mon0.spc${c}_stb_ced_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_stb_ced_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_stb_ced_cntr${t}" iskew -1  
+connect input lsu_cov_top.C${c}T${t}_mbar_capture = "cmp_top.monitor.lsu_mon0.spc${c}_mbar_vld_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_mbar_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_mbar_vld_cntr${t}" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_flsh_capture = "cmp_top.monitor.lsu_mon0.spc${c}_flsh_vld_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_flsh_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_flsh_vld_cntr${t}" iskew -1 
+
+connect input lsu_cov_top.C${c}T${t}_atomic_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_atm_cntr${t}" iskew -1 
+connect input lsu_cov_top.C${c}T${t}_atm_intr_capture = "cmp_top.monitor.lsu_mon0.spc${c}_atm_intrpt_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_atm_b4intr_capture = "cmp_top.monitor.lsu_mon0.spc${c}_atm_intrpt_b4capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_atm_inv_capture = "cmp_top.monitor.lsu_mon0.spc${c}_atm_inv_capture${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_atm_imiss_capture = "cmp_top.monitor.lsu_mon0.spc${c}_atm_imiss_eq${t}" iskew -1
+connect input lsu_cov_top.C${c}T${t}_atm_ldmiss_capture = "cmp_top.monitor.lsu_mon0.spc${c}_atm_lmiss_eq${t}" iskew -1
+
+connect input lsu_cov_top.C${c}T${t}_bld_capture = "cmp_top.monitor.lsu_mon0.spc${c}_bld${t}_full_capture" iskew -1
+connect input lsu_cov_top.C${c}T${t}_bld_cntr = "cmp_top.monitor.lsu_mon0.spc${c}_bld${t}_full_cntr" iskew -1 
+
+connect input lsu_cov_top.C${c}T${t}_ldeqi_vld = "cmp_top.monitor.lsu_mon0.spc${c}_lmiss_eq${t}" iskew -1  
+. }
+
+
+// load interface signals
+connect input lsu_cov_top.C${c}_fp_ldst_g          = "${instancePath}.dctl.fp_ldst_g" iskew -1
+connect input lsu_cov_top.C${c}_ldst_miss_w        = "${instancePath}.lsu_ifu_ldst_miss_w" iskew -1
+connect input lsu_cov_top.C${c}_stb_cam_hit        = "${instancePath}.stb_cam_hit" iskew -1
+
+connect input lsu_cov_top.C${c}_fp_ldst_w2         = "${instancePath}.dctl.fp_ldst_w2" iskew -1
+connect input lsu_cov_top.C${c}_ldst_miss_w2       = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_ifu_ldst_miss_w2" iskew -1
+connect input lsu_cov_top.C${c}_dc_parity_error_w2 = "${instancePath}.lsu_ifu_dc_parity_error_w2" iskew -1
+
+
+// store interface signals
+connect input lsu_cov_top.C${c}_inst_vld_e = "cmp_top.iop.sparc${c}.ifu_exu_inst_vld_e" iskew -1  
+connect input lsu_cov_top.C${c}_st_inst_e  = "${instancePath}.ifu_lsu_st_inst_e" iskew -1
+connect input lsu_cov_top.C${c}_ldst_dbl_e = "${instancePath}.ifu_lsu_ldst_dbl_e" iskew -1
+connect input lsu_cov_top.C${c}_ldst_fp_e  = "${instancePath}.ifu_lsu_ldst_fp_e" iskew -1
+connect input lsu_cov_top.C${c}_thrid_e    = "${instancePath}.ifu_tlu_thrid_e" iskew -1
+
+
+// store buffer signals
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top.C${c}T${t}_stb_state_vld_din = "${instancePath}.stb_ctl${t}.stb_state_vld_din" iskew -1
+connect input lsu_cov_top.C${c}T${t}_stb_state_rst = "${instancePath}.stb_ctl${t}.stb_state_rst" iskew -1
+. }
+
+
+// b2b stores flush signals
+// inst_vld_m is already declared under "block store interface signals"
+// connect input lsu_cov_top.C${c}_inst_vld_m           = "cmp_top.iop.sparc${c}.ifu_tlu_inst_vld_m" iskew -1  
+connect input lsu_cov_top.C${c}_excpctl_st_inst_m    = "${instancePath}.excpctl.st_inst_vld_m" iskew -1
+connect input lsu_cov_top.C${c}_thread0_m            = "${instancePath}.excpctl.thread0_m" iskew -1
+connect input lsu_cov_top.C${c}_thread1_m            = "${instancePath}.excpctl.thread1_m" iskew -1
+connect input lsu_cov_top.C${c}_thread2_m            = "${instancePath}.excpctl.thread2_m" iskew -1
+connect input lsu_cov_top.C${c}_thread3_m            = "${instancePath}.excpctl.thread3_m" iskew -1
+connect input lsu_cov_top.C${c}_excpctl_flush_pipe_w = "${instancePath}.excpctl.lsu_flush_pipe_w" iskew -1
+
+
+// flush signaling interface
+connect input lsu_cov_top.C${c}_flush_pipe_w       = "${instancePath}.lsu_ifu_flush_pipe_w" iskew -1
+connect input lsu_cov_top.C${c}_ld_inst_e          = "${instancePath}.ifu_lsu_ld_inst_e" iskew -1
+connect input lsu_cov_top.C${c}_flush_m            = "${instancePath}.ifu_tlu_flush_m" iskew -1
+connect input lsu_cov_top.C${c}_ld_stb_full_raw_w3 = "${instancePath}.dctl.ld_stb_full_raw_w3" iskew -1
+connect input lsu_cov_top.C${c}_pref_inst_m        = "${instancePath}.dctl.pref_inst_m" iskew -1
+connect input lsu_cov_top.C${c}_blk_asi_m          = "${instancePath}.dctl.blk_asi_m" iskew -1
+
+
+// block store interface signals
+connect input lsu_cov_top.C${c}_blk_st_m     = "${instancePath}.dctl.blkst_m_tmp" iskew -1
+connect input lsu_cov_top.C${c}_blk_st_tid_m = "${instancePath}.stb_rwctl.ffu_lsu_blk_st_tid_m" iskew -1
+connect input lsu_cov_top.C${c}_inst_vld_m   = "${instancePath}.ifu_tlu_inst_vld_m" iskew -1
+connect input lsu_cov_top.C${c}_thrid_m      = "${instancePath}.qctl1.thrid_m" iskew -1
+connect input lsu_cov_top.C${c}_ld_inst_m    = "${instancePath}.dctl.ld_inst_vld_m" iskew -1
+connect input lsu_cov_top.C${c}_st_inst_m    = "${instancePath}.dctl.st_inst_vld_m" iskew -1
+connect input lsu_cov_top.C${c}_casa_m       = "${instancePath}.dctl.casa_m" iskew -1
+connect input lsu_cov_top.C${c}_ldstub_m     = "${instancePath}.dctl.ldstub_m" iskew -1
+connect input lsu_cov_top.C${c}_swap_m       = "${instancePath}.dctl.swap_m" iskew -1
+connect input lsu_cov_top.C${c}_flsh_inst_m  = "${instancePath}.dctl.flsh_inst_m" iskew -1
+
+
+// exu_lsu_ldst_va_e
+connect input lsu_cov_top.C${c}_ldst_va_e   = "${instancePath}.exu_lsu_ldst_va_e" iskew -1
+connect input lsu_cov_top.C${c}_flsh_inst_e = "${instancePath}.ifu_tlu_flsh_inst_e" iskew -1
+
+
+// lsu_ifu_ldst_miss_w fanin
+connect input lsu_cov_top.C${c}_common_ldst_miss_w     = "${instancePath}.dctl.common_ldst_miss_w" iskew -1
+connect input lsu_cov_top.C${c}_ldxa_internal_swo_g    = "${instancePath}.dctl.ldxa_internal_swo_g" iskew -1
+connect input lsu_cov_top.C${c}_ld_inst_vld_unflushed  = "${instancePath}.dctl.ld_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top.C${c}_lsu_inst_vld_w         = "${instancePath}.dctl.lsu_inst_vld_w" iskew -1
+
+
+// lsu_exu_ldst_miss_w2 fanin
+connect input lsu_cov_top.C${c}_endian_mispred_g       = "${instancePath}.dctl.endian_mispred_g" iskew -1
+connect input lsu_cov_top.C${c}_atomic_g               = "${instancePath}.dctl.atomic_g" iskew -1
+connect input lsu_cov_top.C${c}_dcache_rd_parity_error = "${instancePath}.dctl.dcache_rd_parity_error" iskew -1
+connect input lsu_cov_top.C${c}_dtag_perror_g          = "${instancePath}.dctl.dtag_perror_g" iskew -1
+connect input lsu_cov_top.C${c}_tte_data_perror_unc_en = "${instancePath}.dctl.tte_data_perror_unc_en" iskew -1
+connect input lsu_cov_top.C${c}_pref_inst_g            = "${instancePath}.dctl.pref_inst_g" iskew -1
+
+
+// lsu_ifu_dc_parity_error_w2 fanin
+connect input lsu_cov_top.C${c}_dctl_flush_pipe_w      = "${instancePath}.dctl.dctl_flush_pipe_w" iskew -1
+
+
+// *********************************************************************
+// begin dctl objects 
+// *********************************************************************
+
+// tlb cam
+connect input lsu_cov_top2.C${c}_memref_e       = "${instancePath}.dctl.memref_e" iskew -1
+connect input lsu_cov_top2.C${c}_ld_inst_e      = "${instancePath}.ifu_lsu_ld_inst_e" iskew -1
+connect input lsu_cov_top2.C${c}_st_inst_e      = "${instancePath}.ifu_lsu_st_inst_e" iskew -1
+connect input lsu_cov_top2.C${c}_casa_e         = "${instancePath}.ifu_lsu_casa_e" iskew -1
+connect input lsu_cov_top2.C${c}_ldstub_e       = "${instancePath}.ifu_lsu_ldstub_e" iskew -1
+connect input lsu_cov_top2.C${c}_swap_e         = "${instancePath}.ifu_lsu_swap_e" iskew -1
+connect input lsu_cov_top2.C${c}_pref_e         = "${instancePath}.ifu_lsu_pref_inst_e" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_bypass_e  = "${instancePath}.dctl.dtlb_bypass_e" iskew -1
+connect input lsu_cov_top2.C${c}_asi_internal_e = "${instancePath}.dctl.asi_internal_e" iskew -1
+connect input lsu_cov_top2.C${c}_alt_space_e    = "${instancePath}.dctl.alt_space_e" iskew -1
+
+// tlb r->p translation
+connect input lsu_cov_top2.C${c}_lsuctl_dtlb_byp_e      = "${instancePath}.dctl.lsuctl_dtlb_byp_e" iskew -1
+connect input lsu_cov_top2.C${c}_hpv_priv_e             = "${instancePath}.dctl.hpv_priv_e" iskew -1
+connect input lsu_cov_top2.C${c}_hpstate_en_e           = "${instancePath}.dctl.hpstate_en_e" iskew -1
+connect input lsu_cov_top2.C${c}_altspace_ldst_e        = "${instancePath}.dctl.altspace_ldst_e" iskew -1
+connect input lsu_cov_top2.C${c}_phy_byp_ec_asi_e       = "cmp_top.monitor.lsu_mon2.spc${c}_phy_byp_ec_asi_e" iskew -1 
+connect input lsu_cov_top2.C${c}_phy_use_ec_asi_e       = "cmp_top.monitor.lsu_mon2.spc${c}_phy_use_ec_asi_e" iskew -1 
+connect input lsu_cov_top2.C${c}_quad_ldd_real_e        = "cmp_top.monitor.lsu_mon2.spc${c}_quad_ldd_real_e" iskew -1 
+connect input lsu_cov_top2.C${c}_quad_ldd_real_little_e = "cmp_top.monitor.lsu_mon2.spc${c}_quad_ldd_real_little_e" iskew -1 
+
+// address masking enabled
+connect input lsu_cov_top2.C${c}_lsu_dtlb_addr_mask_l_e = "${instancePath}.dctl.lsu_dtlb_addr_mask_l_e" iskew -1
+connect input lsu_cov_top2.C${c}_tlb_ldst_cam_vld       = "${instancePath}.dctl.tlb_ldst_cam_vld" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_dtlb_cam_real_e    = "${instancePath}.dctl.lsu_dtlb_cam_real_e" iskew -1
+
+// tlb access
+connect input lsu_cov_top2.C${c}_local_dtlb_wr_vld_g = "${instancePath}.dctl.local_dtlb_wr_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_tag_rd_g       = "${instancePath}.dctl.tlu_dtlb_tag_rd_g" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_data_rd_g      = "${instancePath}.dctl.tlu_dtlb_data_rd_g" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_dmp_vld_g      = "${instancePath}.dctl.tlu_dtlb_dmp_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_rw_index_vld_g = "${instancePath}.dctl.tlu_dtlb_rw_index_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_wr_init_d1     = "${instancePath}.dctl.dtlb_wr_init_d1" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_wr_init_d2     = "${instancePath}.dctl.dtlb_wr_init_d2" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_done_d1        = "${instancePath}.dctl.dtlb_done_d1" iskew -1
+connect input lsu_cov_top2.C${c}_dtlb_done_d2        = "${instancePath}.dctl.dtlb_done_d2" iskew -1
+
+// update of asi register by done/retry instruction
+connect input lsu_cov_top2.C${c}_asi_state_wr_en    = "${instancePath}.dctl.asi_state_wr_en" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_inst_vld_w     = "${instancePath}.dctl.lsu_inst_vld_w" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_early_flush_w = "${instancePath}.dctl.dctl_early_flush_w" iskew -1
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_thread${t}_g       = "${instancePath}.dctl.thread${t}_g" iskew -1
+connect input lsu_cov_top2.C${c}_tsa_update_asi${t} = "${instancePath}.dctl.tsa_update_asi${t}" iskew -1
+. }
+
+// coverage of illegal-va detection
+connect input lsu_cov_top2.C${c}_pscxt_ldxa_illgl_va_decode = "cmp_top.monitor.lsu_mon2.spc${c}_pscxt_ldxa_illgl_va_decode" iskew -1 
+connect input lsu_cov_top2.C${c}_lsuctl_illgl_va_decode     = "cmp_top.monitor.lsu_mon2.spc${c}_lsuctl_illgl_va_decode" iskew -1 
+connect input lsu_cov_top2.C${c}_mrgnctl_illgl_va_decode    = "cmp_top.monitor.lsu_mon2.spc${c}_mrgnctl_illgl_va_decode" iskew -1 
+connect input lsu_cov_top2.C${c}_asi42_illgl_va_decode      = "cmp_top.monitor.lsu_mon2.spc${c}_asi42_illgl_va_decode" iskew -1 
+connect input lsu_cov_top2.C${c}_pctxt_va_vld               = "${instancePath}.dctl.pctxt_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_sctxt_va_vld               = "${instancePath}.dctl.sctxt_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_lsuctl_va_vld              = "${instancePath}.dctl.lsuctl_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_mrgnctl_va_vld             = "${instancePath}.dctl.mrgnctl_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_ldiagctl_va_vld            = "${instancePath}.dctl.ldiagctl_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_bistctl_va_vld             = "${instancePath}.dctl.bistctl_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_instmsk_va_vld             = "${instancePath}.dctl.instmsk_va_vld" iskew -1
+connect input lsu_cov_top2.C${c}_ldxa_illgl_va_cmplt_d1     = "${instancePath}.dctl.ldxa_illgl_va_cmplt_d1" iskew -1
+
+// setting of lsu_ctl_reg thru various events
+connect input lsu_cov_top2.C${c}_lsu_ctl_state_wr_en = "${instancePath}.dctl.lsu_ctl_state_wr_en" iskew -1
+connect input lsu_cov_top2.C${c}_dfture_tap_wr_en    = "${instancePath}.dctl.dfture_tap_wr_en" iskew -1
+connect input lsu_cov_top2.C${c}_redmode_rst         = "${instancePath}.dctl.redmode_rst" iskew -1
+
+// disabling the dcache
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_thread${t}_e       = "${instancePath}.dctl.thread${t}_e" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_ctl_reg${t}_b1 = "${instancePath}.dctl.lsu_ctl_reg${t}[1]" iskew -1
+. }
+
+// crossproduct of dcache enable/disable and dtlb enable/disable
+connect input lsu_cov_top2.C${c}_inst_vld_e      = "cmp_top.iop.sparc${c}.ifu_exu_inst_vld_e" iskew -1  
+connect input lsu_cov_top2.C${c}_dcache_enable_e = "${instancePath}.dctl.lsu_dcache_enable" iskew -1
+
+// ignore cache hit when cache disabled
+connect input lsu_cov_top2.C${c}_ifu_lsu_flush_w     = "${instancePath}.dctl.ifu_lsu_flush_w" iskew -1
+connect input lsu_cov_top2.C${c}_cache_way_hit_buf1  = "${instancePath}.dctl.cache_way_hit_buf1" iskew -1
+connect input lsu_cov_top2.C${c}_dcache_enable_g     = "${instancePath}.dctl.dcache_enable_g" iskew -1
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_ld${t}_l2cache_rq_g = "${instancePath}.qctl1.ld${t}_l2cache_rq_g" iskew -1
+connect input lsu_cov_top2.C${c}_ld${t}_ldbl_rq_w2   = "${instancePath}.qctl1.ld${t}_ldbl_rq_w2" iskew -1
+. }
+
+// detect tte-data parity errors
+connect input lsu_cov_top2.C${c}_ld_inst_vld_unflushed = "${instancePath}.dctl.ld_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top2.C${c}_st_inst_vld_unflushed = "${instancePath}.dctl.st_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top2.C${c}_tte_data_perror_unc   = "${instancePath}.dctl.tte_data_perror_unc" iskew -1
+connect input lsu_cov_top2.C${c}_nceen_pipe_g          = "${instancePath}.dctl.nceen_pipe_g" iskew -1
+
+// elaborate cases for writes to dcache
+connect input lsu_cov_top2.C${c}_l2fill_vld_e       = "${instancePath}.dctl.l2fill_vld_e" iskew -1
+connect input lsu_cov_top2.C${c}_ignore_fill        = "${instancePath}.dctl.ignore_fill" iskew -1
+connect input lsu_cov_top2.C${c}_atomic_ld_squash_e = "${instancePath}.dctl.atomic_ld_squash_e" iskew -1
+connect input lsu_cov_top2.C${c}_ld_sec_active      = "${instancePath}.dctl.ld_sec_active" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_ncache_ld_e    = "${instancePath}.dctl.lsu_ncache_ld_e" iskew -1
+
+// selective writes to dcache on stores
+connect input lsu_cov_top2.C${c}_dva_svld_e            = "${instancePath}.dctl.dva_svld_e" iskew -1
+connect input lsu_cov_top2.C${c}_dva_snp_bit_wr_en_e   = "${instancePath}.dctl.dva_snp_bit_wr_en_e" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_dtag_wr_vld_e_tmp = "${instancePath}.dctl.lsu_dtag_wr_vld_e_tmp" iskew -1
+connect input lsu_cov_top2.C${c}_dva_fill_bit_wr_en_e  = "${instancePath}.dctl.dva_fill_bit_wr_en_e" iskew -1
+
+// elaborate writes to dva
+connect input lsu_cov_top2.C${c}_lsu_dtagv_wr_vld_e = "${instancePath}.dctl.lsu_dtagv_wr_vld_e" iskew -1
+connect input lsu_cov_top2.C${c}_dva_bit_wr_en_e    = "${instancePath}.dctl.dva_bit_wr_en_e" iskew -1
+
+// completing a stxa wr to thread
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_stxa_stall_wr_cmplt${t} = "${instancePath}.dctl.stxa_stall_wr_cmplt${t}" iskew -1
+. }
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_spu_stxa_thread${t}     = "${instancePath}.dctl.spu_stxa_thread${t}" iskew -1
+. }
+connect input lsu_cov_top2.C${c}_spu_lsu_stxa_ack        = "${instancePath}.dctl.spu_lsu_stxa_ack" iskew -1
+
+// tlb asi queue - initiating action
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_tlb_access_en${t}_g = "${instancePath}.dctl.tlb_access_en${t}_g" iskew -1
+. }
+
+// tlb asi queue - sequencing events
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_tlb_access_rst${t}      = "${instancePath}.dctl.tlb_access_rst${t}" iskew -1
+connect input lsu_cov_top2.C${c}_tlb_access_sel_thrd${t} = "${instancePath}.dctl.tlb_access_sel_thrd${t}" iskew -1
+. }
+
+// bus sharing between tlu and mmu
+connect input lsu_cov_top2.C${c}_st_sqsh_m = "${instancePath}.dctl.st_sqsh_m" iskew -1
+
+// diagnostic write conflicts with pipeline ld/st, dfq op
+connect input lsu_cov_top2.C${c}_diag_wr_src_d2 = "${instancePath}.dctl.diag_wr_src_d2" iskew -1
+connect input lsu_cov_top2.C${c}_thrid_e        = "${instancePath}.ifu_tlu_thrid_e" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_dfq_vld    = "${instancePath}.dctl.lsu_dfq_vld" iskew -1
+
+// membar/flush reset
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_mbar_vld${t}  = "${instancePath}.dctl.mbar_vld${t}" iskew -1
+. }
+connect input lsu_cov_top2.C${c}_lsu_stb_empty = "${instancePath}.dctl.lsu_stb_empty" iskew -1
+connect input lsu_cov_top2.C${c}_no_spc_rmo_st = "${instancePath}.dctl.no_spc_rmo_st" iskew -1
+
+// rmo store ack count
+connect input lsu_cov_top2.C${c}_lsu_stb_rmo_st_issue = "${instancePath}.dctl.lsu_stb_rmo_st_issue" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_cpx_rmo_st_ack   = "${instancePath}.dctl.lsu_cpx_rmo_st_ack" iskew -1
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_ackcnt${t}           = "${instancePath}.dctl.ackcnt${t}" iskew -1
+. }
+
+// dcache data parity error
+connect input lsu_cov_top2.C${c}_dcache_rparity_err_wb  = "${instancePath}.dctl.dcache_rparity_err_wb" iskew -1
+connect input lsu_cov_top2.C${c}_dcache_rd_parity_error = "${instancePath}.dctl.dcache_rd_parity_error" iskew -1
+connect input lsu_cov_top2.C${c}_dtag_perror_g          = "${instancePath}.dctl.dtag_perror_g" iskew -1
+connect input lsu_cov_top2.C${c}_asi_internal_g         = "${instancePath}.dctl.asi_internal_g" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_alt_space_g        = "${instancePath}.dctl.lsu_alt_space_g" iskew -1
+connect input lsu_cov_top2.C${c}_atomic_g               = "${instancePath}.dctl.atomic_g" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_exu_flush_pipe_w   = "${instancePath}.excpctl.lsu_exu_flush_pipe_w" iskew -1
+
+// bypass queues - test for simultaneous vld entries
+connect input lsu_cov_top2.C${c}_ldbyp0_vld = "${instancePath}.dctl.ldbyp0_vld" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp1_vld = "${instancePath}.dctl.ldbyp1_vld" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp2_vld = "${instancePath}.dctl.ldbyp2_vld" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp3_vld = "${instancePath}.dctl.ldbyp3_vld" iskew -1
+
+// bypass queues - test for b2b reset
+connect input lsu_cov_top2.C${c}_ldbyp0_vld_rst = "${instancePath}.dctl.ldbyp0_vld_rst" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp1_vld_rst = "${instancePath}.dctl.ldbyp1_vld_rst" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp2_vld_rst = "${instancePath}.dctl.ldbyp2_vld_rst" iskew -1
+connect input lsu_cov_top2.C${c}_ldbyp3_vld_rst = "${instancePath}.dctl.ldbyp3_vld_rst" iskew -1
+
+// bypass queues - squashing bypass/cmplt to irf/ifu
+connect input lsu_cov_top2.C${c}_ld_thrd_byp_sel_e = "${instancePath}.dctl.ld_thrd_byp_sel_e" iskew -1
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_ldbyp${t}_fpld    = "${instancePath}.dctl.ldbyp${t}_fpld" iskew -1
+connect input lsu_cov_top2.C${c}_spubyp${t}_trap   = "${instancePath}.dctl.spubyp${t}_trap" iskew -1
+connect input lsu_cov_top2.C${c}_cam_perr_unc${t}  = "${instancePath}.dctl.cam_perr_unc${t}" iskew -1
+connect input lsu_cov_top2.C${c}_asi_data_perr${t} = "${instancePath}.dctl.asi_data_perr${t}" iskew -1
+connect input lsu_cov_top2.C${c}_asi_tag_perr${t}  = "${instancePath}.dctl.asi_tag_perr${t}" iskew -1
+connect input lsu_cov_top2.C${c}_ifu_unc_err${t}   = "${instancePath}.dctl.ifu_unc_err${t}" iskew -1
+. }
+
+// deferred trap
+connect input lsu_cov_top2.C${c}_excpctl_tte_data_parity_error  = "${instancePath}.excpctl.tte_data_parity_error" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_tlb_tte_vld_g          = "${instancePath}.excpctl.tlb_tte_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_lsu_inst_vld_w         = "${instancePath}.excpctl.lsu_inst_vld_w" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_ld_inst_vld_unflushed  = "${instancePath}.excpctl.ld_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_st_inst_vld_unflushed  = "${instancePath}.excpctl.st_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_lsu_flush_pipe_w       = "${instancePath}.excpctl.lsu_flush_pipe_w" iskew -1
+
+// completing stxa with fixed delay
+connect input lsu_cov_top2.C${c}_stxa_internal       = "${instancePath}.dctl.stxa_internal" iskew -1
+connect input lsu_cov_top2.C${c}_intrpt_disp_asi_g   = "${instancePath}.dctl.intrpt_disp_asi_g" iskew -1
+connect input lsu_cov_top2.C${c}_stxa_stall_asi_g    = "${instancePath}.dctl.stxa_stall_asi_g" iskew -1
+connect input lsu_cov_top2.C${c}_ifu_nontlb_asi_g    = "${instancePath}.dctl.ifu_nontlb_asi_g" iskew -1
+connect input lsu_cov_top2.C${c}_ifu_asi42_flush_g   = "${instancePath}.dctl.ifu_asi42_flush_g" iskew -1
+connect input lsu_cov_top2.C${c}_tlb_lng_ltncy_asi_g = "${instancePath}.dctl.tlb_lng_ltncy_asi_g" iskew -1
+
+// direct map mode
+connect input lsu_cov_top2.C${c}_dc_direct_map = "${instancePath}.dctl.dc_direct_map" iskew -1
+
+// writes to cache
+connect input lsu_cov_top2.C${c}_dcache_byte_wr_en_e = "${instancePath}.dctl.dcache_byte_wr_en_e" iskew -1
+
+// prefetch counter
+connect input lsu_cov_top2.C${c}_lsu_pcx_pref_issue = "${instancePath}.dctl.lsu_pcx_pref_issue" iskew -1
+connect input lsu_cov_top2.C${c}_lsu_cpx_pref_ack   = "${instancePath}.dctl.lsu_cpx_pref_ack" iskew -1
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}_pref_ackcnt${t}    = "${instancePath}.dctl.pref_ackcnt${t}" iskew -1
+. }
+
+// tlb asiqueue
+connect input lsu_cov_top2.C${c}_asi_fifo0_vld = "${instancePath}.dctl.asi_fifo0_vld" iskew -1
+connect input lsu_cov_top2.C${c}_asi_fifo1_vld = "${instancePath}.dctl.asi_fifo1_vld" iskew -1
+connect input lsu_cov_top2.C${c}_asi_fifo2_vld = "${instancePath}.dctl.asi_fifo2_vld" iskew -1
+connect input lsu_cov_top2.C${c}_asi_fifo3_vld = "${instancePath}.dctl.asi_fifo3_vld" iskew -1
+connect input lsu_cov_top2.C${c}_fifo_wr       = "${instancePath}.dctl.fifo_wr"       iskew -1
+connect input lsu_cov_top2.C${c}_fifo_shift    = "${instancePath}.dctl.fifo_shift"    iskew -1
+connect input lsu_cov_top2.C${c}_dctl_reset    = "${instancePath}.dctl.reset"         iskew -1
+
+// *********************************************************************
+// end of dctl objects
+// *********************************************************************
+
+
+// *********************************************************************
+// begin qctl objects 
+// *********************************************************************
+connect input lsu_cov_top.C${c}_memref_e = "${instancePath}.dctl.memref_e" iskew -1
+
+connect input lsu_cov_top.C${c}_cpx_spc_data_rdy_cx2 = "cmp_top.iop.sparc${c}.cpx_spc_data_rdy_cx2" iskew -1
+connect input lsu_cov_top.C${c}_cpx_spc_data_cx2     = "cmp_top.iop.sparc${c}.cpx_spc_data_cx2" iskew -1
+
+connect input lsu_cov_top.C${c}_cpx_spc_data_cx2_local = "cmp_top.monitor.lsu_mon2.cpx_spc_data_cx2_local[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_cpx_spc_data_cx2_Dinv  = "cmp_top.monitor.lsu_mon2.cpx_spc_data_cx2_Dinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_cpx_spc_data_cx2_Iinv  = "cmp_top.monitor.lsu_mon2.cpx_spc_data_cx2_Iinv[${c}]" iskew -1
+
+connect input lsu_cov_top.C${c}_ifu_lsu_ibuf_busy     = "${instancePath}.ifu_lsu_ibuf_busy" iskew -1
+connect input lsu_cov_top.C${c}_lsu_ifu_cpxpkt_vld_i1 = "${instancePath}.lsu_ifu_cpxpkt_vld_i1" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_mx_data_local = "cmp_top.monitor.lsu_mon2.dfq_byp_mx_data_local[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_mx_data_Dinv  = "cmp_top.monitor.lsu_mon2.dfq_byp_mx_data_Dinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_mx_data_Iinv  = "cmp_top.monitor.lsu_mon2.dfq_byp_mx_data_Iinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_mx_data       = "${instancePath}.qdp2.dfq_byp_mx_data" iskew -1
+
+connect input lsu_cov_top.C${c}_dfq_rd_advance = "${instancePath}.qctl2.dfq_rd_advance" iskew -1
+connect input lsu_cov_top.C${c}_dfq_rd_vld_d1  = "${instancePath}.qctl2.dfq_rd_vld_d1" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_en  = "${instancePath}.qctl2.dfq_byp_ff_en" iskew -1
+
+connect input lsu_cov_top.C${c}_dfq_wr_en = "${instancePath}.qctl2.dfq_wr_en" iskew -1
+connect input lsu_cov_top.C${c}_dfq_cpx_raw_wdata_local = "cmp_top.monitor.lsu_mon2.dfq_cpx_raw_wdata_local[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Dinv  = "cmp_top.monitor.lsu_mon2.dfq_cpx_raw_wdata_Dinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_cpx_raw_wdata_Iinv  = "cmp_top.monitor.lsu_mon2.dfq_cpx_raw_wdata_Iinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_cpx_raw_wdata       = "${instancePath}.qdp2.dfq_cpx_raw_wdata" iskew -1
+
+connect input lsu_cov_top.C${c}_dfq_2ormore_vld_entries = "cmp_top.monitor.lsu_mon2.spc${c}_dfq_2ormore_vld_entries" iskew -1
+
+connect input lsu_cov_top.C${c}_inv_clear_d1      = "${instancePath}.qctl2.inv_clear_d1" iskew -1
+connect input lsu_cov_top.C${c}_dfq_rd_advance_d1 = "${instancePath}.qctl2.dfq_rd_advance_d1" iskew -1
+connect input lsu_cov_top.C${c}_dfq_stall_d1      = "${instancePath}.qctl2.dfq_stall_d1" iskew -1
+
+connect input lsu_cov_top.C${c}_lmq_ldd_vld          = "${instancePath}.qctl2.lmq_ldd_vld" iskew -1
+connect input lsu_cov_top.C${c}_ldd_in_dfq_out       = "${instancePath}.qctl2.ldd_in_dfq_out" iskew -1
+connect input lsu_cov_top.C${c}_dfq_ld_vld           = "${instancePath}.qctl2.dfq_ld_vld" iskew -1
+connect input lsu_cov_top.C${c}_lsu_cpx_pkt_prefetch = "${instancePath}.qctl2.lsu_cpx_pkt_prefetch" iskew -1
+connect input lsu_cov_top.C${c}_lsu_l2fill_fpld_e    = "${instancePath}.qctl2.lsu_l2fill_fpld_e" iskew -1
+
+connect input lsu_cov_top.C${c}_lsu_spu_strm_ack_cmplt = "${instancePath}.lsu_spu_strm_ack_cmplt" iskew -1
+connect input lsu_cov_top.C${c}_strmack_cmplt1_d1 = "${instancePath}.qctl2.strmack_cmplt1_d1" iskew -1
+connect input lsu_cov_top.C${c}_strmack_cmplt2_d1 = "${instancePath}.qctl2.strmack_cmplt2_d1" iskew -1
+connect input lsu_cov_top.C${c}_strmack_cmplt3_d1 = "${instancePath}.qctl2.strmack_cmplt3_d1" iskew -1
+
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top.C${c}_ld${t}_l2cache_rq_g    = "${instancePath}.qctl1.ld${t}_l2cache_rq_g" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_inst_vld_w2     = "${instancePath}.qctl1.ld${t}_inst_vld_w2" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_ldbl_rq_w2      = "${instancePath}.qctl1.ld${t}_ldbl_rq_w2" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_l2cache_rq_kill = "${instancePath}.qctl1.ld${t}_l2cache_rq_kill" iskew -1
+. }
+connect input lsu_cov_top.C${c}_lsu_ld_miss_g         = "${instancePath}.qctl1.lsu_ld_miss_g" iskew -1
+connect input lsu_cov_top.C${c}_ld_stb_full_raw_w2    = "${instancePath}.qctl1.ld_stb_full_raw_w2" iskew -1
+connect input lsu_cov_top.C${c}_ld_stb_partial_raw_w2 = "${instancePath}.qctl1.ld_stb_partial_raw_w2" iskew -1
+connect input lsu_cov_top.C${c}_perr_ld_rq_kill_w2    = "${instancePath}.qctl1.perr_ld_rq_kill_w2" iskew -1
+
+connect input lsu_cov_top.C${c}_ifu_lsu_ld_inst_m            = "${instancePath}.qctl2.ld_inst_vld_m" iskew -1
+connect input lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e_d2        = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dtagv_wr_vld_e_d2" iskew -1
+connect input lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e_d1        = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dtagv_wr_vld_e_d1" iskew -1
+connect input lsu_cov_top.C${c}_lsu_dtagv_wr_vld_e           = "${instancePath}.lsu_dtagv_wr_vld_e" iskew -1
+connect input lsu_cov_top.C${c}_dva_rdwr_sameline_diffvalue  = "cmp_top.monitor.lsu_mon2.spc${c}_dva_rdwr_sameline_diffvalue" iskew -1
+connect input lsu_cov_top.C${c}_dva_rd_wr_sameline_diffvalue = "cmp_top.monitor.lsu_mon2.spc${c}_dva_rd_wr_sameline_diffvalue" iskew -1
+connect input lsu_cov_top.C${c}_dva_wr_rd_sameline_diffvalue = "cmp_top.monitor.lsu_mon2.spc${c}_dva_wr_rd_sameline_diffvalue" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_local_d2     = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_local_d2[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv_d2      = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Dinv_d2[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv_d2      = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Iinv_d2[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_d2           = "cmp_top.monitor.lsu_mon2.spc${c}_dfq_byp_ff_data_d2[144:0]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_local_d1     = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_local_d1[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv_d1      = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Dinv_d1[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv_d1      = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Iinv_d1[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_d1           = "cmp_top.monitor.lsu_mon2.spc${c}_dfq_byp_ff_data_d1[144:0]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_local        = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_local[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Dinv         = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Dinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data_Iinv         = "cmp_top.monitor.lsu_mon2.dfq_byp_ff_data_Iinv[${c}]" iskew -1
+connect input lsu_cov_top.C${c}_dfq_byp_ff_data              = "${instancePath}.qdp2.dfq_byp_ff_data" iskew -1
+
+connect input lsu_cov_top.C${c}_ifu_tlu_inst_vld_w       = "cmp_top.monitor.lsu_mon2.spc${c}_ifu_tlu_inst_vld_w" iskew -1
+connect input lsu_cov_top.C${c}_ifu_lsu_ld_inst_w        = "${instancePath}.excpctl.ld_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top.C${c}_ifu_lsu_st_inst_w        = "${instancePath}.excpctl.st_inst_vld_unflushed" iskew -1
+connect input lsu_cov_top.C${c}_ifu_tlu_flush_w          = "cmp_top.monitor.lsu_mon2.spc${c}_ifu_tlu_flush_w" iskew -1
+connect input lsu_cov_top.C${c}_ifu_mmu_trap_w           = "cmp_top.monitor.lsu_mon2.spc${c}_ifu_mmu_trap_w" iskew -1
+//connect input lsu_cov_top.C${c}_spu_tlu_rsrv_illgl_w     = "cmp_top.monitor.lsu_mon2.spc${c}_spu_tlu_rsrv_illgl_w" iskew -1
+connect input lsu_cov_top.C${c}_exu_lsu_priority_trap_w  = "cmp_top.monitor.lsu_mon2.spc${c}_exu_lsu_priority_trap_w" iskew -1
+connect input lsu_cov_top.C${c}_ffu_tlu_ill_inst_w       = "cmp_top.monitor.lsu_mon2.spc${c}_ffu_tlu_ill_inst_w" iskew -1
+connect input lsu_cov_top.C${c}_lsu_tlu_wtchpt_trp_g     = "${instancePath}.lsu_tlu_wtchpt_trp_g" iskew -1
+connect input lsu_cov_top.C${c}_lsu_tlu_dmmu_miss_g      = "${instancePath}.lsu_tlu_dmmu_miss_g" iskew -1
+connect input lsu_cov_top.C${c}_early_trap_vld_g         = "${instancePath}.excpctl.early_trap_vld_g" iskew -1
+connect input lsu_cov_top.C${c}_lsu_tlu_daccess_excptn_g = "${instancePath}.lsu_tlu_daccess_excptn_g" iskew -1
+connect input lsu_cov_top.C${c}_lsu_tlu_daccess_prot_g   = "${instancePath}.lsu_tlu_daccess_prot_g" iskew -1
+connect input lsu_cov_top.C${c}_lsu_tlu_priv_action_g    = "${instancePath}.lsu_tlu_priv_action_g" iskew -1
+connect input lsu_cov_top.C${c}_ifu_tlu_immu_miss_w      = "cmp_top.monitor.lsu_mon2.spc${c}_ifu_tlu_immu_miss_w" iskew -1
+connect input lsu_cov_top.C${c}_ifu_tlu_priv_violtn_w    = "cmp_top.monitor.lsu_mon2.spc${c}_ifu_tlu_priv_violtn_w" iskew -1
+connect input lsu_cov_top.C${c}_exu_ifu_va_oor_w         = "cmp_top.monitor.lsu_mon2.spc${c}_exu_ifu_va_oor_w" iskew -1
+
+connect input lsu_cov_top.C${c}_lsu_way_hit_or_w2 = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_way_hit_or_w2" iskew -1
+connect input lsu_cov_top.C${c}_ncache_pcx_rq_w2  = "cmp_top.monitor.lsu_mon2.spc${c}_ncache_pcx_rq_w2" iskew -1
+
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top.C${c}_t${t}_ld_st_partialraw_hit    = "cmp_top.monitor.lsu_mon2.spc${c}_t${t}_ld_st_partialraw_hit" iskew -1
+connect input lsu_cov_top.C${c}_t${t}_ld_st_fullraw_hit       = "cmp_top.monitor.lsu_mon2.spc${c}_t${t}_ld_st_fullraw_hit" iskew -1
+connect input lsu_cov_top.C${c}_t${t}_st_ld_partialraw_hit    = "cmp_top.monitor.lsu_mon2.spc${c}_t${t}_st_ld_partialraw_hit" iskew -1
+connect input lsu_cov_top.C${c}_t${t}_st_ld_fullraw_hit       = "cmp_top.monitor.lsu_mon2.spc${c}_t${t}_st_ld_fullraw_hit" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_inst_vld_w4            = "cmp_top.monitor.lsu_mon2.spc${c}_ld${t}_inst_vld_w4" iskew -1
+connect input lsu_cov_top.C${c}_st${t}_pcx_rq_sel_d1          = "${instancePath}.qctl1.st${t}_pcx_rq_sel_d1" iskew -1
+.}
+connect input lsu_cov_top.C${c}_io_ld_w4                      = "cmp_top.monitor.lsu_mon2.spc${c}_io_ld_w4" iskew -1
+connect input lsu_cov_top.C${c}_io_ld_w2                      = "${instancePath}.qctl1.io_ld_w2" iskew -1
+connect input lsu_cov_top.C${c}_stb_cam_mhit_w4               = "cmp_top.monitor.lsu_mon2.spc${c}_stb_cam_mhit_w4" iskew -1
+connect input lsu_cov_top.C${c}_stb_cam_mhit_w2               = "${instancePath}.qctl1.stb_cam_mhit_w2" iskew -1
+connect input lsu_cov_top.C${c}_pcx_req_squash                = "${instancePath}.qctl1.pcx_req_squash" iskew -1
+
+connect input lsu_cov_top.C${c}_pick_status = "cmp_top.monitor.lsu_mon2.spc${c}_pick_status" iskew -1
+
+connect input lsu_cov_top.C${c}_pick_presented       = "cmp_top.monitor.lsu_mon2.spc${c}_pick_presented" iskew -1
+connect input lsu_cov_top.C${c}_pick_destbusy        = "cmp_top.monitor.lsu_mon2.spc${c}_pick_destbusy" iskew -1
+connect input lsu_cov_top.C${c}_pick_atompend        = "cmp_top.monitor.lsu_mon2.spc${c}_pick_atompend" iskew -1
+
+connect input lsu_cov_top.C${c}_pick_presented_count = "cmp_top.monitor.lsu_mon2.spc${c}_pick_presented_count" iskew -1
+connect input lsu_cov_top.C${c}_pick_destbusy_count  = "cmp_top.monitor.lsu_mon2.spc${c}_pick_destbusy_count" iskew -1
+connect input lsu_cov_top.C${c}_pick_atompend_count  = "cmp_top.monitor.lsu_mon2.spc${c}_pick_atompend_count" iskew -1
+
+connect input lsu_cov_top.C${c}_filladdrw_eq_ldaddrm = "cmp_top.monitor.lsu_mon2.spc${c}_filladdrw_eq_ldaddrm" iskew -1
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top.C${c}_ld${t}_fill_reset_w  = "${instancePath}.qctl1.ld${t}_fill_reset_d2_tmp" iskew -1
+connect input lsu_cov_top.C${c}_ld${t}_inst_vld_m    = "${instancePath}.qctl1.ld${t}_inst_vld_m" iskew -1
+.}
+
+connect input lsu_cov_top.C${c}_st_inst_vld_g     = "${instancePath}.dctl.st_inst_vld_g" iskew -1
+connect input lsu_cov_top.C${c}_stxa_stall_asi_g  = "${instancePath}.dctl.stxa_stall_asi_g" iskew -1
+connect input lsu_cov_top.C${c}_thrid_g           = "${instancePath}.qctl1.thrid_g" iskew -1
+connect input lsu_cov_top.C${c}_lsu_spu_stb_empty = "${instancePath}.lsu_spu_stb_empty" iskew -1
+
+// *********************************************************************
+// end qctl objects 
+// *********************************************************************
+
+
+// *********************************************************************
+// begin stb_ctl objects 
+// *********************************************************************
+. for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_vld_g     = "${instancePath}.stb_ctl${t}.inflight_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_tlb_hit_g          = "${instancePath}.stb_ctl${t}.tlb_hit_g" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_0  = "${instancePath}.stb_ctl${t}.stb_state_rtype_0[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_1  = "${instancePath}.stb_ctl${t}.stb_state_rtype_1[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_2  = "${instancePath}.stb_ctl${t}.stb_state_rtype_2[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_3  = "${instancePath}.stb_ctl${t}.stb_state_rtype_3[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_4  = "${instancePath}.stb_ctl${t}.stb_state_rtype_4[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_5  = "${instancePath}.stb_ctl${t}.stb_state_rtype_5[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_6  = "${instancePath}.stb_ctl${t}.stb_state_rtype_6[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rtype_7  = "${instancePath}.stb_ctl${t}.stb_state_rtype_7[2:1]" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx       = "${instancePath}.stb_ctl${t}.dec_rptr_pcx" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_issue_g   = "${instancePath}.stb_ctl${t}.inflight_issue_g" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_dfq       = "${instancePath}.stb_ctl${t}.dec_rptr_dfq" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld      = "${instancePath}.stb_ctl${t}.stb_state_vld" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_ack      = "${instancePath}.stb_ctl${t}.stb_state_ack" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_ced_spec = "${instancePath}.stb_ctl${t}.stb_state_ced_spec" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_rmo_st_sat         = "${instancePath}.stb_ctl${t}.rmo_st_satuated" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_rmo      = "${instancePath}.stb_ctl${t}.stb_state_rmo" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_dec_rptr_pcx_noced = "cmp_top.monitor.lsu_mon2.spc${c}t${t}_dec_rptr_pcx_noced" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_full_flush_st_g    = "${instancePath}.stb_ctl${t}.full_flush_st_g" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_st_dtlb_perr_g     = "${instancePath}.stb_ctl${t}.st_dtlb_perr_g" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_inflight_vld_g     = "${instancePath}.stb_ctl${t}.inflight_vld_g" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_dq_rmo         = "${instancePath}.stb_ctl${t}.stb_dq_rmo" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_st_dq1_ld_hit      = "cmp_top.monitor.lsu_mon2.spc${c}t${t}_st_dq1_ld_hit" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_st_dq2_ld_hit      = "cmp_top.monitor.lsu_mon2.spc${c}t${t}_st_dq2_ld_hit" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_stb_dq_rmo_dfq_ptr = "${instancePath}.stb_ctl${t}.stb_dq_rmo_dfq_ptr" iskew -1
+
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_dec_ackptr         = "${instancePath}.stb_ctl${t}.dec_ackptr" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_pcx_rq_for_stb_d2  = "${instancePath}.stb_ctl${t}.pcx_rq_for_stb_d2" iskew -1
+connect input lsu_cov_top2.C${c}T${t}_stb_ctl_pcx_req_squash_d2  = "${instancePath}.stb_ctl${t}.pcx_req_squash_d2" iskew -1
+
+.} # for $t
+
+connect input lsu_cov_top2.C${c}_stb_rwctl_st_atm_blkst_vld      = "cmp_top.monitor.lsu_mon2.spc${c}_st_atm_blkst_vld" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_flush_st_g            = "${instancePath}.stb_rwctl.flush_st_g" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_b2b_st_detect         = "${instancePath}.stb_rwctl.b2b_st_detect" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thread0_m             = "${instancePath}.stb_rwctl.thread0_m" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thread1_m             = "${instancePath}.stb_rwctl.thread1_m" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thread2_m             = "${instancePath}.stb_rwctl.thread2_m" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thread3_m             = "${instancePath}.stb_rwctl.thread3_m" iskew -1
+
+connect input lsu_cov_top2.C${c}_stb_rwctl_lsu_st_pcx_rq_vld     = "${instancePath}.stb_rwctl.lsu_st_pcx_rq_vld" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_cam_hit_w2        = "${instancePath}.stb_rwctl.stb_cam_hit_w2" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thrid_w2              = "${instancePath}.stb_rwctl.thrid_w2" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_cam_hit_ptr_w2    = "${instancePath}.stb_rwctl.stb_cam_hit_ptr_w2" iskew -1
+
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_cam_vld           = "${instancePath}.stb_cam_vld" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_ldst_byte_mask        = "${instancePath}.stb_rwctl.ldst_byte_mask" iskew -1
+
+connect input lsu_cov_top2.C${c}_stb_rwctl_ldquad_inst_g         = "${instancePath}.qctl1.ldquad_inst_g" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_thrid_g               = "${instancePath}.stb_rwctl.thrid_g" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_cam_mhit          = "${instancePath}.stb_rwctl.stb_cam_mhit" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_ld_full_raw       = "${instancePath}.stb_rwctl.stb_ld_full_raw" iskew -1
+connect input lsu_cov_top2.C${c}_stb_rwctl_stb_ld_partial_raw    = "${instancePath}.stb_rwctl.stb_ld_partial_raw" iskew -1
+
+connect input lsu_cov_top2.C${c}_lsu_ld_inst_vld_g               = "${instancePath}.lsu_ld_inst_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_blk_asi_g                  = "${instancePath}.dctl.blk_asi_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_qctl1_lsu_inst_vld_w            = "${instancePath}.qctl1.lsu_inst_vld_w" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_atomic_g                  = "${instancePath}.qctl1.atomic_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_stb_rwctl_ld_rawp_st_ced_w2     = "${instancePath}.stb_rwctl.ld_rawp_st_ced_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_casa_w2                   = "cmp_top.monitor.lsu_mon2.spc${c}_qctl1_casa_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_stb_cam_mhit_w2           = "${instancePath}.qctl1.stb_cam_mhit_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_io_ld_w2                  = "${instancePath}.qctl1.io_ld_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_stb_not_empty_w2          = "${instancePath}.qctl1.stb_not_empty_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_ld_stb_partial_raw_w2     = "${instancePath}.qctl1.ld_stb_partial_raw_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_partial_raw_w2            = "${instancePath}.qctl1.partial_raw_w2" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_ldq_hit_w2                = "${instancePath}.qctl1.ldq_hit_w2" iskew -1
+
+
+// *********************************************************************
+// end stb_ctl objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin errors objects 
+// *********************************************************************
+connect input lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc     = "${instancePath}.excpctl.tte_data_perror_unc" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ld_inst_vld_g              = "${instancePath}.dctl.ld_inst_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_st_inst_vld_g              = "${instancePath}.dctl.st_inst_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_casa_g                     = "${instancePath}.dctl.casa_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_swap_g                     = "${instancePath}.dctl.swap_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ldstub_g                   = "${instancePath}.dctl.ldstub_g" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_bld_g                     = "${instancePath}.qctl1.bld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_blkst_g                    = "${instancePath}.dctl.blkst_g" iskew -1
+connect input lsu_cov_top2.C${c}_qctl1_ldquad_inst_g             = "${instancePath}.qctl1.ldquad_inst_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_pref_inst_g                = "${instancePath}.dctl.pref_inst_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc_wo_vld  = "cmp_top.monitor.lsu_mon2.spc${c}_tte_data_perror_unc_wo_vld" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_tte_data_perror_unc_w_flush = "cmp_top.monitor.lsu_mon2.spc${c}_tte_data_perror_unc_w_flush" iskew -1
+
+connect input lsu_cov_top2.C${c}_excpctl_asi_tte_data_perror     = "${instancePath}.excpctl.asi_tte_data_perror" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_asi_tte_tag_perror      = "${instancePath}.excpctl.asi_tte_tag_perror" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g    = "${instancePath}.dctl.lsu_dcache_tag_perror_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_dtag_parity_error          = "${instancePath}.dctl.dtag_parity_error" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_blkasi            = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_tag_perror_g_w_blkasi" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_w_bypass  = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_tag_perror_g_w_pgnum39_w_bypass" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_pgnum39_wo_bypass = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_tag_perror_g_w_pgnum39_wo_bypass" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_tag_perror_g_w_atomic            = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_tag_perror_g_w_atomic" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g   = "${instancePath}.dctl.lsu_dcache_data_perror_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_wo_cacheenable     = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_data_perror_g_wo_cacheenable" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_dtag_perror        = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_data_perror_g_dtag_perror" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_w_altspace         = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_data_perror_g_w_altspace" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_dcache_data_perror_g_w_atomic           = "cmp_top.monitor.lsu_mon2.spc${c}_lsu_dcache_data_perror_g_w_atomic" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_async_ttype_vld_g          = "${instancePath}.dctl.async_ttype_vld_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_cam_perr_unc_g             = "${instancePath}.dctl.cam_perr_unc_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_asi_data_perr_g            = "${instancePath}.dctl.asi_data_perr_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_asi_tag_perr_g             = "${instancePath}.dctl.asi_tag_perr_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ifu_unc_err_g              = "${instancePath}.dctl.ifu_unc_err_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_nceen_g                    = "${instancePath}.dctl.nceen_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_pmem_unc_error_g           = "${instancePath}.dctl.pmem_unc_error_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_pmem_unc_error_tmp         = "${instancePath}.dctl.pmem_unc_error_tmp" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_bld_unc_err_pend_g         = "${instancePath}.dctl.bld_unc_err_pend_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_bld_squash_err_g           = "${instancePath}.dctl.bld_squash_err_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_nceen_dfq_g                = "${instancePath}.dctl.nceen_dfq_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_atm_st_unc_err_g           = "${instancePath}.dctl.atm_st_unc_err_g" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_spubyp_trap_active_g       = "${instancePath}.dctl.spubyp_trap_active_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_async_tid_g                = "${instancePath}.dctl.async_tid_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_excpctl_defr_trp_taken_m         = "${instancePath}.excpctl.defr_trp_taken_m" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_defr_trp_taken_byp       = "${instancePath}.excpctl.defr_trp_taken_byp" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread0_m                = "${instancePath}.excpctl.thread0_m" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread1_m                = "${instancePath}.excpctl.thread1_m" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread2_m                = "${instancePath}.excpctl.thread2_m" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread3_m                = "${instancePath}.excpctl.thread3_m" iskew -1
+
+connect input lsu_cov_top2.C${c}_excpctl_lsu_defr_trp_taken_g     = "${instancePath}.excpctl.lsu_defr_trp_taken_g" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread0_g                = "${instancePath}.excpctl.thread0_g" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread1_g                = "${instancePath}.excpctl.thread1_g" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread2_g                = "${instancePath}.excpctl.thread2_g" iskew -1
+connect input lsu_cov_top2.C${c}_excpctl_thread3_g                = "${instancePath}.excpctl.thread3_g" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_ldbyp0_vld_en               = "${instancePath}.dctl.ldbyp0_vld_en" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_fp_ldst_thrd0_w5            = "${instancePath}.dctl.fp_ldst_thrd0_w5" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ldbyp1_vld_en               = "${instancePath}.dctl.ldbyp1_vld_en" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_fp_ldst_thrd1_w5            = "${instancePath}.dctl.fp_ldst_thrd1_w5" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ldbyp2_vld_en               = "${instancePath}.dctl.ldbyp2_vld_en" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_fp_ldst_thrd2_w5            = "${instancePath}.dctl.fp_ldst_thrd2_w5" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ldbyp3_vld_en               = "${instancePath}.dctl.ldbyp3_vld_en" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_fp_ldst_thrd3_w5            = "${instancePath}.dctl.fp_ldst_thrd3_w5" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_spu_trap                    = "${instancePath}.dctl.spu_trap" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_tte_data_perror_unc_w2      = "${instancePath}.dctl.tte_data_perror_unc_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_atm_ld_w_uerr               = "${instancePath}.dctl.atm_ld_w_uerr" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_asi_tte_data_perror_w2      = "${instancePath}.dctl.asi_tte_data_perror_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_asi_tte_tag_perror_w2       = "${instancePath}.dctl.asi_tte_tag_perror_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ifu_lsu_asi_rd_unc          = "${instancePath}.dctl.ifu_lsu_asi_rd_unc" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_l2_unc_error_e              = "${instancePath}.dctl.l2_unc_error_e" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_l2_corr_error_e             = "${instancePath}.dctl.l2_corr_error_e" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_cpx_pkt_ld_err          = "${instancePath}.dctl.lsu_cpx_pkt_ld_err" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_l2fill_vld_e                = "${instancePath}.dctl.l2fill_vld_e" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_ignore_fill                 = "${instancePath}.dctl.ignore_fill" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_lsu_ifu_l2_unc_error        = "${instancePath}.dctl.lsu_ifu_l2_unc_error" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_l2_unc_error_w2             = "${instancePath}.dctl.l2_unc_error_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_bld_unc_err_pend_w2         = "${instancePath}.dctl.bld_unc_err_pend_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_lsu_ifu_err_addr_b39        = "${instancePath}.dctl.lsu_ifu_err_addr_b39" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_bld_squash_err_w2           = "${instancePath}.dctl.bld_squash_err_w2" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_lsu_ifu_l2_corr_error       = "${instancePath}.dctl.lsu_ifu_l2_corr_error" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_l2_corr_error_w2            = "${instancePath}.dctl.l2_corr_error_w2" iskew -1
+connect input lsu_cov_top2.C${c}_dctl_bld_corr_err_pend_w2        = "${instancePath}.dctl.bld_corr_err_pend_w2" iskew -1
+
+connect input lsu_cov_top2.C${c}_dctl_lsu_ifu_io_error            = "${instancePath}.dctl.lsu_ifu_io_error" iskew -1
+
+
+// *********************************************************************
+// end errors objects 
+// *********************************************************************
+
+// cmplt ext....
+
+connect input lsu_cov_top2.C${c}_stxa_internal_d2            = "${instancePath}.dctl.stxa_internal_d2" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_thread0_w3                  = "${instancePath}.dctl.thread0_w3" iskew -1  // 1bit
+connect input lsu_cov_top2.C${c}_stxa_stall_wr_cmplt0_d1     = "${instancePath}.dctl.stxa_stall_wr_cmplt0_d1" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_stxa_stall_wr_cmplt1_d1     = "${instancePath}.dctl.stxa_stall_wr_cmplt1_d1" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_stxa_stall_wr_cmplt2_d1     = "${instancePath}.dctl.stxa_stall_wr_cmplt2_d1" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_stxa_stall_wr_cmplt3_d1     = "${instancePath}.dctl.stxa_stall_wr_cmplt3_d1" iskew -1 // 1bit
+
+connect input lsu_cov_top2.C${c}_l2fill_vld_e                = "${instancePath}.dctl.l2fill_vld_e" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_ignore_fill                 = "${instancePath}.dctl.ignore_fill" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_l2fill_fpld_e               = "${instancePath}.dctl.l2fill_fpld_e" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_lsu_cpx_pkt_atm_st_cmplt    = "${instancePath}.dctl.lsu_cpx_pkt_atm_st_cmplt" iskew -1 // 1bit
+
+connect input lsu_cov_top2.C${c}_lsu_cpx_pkt_ld_err          = "${instancePath}.dctl.lsu_cpx_pkt_ld_err[1]" iskew -1 // 1bit
+connect input lsu_cov_top2.C${c}_lsu_nceen_d1                = "${instancePath}.dctl.lsu_nceen_d1" iskew -1  // 4 bits
+
+connect input lsu_cov_top2.C${c}_dfill_thread0               = "${instancePath}.dctl.dfill_thread0" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_dfill_thread1               = "${instancePath}.dctl.dfill_thread1" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_dfill_thread2               = "${instancePath}.dctl.dfill_thread2" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_dfill_thread3               = "${instancePath}.dctl.dfill_thread3" iskew -1 // 1 bit
+
+connect input lsu_cov_top2.C${c}_intld_byp_cmplt             = "${instancePath}.dctl.intld_byp_cmplt" iskew -1 // 4bits
+
+connect input lsu_cov_top2.C${c}_atm_st_cmplt0               = "${instancePath}.dctl.atm_st_cmplt0" iskew -1  // 1bit
+connect input lsu_cov_top2.C${c}_atm_st_cmplt1               = "${instancePath}.dctl.atm_st_cmplt1" iskew -1  // 1bit
+connect input lsu_cov_top2.C${c}_atm_st_cmplt2               = "${instancePath}.dctl.atm_st_cmplt2" iskew -1  // 1bit
+connect input lsu_cov_top2.C${c}_atm_st_cmplt3               = "${instancePath}.dctl.atm_st_cmplt3" iskew -1  // 1bit
+
+
+connect input lsu_cov_top2.C${c}_pend_atm_ld_ue              = "${instancePath}.dctl.pend_atm_ld_ue" iskew -1   // 4 bits
+connect input lsu_cov_top2.C${c}_bsync0_reset                = "${instancePath}.dctl.bsync0_reset" iskew -1     // 1 bit
+connect input lsu_cov_top2.C${c}_bsync1_reset                = "${instancePath}.dctl.bsync1_reset" iskew -1     // 1 bit
+connect input lsu_cov_top2.C${c}_bsync2_reset                = "${instancePath}.dctl.bsync2_reset" iskew -1     // 1 bit
+connect input lsu_cov_top2.C${c}_bsync3_reset                = "${instancePath}.dctl.bsync3_reset" iskew -1     // 1 bit
+
+connect input lsu_cov_top2.C${c}_lsu_intrpt_cmplt            = "${instancePath}.dctl.lsu_intrpt_cmplt" iskew -1 // 4 bits
+
+connect input lsu_cov_top2.C${c}_diag_wr_cmplt0              = "${instancePath}.dctl.diag_wr_cmplt0" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_diag_wr_cmplt1              = "${instancePath}.dctl.diag_wr_cmplt1" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_diag_wr_cmplt2              = "${instancePath}.dctl.diag_wr_cmplt2" iskew -1 // 1 bit
+connect input lsu_cov_top2.C${c}_diag_wr_cmplt3              = "${instancePath}.dctl.diag_wr_cmplt3" iskew -1 // 1 bit
+
+connect input lsu_cov_top2.C${c}_ldxa_illgl_va_cmplt_d1      = "${instancePath}.dctl.ldxa_illgl_va_cmplt_d1" iskew -1 // 4 bits
+connect input lsu_cov_top2.C${c}_pref_tlbmiss_cmplt_d2       = "${instancePath}.dctl.pref_tlbmiss_cmplt_d2" iskew -1 // 4 bits
+connect input lsu_cov_top2.C${c}_lsu_pcx_pref_issue          = "${instancePath}.dctl.lsu_pcx_pref_issue" iskew -1 // 4 bits
+// cmplt ext end
+
+
+
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $LSU_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }

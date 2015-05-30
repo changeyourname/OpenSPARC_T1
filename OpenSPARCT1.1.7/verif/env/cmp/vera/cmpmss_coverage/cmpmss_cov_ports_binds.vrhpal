@@ -1,0 +1,697 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpmss_cov_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "cmpmss_cov_inc.pal";
+
+#ifndef INC__CMPMSS_COV_PORTS_BINDS_VRH
+#define INC__CMPMSS_COV_PORTS_BINDS_VRH
+
+#include "cmpmss_cov.if.vrh"
+
+/////////////////////////////////////////////////////////////////
+// Port definitions
+/////////////////////////////////////////////////////////////////
+
+port cmpccx_pcx_req_port {
+    cmpccx_pcx_req_state;
+}
+
+port cmpccx_cpx_req_port {
+    cmpccx_cpx_req_state;
+}
+
+port cmpccx_pcx_sequence_port {
+    cmpccx_pcx_sequence_state;
+}
+
+port cmpccx_cpx_sequence_port {
+    cmpccx_cpx_sequence_state;
+}
+
+port cmpccx_pcx_qfull_port {
+    cmpccx_pcx_qfull_state;
+}
+
+port cmpccx_cpx_qfull_port {
+    cmpccx_cpx_qfull_state;
+}
+
+port cmpccx_pcx_stallatom_port {
+    cmpccx_pcx_stallatom_state;
+}
+
+port cmpccx_cpx_stallatom_port {
+    cmpccx_cpx_stallatom_state;
+}
+/*
+port cmpl2_pcx_fields_port {
+    cmpl2_pcx_fields_state;
+}
+
+port cmpl2_cpx_fields_port {
+    cmpl2_cpx_fields_state;
+}
+
+port cmpl2_inv_vector_port {
+    cmpl2_inv_vector_state;
+}
+
+port cmpl2_addr_port {
+    cmpl2_addr_state;
+}
+*/
+port cmpl2_jbi_fields_port {
+    cmpl2_jbi_fields_state;
+}
+
+port cmpl2_dir_write_port {
+    cmpl2_dir_write_state;
+}
+
+port cmpl2_dir_lookup_port {
+    cmpl2_dir_lookup_state;
+}
+
+port cmpl2_iq_count_port {
+    cmpl2_iq_count_state;
+}
+
+port cmpl2_iq_overflow_port {
+    cmpl2_iq_overflow_state;
+}
+
+port cmpl2_oq_count_port {
+    cmpl2_oq_count_state;
+}
+
+port cmpl2_oq_ifill12_port {
+    cmpl2_oq_ifill12_state;
+}
+
+port cmpl2_oq_overflow_port {
+    cmpl2_oq_overflow_state;
+}
+
+port cmpl2_mb_count_port {
+    cmpl2_mb_count_state;
+}
+
+port cmpl2_mb_sameindex_port {
+    cmpl2_mb_sameindex_state;
+}
+
+port cmpl2_mb_hit_bypass_port {
+    cmpl2_mb_hit_bypass_state;
+}
+
+port cmpl2_mb_overflow_port {
+    cmpl2_mb_overflow_state;
+}
+
+port cmpl2_fb_count_port {
+    cmpl2_fb_count_state;
+}
+
+port cmpl2_fbmb_miss_entries_port {
+    cmpl2_fbmb_miss_entries_state;
+}
+
+port cmpl2_fbmb_stdep_entries_port {
+    cmpl2_fbmb_stdep_entries_state;
+}
+
+port cmpl2_fb_bypass_entries_port {
+    cmpl2_fb_bypass_entries_state;
+}
+
+port cmpl2_fb_bypass_insts_port {
+    cmpl2_fb_bypass_insts_state;
+}
+
+port cmpl2_fill_complete_port {
+    cmpl2_fill_complete_state;
+}
+
+port cmpl2_wb_count_port {
+    cmpl2_wb_count_state;
+}
+
+port cmpl2_wb_hit_bypass_port {
+    cmpl2_wb_hit_bypass_state;
+}
+
+port cmpl2_snpiq_valid_port {
+    cmpl2_snpiq_valid_state;
+}
+
+port cmpl2_rdmawb_valid_port {
+    cmpl2_rdmawb_valid_state;
+}
+
+port cmpl2_pipeline_full_port {
+    cmpl2_pipeline_full_state;
+}
+
+port cmpl2_stalled_insts1_port {
+    cmpl2_stalled_insts1_state;
+}
+
+port cmpl2_stalled_insts2_port {
+    cmpl2_stalled_insts2_state;
+}
+
+port cmpl2_stalled_scrub1_port {
+    cmpl2_stalled_scrub1_state;
+}
+
+port cmpl2_stalled_scrub2_port {
+    cmpl2_stalled_scrub2_state;
+}
+
+port cmpl2_vuad_bypass_port {
+    cmpl2_vuad_bypass_state;
+}
+
+port cmpl2_offmode_directmap_insts_port {
+    cmpl2_offmode_directmap_insts_state;
+}
+
+port cmpl2_inst_flow_port {
+    cmpl2_inst_flow_state;
+}
+
+port cmpl2_buffer_hits_port {
+    cmpl2_buffer_hits_state;
+}
+
+port cmpl2_error_status_reg_port {
+    cmpl2_error_status_reg_state;
+}
+
+port cmpl2_error_trans_port {
+    cmpl2_error_trans_state;
+}
+
+port cmpl2_error_tag_port {
+    cmpl2_error_tag_state;
+}
+
+port cmpl2_error_offmode_port {
+    cmpl2_error_offmode_state;
+}
+
+port cmpl2_scrub_stall_port {
+    cmpl2_scrub_stall_state;
+}
+
+port cmpl2_tecc_writeback_port {
+    cmpl2_tecc_writeback_state;
+}
+
+/////////////////////////////////////////////////////////////////
+// Port binds
+/////////////////////////////////////////////////////////////////
+
+bind cmpccx_pcx_req_port cmpccx_pcx_req_sample {
+    cmpccx_pcx_req_state {
+        cmpmss_cov.spc7_pcx_req, cmpmss_cov.spc6_pcx_req,
+        cmpmss_cov.spc5_pcx_req, cmpmss_cov.spc4_pcx_req,
+        cmpmss_cov.spc3_pcx_req, cmpmss_cov.spc2_pcx_req,
+        cmpmss_cov.spc1_pcx_req, cmpmss_cov.spc0_pcx_req,
+        cmpmss_cov.spc7_pcx_atom, cmpmss_cov.spc6_pcx_atom,
+        cmpmss_cov.spc5_pcx_atom, cmpmss_cov.spc4_pcx_atom,
+        cmpmss_cov.spc3_pcx_atom, cmpmss_cov.spc2_pcx_atom,
+        cmpmss_cov.spc1_pcx_atom, cmpmss_cov.spc0_pcx_atom
+    };
+}
+
+bind cmpccx_cpx_req_port cmpccx_cpx_req_sample {
+    cmpccx_cpx_req_state {
+        cmpmss_cov.sctag3_cpx_req, cmpmss_cov.sctag2_cpx_req,
+        cmpmss_cov.sctag1_cpx_req, cmpmss_cov.sctag0_cpx_req,
+        cmpmss_cov.sctag3_cpx_atom, cmpmss_cov.sctag2_cpx_atom,
+        cmpmss_cov.sctag1_cpx_atom, cmpmss_cov.sctag0_cpx_atom
+    };
+}
+
+bind cmpccx_pcx_sequence_port cmpccx_pcx_sequence_sample {
+    cmpccx_pcx_sequence_state {
+        cmpmss_cov.spc0_pcx_req, cmpmss_cov.spc0_pcx_atom, cmpmss_cov.pcx_spc0_grant
+    };
+}
+
+bind cmpccx_cpx_sequence_port cmpccx_cpx_sequence_sample {
+    cmpccx_cpx_sequence_state {
+        cmpmss_cov.sctag0_cpx_req, cmpmss_cov.sctag0_cpx_atom, cmpmss_cov.cpx_sctag0_grant
+    };
+}
+
+bind cmpccx_pcx_qfull_port cmpccx_pcx_qfull_sample {
+    cmpccx_pcx_qfull_state {
+        cmpmss_cov.pcx_arb3_qfull, cmpmss_cov.pcx_arb2_qfull,
+        cmpmss_cov.pcx_arb1_qfull, cmpmss_cov.pcx_arb0_qfull
+    };
+}
+
+bind cmpccx_cpx_qfull_port cmpccx_cpx_qfull_sample {
+    cmpccx_cpx_qfull_state {
+        cmpmss_cov.cpx_arb7_qfull, cmpmss_cov.cpx_arb6_qfull,
+        cmpmss_cov.cpx_arb5_qfull, cmpmss_cov.cpx_arb4_qfull,
+        cmpmss_cov.cpx_arb3_qfull, cmpmss_cov.cpx_arb2_qfull,
+        cmpmss_cov.cpx_arb1_qfull, cmpmss_cov.cpx_arb0_qfull
+    };
+}
+
+bind cmpccx_pcx_stallatom_port cmpccx_pcx_stallatom_sample {
+    cmpccx_pcx_stallatom_state {
+        cmpmss_cov.pcx_arb0_atom, cmpmss_cov.pcx_arb0_grant_a, cmpmss_cov.pcx_arb0_stall_a
+    };
+}
+
+bind cmpccx_cpx_stallatom_port cmpccx_cpx_stallatom_sample {
+    cmpccx_cpx_stallatom_state {
+        cmpmss_cov.cpx_arb0_atom, cmpmss_cov.cpx_arb0_grant_a, cmpmss_cov.cpx_arb0_stall_a
+    };
+}
+
+
+.for($b=0; $b<$BANKS; $b++) {
+/*
+bind cmpl2_pcx_fields_port cmpl2_pcx_fields_sample_${b} {
+    cmpl2_pcx_fields_state {
+        cmpmss_cov.pcx_sctag${b}_data_rdy,
+        cmpmss_cov.pcx_sctag${b}_data[123:64]
+    };
+}
+
+bind cmpl2_cpx_fields_port cmpl2_cpx_fields_sample_${b} {
+    cmpl2_cpx_fields_state {
+        cmpmss_cov.sctag${b}_cpx_data[144:123]
+    };
+}
+
+bind cmpl2_inv_vector_port cmpl2_inv_vector_sample_${b} {
+    cmpl2_inv_vector_state {
+        cmpmss_cov.sctag${b}_cpx_data[144:140],
+        cmpmss_cov.sctag${b}_cpx_data[111:0]
+    };
+}
+
+bind cmpl2_addr_port cmpl2_addr_sample_${b} {
+    cmpl2_addr_state {
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbctl_inval_inst_c2_${b},
+        cmpmss_cov.decdp_inst_int_c2_${b},
+        cmpmss_cov.arbdp_addr_c2_${b}
+    };
+}
+*/
+bind cmpl2_jbi_fields_port cmpl2_jbi_fields_sample_${b} {
+    cmpl2_jbi_fields_state {
+        cmpmss_cov.jbi_sctag${b}_req_vld, cmpmss_cov.jbi_sctag${b}_req
+    };
+}
+
+bind cmpl2_dir_write_port cmpl2_dir_write_sample_${b} {
+    cmpl2_dir_write_state {
+        cmpmss_cov.ic_wr_en_c4_${b},
+        cmpmss_cov.dir_panel_icd_c4_${b}[4:3],
+        cmpmss_cov.dir_panel_icd_c4_${b}[1:0],
+        cmpmss_cov.wr_ic_dir_entry_c4_${b},
+        cmpmss_cov.dc_wr_en_c4_${b},
+        cmpmss_cov.dir_panel_dcd_c4_${b}[4:3],
+        cmpmss_cov.dir_panel_dcd_c4_${b}[1:0],
+        cmpmss_cov.wr_dc_dir_entry_c4_${b}
+    };
+}
+
+bind cmpl2_dir_lookup_port cmpl2_dir_lookup_sample_${b} {
+    cmpl2_dir_lookup_state {
+        cmpmss_cov.ic_lkup_row_dec_c4_${b},
+        cmpmss_cov.lkup_row_addr_icd_c4_${b},
+        cmpmss_cov.dc_lkup_row_dec_c4_${b},
+        cmpmss_cov.lkup_row_addr_dcd_c4_${b}
+    };
+}
+
+bind cmpl2_iq_count_port cmpl2_iq_count_sample_${b} {
+    cmpl2_iq_count_state {
+        cmpmss_cov.iq_count_${b}
+    };
+}
+
+bind cmpl2_iq_overflow_port cmpl2_iq_overflow_sample_${b} {
+    cmpl2_iq_overflow_state {
+        cmpmss_cov.pcx_sctag${b}_data_rdy,
+        cmpmss_cov.pcx_sctag${b}_data[122:118],
+        cmpmss_cov.iq_count_${b}
+    };
+}
+
+bind cmpl2_oq_count_port cmpl2_oq_count_sample_${b} {
+    cmpl2_oq_count_state {
+        cmpmss_cov.oq_count_${b}
+    };
+}
+
+bind cmpl2_oq_ifill12_port cmpl2_oq_ifill12_sample_${b} {
+    cmpl2_oq_ifill12_state {
+        cmpmss_cov.imiss1_to_xbarq_c6_${b},
+        cmpmss_cov.sel_old_req_${b}
+    };
+}
+
+bind cmpl2_oq_overflow_port cmpl2_oq_overflow_sample_${b} {
+    cmpl2_oq_overflow_state {
+        cmpmss_cov.oqarray_wr_en_${b},
+        cmpmss_cov.oq_array_data_in_${b}[143:140],
+        cmpmss_cov.oq_array_data_in_${b}[129],
+        cmpmss_cov.oq_count_${b}
+    };
+}
+
+bind cmpl2_mb_count_port cmpl2_mb_count_sample_${b} {
+    cmpl2_mb_count_state {
+        cmpmss_cov.mb_count_${b}
+    };
+}
+
+bind cmpl2_mb_sameindex_port cmpl2_mb_sameindex_sample_${b} {
+    cmpl2_mb_sameindex_state {
+        cmpmss_cov.mb_sameindex_count_${b}
+    };
+}
+
+bind cmpl2_mb_hit_bypass_port cmpl2_mb_hit_bypass_sample_${b} {
+    cmpl2_mb_hit_bypass_state {
+        cmpmss_cov.mbctl_hit_c2_${b},
+        cmpmss_cov.tmp_hit_unqual_c2_${b},
+        cmpmss_cov.tmp_cam_hit_c2_${b},
+        cmpmss_cov.mbf_insert_c3_tmp_${b},
+        cmpmss_cov.cam_hit_vec_c1_${b}
+    };
+}
+
+bind cmpl2_mb_overflow_port cmpl2_mb_overflow_sample_${b} {
+    cmpl2_mb_overflow_state {
+        cmpmss_cov.mbf_insert_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:13],
+        cmpmss_cov.mb_count_${b}
+    };
+}
+
+bind cmpl2_fb_count_port cmpl2_fb_count_sample_${b} {
+    cmpl2_fb_count_state {
+        cmpmss_cov.fb_count_${b}
+    };
+}
+
+bind cmpl2_fbmb_miss_entries_port cmpl2_fbmb_miss_entries_sample_${b} {
+    cmpl2_fbmb_miss_entries_state {
+        cmpmss_cov.fbf_ready_miss_r1_${b},
+        cmpmss_cov.dram_rd_req_id_r0_d1_${b},
+        cmpmss_cov.fbf_enc_ld_mbid_r1_${b}
+    };
+}
+
+bind cmpl2_fbmb_stdep_entries_port cmpl2_fbmb_stdep_entries_sample_${b} {
+    cmpl2_fbmb_stdep_entries_state {
+        cmpmss_cov.fbf_st_or_dep_rdy_c4_${b},
+        cmpmss_cov.fill_complete_c4_${b},
+        cmpmss_cov.fbf_enc_dep_mbid_c4_${b}
+    };
+}
+
+bind cmpl2_fb_bypass_entries_port cmpl2_fb_bypass_entries_sample_${b} {
+    cmpl2_fb_bypass_entries_state {
+        cmpmss_cov.fbctl_hit_c2_${b},
+        cmpmss_cov.fb_hit_vec_c2_${b}
+    };
+}
+
+bind cmpl2_fb_bypass_insts_port cmpl2_fb_bypass_insts_sample_${b} {
+    cmpl2_fb_bypass_insts_state {
+        cmpmss_cov.fbctl_hit_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:13],
+        cmpmss_cov.arbdp_inst_c2_${b}[7:6],
+        cmpmss_cov.arbdp_addr_c2_${b}[5:4]
+    };
+}
+
+bind cmpl2_fill_complete_port cmpl2_fill_complete_sample_${b} {
+    cmpl2_fill_complete_state {
+        cmpmss_cov.dec_fill_entry_c3_${b},
+        cmpmss_cov.no_fill_entry_dequeue_c3_${b},
+        cmpmss_cov.en_hit_dequeue_c2_${b},
+        cmpmss_cov.rdma_inst_c2_${b},
+        cmpmss_cov.mbctl_rdma_reg_vld_c2_${b}
+    };
+}
+
+bind cmpl2_wb_count_port cmpl2_wb_count_sample_${b} {
+    cmpl2_wb_count_state {
+        cmpmss_cov.wb_count_${b}
+    };
+}
+
+bind cmpl2_wb_hit_bypass_port cmpl2_wb_hit_bypass_sample_${b} {
+    cmpl2_wb_hit_bypass_state {
+        cmpmss_cov.wbctl_hit_qual_c2_${b},
+        cmpmss_cov.bypass_hit_en_c2_${b},
+        cmpmss_cov.wb_cam_hit_vec_tmp_c2_${b}
+    };
+}
+
+bind cmpl2_snpiq_valid_port cmpl2_snpiq_valid_sample_${b} {
+    cmpl2_snpiq_valid_state {
+        cmpmss_cov.snpq_valid_${b}
+    };
+}
+
+bind cmpl2_rdmawb_valid_port cmpl2_rdmawb_valid_sample_${b} {
+    cmpl2_rdmawb_valid_state {
+        cmpmss_cov.rdma_valid_${b}
+    };
+}
+
+bind cmpl2_pipeline_full_port cmpl2_pipeline_full_sample_${b} {
+    cmpl2_pipeline_full_state {
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b}
+    };
+}
+
+bind cmpl2_stalled_insts1_port cmpl2_stalled_insts1_sample_${b} {
+    cmpl2_stalled_insts1_state {
+        cmpmss_cov.same_col_stall_c1_${b},     // 17
+        cmpmss_cov.imiss_stall_op_c1inc1_${b}, // 16
+        cmpmss_cov.arbctl_evict_vld_c2_${b},   // 15
+        cmpmss_cov.arbctl_fill_vld_c2_${b},    // 14
+        cmpmss_cov.arbctl_fill_vld_c3_${b},    // 13
+        cmpmss_cov.rdma_64B_stall_${b},        // 12
+        cmpmss_cov.arbctl_inval_inst_c2_${b},  // 11
+        cmpmss_cov.inval_inst_vld_c3_${b},     // 10
+        cmpmss_cov.inval_inst_vld_c4_${b},     // 09
+        cmpmss_cov.inst_l2data_vld_c2_${b},    // 08
+        cmpmss_cov.inst_l2tag_vld_c2_${b},     // 07
+        cmpmss_cov.inst_l2tag_vld_c3_${b},     // 06
+        cmpmss_cov.inst_l2vuad_vld_c2_${b},    // 05
+        cmpmss_cov.inst_l2vuad_vld_c3_${b},    // 04
+        cmpmss_cov.inst_l2vuad_vld_c4_${b},    // 03
+        cmpmss_cov.inc_tag_ecc_cnt_c2_${b},    // 02
+        cmpmss_cov.inc_tag_ecc_cnt_c3_${b},    // 01
+        cmpmss_cov.data_ecc_active_c4_${b},    // 00
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbctl_inst_diag_c1_${b},
+        cmpmss_cov.arbdp_inst_c1_${b}[19:5]
+    };
+}
+
+bind cmpl2_stalled_insts2_port cmpl2_stalled_insts2_sample_${b} {
+    cmpl2_stalled_insts2_state {
+        cmpmss_cov.arbctl_inst_diag_c1_${b}, // 7
+        cmpmss_cov.arbdp_evict_c1_${b},      // 6
+        cmpmss_cov.arbdp_inst_fb_c1_${b},    // 5
+        cmpmss_cov.decdp_imiss_inst_c1_${b}, // 4
+        cmpmss_cov.decdp_ic_inval_c1_${b},   // 3
+        cmpmss_cov.decdp_dc_inval_c1_${b},   // 2
+        cmpmss_cov.arbdp_tecc_c1_${b},       // 1
+        cmpmss_cov.arbdp_inst_rsvd_c1_${b},  // 0
+        cmpmss_cov.arbctl_stall_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbctl_inst_diag_c1_${b},
+        cmpmss_cov.arbdp_inst_c1_${b}[19:5]
+    };
+}
+
+bind cmpl2_stalled_scrub1_port cmpl2_stalled_scrub1_sample_${b} {
+    cmpl2_stalled_scrub1_state {
+        cmpmss_cov.same_col_stall_c1_${b},     // 17
+        cmpmss_cov.imiss_stall_op_c1inc1_${b}, // 16
+        cmpmss_cov.arbctl_evict_vld_c2_${b},   // 15
+        cmpmss_cov.arbctl_fill_vld_c2_${b},    // 14
+        cmpmss_cov.arbctl_fill_vld_c3_${b},    // 13
+        cmpmss_cov.rdma_64B_stall_${b},        // 12
+        cmpmss_cov.arbctl_inval_inst_c2_${b},  // 11
+        cmpmss_cov.inval_inst_vld_c3_${b},     // 10
+        cmpmss_cov.inval_inst_vld_c4_${b},     // 09
+        cmpmss_cov.inst_l2data_vld_c2_${b},    // 08
+        cmpmss_cov.inst_l2tag_vld_c2_${b},     // 07
+        cmpmss_cov.inst_l2tag_vld_c3_${b},     // 06
+        cmpmss_cov.inst_l2vuad_vld_c2_${b},    // 05
+        cmpmss_cov.inst_l2vuad_vld_c3_${b},    // 04
+        cmpmss_cov.inst_l2vuad_vld_c4_${b},    // 03
+        cmpmss_cov.inc_tag_ecc_cnt_c2_${b},    // 02
+        cmpmss_cov.inc_tag_ecc_cnt_c3_${b},    // 01
+        cmpmss_cov.data_ecc_active_c4_${b},    // 00
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbdp_inst_fb_c1_${b},
+        cmpmss_cov.arbdp_tecc_c1_${b}
+    };
+}
+
+bind cmpl2_stalled_scrub2_port cmpl2_stalled_scrub2_sample_${b} {
+    cmpl2_stalled_scrub2_state {
+        cmpmss_cov.arbctl_inst_diag_c1_${b}, // 7
+        cmpmss_cov.arbdp_evict_c1_${b},      // 6
+        cmpmss_cov.arbdp_inst_fb_c1_${b},    // 5
+        cmpmss_cov.decdp_imiss_inst_c1_${b}, // 4
+        cmpmss_cov.decdp_ic_inval_c1_${b},   // 3
+        cmpmss_cov.decdp_dc_inval_c1_${b},   // 2
+        cmpmss_cov.arbdp_tecc_c1_${b},       // 1
+        cmpmss_cov.arbdp_inst_rsvd_c1_${b},  // 0
+        cmpmss_cov.arbctl_stall_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbdp_inst_fb_c1_${b},
+        cmpmss_cov.arbdp_tecc_c1_${b}
+    };
+}
+
+bind cmpl2_vuad_bypass_port cmpl2_vuad_bypass_sample_${b} {
+    cmpl2_vuad_bypass_state {
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.vuad_sel_c2orc3_${b},
+        cmpmss_cov.vuad_sel_c2_${b},
+        cmpmss_cov.vuad_sel_c4orc5_${b},
+        cmpmss_cov.vuad_sel_c4_${b}
+    };
+}
+
+bind cmpl2_offmode_directmap_insts_port cmpl2_offmode_directmap_insts_sample_${b} {
+    cmpl2_offmode_directmap_insts_state {
+        cmpmss_cov.l2_bypass_mode_on_d1_${b},
+        cmpmss_cov.l2_dir_map_on_d1_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:5]
+    };
+}
+
+bind cmpl2_inst_flow_port cmpl2_inst_flow_sample_${b} {
+    cmpl2_inst_flow_state {
+        cmpmss_cov.tagctl_hit_l2orfb_c2_${b},
+        cmpmss_cov.mbctl_hit_c2_${b},
+        cmpmss_cov.arbdp_inst_mb_c2_${b},
+        cmpmss_cov.arbctl_evict_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:5]
+    };
+}
+
+bind cmpl2_buffer_hits_port cmpl2_buffer_hits_sample_${b} {
+    cmpl2_buffer_hits_state {
+        cmpmss_cov.mbctl_hit_c2_${b},
+        cmpmss_cov.fbctl_mbctl_match_c2_${b},
+        cmpmss_cov.wbctl_hit_qual_c2_${b},
+        cmpmss_cov.rdmatctl_hit_qual_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:5]
+    };
+}
+
+bind cmpl2_error_status_reg_port cmpl2_error_status_reg_sample_${b} {
+    cmpl2_error_status_reg_state {
+        cmpmss_cov.err_state_new_c9_${b}[63:32],
+        cmpmss_cov.err_status_in_${b}[63:32]
+    };
+}
+
+bind cmpl2_error_trans_port cmpl2_error_trans_sample_${b} {
+    cmpl2_error_trans_state {
+        cmpmss_cov.csr_l2_errstate_reg_${b}[63:62], // MEU, MEC
+        cmpmss_cov.csr_l2_errstate_reg_${b}[35],    // VEU
+        cmpmss_cov.csr_l2_errstate_reg_${b}[36]     // VEC
+    };
+}
+
+bind cmpl2_error_tag_port cmpl2_error_tag_sample_${b} {
+    cmpl2_error_tag_state {
+        cmpmss_cov.mbctl_hit_c2_${b},
+        cmpmss_cov.tecc_c2_${b},
+        cmpmss_cov.tagctl_hit_l2orfb_c2_${b},
+        cmpmss_cov.par_err_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_pst_with_ctrue_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:5]
+    };
+}
+
+bind cmpl2_error_offmode_port cmpl2_error_offmode_sample_${b} {
+    cmpl2_error_offmode_state {
+        cmpmss_cov.l2_bypass_mode_on_d1_${b},
+        cmpmss_cov.fbuerr0_d1_${b},
+        cmpmss_cov.fbcerr0_d1_${b},
+        cmpmss_cov.fbctl_hit_c2_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_inst_diag_c2_${b},
+        cmpmss_cov.arbdp_inst_c2_${b}[19:5]
+    };
+}
+
+bind cmpl2_scrub_stall_port cmpl2_scrub_stall_sample_${b} {
+    cmpl2_scrub_stall_state {
+        cmpmss_cov.arbctl_inst_vld_c1_${b},
+        cmpmss_cov.arbdp_inst_fb_c1_${b},
+        cmpmss_cov.arbdp_tecc_c1_${b},
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.arbctl_fill_vld_c2_${b},
+        cmpmss_cov.tecc_c2_${b}
+    };
+}
+
+bind cmpl2_tecc_writeback_port cmpl2_tecc_writeback_sample_${b} {
+    cmpl2_tecc_writeback_state {
+        cmpmss_cov.arbctl_inst_vld_c2_${b},
+        cmpmss_cov.par_err_c2_${b},
+        cmpmss_cov.tecc_c2_${b},
+        cmpmss_cov.wbctl_hit_qual_c2_${b},
+        cmpmss_cov.rdmatctl_hit_qual_c2_${b}
+    };
+}
+
+.}
+
+#endif
+

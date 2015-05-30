@@ -1,0 +1,4 @@
+design/sys/iop/include/xst_defines.h
+design/sys/iop/srams/rtl/bw_r_rf32x152b.v
+design/sys/iop/common/rtl/swrvr_clib.v
+design/sys/iop/common/rtl/swrvr_dlib.v

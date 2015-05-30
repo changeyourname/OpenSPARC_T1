@@ -1,0 +1,77 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_intr_cov.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Fri Feb 28 13:25:11 PST 2003
+// saperate this guy to make it more readable
+
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+#include "mt_trap_cov.vrh"
+
+class Intr {
+  local bit [2:0] intr_sig;
+  //  local INTR intr_cov;
+  local mt_cov_port my_pt;
+
+  bit [2:0] intr_sample;
+
+  event smpl_event;
+
+  task new (mt_cov_port pt) {
+    my_pt = pt;
+    intr_sig = 0;
+    //    intr_cov = newcov(intr_sig, @(posedge my_pt.\$cmp_clk));
+     CoverOn();
+  }
+
+  local task Going();
+  local task CoverOn();
+
+}
+
+task Intr::Going() {
+
+  if (my_pt.\$intr_req == 4'b0111 && my_pt.\$intr_vld == 1'b1) {
+    intr_sig = {1'b1, my_pt.\$int_thid};
+  } else {
+    intr_sig = 0;
+  }
+
+}
+task Intr::CoverOn ()
+{
+  integer done = 0;
+
+  fork {
+    while (!done) {
+      @ (posedge my_pt.\$cmp_clk);
+      Going();
+      intr_sample = intr_sig;
+      trigger(ONE_SHOT, smpl_event);
+    }
+  } {
+    @ (posedge my_pt.\$cmp_diag_done);
+    done = 1;
+    {
+
+    }
+  } join none
+}

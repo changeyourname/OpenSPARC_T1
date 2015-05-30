@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_nc_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// if lsu_stb_cam_hit and lsu_io_ld are active at the same time we've got
+// an IO load hitting in the store buffer. This is what we monitor here.
+// I also check that one l2cache request always goes out.
+// lsu_stb_cam_hit, 
+// lsu_io_ld,
+// ld0_l2cache_rq,
+// ld1_l2cache_rq,
+// ld2_l2cache_rq,
+// ld3_l2cache_rq
+// Dealing only with thread0.
+// 
+// TSO_LSU_NC_HIT          6'b111000 meaning that NC request hit in STB 
+//				     and issued a request
+// TSO_LSU_NC_BAD1         6'b110000 meaning that NC request hit in STB
+//				     and did NOT issue a req. This is BAD.
+//***********************************************************************
+
+// good states
+//------------
+  state s_TSO_LSU_NC_HIT	(TSO_LSU_NC_HIT);
+
+// bad states
+//-----------
+  bad_state s_TSO_LSU_NC_BAD1	(TSO_LSU_NC_BAD1);

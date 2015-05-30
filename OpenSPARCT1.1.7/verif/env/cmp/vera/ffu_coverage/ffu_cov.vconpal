@@ -1,0 +1,141 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ffu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// ffu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+
+// global signals
+connect input ffu_cov_top.cmp_clk = "cmp_top.iop.sparc0.rclk" iskew -1 
+connect input ffu_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+. sub connectInstance {
+.	my ( $instancePath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+// SHARED ACROSS BINDS
+connect input ffu_cov_top.C${c}_ffu_rs1     = "${instancePath}.ctl.rs1[0]"        iskew -1
+connect input ffu_cov_top.C${c}_ffu_rs2     = "${instancePath}.ctl.rs2[0]"        iskew -1
+connect input ffu_cov_top.C${c}_ffu_rd      = "${instancePath}.ctl.rd[0]"         iskew -1
+
+
+// LSU_FSM_COV
+connect input ffu_cov_top.C${c}_ffu_lsu_fpop2_ready_w3 = "${instancePath}.ctl.fpop2_ready_w3"      iskew -1
+connect input ffu_cov_top.C${c}_ffu_lsu_fpop1_ready_w2 = "${instancePath}.ctl.fpop1_ready_w2"      iskew -1
+connect input ffu_cov_top.C${c}_ffu_lsu_fpop_rq_vld    = "${instancePath}.ctl.ffu_lsu_fpop_rq_vld" iskew -1
+
+
+// MOV_ABS_NEG
+connect input ffu_cov_top.C${c}_ffu_unimple_op_w   = "${instancePath}.ctl.unimpl_op_w"  iskew -1
+connect input ffu_cov_top.C${c}_ffu_move_w      = "${instancePath}.ctl.move_w_valid"      iskew -1
+connect input ffu_cov_top.C${c}_ffu_abs_w       = "${instancePath}.ctl.abs_w"       iskew -1
+connect input ffu_cov_top.C${c}_ffu_neg_w       = "${instancePath}.ctl.neg_w"       iskew -1
+
+
+// VIS_ADD_SUB and VIS_LOGIC
+connect input ffu_cov_top.C${c}_ffu_src_sgl = "${instancePath}.ctl.source_single" iskew -1
+connect input ffu_cov_top.C${c}_ffu_dst_sgl = "${instancePath}.ctl.dest_single"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_visop        = "${instancePath}.ctl.visctl.visop_w3_vld" iskew -1
+connect input ffu_cov_top.C${c}_ffu_vis_sel_add  = "${instancePath}.ctl.visctl.add"          iskew -1
+connect input ffu_cov_top.C${c}_ffu_vis_subtract = "${instancePath}.ctl.ctl_vis_subtract"    iskew -1
+connect input ffu_cov_top.C${c}_ffu_vis_sel_log  = "${instancePath}.ctl.visctl.logic"        iskew -1
+
+
+// fsr_gsr_rounding
+connect input ffu_cov_top.C${c}_ffu_is_fpop_d = "${instancePath}.ctl.fpu_op_w3_vld"            iskew -1
+connect input ffu_cov_top.C${c}_ffu_gsr_im  = "${instancePath}.ctl.visctl.gsr_rnd[2]"          iskew -1
+connect input ffu_cov_top.C${c}_ffu_gsr_rnd = "${instancePath}.ctl.visctl.gsr_rnd[1:0]"        iskew -1
+connect input ffu_cov_top.C${c}_ffu_fsr_rnd = "${instancePath}.ctl.visctl.dp_ctl_fsr_rnd[1:0]" iskew -1
+
+
+// ieee_754 trap
+connect input ffu_cov_top.C${c}_is_fpu_result= "${instancePath}.ctl.is_fpu_result"     iskew -1
+connect input ffu_cov_top.C${c}_ffu_fsr_tem  = "${instancePath}.ctl.fsr_tem_d1"        iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_fsr_cexc = "${instancePath}.ctl.fp_exc_w2[4:0]"    iskew -1
+connect input ffu_cov_top.C${c}_ffu_fsr_aexc = "${instancePath}.ctl.fp_exc_w2[9:5]"    iskew -1
+connect input ffu_cov_top.C${c}_fpu_exc	     = "${instancePath}.ctl.cpx_fpexc_d1[4:0]" iskew -1
+
+
+// flush stage
+connect input ffu_cov_top.C${c}_ffu_kill_m   = "${instancePath}.ctl.kill_m"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_killed_w = "${instancePath}.ctl.killed_w" iskew -1
+connect input ffu_cov_top.C${c}_ffu_kill_w   = "${instancePath}.ctl.kill_w"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_flush_w  = "${instancePath}.ctl.flush_w"  iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_flush_w2       = "${instancePath}.ctl.flush_w2"       iskew -1
+connect input ffu_cov_top.C${c}_ffu_ecc_kill_rs2_w2 = "${instancePath}.ctl.ecc_kill_rs2_w2" iskew -1
+connect input ffu_cov_top.C${c}_ffu_unimple_op_w2   = "${instancePath}.ctl.unimpl_op_w2"     iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_ifu_tlu_inst_vld_w = "${instancePath}.ctl.ifu_tlu_inst_vld_w" iskew -1
+connect input ffu_cov_top.C${c}_ffu_thr_match_ww2      = "${instancePath}.ctl.thr_match_ww2"      iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_any_op_e     = "${instancePath}.ctl.any_op_e"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_any_op_m     = "${instancePath}.ctl.any_op_m"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_any_op_w     = "${instancePath}.ctl.any_op_w" iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_lsu_ffu_flush_pipe_w = "${instancePath}.ctl.lsu_ffu_flush_pipe_w" iskew -1
+connect input ffu_cov_top.C${c}_ffu_ifu_tlu_flush_w      = "${instancePath}.ctl.ifu_tlu_flush_w"      iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_fst_w    = "${instancePath}.ctl.fst_w"    iskew -1
+connect input ffu_cov_top.C${c}_ffu_fst_m    = "${instancePath}.ctl.fst_m"    iskew -1
+connect input ffu_cov_top.C${c}_ffu_fpu_op_w = "${instancePath}.ctl.fpu_op_w" iskew -1
+connect input ffu_cov_top.C${c}_ffu_fpu_op_m = "${instancePath}.ctl.fpu_op_m" iskew -1
+
+
+// Block store
+connect input ffu_cov_top.C${c}_ffu_ifu_stall_req = "${instancePath}.ctl.bst_stall_req" iskew -1
+connect input ffu_cov_top.C${c}_ffu_bst_cnt	  = "${instancePath}.ctl.bst_cnt"      iskew -1
+connect input ffu_cov_top.C${c}_ffu_bst_nceen     = "${instancePath}.ctl.nceen"    iskew -1
+connect input ffu_cov_top.C${c}_ffu_bst_op        = "${instancePath}.ctl.bst_issue_c4" iskew -1
+
+
+// ECC 
+connect input ffu_cov_top.C${c}_ffu_ce         = "${instancePath}.ctl.previous_ce" iskew -1
+connect input ffu_cov_top.C${c}_ffu_ue         = "${instancePath}.ctl.previous_ue" iskew -1
+connect input ffu_cov_top.C${c}_ffu_ecc_rd     = "${instancePath}.ctl.fst_w"       iskew -1
+connect input ffu_cov_top.C${c}_ffu_ren_rs1    = "${instancePath}.ctl.ren_rs1_w3"  iskew -1
+connect input ffu_cov_top.C${c}_ffu_ecc_rs2    = "${instancePath}.ctl.ren_rs2_w2"   iskew -1
+connect input ffu_cov_top.C${c}_ffu_combo_ce_rs2 = "${instancePath}.ctl.rs2_fst_ce_w3"  iskew -1
+connect input ffu_cov_top.C${c}_ffu_combo_ue_rs2 = "${instancePath}.ctl.rs2_fst_ue_w3"  iskew -1
+
+connect input ffu_cov_top.C${c}_ffu_nceen      = "${instancePath}.ctl.nceen"     iskew -1
+
+
+
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $FFU_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }
+
+`endif

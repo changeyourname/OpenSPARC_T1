@@ -1,0 +1,114 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_misc_cov.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "iop_rtl.h"
+#include "coreccx_cov.if.vrh"
+
+
+// This task implements the coverage objects that cannot be easily implemented
+// using the standard Vera coverage syntax.
+
+task coreccx_misc_cov() {
+
+    shadow integer i;
+    shadow integer reqcount[4];  // number of requests to each bank
+    shadow integer speccount[4]; // number of speculative requests (which will have to be retried)
+    shadow bit [19:0] statepath = 20'b00001_00001_00001_00001;
+    shadow bit [19:0] statepath_prev; // value of statepath in the previous cycle
+    shadow bit [11:0] covstate;  // vector sampled by coverage object, updated once per cycle
+
+
+    for(i=0; i<4; i++) {
+        reqcount[i] = 0;
+        speccount[i] = 0;
+    }
+
+
+    fork
+    // coreccx_pcx_retry_req
+    {
+        while(1) {
+            statepath_prev = statepath;
+            covstate = 12'b0;
+            
+            // 4 banks
+            for(i=0; i<4; i++) {
+                // grants from each Bank to Core 0
+                if(coreccx_cov.pcx_spc0_grant[i] == 1'b1) {
+                    statepath[(i*5 + reqcount[i] + speccount[i])] = 1'b0;
+                    reqcount[i]--;
+                }
+
+                // requests from Core 0 to each Bank
+                if(coreccx_cov.spc0_pcx_req[i] == 1'b1) {
+                    // atomic request
+                    if(coreccx_cov.spc0_pcx_atom == 1'b1) {
+                        // request either for CAS1_RQ or CAS2_RQ cannot be speculative;
+                        // this causes a bad_state in the coverage object to be hit,
+                        // which should generate an error immediately
+                        if(reqcount[i] != 0) {
+                            covstate[i*3 + 2] = 1'b1; // bit 2, 5, 8, or 11
+                            printf("PCXERROR: CAS1_RQ or CAS2_RQ from Core 0 to Bank %0d is speculative\n", i);
+                        }
+                        
+                        reqcount[i] += 2;
+                        statepath[(i*5 + reqcount[i] + speccount[i])] = 1'b1;
+                    }
+                    // single-packet request
+                    else {
+                        if(reqcount[i] < 2) {
+                            // always increment reqcount when request signal is asserted
+                            reqcount[i]++;
+                            
+                            // if request is a retry of an earlier speculative request, decrement speccount
+                            if(speccount[i] != 0)
+                                speccount[i]--;
+                        }
+                        // this request is a speculative request
+                        else {
+                            // if request is a retry of an earlier speculative request, don't increment speccount
+                            if(speccount[i] == 0)
+                                speccount[i]++;
+                        }
+
+                        statepath[(i*5 + reqcount[i] + speccount[i])] = 1'b1;
+                    }
+                }
+
+                // count coverage only once per event
+                if(statepath != statepath_prev) {
+                    // reqcount[i]: 0 -> 1 -> 2 -> 3
+                    if(statepath[i*5+4:i*5] == 5'b01111)
+                        covstate[i*3] = 1'b1; // bit 0, 3, 6, or 9
+                    
+                    // reqcount[i]: 0 -> 2 -> 3
+                    if(statepath[i*5+4:i*5] == 5'b01101)
+                        covstate[i*3 + 1] = 1'b1; // bit 1, 4, 7, or 10
+                }
+            } // for(i=0; i<4; i++)
+            
+            coreccx_cov.coreccx_pcx_retry_req = covstate;
+
+            @(posedge coreccx_cov.clk);
+        }
+    }
+    join none
+}

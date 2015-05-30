@@ -1,0 +1,693 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l1_stub.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        l1_stub.vrpal
+//  Description:        Stub to snoop and emulate the l1 i\$ and d\$
+//                      valid and tag arrays. This is used by the l1
+//                      checker.
+//
+////////////////////////////////////////////////////////////////////////
+
+#include <vera_defines.vrh>
+#include "l1.if.vrh"
+#include "l1_ports_binds.vrh"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+
+class L1_STUB {
+    string name;
+    integer sparc_id;
+
+    integer	difflimit, count;
+ 
+    integer debug, intq_end_check;
+
+    // the real cache, indexed by {index[6:0], way[1:0]}
+    bit [511:0] icvld; 
+    bit [511:0] dcvld;
+    bit [27:0] ictag[512];
+    bit [28:0] dctag[512];
+
+    // the virtual cache, indexed by {index[6:0], way[1:0]}
+    bit [511:0] vicvld;
+    bit [511:0] vdcvld;
+    bit [27:0] victag[512];
+    bit [28:0] vdctag[512];
+
+    // real and virtual caches are different
+    bit [7:0] dcdiff[512];	
+    bit [7:0] icdiff[512];
+    
+    // binds to the RTL signals
+    cvld_port icvld_bind;
+    cvld_port dcvld_bind;
+    ctag_port ictag_bind;
+    ctag_port dctag_bind;
+    int_port int_bind;
+
+    bit [8:0] dfq_ind[32];
+    bit [31:0] dfq_vld;
+    integer	dfq_wptr, dfq_rptr;
+
+    bit [8:0] ifq_ind[32];
+    bit [31:0] ifq_vld;
+    integer	ifq_wptr, ifq_rptr;
+
+    bit [17:0] intpkt[32];
+    integer	int_wptr, int_rptr;
+
+    // tasks and functions
+    task new(string name = "L1_STUB", integer sparc_id,
+             cvld_port icvld_bind, cvld_port dcvld_bind,
+             ctag_port ictag_bind, ctag_port dctag_bind,
+             int_port int_bind);
+    task start();
+
+    // itype: 1 = I, 0 = D
+    task snoop_cvld(string type, integer itype,	cvld_port cvld_bind, var bit [511:0] cvld);
+    task snoop_dctag(ctag_port ctag_bind);
+    task snoop_ictag(ctag_port ctag_bind);
+    task compare_caches(cvld_port cvld_bind);
+
+    task wr_vdcvld(bit [8:0] arr_index, bit din);
+    task wr_vicvld(bit [8:0] arr_index, bit din);
+    task wr_vdctag(bit [8:0] arr_index, bit [28:0] din);
+    task wr_victag(bit [8:0] arr_index, bit [27:0] din);
+
+    function bit get_vicvld(bit [8:0] arr_index);
+    function bit get_vdcvld(bit [8:0] arr_index);
+    function bit [27:0] get_victag(bit [8:0] arr_index);
+    function bit [28:0] get_vdctag(bit [8:0] arr_index);
+
+    task process_fq(integer itype, bit vldin, bit [8:0] arr_index);
+    task process_intq();
+    task check_intq_done();
+    task wr_intq(bit [17:0] intin);
+}
+
+///////////////////////////////////////////////////////////////////////
+// Constructor.
+///////////////////////////////////////////////////////////////////////
+
+task L1_STUB::new(string name = "L1_STUB", integer sparc_id,
+                  cvld_port icvld_bind, cvld_port dcvld_bind,
+                  ctag_port ictag_bind, ctag_port dctag_bind,
+                  int_port int_bind) {
+
+    integer i;
+    
+    icvld = 512'b0;
+    dcvld = 512'b0;
+    vicvld = 512'b0;
+    vdcvld = 512'b0;
+
+    // 1 difflimit = 8 cycles
+    if(get_plus_arg(CHECK, "L1_DIFFLIMIT"))
+      this.difflimit = get_plus_arg (NUM, "L1_DIFFLIMIT=");
+    else
+      this.difflimit = 8;
+
+    if(get_plus_arg(CHECK, "L1_INTQ_END_CHECK_OFF"))
+      this.intq_end_check = 0;
+    else
+      this.intq_end_check = 1;
+
+    if(get_plus_arg(CHECK, "L1_DEBUG"))
+      this.debug = get_plus_arg (NUM, "L1_DEBUG=");
+    else
+      this.debug = 0;
+
+    count = 0;
+    
+    for(i=0; i<512; i++) {
+        ictag[i] = 32'b0;
+        dctag[i] = 32'b0;
+        victag[i] = 32'b0;
+        vdctag[i] = 32'b0;
+        dcdiff[i] = 8'b0;
+        icdiff[i] = 8'b0;
+    }
+    
+    this.name = name;
+    this.sparc_id = sparc_id;
+    this.icvld_bind = icvld_bind;
+    this.dcvld_bind = dcvld_bind;
+    this.ictag_bind = ictag_bind;
+    this.dctag_bind = dctag_bind;
+    this.int_bind   = int_bind;
+
+    dfq_rptr = 0;
+    dfq_wptr = 0;
+    ifq_rptr = 0;
+    ifq_wptr = 0;
+    int_rptr = 0;
+    int_wptr = 0;
+}
+
+//////////////////////////////////////////////////////////////
+// Start snooping.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::start() {
+
+    if(!get_plus_arg(CHECK, "l1_chkoff")) {
+        fork
+        {
+            snoop_cvld("write icvld array", 1, icvld_bind, icvld);
+        }
+        {
+            snoop_cvld("write dcvld array", 0, dcvld_bind, dcvld);
+        }
+        {
+            snoop_ictag(ictag_bind);
+        }
+        {
+            snoop_dctag(dctag_bind);
+        }
+        {
+            compare_caches(icvld_bind);
+        }
+        {
+            process_intq();
+        }
+        {
+            check_intq_done();
+        }
+        join none
+
+        printf ("%0d: L1 stub started for C%0d.\n", get_time(LO), sparc_id);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor Dcache/Icache valid array read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::snoop_cvld(string type, integer itype, cvld_port cvld_bind, var bit [511:0] cvld) {
+
+    bit [4:0] i;
+    bit [8:0] arr_index;
+    bit [8:0] exp_arr_index;
+    bit vldin, exp_vldin;
+
+    bit wr_en_d1;
+    bit [15:0] bit_wen_d1;
+    bit [4:0]  wr_adr_d1;
+    bit din_d1;
+
+    bit [1:0] dfq_tid_d1, dfq_tid_d2;
+
+
+    wr_en_d1 = 1'b0;
+    bit_wen_d1 = 16'b0;
+    wr_adr_d1 = 5'b0;
+    din_d1 = 1'b0;
+
+    dfq_tid_d1 = 2'b00;
+    dfq_tid_d2 = 2'b00;
+
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // the second line is a hack because LSU can assert the inputs of the DVA over multiple cycles for the
+        // same invalidation
+        if( cvld_bind.\$spc_grst_l && cvld_bind.\$cvld_wr_en &&
+            !(!itype && wr_en_d1 && cvld_bind.\$cvld_bit_wen == bit_wen_d1 && cvld_bind.\$cvld_wr_adr == wr_adr_d1 &&
+              !din_d1 && !cvld_bind.\$cvld_din && dfq_tid_d1 == dfq_tid_d2) ) {
+          
+            // Update the valid vector.
+            for(i=0; i<16; i++) {
+                if(cvld_bind.\$cvld_bit_wen[i]) {
+                    arr_index = {cvld_bind.\$cvld_wr_adr, i[3:0]};
+                    cvld[arr_index] = cvld_bind.\$cvld_din;
+                    
+                    if(debug > 1) {
+                        printf("%0d: %s: C%0d %s, arr_index = %h, index = %h, way = %h, vld = %h\n",
+                               get_time(LO), this.name, sparc_id, type, 
+                               arr_index, arr_index[8:2], arr_index[1:0], cvld_bind.\$cvld_din);
+                    }
+                    
+                    process_fq(itype, cvld[arr_index], arr_index);
+                }
+            }
+      	}
+
+        wr_en_d1 = cvld_bind.\$cvld_wr_en;
+        bit_wen_d1 = cvld_bind.\$cvld_bit_wen;
+        wr_adr_d1 = cvld_bind.\$cvld_wr_adr;
+        din_d1 = cvld_bind.\$cvld_din;
+        dfq_tid_d2 = dfq_tid_d1;
+        dfq_tid_d1 = cvld_bind.\$dfq_tid;
+    } // while(1)
+}
+
+//////////////////////////////////////////////////////////////
+// now do the ifq/dfq 
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::process_fq(integer itype, bit vldin, bit [8:0] arr_index) {
+    
+    bit [8:0] exp_arr_index;
+    bit exp_vldin;
+
+
+    if(itype) {
+        if(ifq_rptr == ifq_wptr) {
+            printf ("%0d: %s: C%0d Simulation -> FAIL IFQ is empty\n", get_time(LO), this.name, sparc_id );
+            @(posedge l1_top.clk);
+            exit(1);
+        }
+        
+        exp_vldin = ifq_vld[ifq_rptr];
+        exp_arr_index = ifq_ind[ifq_rptr];
+        ifq_rptr = (ifq_rptr + 1) % 32;
+
+        if(debug >20) {
+            printf("%0d: %s: C%0d ifq read exp_vldin = %h, exp_arr_index = %h rptr =  %d wptr = %d\n",
+                   get_time(LO), this.name, sparc_id, exp_vldin, exp_arr_index, ifq_rptr, ifq_wptr);
+        }
+
+    }
+    else {
+        if(dfq_rptr == dfq_wptr) {
+            printf ("%0d: %s: C%0d Simulation -> FAIL DFQ is empty\n", get_time(LO), this.name, sparc_id );
+            @(posedge l1_top.clk);
+            exit(1);
+        }
+        
+        exp_vldin = dfq_vld[dfq_rptr];
+        exp_arr_index = dfq_ind[dfq_rptr];
+        dfq_rptr = (dfq_rptr +1) % 32;
+        
+        if(debug > 20) {
+            printf("%0d: %s: C%0d dfq read exp_vldin = %h, exp_arr_index = %h rptr =  %d wptr = %d\n",
+                   get_time(LO), this.name, sparc_id, exp_vldin, exp_arr_index, dfq_rptr, dfq_wptr);
+        }
+    }
+
+    if(arr_index != exp_arr_index || vldin != exp_vldin) {
+        printf("%0d: %s: C%0d I/DFQ problems itype %d expvld %h vld %h exp arrind %h arr_index %h\n",
+               get_time(LO), this.name, sparc_id, itype, exp_vldin, vldin, exp_arr_index, arr_index);
+        printf("%0d: %s: Simulation -> FAIL DFQ/IFQ problems\n", get_time(LO), this.name);
+        @(posedge l1_top.clk);
+        exit(1);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor Dcache tag read/write signals.
+// Update the ctag array.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::snoop_dctag(ctag_port ctag_bind) {
+    
+    bit [8:0] arr_index;
+    bit [32:0] index_way;
+    
+    
+    while(1) {
+        @(posedge l1_top.clk);
+        
+        if(ctag_bind.\$spc_grst_l && ctag_bind.\$ctag_wrreq_y) {
+            if(ctag_bind.\$ctag_dec_wrway_y[0]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b00};
+                index_way = ctag_bind.\$ctag_wrtag_w0_y;
+                dctag[arr_index] = index_way[28:0];
+            }
+            else if(ctag_bind.\$ctag_dec_wrway_y[1]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b01};
+                index_way = ctag_bind.\$ctag_wrtag_w1_y;
+                dctag[arr_index] = index_way[28:0];
+            }
+            else if (ctag_bind.\$ctag_dec_wrway_y[2]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b10};
+                index_way = ctag_bind.\$ctag_wrtag_w2_y;
+                dctag[arr_index] = index_way[28:0];
+            }
+            else if (ctag_bind.\$ctag_dec_wrway_y[3]){
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b11};
+                index_way = ctag_bind.\$ctag_wrtag_w3_y;
+                dctag[arr_index] = index_way[28:0];
+            }
+            
+            if(debug > 1) {
+                printf("%0d: %s: C%0d write dctag arr_index = %h, index = %h, way = %h, tag = %h\n",
+                       get_time(LO), name, sparc_id, arr_index, arr_index[8:2], arr_index[1:0], index_way[28:0]);
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor Icache tag read/write signals.
+// Update the ctag array.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::snoop_ictag(ctag_port ctag_bind) {
+    
+    bit [8:0] arr_index;
+    bit [32:0] index_way;
+    
+    
+    while(1) {
+        @(posedge l1_top.clk);
+        
+        if(ctag_bind.\$spc_grst_l && ctag_bind.\$ctag_wrreq_y) {
+            if(ctag_bind.\$ctag_dec_wrway_y[0]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b00};
+                index_way = ctag_bind.\$ctag_wrtag_w0_y;
+                ictag[arr_index] = index_way[27:0];
+            }
+            else if(ctag_bind.\$ctag_dec_wrway_y[1]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b01};
+                index_way = ctag_bind.\$ctag_wrtag_w1_y;
+                ictag[arr_index] = index_way[27:0];
+            }
+            else if (ctag_bind.\$ctag_dec_wrway_y[2]) {
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b10};
+                index_way = ctag_bind.\$ctag_wrtag_w2_y;
+                ictag[arr_index] = index_way[27:0];
+            }
+            else if (ctag_bind.\$ctag_dec_wrway_y[3]){
+                arr_index = {ctag_bind.\$ctag_index_y, 2'b11};
+                index_way = ctag_bind.\$ctag_wrtag_w3_y;
+                ictag[arr_index] = index_way[27:0];
+            }
+            
+            if(debug >1){
+                printf("%0d: %s: C%0d write ictag arr_index = %h, index = %h, way = %h, tag = %h\n",
+                       get_time(LO), name, sparc_id, arr_index, arr_index[8:2], arr_index[1:0], index_way[27:0]);
+            }
+        }
+    }
+}
+
+
+//////////////////////  VIRTUAL CACHES ////////////////////////
+
+
+//////////////////////////////////////////////////////////////
+// Monitor virtual Dcache valid array read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::wr_vdcvld(bit [8:0] arr_index, bit din) {
+    
+    vdcvld[arr_index] = din;
+    
+    if(debug > 1) {
+        printf("%0d: %s: write vdcvld array arr_index = %h, index = %h, way = %h, din = %h\n",
+               get_time(LO), this.name, arr_index, arr_index[8:2], arr_index[1:0], din);
+    }
+    
+    dfq_vld[dfq_wptr] = din;
+    dfq_ind[dfq_wptr] = arr_index;
+    
+    dfq_wptr = (dfq_wptr + 1) % 32;
+
+    if(dfq_wptr == dfq_rptr){
+        printf ("%0d: %s: C%0d Simulation -> FAIL DFQ overflow\n", get_time(LO), this.name, sparc_id );
+        @(posedge l1_top.clk);
+        exit (1);
+    }
+
+    if(debug > 20) {
+        printf("%0d: %s: C%0d dfq write vld = %h index = %h rptr = %d wptr = %d\n",
+               get_time(LO), this.name, sparc_id, din, arr_index, dfq_rptr, dfq_wptr);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor virtual Icache valid array read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::wr_vicvld(bit [8:0] arr_index, bit din) {
+    
+    vicvld[arr_index] = din;
+    
+    if(debug > 1) {
+        printf("%0d: %s: write vicvld array arr_index = %h, index = %h, way = %h, din = %h\n",
+               get_time(LO), this.name, arr_index, arr_index[8:2], arr_index[1:0], din);
+    }
+    
+    ifq_vld[ifq_wptr] = din;
+    ifq_ind[ifq_wptr] = arr_index;
+    
+    ifq_wptr = (ifq_wptr + 1) % 32;
+    
+    if(ifq_wptr == ifq_rptr) {
+        printf ("%0d: %s: C%0d Simulation -> FAIL IFQ overflow\n", get_time(LO), this.name, sparc_id );
+        @(posedge l1_top.clk);
+        exit (1);
+    }
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d ifq write vld = %h index = %h rptr = %d wptr = %d\n",
+               get_time(LO), this.name, sparc_id, din, arr_index, ifq_rptr, ifq_wptr);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor virtual Dcache tag array read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::wr_vdctag(bit [8:0] arr_index, bit [28:0] din) {
+    
+    vdctag[arr_index] = din;
+
+    if(debug > 1) {
+        printf("%0d: %s: write vdctag arr_index = %h, index = %h, way = %h, din = %h\n",
+               get_time(LO), this.name, arr_index, arr_index[8:2], arr_index[1:0], din);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor virtual Icache tag array read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::wr_victag(bit [8:0] arr_index, bit [27:0] din) {
+
+    victag[arr_index] = din;
+
+    if(debug > 1) {
+        printf("%0d: %s: write victag arr_index = %h, index = %h, way = %h, din = %h\n",
+               get_time(LO), this.name, arr_index, arr_index[8:2], arr_index[1:0], din);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Monitor virtual interrupt queue read/write signals.
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::wr_intq(bit[17:0] intin) {
+
+    intpkt[int_wptr] = intin;
+    
+    int_wptr = (int_wptr + 1) % 32;
+    
+    if(int_wptr == int_rptr) {
+        printf ("%0d: %s: C%0d Simulation -> FAIL INTQ overflow\n", get_time(LO), this.name, sparc_id );
+        @(posedge l1_top.clk);
+        exit (1);
+    }
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d int write vld = %h intin = %h rptr = %d wptr = %d\n",
+               get_time(LO), this.name, sparc_id, 1'b1, intin, ifq_rptr, ifq_wptr);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// now do the intq 
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::process_intq() {
+    
+    bit [17:0] exp_intq;
+    
+    
+    while(1) {
+        @(posedge l1_top.clk);
+        
+        if(int_bind.\$spc_grst_l && int_bind.\$lsu_tlu_cpx_vld && int_bind.\$lsu_tlu_cpx_req[3:0] == `INT_RET) {
+            if(int_rptr == int_wptr){
+                printf ("%0d: %s: C%0d Simulation -> FAIL INTQ is empty\n", get_time(LO), this.name, sparc_id );
+                @(posedge l1_top.clk);
+                exit (1);
+            }
+            
+            exp_intq = intpkt[int_rptr];
+            int_rptr = (int_rptr + 1) % 32;
+            
+            if(debug > 20) {
+                printf("%0d: %s: C%0d int read, exp_intq = %h rptr =  %d wptr = %d\n",
+                       get_time(LO), this.name, sparc_id, exp_intq, int_rptr, int_wptr);
+            }
+            
+            if(int_bind.\$lsu_tlu_intpkt != exp_intq) {
+                printf ("%0d: %s: C%0d INTQ problems, exp intq %h intq %h\n",
+                        get_time(LO), this.name, sparc_id, exp_intq, int_bind.\$lsu_tlu_intpkt);
+                printf ("%0d: %s: Simulation -> FAIL INTQ problems \n", get_time(LO), this.name);
+                @(posedge l1_top.clk);
+                exit (1);
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// now do the intq 
+//////////////////////////////////////////////////////////////
+
+task L1_STUB::check_intq_done() {
+    
+    @(posedge l1_top.cmp_diag_done);
+    
+    if(intq_end_check && int_rptr != int_wptr) {
+        printf ("%0d: %s: C%0d Simulation -> FAIL INTQ is NOT at diag end \n", get_time(LO), this.name, sparc_id );
+        @(posedge l1_top.clk);
+        exit (1);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////
+// Access the virtual Icache valid array
+///////////////////////////////////////////////////////////////////////
+
+function bit L1_STUB::get_vicvld(bit [8:0] arr_index) {
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d get viclvd result= %h, arr_index = %h, index = %h, way = %h\n",
+               get_time(LO), this.name, sparc_id, vicvld[arr_index], arr_index, arr_index[8:2], arr_index[1:0]);
+    }
+    
+    get_vicvld = vicvld[arr_index];
+}
+
+///////////////////////////////////////////////////////////////////////
+// Access the virtual Dcache valid array
+///////////////////////////////////////////////////////////////////////
+
+function bit L1_STUB::get_vdcvld(bit [8:0] arr_index) {
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d get vdclvd result= %h, arr_index = %h, index = %h, way = %h\n",
+               get_time(LO), this.name, sparc_id, vdcvld[arr_index], arr_index, arr_index[8:2], arr_index[1:0]);
+    }
+    
+    get_vdcvld = vdcvld[arr_index];
+}
+
+///////////////////////////////////////////////////////////////////////
+// Access the virtual Icache tag array
+///////////////////////////////////////////////////////////////////////
+
+function bit [27:0] L1_STUB::get_victag(bit [8:0] arr_index) {
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d get victag result = %h, arr_index = %h, index = %h, way = %h\n",
+               get_time(LO), this.name, sparc_id, victag[arr_index], arr_index, arr_index[8:2], arr_index[1:0]);
+    }
+
+    get_victag = victag[arr_index];
+}
+
+///////////////////////////////////////////////////////////////////////
+// Access the virtual Dcache tag array
+///////////////////////////////////////////////////////////////////////
+
+function bit [28:0] L1_STUB::get_vdctag(bit [8:0] arr_index) {
+    
+    if(debug > 20) {
+        printf("%0d: %s: C%0d get vdctag result = %h, arr_index = %h, index = %h, way = %h\n",
+               get_time(LO), this.name, sparc_id, vdctag[arr_index], arr_index, arr_index[8:2], arr_index[1:0]);
+    }
+
+    get_vdctag = vdctag[arr_index];
+}
+
+///////////////////////////////////////////////////////////////////////
+// Compare real and virtual caches to check for consistency
+///////////////////////////////////////////////////////////////////////
+
+task L1_STUB::compare_caches(cvld_port cvld_bind) {
+    
+    integer i;
+    
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // check every 8 cycles
+        count = (count + 1) % 8;
+
+        if(count)
+            continue;
+
+        if(debug > 100)
+            printf("%0d: %s: compare_caches checking\n", get_time(LO), this.name);
+        
+        if(!cvld_bind.\$spc_grst_l) {
+            icvld = 512'b0;
+            dcvld = 512'b0;
+            vicvld = 512'b0;
+            vdcvld = 512'b0;
+            dfq_rptr = 0;
+            dfq_wptr = 0;
+            ifq_rptr = 0;
+            ifq_wptr = 0;
+        }
+
+        // indexed by {index[6:0], way[1:0]}
+        for(i=0; i<512; i++) {
+            // compare Dcache
+            if(dcvld[i] != vdcvld[i] || dcvld && vdcvld[i] && dctag[i] != vdctag[i])
+                dcdiff[i]++;
+            else
+                dcdiff[i] = 8'b0;
+
+            // compare Icache
+            if(icvld[i] != vicvld[i] || icvld[i] && vicvld[i] && ictag[i] !=victag[i])
+                icdiff[i]++;
+            else
+                icdiff[i] = 8'b0;
+            
+            if(dcdiff[i] > difflimit) {
+                printf("%0d: %s: Simulation -> FAIL C%0d dcache and virtual ", get_time(LO), this.name, sparc_id);
+                printf("dcache differ at index %h for more than %0d cycles\n", i, difflimit * 8);
+                printf("dvld %h vdvld %h dtag %h vdtag %h\n", dcvld[i], vdcvld[i], dctag[i], vdctag[i]);
+                printf("%0d: %s: Simulation -> FAIL\n", get_time(LO), this.name);
+                @(posedge l1_top.clk);
+                exit(1);
+            }
+            
+            if(icdiff[i] > difflimit) {
+                printf("%0d: %s:  Simulation -> FAIL C%0d icache and virtual ", get_time(LO), this.name, sparc_id);
+                printf("icache differ at index %h for more than %0d cycles\n", i, difflimit * 8);
+                printf("ivld %h vivld %h itag %h vitag %h\n", icvld[i], vicvld[i], ictag[i], victag[i]);
+                printf("%0d: %s: Simulation -> FAIL\n", get_time(LO), this.name);
+                @(posedge l1_top.clk);
+                exit(1);
+            }
+        } // for(i=0; i<512; i++)
+    } // while(1)
+}

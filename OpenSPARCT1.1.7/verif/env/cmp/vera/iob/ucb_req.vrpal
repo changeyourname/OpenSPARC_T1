@@ -1,0 +1,110 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ucb_req.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        ucb_req.vrpal
+//  Description:        Class definition and methods for the iob checker
+//                      (reference model) used for modelling the
+//                      iob functionality
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "sys_rtl.h"
+
+#define UCB_THR_BITS UCB_THR_HI-UCB_THR_LO-1:0
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class UCB_REQ {
+  bit rd;
+  bit wr;
+  bit ifill;
+  bit [UCB_THR_BITS] thr_id;   // coreid, threadid
+  bit [UCB_BUF_HI-UCB_BUF_LO:0] buf_id;
+  bit [UCB_ADDR_HI-UCB_ADDR_LO:0] addr;
+  bit [UCB_DATA_HI-UCB_DATA_LO:0] data;
+  task new(bit rd, bit wr, (bit [31:0] ifill = 32'h0),
+           bit [UCB_THR_BITS] thr_id,
+           bit [UCB_BUF_HI-UCB_BUF_LO:0] buf_id,
+           bit [UCB_ADDR_HI-UCB_ADDR_LO:0] addr,
+           bit [UCB_DATA_HI-UCB_DATA_LO:0] data) {
+    this.rd     = rd;
+    this.wr     = wr;
+    this.ifill  = ifill;
+    this.thr_id = thr_id;
+    this.buf_id = buf_id;
+    this.addr   = addr;
+    this.data   = data;
+  }
+  function bit compare(UCB_REQ new_req) {
+    compare = ((this.rd == new_req.rd) &&
+               (this.wr == new_req.wr) &&
+               (this.ifill == new_req.ifill) &&
+               (this.thr_id == new_req.thr_id) &&
+               (this.addr == new_req.addr) &&
+               (this.data == new_req.data)); // don't compare buf_id
+  }
+  task print ((string name="MISC")) {
+    static integer print_count = 0 ;
+
+    if ((print_count % 40) == 0)
+    {
+      print_header (name) ;
+    }
+
+    printf ("| UCB_REQ ") ;
+    printf ("| %10s ", name) ;
+    printf ("| %10d ", get_time(LO)) ;
+    printf ("| %b  ",  this.rd) ;
+    printf ("| %b  ",  this.wr) ;
+    printf ("| %b  ",  this.ifill) ;
+    printf ("| %x  ",  this.thr_id) ;
+    printf ("| %x ",  this.addr) ;
+    printf ("| %x ",  this.data) ;
+    printf ("|\n") ;
+
+    print_count++ ;
+
+//    printf ("%0d : UCB_REQ: rd: %b wr: %b ifill: %b thrd_id:%b\n",
+//            get_time(LO), this.rd, this.wr, this.ifill, this.thr_id);
+//    printf ("%0d : UCB_REQ: address: %10h\n",get_time(LO), this.addr);
+//    printf ("%0d : UCB_REQ: data   : %16h\n",get_time(LO), this.data);
+  }
+
+  task print_header ((string name="MISC")) {
+    printf ("| UCB_REQ ") ;
+    printf ("| %10s ", name) ;
+    printf ("| Time       ") ;
+    printf ("| Rd ") ;
+    printf ("| Wr ") ;
+    printf ("| If ") ;
+    printf ("| TId ") ;
+    printf ("| Address    ") ;
+    printf ("| Data             ") ;
+    printf ("|\n") ;
+  }
+}
+
+MakeVeraList(UCB_REQ)

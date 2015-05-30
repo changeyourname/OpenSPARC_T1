@@ -1,0 +1,294 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// the defines for all coverage objects happen here.
+// You should look at the coverage object as a main source
+// of info and just refer to this file to get the exact define value.
+//***********************************************************************
+
+// Defines for all kinds of counters, consecutive numbers
+// and flags tso_1bit and tso_8bit_generic, e.t.c.
+//----------------------------------------------------------
+#define TSO_BIT_SET			1'b1
+
+#define B0				8'bxxxxxxx1
+#define B1				8'bxxxxxx1x
+#define B2				8'bxxxxx1xx
+#define B3				8'bxxxx1xxx
+#define B4				8'bxxx1xxxx
+#define B5				8'bxx1xxxxx
+#define B6				8'bx1xxxxxx
+#define B7				8'b1xxxxxxx
+
+#define is0_4b				4'b0000
+#define is1_4b				4'b0001
+#define is2_4b				4'b0010
+#define is3_4b				4'b0011
+#define is4_4b				4'b0100
+#define is5_4b				4'b0101
+#define is6_4b				4'b0110
+#define is7_4b				4'b0111
+#define is8_4b				4'b1000
+#define is9_4b				4'b1001
+#define is10_4b				4'b1010
+#define is11_4b				4'b1011
+#define is12_4b				4'b1100
+#define is13_4b				4'b1101
+#define is14_4b				4'b1110
+#define is15_4b				4'b1111
+
+// defines for tso_cpx_inv_fanout2
+//--------------------------------
+#define MULT_INV01      		4'b0100
+#define MULT_INV01_MULT_FANOUT  	4'b1100
+#define MULT_INV0123      		4'b0101
+#define MULT_INV0123_MULT_FANOUT  	4'b1111
+#define BAD_MULT_FANOUT01		4'b1000
+#define BAD_MULT_FANOUT0123_1		4'b0010
+#define BAD_MULT_FANOUT0123_2		4'b0011
+#define BAD_MULT_FANOUT0123_3		4'b0110
+#define BAD_MULT_FANOUT0123_4		4'b0111
+#define BAD_MULT_FANOUT0123_5		4'b1010
+#define BAD_MULT_FANOUT0123_6		4'b1011
+#define BAD_MULT_FANOUT0123_7		4'b1110
+
+// defines for tso_cpx_inv_fanout
+//-------------------------------
+#define FANOUT1        			4'b0001
+#define FANOUT2        			4'b0010
+#define FANOUT3        			4'b0011
+#define FANOUT4        			4'b0100
+#define FANOUT5        			4'b0101
+#define FANOUT6        			4'b0110
+#define FANOUT7        			4'b0111
+#define FANOUT8        			4'b1000
+
+// defines for tso_l2_fsm
+//-----------------------
+#define L2_FSM_IDLE  			4'b0000
+#define L2_FSM_ST1  			4'b0001
+#define L2_FSM_ST2M 			4'b0010
+#define L2_FSM_LD1M 			4'b0011
+#define L2_FSM_LD2M 			4'b0100
+#define L2_FSM_ST2H 			4'b0101
+#define L2_FSM_LD1H 			4'b0110
+#define L2_FSM_LD2H 			4'b0111
+
+// defines for tso_l2_l2mb_state
+//------------------------------
+#define TSO_L2MB_EVICT 			4'b0001
+#define TSO_L2MB_EVICT_FILL		4'b0010
+#define TSO_L2MB_EVICT_BYPASS 		4'b0011
+
+// defines for tso_l2_q_info
+//--------------------------
+#define TSO_L2_HWM			2'b01		
+#define TSO_L2_FUL			2'b11		
+#define TSO_L2_BAD			2'b10		
+
+// defines for tso_l2_wbhit
+//-------------------------
+#define TSO_L2_WBHITS			3'b110		
+#define TSO_L2_HITS			3'b101		
+#define TSO_L2_BOTHHITS			3'b111
+#define TSO_L2_NOHITS			3'b100
+#define TSO_L2_NOINST			3'b000
+
+// defines for tso_lsu_nc
+//-----------------------
+#define TSO_LSU_NC_HIT 			6'b111000
+#define TSO_LSU_NC_BAD1			6'b110000
+
+// defines for tso_lsu_rmost
+//--------------------------
+#define TSO_LSU_2RMOSTORES 		5'b00010
+#define TSO_LSU_3RMOSTORES 		5'b00011
+#define TSO_LSU_4RMOSTORES 		5'b00100
+#define TSO_LSU_6RMOSTORES 		5'b00110
+#define TSO_LSU_MIXRMO1			5'b10001
+#define TSO_LSU_MIXRMO2			5'b10010
+#define TSO_LSU_MIXRMO3			5'b10011
+#define TSO_LSU_MIXRMO4			5'b10100
+#define TSO_LSU_MIXRMO6 		5'b10110
+
+// defines for tso_lsu_stb_ld_hit
+//-------------------------------
+#define STB_LDOI00			11'b00001_000_0_00
+#define STB_LDQI00			11'b00010_000_0_00
+#define STB_LDDI00			11'b00100_000_0_00
+#define STB_LDOF00			11'b01000_000_0_00
+#define STB_LDDF00			11'b10000_000_0_00
+#define STB_LDOI01			11'b00001_001_0_00
+#define STB_LDQI01			11'b00010_001_0_00
+#define STB_LDDI01			11'b00100_001_0_00
+#define STB_LDOF01			11'b01000_001_0_00
+#define STB_LDDF01			11'b10000_001_0_00
+#define STB_LDOI02			11'b00001_010_0_00
+#define STB_LDQI02			11'b00010_010_0_00
+#define STB_LDDI02			11'b00100_010_0_00
+#define STB_LDOF02			11'b01000_010_0_00
+#define STB_LDDF02			11'b10000_010_0_00
+#define STB_LDOI03			11'b00001_100_0_00
+#define STB_LDQI03			11'b00010_100_0_00
+#define STB_LDDI03			11'b00100_100_0_00
+#define STB_LDOF03			11'b01000_100_0_00
+#define STB_LDDF03			11'b10000_100_0_00
+#define STB_LDOI04			11'b00001_001_1_00
+#define STB_LDQI04			11'b00010_001_1_00
+#define STB_LDDI04			11'b00100_001_1_00
+#define STB_LDOF04			11'b01000_001_1_00
+#define STB_LDDF04			11'b10000_001_1_00
+#define STB_LDOI05			11'b00001_010_1_00
+#define STB_LDQI05			11'b00010_010_1_00
+#define STB_LDDI05			11'b00100_010_1_00
+#define STB_LDOF05			11'b01000_010_1_00
+#define STB_LDDF05			11'b10000_010_1_00
+#define STB_LDOI06			11'b00001_100_1_00
+#define STB_LDQI06			11'b00010_100_1_00
+#define STB_LDDI06			11'b00100_100_1_00
+#define STB_LDOF06			11'b01000_100_1_00
+#define STB_LDDF06			11'b10000_100_1_00
+
+#define STB_LDOI07			11'b00001_001_X_1X
+#define STB_LDQI07			11'b00010_001_X_1X
+#define STB_LDDI07			11'b00100_001_X_1X
+#define STB_LDOF07			11'b01000_001_X_1X
+#define STB_LDDF07			11'b10000_001_X_1X
+#define STB_LDOI08			11'b00001_010_X_1X
+#define STB_LDQI08			11'b00010_010_X_1X
+#define STB_LDDI08			11'b00100_010_X_1X
+#define STB_LDOF08			11'b01000_010_X_1X
+#define STB_LDDF08			11'b10000_010_X_1X
+#define STB_LDOI09			11'b00001_100_X_1X
+#define STB_LDQI09			11'b00010_100_X_1X
+#define STB_LDDI09			11'b00100_100_X_1X
+#define STB_LDOF09			11'b01000_100_X_1X
+#define STB_LDDF09			11'b10000_100_X_1X
+
+#define STB_LDANDCPX1			11'bXXXXX_001_X_11
+#define STB_LDANDCPX2			11'bXXXXX_010_X_11
+#define STB_LDANDCPX3			11'bXXXXX_100_X_11
+
+// defines for tso_lsu_stb_multiple
+//---------------------------------
+#define STB_STATE_idle			6'b000_100
+#define STB_STATE_sb_full		6'b000_111
+#define STB_STATE_sb_ne			6'b000_101
+#define STB_STATE_rmo_ne		6'b000_000
+#define STB_STATE_rmo_sb_ne		6'b000_001
+#define STB_STATE_rmo_sb_full		6'b000_011
+
+#define STB_STATE_mb			6'b001_100
+#define STB_STATE_fl			6'b010_100
+#define STB_STATE_intr			6'b100_100
+
+#define STB_STATE_mb_ne			6'b001_101
+#define STB_STATE_mb_full		6'b001_111
+#define STB_STATE_mb_rmo		6'b001_000
+#define STB_STATE_mb_rmo_ne		6'b001_001
+#define STB_STATE_mb_rmo_full		6'b001_011
+
+#define STB_STATE_fl_ne			6'b010_101
+#define STB_STATE_fl_full		6'b010_111
+
+#define STB_STATE_intr_ne		6'b100_101
+#define STB_STATE_intr_full		6'b100_111
+
+// defines for tso_lsu_incoming_int
+//---------------------------------
+#define INC_INT1			6'b110_011
+#define INC_INT2			6'b111_011
+#define INC_INT3			6'b110_111
+#define INC_INT4			6'b110_001
+#define INC_INT5			6'b110_010
+#define INC_INT6			6'b111_000
+#define INC_INT7			6'b111_001
+#define INC_INT8			6'b111_010
+#define INC_INT9			6'b111_100
+#define INC_INT10			6'b111_101
+#define INC_INT11			6'b111_110
+#define INC_INT12			6'b111_111
+
+// defines for tso_lsu_sthit
+//---------------------------
+#define TSO_LSU_ANY			8'b00000000
+#define TSO_LSU_ST_E			8'b10000000
+#define TSO_LSU_CASA_E			8'b11000000
+#define TSO_LSU_LDSTUB_E		8'b10100000
+#define TSO_LSU_SWAP_E			8'b10010000
+#define TSO_LSU_HIT3			8'b00001000
+#define TSO_LSU_HIT2			8'b00000100
+#define TSO_LSU_HIT1			8'b00000010
+#define TSO_LSU_HIT0			8'b00000001
+#define TSO_LSU_MISS			8'b00000000
+
+// defines for tso_cpx_spc_evict_dc_inval
+//---------------------------------------
+#define TSO_INVAL1 			6'b000001
+#define TSO_INVAL2 			6'b000010
+#define TSO_INVAL3 			6'b000011
+#define TSO_INVAL4 			6'b000100
+#define TSO_INVAL5 			6'b000101
+#define TSO_INVAL6 			6'b000110
+#define TSO_INVAL7 			6'b000111
+#define TSO_INVAL8 			6'b001000
+#define TSO_INVAL9 			6'b001001
+#define TSO_INVAL10 			6'b001010
+#define TSO_INVAL11 			6'b001011
+#define TSO_INVAL12 			6'b001100
+#define TSO_INVAL13 			6'b001101
+#define TSO_INVAL14 			6'b001110
+#define TSO_INVAL15 			6'b001111
+#define TSO_INVAL16 			6'b010000
+#define TSO_INVAL17 			6'b010001
+#define TSO_INVAL18 			6'b010010
+#define TSO_INVAL19 			6'b010011
+#define TSO_INVAL20 			6'b010100
+#define TSO_INVAL21 			6'b010101
+#define TSO_INVAL22 			6'b010110
+#define TSO_INVAL23 			6'b010111
+#define TSO_INVAL24 			6'b011000
+#define TSO_INVAL25 			6'b011001
+#define TSO_INVAL26 			6'b011010
+#define TSO_INVAL27 			6'b011011
+#define TSO_INVAL28 			6'b011100
+#define TSO_INVAL29 			6'b011101
+#define TSO_INVAL30 			6'b011110
+#define TSO_INVAL31			6'b011111
+#define TSO_INVAL32 			6'b100000
+
+
+// defines for tso_cpx_spc_st_ack_icdc_inval
+//------------------------------------------
+#define TSO_DC_INV 			6'b000001
+#define TSO_IC_INV 			6'b001000
+
+// defines for tso_cpx_spc_evict_icdc_inval
+//-----------------------------------------
+#define TSO_1CEVICT1 			6'b000001
+#define TSO_1CEVICT2 			6'b000010
+#define TSO_1CEVICT3 			6'b000011
+#define TSO_1CEVICT4 			6'b000100
+#define TSO_1CEVICT5 			6'b001000
+#define TSO_1CEVICT6 			6'b001001
+#define TSO_1CEVICT7 			6'b001010
+#define TSO_1CEVICT8 			6'b010000
+#define TSO_1CEVICT9 			6'b1XXXXX

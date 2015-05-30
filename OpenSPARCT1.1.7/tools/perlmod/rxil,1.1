@@ -1,0 +1,323 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: rxil,1.1
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+# !/bin/perl
+#######################################################################
+# Run XST script
+#
+# rxil -help for help
+#######################################################################
+
+##use warnings;
+#use strict;
+#use Cwd;
+#use Cwd 'chdir';
+#use Getopt::Long ;
+#use Shell qw(rm);
+
+$| = 1;
+
+$SIG{__DIE__} = \&sighandler ;
+
+#######################################################################
+# Global variables
+#######################################################################
+
+
+my $all = 0;
+my $device = "XC4VLX200";
+my $dv_root = $ENV{DV_ROOT};
+my $block_list = "";
+my $block_dir = $ENV{DV_ROOT}."/design/sys/xst/block.list";
+my $blk_dir = "";
+my $blk_list = "";
+my $device_path = "$dv_root/design/sys/xst/$device.xst";
+
+my @blocks = ();
+my @block_list = ();
+
+my $xst_dir = $ENV{DV_ROOT}."/design/sys/iop";
+
+if (`uname -s` eq "SunOS\n") { 
+   $xst_cmd = $ENV{XILINX}."/bin/sol/xst";
+   $netgen_cmd = $ENV{XILINX}."/bin/sol/netgen";
+}
+
+else {
+   if (`uname -m` eq "x86_64\n" || `uname -m` eq "x64\n") {
+      $xst_cmd = $ENV{XILINX}."/bin/lin64/xst";
+      $netgen_cmd = $ENV{XILINX}."/bin/lin64/netgen";
+   }
+   else {
+      $xst_cmd = $ENV{XILINX}."/bin/lin/xst"; 
+      $netgen_cmd = $ENV{XILINX}."/bin/lin/netgen";
+   }
+}
+
+## XST directory set
+
+## First run through the command line arguments
+
+foreach my $argv (@ARGV)
+{
+    if($argv =~ /-device/)
+    {
+        $device = $argv;
+        $device =~ s/-device=(.*)/$1/;
+        print "XST : Device is $device\n";
+        $device_path = "$dv_root/design/sys/xst/$device";
+        $device_path .= ".xst";
+        if(-e $device_path) # Device exists
+        {
+            print "XST : Device $device found\n";
+        }
+        else
+        {
+            print "ERROR XST : Device $device NOT FOUND !!!\n";
+            exit(1);
+        }
+    }
+
+    elsif($argv =~ /-all/)
+    {
+        $all = 1;
+    }
+
+    elsif($argv =~ /-h/ || $argv =~ /-help/)
+    {
+        &usage;
+        exit(0);
+    }
+
+    else
+    {
+        print "Block is $argv\n";
+        push @blocks , $argv;
+    }
+}
+
+my $count = 0;
+
+open(BLK , "< $block_dir") or die ("ERROR : Could not open $block_dir");
+
+if($all)
+{
+    while(<BLK>)
+    {
+        my $line = $_;
+        $line =~ s/\s+$//;
+        $count++;
+        print "Line $count is $line\n";
+        if($line =~ /srams/)
+        {
+            $line =~ s/srams\///;
+        }
+        push @block_list , $line;
+    }
+    print "XST : Running for $count modules\n";
+}
+
+else
+{
+## This will only be a set of specified blocks or only a single block
+    my @all_blocks = <BLK>;
+    foreach my $block(@blocks)
+    {
+        my (@search) = grep (/$block/, @all_blocks);
+        foreach my $line (@search)
+        {
+            $line =~ s/\s+$//;
+            if($line =~ /srams/)
+            {
+                $line =~ s/srams\///;
+            }
+            push @block_list , $line;
+            $count ++;
+        }
+    }
+    if($count)
+    {
+        print "XST : Running synthesis for $count modules\n";
+    }
+    else
+    {
+        print "XST ERROR : No Matchng modules found\n";
+##&usage;
+    }
+}
+
+close(BLK);
+
+## By this time we have determined what to run...Now the running part
+
+foreach my $block (@block_list)
+{
+## Process for each block
+    if($block =~ /bw_/) ## SRAM BW units
+    {
+        $blk_dir = $ENV{DV_ROOT}."/design/sys/iop/srams/$block/xst";
+    }
+    else
+    {
+        $blk_dir = $ENV{DV_ROOT}."/design/sys/iop/$block/xst"; ## For the rest of the units
+    }
+   print "XST : BLOCK DIR = $blk_dir\n";
+## We are now in the xst directory for the particular block
+   my $mod_name = $block;
+   $mod_name =~ s/.*\///;
+
+   my $device_dir = "$blk_dir/$device";
+   $cmd = "mkdir -p $device_dir";
+   system($cmd);
+
+   my $new_dir = "$blk_dir/$block";
+   $new_dir .= ".flist";
+
+   my $dump_dir = "$blk_dir/$device/$block";
+   $dump_dir .= ".flist";
+
+   open(NEW_BLK, "< $new_dir") or die ("XST ERROR : Could not open $new_dir");
+   open(WRITE_BLK,"> $dump_dir") or die ("XST ERROR : COuld open $dump_dir");
+
+    while(<NEW_BLK>)
+    {
+        my $new_line = $_;
+
+        print "XST : FILE $new_line";
+
+        $new_line =~ s/^/verilog work $ENV{DV_ROOT}\//;
+        print "XST : FILE after change $new_line";
+
+        print WRITE_BLK $new_line;
+    }
+
+    close(NEW_BLK);
+    close(WRITE_BLK);
+   
+
+   $cmd = "mkdir -p $blk_dir/$device/xst";
+
+   system($cmd);
+
+   $cmd = "mkdir -p $blk_dir/$device/xst/projnav.tmp";
+
+   system($cmd);
+
+   $cmd = "echo work > $blk_dir/$device/$block.lso";
+
+   system($cmd);
+
+   $cmd = "cd $blk_dir/$device";
+
+   print("XST : Should cd to $blk_dir/$device\n");
+
+   system($cmd);
+
+   $cmd = "$blk_dir/$device";
+
+#`chdir $cmd`;
+   chdir($cmd);
+
+##$cmd = "cp $device_path $blk_dir";
+
+##system($cmd);
+   
+   my $virtex_file = "$blk_dir/$device";
+   $virtex_file .= ".xst";
+
+   if(-e $virtex_file)
+   {
+       print "XST : $virtex_file already exists...No need to create a new one\n";
+   }
+   else
+   {
+       print "XST : $virtex_file does not exist...Creating a new one\n";
+       open(READ_DEVICE,"< $device_path") or die("XST ERROR : Could not open $device_path\n");
+       open(WRITE_DEVICE,"> $virtex_file") or die ("XST ERROR : Could not create $virtex_file\n");
+
+       my $read_line = "";
+
+       while(<READ_DEVICE>)
+       {
+           $read_line = $_;
+           if($read_line =~ /ifn/)
+           {
+               print "XST LINE : $read_line\n";
+               print " XST block : $block\n";
+               $read_line =~ s/\w*(\.flist)/$block$1/;
+           }
+           if($read_line =~ /ofn/)
+           {
+               $read_line =~ s/-ofn \w*/-ofn $block/;
+           }
+           if($read_line =~ /top/)
+           {
+               $read_line =~ s/-top \w*/-top $block/;
+           }
+           if($read_line =~ /lso/)
+           {
+               $read_line =~ s/-lso \w*(\.lso)/-lso $block$1/
+           }
+           print WRITE_DEVICE $read_line;
+       }
+       close(READ_DEVICE);
+       close(WRITE_DEVICE);
+   }
+
+   $cmd = "'$xst_cmd' -ifn $virtex_file";
+
+   system($cmd);
+
+   $cmd_dir = "$blk_dir/$device";
+
+   my $ngc_file = "$cmd_dir/$block";
+   $ngc_file .= ".ngc";
+
+   my $block_file = "$cmd_dir/$block";
+   $block_file .= ".v";
+
+   $cmd = "'$netgen_cmd' -w -ofmt verilog -insert_glbl false $ngc_file $block_file";
+
+   system($cmd);
+##$cmd = "cp $virtex_file $blk_dir/$device";
+##system($cmd);
+
+   sub usage {
+    print "\n$prg : Run XST for OpenSPARC T1\n\n";
+    print "Options are :\n";
+    print "  -all \n\tto run XST for all blocks\n";
+    print "  -h / -help\n\tto print help\n";
+#    print "  -syn_q_command='Your job Queue command'\n\tto specify Job queue command\n";
+    print "  -device='Target Device'\n\tto specify Target FPGA device\n";
+#    print "  -flat \n\tTo run synthesis flat, must use this for Altera parts.\n";
+#    print "  -clean \n\tto remove all unneeded files and/or directories.\n\tNeed to specify target device when not using default device\n\n";
+    print "  block_list :\n\tspecify list of blocks to synthesize\n\n";
+    print "Examples:\n\n";
+    print "\t$prg -all\n\t$prg -device=XC4VLX200 sparc\n";
+#    print "\t$prg -flat -device=EP2S180 sparc\n\n";
+   }
+}
+
+   
+
+   
+            
+
+

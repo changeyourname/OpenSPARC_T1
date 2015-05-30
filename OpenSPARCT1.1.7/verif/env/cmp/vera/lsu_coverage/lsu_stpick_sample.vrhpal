@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stpick_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+
+
+// coverage_def LSU_STPICK_COV (bit [3:0] st_pcx_rq_vld)
+// {
+  // state declarations
+
+  state s_STREQ0   (STREQ0);
+  state s_STREQ1   (STREQ1);
+  state s_STREQ2   (STREQ2);
+  state s_STREQ3   (STREQ3);
+  state s_STREQ4   (STREQ4);
+  state s_STREQ5   (STREQ5);
+  state s_STREQ6   (STREQ6);
+  state s_STREQ7   (STREQ7);
+  state s_STREQ8   (STREQ8);
+  state s_STREQ9   (STREQ9);
+  state s_STREQ10  (STREQ10);
+  state s_STREQ11  (STREQ11);
+  state s_STREQ12  (STREQ12);
+  state s_STREQ13  (STREQ13);
+  state s_STREQ14  (STREQ14);
+  state s_STREQ15  (STREQ15);
+
+  bad_state s_not_STSTATE (not state);
+
+  m_trans t_b2b_reqs (1:15 -> 1:15);
+
+// }
+

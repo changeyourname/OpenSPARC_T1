@@ -1,0 +1,31 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_ifu_l2_error_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu l2 correctable/uncorrectable error
+
+wildcard state s_IFU_L2_UNC_ERROR_0    (8'b01010xxx);
+wildcard state s_IFU_L2_UNC_ERROR_1    (8'b01001xxx);
+wildcard state s_IFU_L2_UNC_ERROR_2    (8'b00110xxx);
+wildcard state s_IFU_L2_UNC_ERROR_3    (8'b00101xxx);
+wildcard state s_IFU_L2_CORR_ERROR_0   (8'bxxx10010);
+wildcard state s_IFU_L2_CORR_ERROR_1   (8'bxxx01010);
+wildcard state s_IFU_L2_CORR_ERROR_2   (8'bxxx10001);
+wildcard state s_IFU_L2_CORR_ERROR_3   (8'bxxx01001);
+

@@ -1,0 +1,60 @@
+## $Id: cpx_props.prj,v 1.1 2006/11/29 21:58:17 tt147840 Exp $
+##
+## Project Module ##########################################
+define_project cpx -format verilog
+add_project_info -msgFilters { VER-129 VER-173 VER-130 ELAB-909 ELAB-910 }
+
+## Design Module ##########################################
+define_design cpx -topModule mb2cpx
+
+
+set_design_info -vcs "+define+LIB +define+MAGELLAN ../../rtl/mb2cpx_sm.v ../../rtl/mb2cpx.v mb2cpx_props.sva -sverilog"
+#add_design_info -blackBoxes { n2_com_cm_32x40_cust n2_com_cm_32x40_cust_array }
+
+## Environment Module ##########################################
+define_env env -timeUnits 100ps -sva
+
+add_env_info env -compOpts { +incdir+../../../include+}
+add_env_info env -compOpts { +incdir+../../rtl+}
+#add_env_info env -simOptions { -ova_cov -ova_cov_events }
+#add_env_info env -simRunOpts { -ova_cov }
+
+########### Clock and Reset Code ###########
+########### Modify as Necessary  ###########
+add_env_port env -name rclk   -clock 100
+add_env_port env -name reset_l -reset 0
+add_env_port env -name reset_l -constant 1
+set_env_reset env -defaultLen 50 
+# set_env_reset env -defaultLen 50 -value 0 -apply before
+#add_env_port env -name spc_aclk_wmr -constant 0
+
+
+######### End Clock and Reset Code #########
+## Property Module ##########################################
+define_property constr
+define_property prop
+add_property_info constr -constraint -scope "*.constr_*"
+#add_property_info constr -constraint -scope "*.#zoh_*"
+
+#add_property_info prop -checker -scope "*.assert*"
+add_property_info prop -checker -scope "*.a_*"
+## Property definitions for separate sessions
+
+define_property prop_all
+add_property_info prop_all -checker -scope "*.a_*"
+
+define_coverage cov_all
+add_coverage_info cov_all -scope "*.cov_*"
+
+## Session Module ##########################################
+define_session se_all -env env
+add_session_info se_all -prop { constr prop_all }
+#set_session_info se_all -avoidDeadends full
+set_session_info se_all -debugLog 1
+
+define_session se_cov -env env
+add_session_info se_cov -prop { constr prop_all }
+add_session_info se_cov -coverage { cov_all }
+#set_session_info se_cov -avoidDeadends full
+set_session_info se_cov -debugLog 1
+

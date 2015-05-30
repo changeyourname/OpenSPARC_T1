@@ -1,0 +1,75 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dfqout_cpxpkt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// CPX packets being read out from the DFQ
+//
+// b[151] is necessary to represent Store_local_Dupdate, because Store_local_Dupdate packets are modified
+// before being written into the DFQ, and thus cannot be decoded in the usual way.
+
+// lsu_dfqout_cpxpkt_state = {dfq_rd_advance, dfq_byp_mx_data[151], dfq_byp_mx_data_local,
+//                            dfq_byp_mx_data_Dinv, dfq_byp_mx_data_Iinv, dfq_byp_mx_data[144:96]};
+
+//                                    dfqrd b151  local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:96]
+wildcard state Load                ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'b0xx, 1'bx, 2'b00, 32'bx} );
+wildcard state Load_inv            ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'b1xx, 1'bx, 2'b00, 32'bx} );
+wildcard state Prefetch            ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'b0xx, 1'bx, 2'b01, 32'bx} );
+wildcard state AtomicLoad          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'b0xx, 1'bx, 2'b10, 32'bx} );
+wildcard state Ifill_f4b           ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b0xx, 1'b1, 2'b00, 32'bx} );
+wildcard state Ifill1              ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b0xx, 1'b0, 2'b00, 32'bx} );
+wildcard state Ifill1_inv          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b1xx, 1'b0, 2'b00, 32'bx} );
+wildcard state Ifill2              ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b0xx, 1'b0, 2'b10, 32'bx} );
+wildcard state Ifill2_inv          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b1xx, 1'b0, 2'b10, 32'bx} );
+wildcard bad_state Strload             ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, STRLOAD_RET, 6'bx, 3'b0xx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int                 ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard bad_state FP              ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FP_RET,      6'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+wildcard bad_state FwdRq_L2            ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b0, 2'bxx, 24'bx,8'bxxxxxxxx} );
+wildcard state FwdRq_L1I               ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b100000xx} );
+wildcard bad_state FwdRq_L1D           ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b010000xx} );
+wildcard bad_state FwdRq_BIST          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b001000xx} );
+wildcard bad_state FwdRq_margin        ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b000100xx} );
+wildcard bad_state FwdRq_deftr         ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RQ_RET,  6'bx, 3'bxxx, 1'b1, 2'bxx, 24'bx,8'b000010xx} );
+wildcard bad_state FwdRpy              ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, FWD_RPY_RET, 6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Error               ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, ERR_RET,     6'bx, 3'bxxx, 1'bx, 2'bxx, 32'bx} );
+wildcard state Dcache_inv          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00001,27'bx} );
+wildcard state Icache_inv          ( {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00010,27'bx} );
+//                                    dfqrd b151  local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:96]
+wildcard state Store_local_noupdate( {1'b1, 1'bx, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} );
+wildcard state Store_local_Dupdate ( {1'b1, 1'b1, 1'b1, 1'bx, 1'bx, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} );
+wildcard state Store_local_Iinv    ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} );
+wildcard state Store_foreign_Dinv  ( {1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} );
+wildcard state Store_foreign_Iinv  ( {1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} );
+wildcard state Blkst_local_noupdate( {1'b1, 1'bx, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} );
+wildcard state Blkst_local_Dupdate ( {1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} );
+wildcard state Blkst_local_Iinv    ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} );
+wildcard state Blkst_foreign_Dinv  ( {1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} );
+wildcard state Blkst_foreign_Iinv  ( {1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} );
+wildcard state Atmst_local_noupdate( {1'b1, 1'bx, 1'b1, 1'b0, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} );
+wildcard state Atmst_local_Dupdate ( {1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} );
+wildcard state Atmst_local_Iinv    ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} );
+wildcard state Atmst_foreign_Dinv  ( {1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} );
+wildcard state Atmst_foreign_Iinv  ( {1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} );
+wildcard state Strst_local_noupdate( {1'b1, 1'bx, 1'b1, 1'b0, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Strst_local_Dupdate ( {1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Strst_local_Iinv    ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Strst_foreign_Dinv  ( {1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Strst_foreign_Iinv  ( {1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Evict_Dinv          ( {1'b1, 1'bx, 1'bx, 1'b1, 1'b0, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Evict_Iinv          ( {1'b1, 1'bx, 1'bx, 1'b0, 1'b1, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );
+wildcard state Evict_IandDinv      ( {1'b1, 1'bx, 1'bx, 1'b1, 1'b1, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} );

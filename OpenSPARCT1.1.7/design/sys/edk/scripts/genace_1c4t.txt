@@ -1,0 +1,1 @@
+xmd -tcl genace.tcl -jprog -target mdm -board ml505 -hw implementation/download.bit -elf ccx-firmware/executable.elf -data os/proms/1c4t_obp_prom.bin 0x8ff00000 -data os/OpenSolaris/proto/ramdisk.snv-b77-nd.gz 0x8af00000 -ace os_1_7_1c4t.ace

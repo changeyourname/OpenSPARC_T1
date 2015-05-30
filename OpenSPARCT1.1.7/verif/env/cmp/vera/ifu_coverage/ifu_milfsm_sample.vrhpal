@@ -1,0 +1,63 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_milfsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_milfsm_cov.vr
+// Description:
+// Coverage object for the MIL state machine
+//
+// State: 4'b: mil_state(4)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_MILFSM_COV (bit [3:0] milfsm_state)
+// {
+  // state declarations
+  state s_MILFSM_NULL      (MILFSM_NULL); 
+  state s_MILFSM_WAIT      (MILFSM_WAIT);
+  state s_MILFSM_REQ       (MILFSM_REQ);
+  state s_MILFSM_FILL0     (MILFSM_FILL0);
+  state s_MILFSM_FILL1     (MILFSM_FILL1);
+
+  // transitions
+  trans t_null_null         (MILFSM_NULL -> MILFSM_NULL);
+  trans t_null_req         (MILFSM_NULL -> MILFSM_REQ);
+  trans t_null_wait        (MILFSM_NULL -> MILFSM_WAIT);
+  trans t_req_req          (MILFSM_REQ -> MILFSM_REQ);
+//  trans t_req_null         (MILFSM_REQ -> MILFSM_NULL); Since cancellation is gone 
+  trans t_req_wait         (MILFSM_REQ -> MILFSM_WAIT);
+  trans t_wait_wait        (MILFSM_WAIT -> MILFSM_WAIT);
+  trans t_wait_fill0       (MILFSM_WAIT -> MILFSM_FILL0);
+  trans t_wait_null        (MILFSM_WAIT -> MILFSM_NULL);
+  trans t_fill0_fill0      (MILFSM_FILL0 -> MILFSM_FILL0);
+  trans t_fill0_fill1      (MILFSM_FILL0 -> MILFSM_FILL1);
+  trans t_fill1_fill1      (MILFSM_FILL1 -> MILFSM_FILL1);
+  trans t_fill1_null       (MILFSM_FILL1 -> MILFSM_NULL);
+  
+  // bad states
+  bad_state s_not_MILFSM_STATE (not state);
+
+  // bad transitions 
+  bad_trans t_not_MILFSM_TRANS (not trans);
+
+// }
+

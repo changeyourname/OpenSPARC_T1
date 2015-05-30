@@ -1,0 +1,11 @@
+. $cores	= 1;
+. $sys		= "CMP";
+.# END_INIT
+.
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+// sys = $sys, cores = $cores
+.
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]	= $i;
+.	$SPU_COV_PATHS[$i]	= "cmp_top.iop.sparc${i}";
+. }

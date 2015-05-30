@@ -1,0 +1,28 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_tecc_writeback_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// bits[4:0] = {arbctl_inst_vld_c2, par_err_c2, tecc_c2, wbctl_hit_qual_c2, rdmatctl_hit_qual_c2};
+
+state tagerr_detect_wb_hit    ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b0} );
+state tagerr_detect_rwb_hit   ( {1'b1, 1'b1, 1'b0, 1'b0, 1'b1} );
+
+wildcard state tagerr_scrub_wb_hit     ( {1'b1, 1'bx, 1'b1, 1'b1, 1'b0} );
+wildcard state tagerr_scrub_rwb_hit    ( {1'b1, 1'bx, 1'b1, 1'b0, 1'b1} );

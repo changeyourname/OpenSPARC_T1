@@ -1,0 +1,101 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mt_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	mt_coverage.vr
+ * Description:
+ * -----------
+ *	Top level  multithreading coverage class.
+ *	Contains the new() task which instantiates all the mt coverage
+ *	objects using "newcov", which also starts the objects.
+ *
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+#include "mt_core_pipe.vrh"
+#include "mt_defines.vrh"
+
+
+class mt_coverage {
+
+. foreach $c ( @CORE_STR ) {
+
+  // coverage declarations for core $c
+  CorePipe   C${c}_cov_obj;
+  mt_cov_port C${c}_mt_bind;
+. } # for $c
+
+ task                  new();
+}
+
+
+task mt_coverage::new() {
+
+    bit coverage_on;
+
+    // check coverage option
+    if ( get_plus_arg( CHECK, "mt_coverage" )
+//	 || get_plus_arg( CHECK, "coverage_on" )
+	) {
+
+	coverage_on	= 1;
+
+	// check if coverage to be disabled for everyone
+	if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+	    coverage_on	= 0;
+	}
+
+    } else {
+	coverage_on	= 0;
+    }
+.
+    if(coverage_on){
+.	foreach $c ( @CORE_STR ) {
+
+	C${c}_mt_bind = C${c}_mt_cov_bind;
+	C${c}_cov_obj = new (
+		             C${c}_mt_bind
+			    );
+.
+.	} # foreach $c
+.
+.	foreach $c ( @CORE_STR ) {
+
+	//coverage (ON, C${c}_threadfsm_cov_obj);
+	//C${c}_cov_obj.CoverOn("${c}");
+.
+.	} # foreach $c
+
+	printf("%d : Coverage turned on for MT objects!\n", get_time(LO));
+
+	fork {
+	 @(posedge C0_mt_bind.\$cmp_diag_done);
+.
+	 printf("%d : Coverage report for MT generated!\n", get_time(LO));
+	} join none
+    } // if(coverage_on)
+
+} // task mt_coverage::new()
+

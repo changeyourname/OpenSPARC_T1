@@ -1,0 +1,140 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: pcxpacket.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "iop_rtl.h"
+#include <ListMacros.vrh>
+
+/*-------------------------------------------------------------------------------------------
+  define pcx packet.
+---------------------------------------------------------------------------------------------*/
+class PcxPacket{
+  // pcx packet fields.
+  rand
+  {
+    bit                           valid;
+    bit [PCX_RQ_HI-PCX_RQ_LO:0]   rqtyp;
+    bit                           nc;
+    bit [PCX_CP_HI-PCX_CP_LO:0]   cpu_id;
+    bit [PCX_TH_HI-PCX_TH_LO:0]   thread_id;
+    bit [PCX_BF_HI-PCX_BF_LO:0]   bf_id;
+    bit [PCX_WY_HI-PCX_WY_LO:0]   rep_l1_way;
+    bit [PCX_SZ_HI-PCX_SZ_LO:0]   size;
+    bit [PCX_AD_HI-PCX_AD_LO:0]   addr;
+    bit [PCX_DA_HI-PCX_DA_LO:0]   data;
+  }
+
+  bit [2:0]                     sparc_id;
+
+  integer                       time_out;
+  //define public tasks or functions
+  task                          new(){}
+  task                          print();
+  task                          print_header();
+  task                          accept(bit [PCX_WIDTH-1:0] pcx);
+  function bit[PCX_WIDTH-1:0]   get_pkt();
+}
+MakeVeraList(PcxPacket)
+
+/*-------------------------------------------------------------------------------------------
+  contructor.
+---------------------------------------------------------------------------------------------*/
+task PcxPacket::accept(bit [PCX_WIDTH-1:0] pcx)
+{
+  printf("Info: %d pcx packet received -> %x\n", get_time(LO), pcx);
+  this.valid            = pcx[PCX_VLD];
+  this.rqtyp            = pcx[PCX_RQ_HI:PCX_RQ_LO];
+  this.nc               = pcx[PCX_NC];
+  this.cpu_id           = pcx[PCX_CP_HI:PCX_CP_LO];
+  this.thread_id        = pcx[PCX_TH_HI:PCX_TH_LO];
+  this.bf_id            = pcx[PCX_BF_HI:PCX_BF_LO];
+  this.rep_l1_way       = pcx[PCX_WY_HI:PCX_WY_LO];
+  this.size             = pcx[PCX_SZ_HI:PCX_SZ_LO];
+  this.addr             = pcx[PCX_AD_HI:PCX_AD_LO];
+  this.data             = pcx[PCX_DA_HI:PCX_DA_LO];
+ }
+/*-------------------------------------------------------------------------------------------
+  return the pcx packet.
+---------------------------------------------------------------------------------------------*/
+function bit [PCX_WIDTH-1:0] PcxPacket::get_pkt()
+{
+  get_pkt = {valid, rqtyp, nc, cpu_id, thread_id, bf_id, rep_l1_way, size, addr, data};
+}
+
+task PcxPacket::print ()
+{
+  static integer print_count = 0 ;
+
+  if ((print_count % 40) == 0)
+  {
+    print_header () ;
+  }
+
+  printf ("| PCX ") ;
+  printf ("| %10d ", get_time(LO)) ;
+  printf ("| %d   ", sparc_id) ;
+  printf ("| %b   ", valid) ;
+  case (rqtyp)
+  {
+    LOAD_RQ      : printf ("| LOAD_RQ     ") ;
+    IMISS_RQ     : printf ("| IMISS_RQ    ") ;
+    STORE_RQ     : printf ("| STORE_RQ    ") ;
+    CAS1_RQ      : printf ("| CAS1_RQ     ") ;
+    CAS2_RQ      : printf ("| CAS2_RQ     ") ;
+    SWAP_RQ      : printf ("| SWAP_RQ     ") ;
+    STRLOAD_RQ   : printf ("| STRLOAD_RQ  ") ;
+    STRST_RQ     : printf ("| STRST_RQ    ") ;
+    STQ_RQ       : printf ("| STQ_RQ      ") ;
+    INT_RQ       : printf ("| INT_RQ      ") ;
+    FWD_RQ       : printf ("| FWD_RQ      ") ;
+    FWD_RPY      : printf ("| FWD_RPY     ") ;
+    RSVD_RQ      : printf ("| RSVD_RQ     ") ;
+    default      : printf ("| INVALID     ") ;
+  }
+  printf ("| %b  ", nc) ;
+  printf ("| %d   ", cpu_id) ;
+  printf ("| %d   ", thread_id) ;
+  printf ("| %d   ", bf_id) ;
+  printf ("| %d   ", rep_l1_way) ;
+  printf ("| %d   ", size) ;
+  printf ("| %x ", addr) ;
+  printf ("| %x ", data) ;
+  printf ("|\n") ;
+
+  print_count++ ;
+}
+
+task PcxPacket::print_header ()
+{
+  printf ("| PCX ") ;
+  printf ("| Time       ") ;
+  printf ("| Spc ") ;
+  printf ("| Vld ") ;
+  printf ("| Type        ") ;
+  printf ("| NC ") ;
+  printf ("| CPU ") ;
+  printf ("| Thr ") ;
+  printf ("| Buf ") ;
+  printf ("| Way ") ;
+  printf ("| Siz ") ;
+  printf ("| Address    ") ;
+  printf ("| Data             ") ;
+  printf ("|\n") ;
+}

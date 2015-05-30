@@ -1,0 +1,77 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_diff_thr_rb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_diff_thr_rb_cov.vr
+// Description:
+// This object covers simulatneous rollbacks from different stages for
+// different threads.
+//
+// State: 12'b: rb_s,rb_d,rb_w
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_DIFF_THR_RB_COV (bit [11:0] cov_vector)
+// {
+
+  //These states mean simultaneous rollbacks from s and d stages on different threads
+  //The state names are old and not renamed to avoid resetting the whole coverage
+  //States as coded previously wrer illegal
+
+  state s_T0_rbs_T1_rbd_T2_rbw  (12'b/**/T0/**/T1/**/xxxx); 
+  state s_T0_rbs_T1_rbd_T3_rbw  (12'b/**/T0/**/T2/**/xxxx);
+  state s_T0_rbs_T2_rbd_T1_rbw  (12'b/**/T0/**/T3/**/xxxx);
+  state s_T0_rbs_T2_rbd_T3_rbw  (12'b/**/T1/**/T0/**/xxxx);
+  state s_T0_rbs_T3_rbd_T1_rbw  (12'b/**/T1/**/T2/**/xxxx);
+  state s_T0_rbs_T3_rbd_T2_rbw  (12'b/**/T1/**/T3/**/xxxx);
+  state s_T1_rbs_T0_rbd_T2_rbw  (12'b/**/T2/**/T0/**/xxxx);
+  state s_T1_rbs_T0_rbd_T3_rbw  (12'b/**/T2/**/T1/**/xxxx);
+  state s_T1_rbs_T2_rbd_T0_rbw  (12'b/**/T2/**/T3/**/xxxx);
+  state s_T1_rbs_T2_rbd_T3_rbw  (12'b/**/T3/**/T0/**/xxxx);
+  state s_T1_rbs_T3_rbd_T0_rbw  (12'b/**/T3/**/T1/**/xxxx);
+  state s_T1_rbs_T3_rbd_T2_rbw  (12'b/**/T3/**/T2/**/xxxx);
+
+  //These states mean simultaneous rollbacks from d and w stages on different threads
+  //The state names are old and not renamed to avoid resetting the whole coverage
+  //States as coded previously were illegal
+
+  state s_T2_rbs_T0_rbd_T1_rbw  (12'bxxxx/**/T0/**/T1);
+  state s_T2_rbs_T0_rbd_T3_rbw  (12'bxxxx/**/T0/**/T2);
+  state s_T2_rbs_T1_rbd_T0_rbw  (12'bxxxx/**/T0/**/T3);
+  state s_T2_rbs_T1_rbd_T3_rbw  (12'bxxxx/**/T1/**/T0);
+  state s_T2_rbs_T3_rbd_T0_rbw  (12'bxxxx/**/T1/**/T2);
+  state s_T2_rbs_T3_rbd_T1_rbw  (12'bxxxx/**/T1/**/T3);
+  state s_T3_rbs_T0_rbd_T1_rbw  (12'bxxxx/**/T2/**/T0);
+  state s_T3_rbs_T0_rbd_T2_rbw  (12'bxxxx/**/T2/**/T1);
+  state s_T3_rbs_T1_rbd_T0_rbw  (12'bxxxx/**/T2/**/T3);
+  state s_T3_rbs_T1_rbd_T2_rbw  (12'bxxxx/**/T3/**/T0);
+  state s_T3_rbs_T2_rbd_T0_rbw  (12'bxxxx/**/T3/**/T1);
+  state s_T3_rbs_T2_rbd_T1_rbw  (12'bxxxx/**/T3/**/T2);
+
+  //Three threads have W-stage rollbacks b2b
+  wildcard trans t_T0_rbw_T1_rbw_T2_rbw  (12'bxxxxxxxx/**/T0 -> 12'bxxxxxxxx/**/T1 -> 12'bxxxxxxxx/**/T2);
+  wildcard trans t_T0_rbw_T2_rbw_T1_rbw  (12'bxxxxxxxx/**/T0 -> 12'bxxxxxxxx/**/T2 -> 12'bxxxxxxxx/**/T1);
+  wildcard trans t_T1_rbw_T0_rbw_T2_rbw  (12'bxxxxxxxx/**/T1 -> 12'bxxxxxxxx/**/T0 -> 12'bxxxxxxxx/**/T2);
+  wildcard trans t_T1_rbw_T2_rbw_T0_rbw  (12'bxxxxxxxx/**/T1 -> 12'bxxxxxxxx/**/T2 -> 12'bxxxxxxxx/**/T0);
+  wildcard trans t_T2_rbw_T1_rbw_T0_rbw  (12'bxxxxxxxx/**/T2 -> 12'bxxxxxxxx/**/T1 -> 12'bxxxxxxxx/**/T0);
+  wildcard trans t_T2_rbw_T0_rbw_T1_rbw  (12'bxxxxxxxx/**/T2 -> 12'bxxxxxxxx/**/T0 -> 12'bxxxxxxxx/**/T1);
+// }

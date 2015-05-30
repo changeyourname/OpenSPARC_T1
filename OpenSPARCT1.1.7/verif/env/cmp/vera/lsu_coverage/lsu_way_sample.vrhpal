@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_way_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load miss pa equal to imiss pa for 4 threads
+// using the equal pa calculation in lsu_mon
+//
+//***********************************************************************
+
+
+
+// coverage_def LSU_WAY_COV (bit [2:0] ld_miss_way)
+// {
+  // state declarations
+
+  state s_WAY0   (3'b100);
+  state s_WAY1   (3'b101);
+  state s_WAY2   (3'b110);
+  state s_WAY3   (3'b111);
+
+  trans t_s_WAY0_to_s_WAY0 	( WAY0 -> WAY0 );
+  trans t_s_WAY0_to_s_WAY1 	( WAY0 -> WAY1 );
+  trans t_s_WAY0_to_s_WAY2 	( WAY0 -> WAY2 );
+  trans t_s_WAY0_to_s_WAY3 	( WAY0 -> WAY3 );
+
+  trans t_s_WAY1_to_s_WAY0 	( WAY1 -> WAY0 );
+  trans t_s_WAY1_to_s_WAY1 	( WAY1 -> WAY1 );
+  trans t_s_WAY1_to_s_WAY2 	( WAY1 -> WAY2 );
+  trans t_s_WAY1_to_s_WAY3 	( WAY1 -> WAY3 );
+				             
+  trans t_s_WAY2_to_s_WAY0 	( WAY2 -> WAY0 );
+  trans t_s_WAY2_to_s_WAY1 	( WAY2 -> WAY1 );
+  trans t_s_WAY2_to_s_WAY2 	( WAY2 -> WAY2 );
+  trans t_s_WAY2_to_s_WAY3 	( WAY2 -> WAY3 );
+				             
+  trans t_s_WAY3_to_s_WAY0 	( WAY3 -> WAY0 );
+  trans t_s_WAY3_to_s_WAY1 	( WAY3 -> WAY1 );
+  trans t_s_WAY3_to_s_WAY2 	( WAY3 -> WAY2 );
+  trans t_s_WAY3_to_s_WAY3 	( WAY3 -> WAY3 );
+
+// }
+

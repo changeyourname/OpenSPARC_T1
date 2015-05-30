@@ -1,0 +1,358 @@
+
+# ##############################################################################
+# Created by Base System Builder Wizard for Xilinx EDK 10.1.03 Build EDK_K_SP3.6
+# Thu Nov 06 08:08:49 2008
+# Target Board:  Xilinx XUPV5-LX110T Evaluation Platform Rev A
+# Family:    virtex5
+# Device:    xc5vlx110t
+# Package:   ff1136
+# Speed Grade:  -1
+# Processor: microblaze_0
+# System clock frequency: 125.00 MHz
+# On Chip Memory :  16 KB
+# Total Off Chip Memory : 256 MB
+# - DDR2_SDRAM = 256 MB
+# ##############################################################################
+ PARAMETER VERSION = 2.1.0
+
+
+ PORT fpga_0_Hard_Ethernet_MAC_PHY_MII_INT = fpga_0_Hard_Ethernet_MAC_PHY_MII_INT, DIR = I, SENSITIVITY = LEVEL_LOW, SIGIS = INTERRUPT
+ PORT fpga_0_RS232_Uart_1_RX_pin = fpga_0_RS232_Uart_1_RX, DIR = I
+ PORT fpga_0_RS232_Uart_1_TX_pin = fpga_0_RS232_Uart_1_TX, DIR = O
+ PORT fpga_0_DDR2_SDRAM_DDR2_ODT_pin = fpga_0_DDR2_SDRAM_DDR2_ODT, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_Addr_pin = fpga_0_DDR2_SDRAM_DDR2_Addr, DIR = O, VEC = [12:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_BankAddr_pin = fpga_0_DDR2_SDRAM_DDR2_BankAddr, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_CAS_n_pin = fpga_0_DDR2_SDRAM_DDR2_CAS_n, DIR = O
+ PORT fpga_0_DDR2_SDRAM_DDR2_CE_pin = fpga_0_DDR2_SDRAM_DDR2_CE, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_CS_n_pin = fpga_0_DDR2_SDRAM_DDR2_CS_n, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_RAS_n_pin = fpga_0_DDR2_SDRAM_DDR2_RAS_n, DIR = O
+ PORT fpga_0_DDR2_SDRAM_DDR2_WE_n_pin = fpga_0_DDR2_SDRAM_DDR2_WE_n, DIR = O
+ PORT fpga_0_DDR2_SDRAM_DDR2_Clk_pin = fpga_0_DDR2_SDRAM_DDR2_Clk, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_Clk_n_pin = fpga_0_DDR2_SDRAM_DDR2_Clk_n, DIR = O, VEC = [1:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_DM_pin = fpga_0_DDR2_SDRAM_DDR2_DM, DIR = O, VEC = [7:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_DQS = fpga_0_DDR2_SDRAM_DDR2_DQS, DIR = IO, VEC = [7:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_DQS_n = fpga_0_DDR2_SDRAM_DDR2_DQS_n, DIR = IO, VEC = [7:0]
+ PORT fpga_0_DDR2_SDRAM_DDR2_DQ = fpga_0_DDR2_SDRAM_DDR2_DQ, DIR = IO, VEC = [63:0]
+ PORT fpga_0_Hard_Ethernet_MAC_TemacPhy_RST_n_pin = fpga_0_Hard_Ethernet_MAC_TemacPhy_RST_n, DIR = O
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_TXD_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_TXD_0, DIR = O, VEC = [7:0]
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_TX_EN_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_TX_EN_0, DIR = O
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_TX_CLK_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_TX_CLK_0, DIR = O
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_TX_ER_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_TX_ER_0, DIR = O
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_RX_ER_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_RX_ER_0, DIR = I
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_RX_CLK_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_RX_CLK_0, DIR = I
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_RX_DV_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_RX_DV_0, DIR = I
+ PORT fpga_0_Hard_Ethernet_MAC_GMII_RXD_0_pin = fpga_0_Hard_Ethernet_MAC_GMII_RXD_0, DIR = I, VEC = [7:0]
+ PORT fpga_0_Hard_Ethernet_MAC_MII_TX_CLK_0_pin = fpga_0_Hard_Ethernet_MAC_MII_TX_CLK_0, DIR = I
+ PORT fpga_0_Hard_Ethernet_MAC_MDC_0_pin = fpga_0_Hard_Ethernet_MAC_MDC_0, DIR = O
+ PORT fpga_0_Hard_Ethernet_MAC_MDIO_0_pin = fpga_0_Hard_Ethernet_MAC_MDIO_0, DIR = IO
+ PORT sys_clk_pin = dcm_clk_s, DIR = I, SIGIS = CLK, CLK_FREQ = 100000000
+ PORT sys_rst_pin = sys_rst_s, DIR = I, RST_POLARITY = 0, SIGIS = RST
+
+
+BEGIN microblaze
+ PARAMETER INSTANCE = microblaze_0
+ PARAMETER C_INTERCONNECT = 1
+ PARAMETER HW_VER = 7.10.d
+ PARAMETER C_USE_ICACHE = 1
+ PARAMETER C_CACHE_BYTE_SIZE = 16384
+ PARAMETER C_USE_DCACHE = 1
+ PARAMETER C_DCACHE_BYTE_SIZE = 16384
+ PARAMETER C_DEBUG_ENABLED = 1
+ PARAMETER C_ICACHE_BASEADDR = 0x80000000
+ PARAMETER C_ICACHE_HIGHADDR = 0x8fffffff
+ PARAMETER C_DCACHE_BASEADDR = 0x80000000
+ PARAMETER C_DCACHE_HIGHADDR = 0x8fffffff
+ PARAMETER C_FSL_LINKS = 1
+ PARAMETER C_USE_BARREL = 1
+ BUS_INTERFACE DLMB = dlmb
+ BUS_INTERFACE ILMB = ilmb
+ BUS_INTERFACE DPLB = mb_plb
+ BUS_INTERFACE IPLB = mb_plb
+ BUS_INTERFACE ixcl = ixcl
+ BUS_INTERFACE dxcl = dxcl
+ BUS_INTERFACE SFSL0 = ccx2mb_0_to_microblaze_0
+ BUS_INTERFACE MFSL0 = microblaze_0_to_ccx2mb_0
+ BUS_INTERFACE DEBUG = microblaze_0_dbg
+ PORT MB_RESET = mb_reset
+ PORT Interrupt = Interrupt
+END
+
+BEGIN plb_v46
+ PARAMETER INSTANCE = mb_plb
+ PARAMETER HW_VER = 1.03.a
+ PORT PLB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_v10
+ PARAMETER INSTANCE = ilmb
+ PARAMETER HW_VER = 1.00.a
+ PORT LMB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_v10
+ PARAMETER INSTANCE = dlmb
+ PARAMETER HW_VER = 1.00.a
+ PORT LMB_Clk = sys_clk_s
+ PORT SYS_Rst = sys_bus_reset
+END
+
+BEGIN lmb_bram_if_cntlr
+ PARAMETER INSTANCE = dlmb_cntlr
+ PARAMETER HW_VER = 2.10.a
+ PARAMETER C_BASEADDR = 0x00000000
+ PARAMETER C_HIGHADDR = 0x00003fff
+ BUS_INTERFACE SLMB = dlmb
+ BUS_INTERFACE BRAM_PORT = dlmb_port
+END
+
+BEGIN lmb_bram_if_cntlr
+ PARAMETER INSTANCE = ilmb_cntlr
+ PARAMETER HW_VER = 2.10.a
+ PARAMETER C_BASEADDR = 0x00000000
+ PARAMETER C_HIGHADDR = 0x00003fff
+ BUS_INTERFACE SLMB = ilmb
+ BUS_INTERFACE BRAM_PORT = ilmb_port
+END
+
+BEGIN bram_block
+ PARAMETER INSTANCE = lmb_bram
+ PARAMETER HW_VER = 1.00.a
+ BUS_INTERFACE PORTA = ilmb_port
+ BUS_INTERFACE PORTB = dlmb_port
+END
+
+BEGIN xps_uartlite
+ PARAMETER INSTANCE = RS232_Uart_1
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_BAUDRATE = 9600
+ PARAMETER C_DATA_BITS = 8
+ PARAMETER C_ODD_PARITY = 0
+ PARAMETER C_USE_PARITY = 0
+ PARAMETER C_SPLB_CLK_FREQ_HZ = 125000000
+ PARAMETER C_BASEADDR = 0x40600000
+ PARAMETER C_HIGHADDR = 0x4060ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT RX = fpga_0_RS232_Uart_1_RX
+ PORT TX = fpga_0_RS232_Uart_1_TX
+END
+
+BEGIN xps_ll_temac
+ PARAMETER INSTANCE = Hard_Ethernet_MAC
+ PARAMETER HW_VER = 1.01.b
+ PARAMETER C_SPLB_CLK_PERIOD_PS = 8000
+ PARAMETER C_PHY_TYPE = 1
+ PARAMETER C_TEMAC1_ENABLED = 0
+ PARAMETER C_TEMAC0_PHYADDR = 0b00001
+ PARAMETER C_NUM_IDELAYCTRL = 2
+ PARAMETER C_IDELAYCTRL_LOC = IDELAYCTRL_X0Y4-IDELAYCTRL_X1Y5
+ PARAMETER C_TEMAC_TYPE = 0
+ PARAMETER C_BUS2CORE_CLK_RATIO = 1
+ PARAMETER C_BASEADDR = 0x40c00000
+ PARAMETER C_HIGHADDR = 0x40c0ffff
+ BUS_INTERFACE SPLB = mb_plb
+ BUS_INTERFACE LLINK0 = Hard_Ethernet_MAC_LLINK0
+ PORT TemacPhy_RST_n = fpga_0_Hard_Ethernet_MAC_TemacPhy_RST_n
+ PORT GMII_TXD_0 = fpga_0_Hard_Ethernet_MAC_GMII_TXD_0
+ PORT GMII_TX_EN_0 = fpga_0_Hard_Ethernet_MAC_GMII_TX_EN_0
+ PORT GMII_TX_ER_0 = fpga_0_Hard_Ethernet_MAC_GMII_TX_ER_0
+ PORT GMII_TX_CLK_0 = fpga_0_Hard_Ethernet_MAC_GMII_TX_CLK_0
+ PORT GMII_RXD_0 = fpga_0_Hard_Ethernet_MAC_GMII_RXD_0
+ PORT GMII_RX_DV_0 = fpga_0_Hard_Ethernet_MAC_GMII_RX_DV_0
+ PORT GMII_RX_ER_0 = fpga_0_Hard_Ethernet_MAC_GMII_RX_ER_0
+ PORT GMII_RX_CLK_0 = fpga_0_Hard_Ethernet_MAC_GMII_RX_CLK_0
+ PORT MII_TX_CLK_0 = fpga_0_Hard_Ethernet_MAC_MII_TX_CLK_0
+ PORT MDC_0 = fpga_0_Hard_Ethernet_MAC_MDC_0
+ PORT MDIO_0 = fpga_0_Hard_Ethernet_MAC_MDIO_0
+ PORT GTX_CLK_0 = sys_clk_s
+ PORT REFCLK = clk_200mhz_s
+ PORT LlinkTemac0_CLK = sys_clk_s
+ PORT TemacIntc0_Irpt = Hard_Ethernet_MAC_TemacIntc0_Irpt
+END
+
+BEGIN mpmc
+ PARAMETER INSTANCE = DDR2_SDRAM
+ PARAMETER HW_VER = 4.03.a
+ PARAMETER C_NUM_PORTS = 4
+ PARAMETER C_PIM0_BASETYPE = 1
+ PARAMETER C_PIM1_BASETYPE = 1
+ PARAMETER C_MEM_PARTNO = mt4htf3264h-53e
+ PARAMETER C_NUM_IDELAYCTRL = 3
+ PARAMETER C_IDELAYCTRL_LOC = IDELAYCTRL_X0Y6-IDELAYCTRL_X0Y2-IDELAYCTRL_X0Y1
+ PARAMETER C_MEM_DQS_IO_COL = 0b00_0000_0000_0000_0000
+ PARAMETER C_MEM_DQ_IO_MS = 0b00000000_01110101_00111101_00001111_00011110_00101110_11000011_11000001_10111100
+ PARAMETER C_DDR2_DQSN_ENABLE = 1
+ PARAMETER C_MEM_CE_WIDTH = 2
+ PARAMETER C_MEM_CS_N_WIDTH = 2
+ PARAMETER C_MEM_CLK_WIDTH = 2
+ PARAMETER C_MEM_ODT_WIDTH = 2
+ PARAMETER C_MEM_ODT_TYPE = 1
+ PARAMETER C_XCL0_WRITEXFER = 0
+ PARAMETER C_PIM2_BASETYPE = 2
+ PARAMETER C_PIM3_BASETYPE = 3
+ PARAMETER C_MPMC_CLK0_PERIOD_PS = 8000
+ PARAMETER C_SDMA3_PI2LL_CLK_RATIO = 1
+ PARAMETER C_MPMC_BASEADDR = 0x80000000
+ PARAMETER C_MPMC_HIGHADDR = 0x8fffffff
+ PARAMETER C_SDMA_CTRL_BASEADDR = 0x74600000
+ PARAMETER C_SDMA_CTRL_HIGHADDR = 0x7460ffff
+ PARAMETER C_PI0_RD_FIFO_TYPE = SRL
+ PARAMETER C_PI0_WR_FIFO_TYPE = SRL
+ PARAMETER C_PI1_RD_FIFO_TYPE = SRL
+ PARAMETER C_PI1_WR_FIFO_TYPE = SRL
+ PARAMETER C_PI2_RD_FIFO_TYPE = SRL
+ PARAMETER C_PI2_WR_FIFO_TYPE = SRL
+ BUS_INTERFACE XCL0 = ixcl
+ BUS_INTERFACE XCL1 = dxcl
+ BUS_INTERFACE SPLB2 = mb_plb
+ BUS_INTERFACE SDMA_LL3 = Hard_Ethernet_MAC_LLINK0
+ BUS_INTERFACE SDMA_CTRL3 = mb_plb
+ PORT DDR2_ODT = fpga_0_DDR2_SDRAM_DDR2_ODT
+ PORT DDR2_Addr = fpga_0_DDR2_SDRAM_DDR2_Addr
+ PORT DDR2_BankAddr = fpga_0_DDR2_SDRAM_DDR2_BankAddr
+ PORT DDR2_CAS_n = fpga_0_DDR2_SDRAM_DDR2_CAS_n
+ PORT DDR2_CE = fpga_0_DDR2_SDRAM_DDR2_CE
+ PORT DDR2_CS_n = fpga_0_DDR2_SDRAM_DDR2_CS_n
+ PORT DDR2_RAS_n = fpga_0_DDR2_SDRAM_DDR2_RAS_n
+ PORT DDR2_WE_n = fpga_0_DDR2_SDRAM_DDR2_WE_n
+ PORT DDR2_Clk = fpga_0_DDR2_SDRAM_DDR2_Clk
+ PORT DDR2_Clk_n = fpga_0_DDR2_SDRAM_DDR2_Clk_n
+ PORT DDR2_DM = fpga_0_DDR2_SDRAM_DDR2_DM
+ PORT DDR2_DQS = fpga_0_DDR2_SDRAM_DDR2_DQS
+ PORT DDR2_DQS_n = fpga_0_DDR2_SDRAM_DDR2_DQS_n
+ PORT DDR2_DQ = fpga_0_DDR2_SDRAM_DDR2_DQ
+ PORT MPMC_Clk0 = sys_clk_s
+ PORT MPMC_Clk90 = DDR2_SDRAM_mpmc_clk_90_s
+ PORT SDMA3_Clk = sys_clk_s
+ PORT MPMC_Clk_200MHz = clk_200mhz_s
+ PORT MPMC_Clk0_DIV2 = DDR2_SDRAM_MPMC_Clk_Div2
+ PORT MPMC_Rst = sys_periph_reset
+ PORT SDMA3_Rx_IntOut = DDR2_SDRAM_SDMA3_Rx_IntOut
+ PORT SDMA3_Tx_IntOut = DDR2_SDRAM_SDMA3_Tx_IntOut
+END
+
+BEGIN clock_generator
+ PARAMETER INSTANCE = clock_generator_0
+ PARAMETER HW_VER = 2.01.a
+ PARAMETER C_EXT_RESET_HIGH = 1
+ PARAMETER C_CLKIN_FREQ = 100000000
+ PARAMETER C_CLKOUT0_FREQ = 125000000
+ PARAMETER C_CLKOUT0_BUF = TRUE
+ PARAMETER C_CLKOUT0_PHASE = 0
+ PARAMETER C_CLKOUT0_GROUP = PLL0
+ PARAMETER C_CLKOUT1_FREQ = 125000000
+ PARAMETER C_CLKOUT1_BUF = TRUE
+ PARAMETER C_CLKOUT1_PHASE = 90
+ PARAMETER C_CLKOUT1_GROUP = PLL0
+ PARAMETER C_CLKOUT2_FREQ = 200000000
+ PARAMETER C_CLKOUT2_BUF = TRUE
+ PARAMETER C_CLKOUT2_PHASE = 0
+ PARAMETER C_CLKOUT2_GROUP = NONE
+ PARAMETER C_CLKOUT3_FREQ = 62500000
+ PARAMETER C_CLKOUT3_BUF = TRUE
+ PARAMETER C_CLKOUT3_PHASE = 0
+ PARAMETER C_CLKOUT3_GROUP = NONE
+ PARAMETER C_CLKOUT4_FREQ = 50000000
+ PARAMETER C_CLKOUT4_BUF = TRUE
+ PARAMETER C_CLKOUT4_PHASE = 0
+ PARAMETER C_CLKOUT4_GROUP = NONE
+ PORT CLKOUT0 = sys_clk_s
+ PORT CLKOUT1 = DDR2_SDRAM_mpmc_clk_90_s
+ PORT CLKOUT2 = clk_200mhz_s
+ PORT CLKOUT3 = DDR2_SDRAM_MPMC_Clk_Div2
+ PORT CLKOUT4 = gclk
+ PORT CLKIN = dcm_clk_s
+ PORT LOCKED = Dcm_all_locked
+ PORT RST = net_gnd
+END
+
+BEGIN mdm
+ PARAMETER INSTANCE = debug_module
+ PARAMETER HW_VER = 1.00.d
+ PARAMETER C_MB_DBG_PORTS = 1
+ PARAMETER C_USE_UART = 1
+ PARAMETER C_UART_WIDTH = 8
+ PARAMETER C_BASEADDR = 0x41400000
+ PARAMETER C_HIGHADDR = 0x4140ffff
+ BUS_INTERFACE SPLB = mb_plb
+ BUS_INTERFACE MBDEBUG_0 = microblaze_0_dbg
+ PORT Debug_SYS_Rst = Debug_SYS_Rst
+END
+
+BEGIN proc_sys_reset
+ PARAMETER INSTANCE = proc_sys_reset_0
+ PARAMETER HW_VER = 2.00.a
+ PARAMETER C_EXT_RESET_HIGH = 0
+ PORT Slowest_sync_clk = sys_clk_s
+ PORT Dcm_locked = Dcm_all_locked
+ PORT Ext_Reset_In = sys_rst_s
+ PORT MB_Reset = mb_reset
+ PORT Bus_Struct_Reset = sys_bus_reset
+ PORT MB_Debug_Sys_Rst = Debug_SYS_Rst
+ PORT Peripheral_Reset = sys_periph_reset
+END
+
+BEGIN xps_intc
+ PARAMETER INSTANCE = xps_intc_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_BASEADDR = 0x41200000
+ PARAMETER C_HIGHADDR = 0x4120ffff
+ BUS_INTERFACE SPLB = mb_plb
+ PORT Irq = Interrupt
+ PORT Intr = Hard_Ethernet_MAC_TemacIntc0_Irpt & DDR2_SDRAM_SDMA3_Rx_IntOut & DDR2_SDRAM_SDMA3_Tx_IntOut & fpga_0_Hard_Ethernet_MAC_PHY_MII_INT
+END
+
+BEGIN fsl_v20
+ PARAMETER INSTANCE = ccx2mb_0_to_microblaze_0
+ PARAMETER HW_VER = 2.11.a
+ PARAMETER C_EXT_RESET_HIGH = 0
+ PARAMETER C_ASYNC_CLKS = 1
+ PARAMETER C_READ_CLOCK_PERIOD = 8000
+ PORT FSL_M_Clk = gclk
+ PORT FSL_S_Clk = sys_clk_s
+ PORT SYS_Rst = sys_rst_s
+END
+
+BEGIN ccx2mb
+ PARAMETER INSTANCE = ccx2mb_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_EXT_RESET_HIGH = 0
+ BUS_INTERFACE MFSL = ccx2mb_0_to_microblaze_0
+ BUS_INTERFACE SFSL = microblaze_0_to_ccx2mb_0
+ PORT pcx_spc_grant_px = ccx2mb_0_pcx_spc_grant_px
+ PORT cpx_spc_data_rdy_cx2 = ccx2mb_0_cpx_spc_data_rdy_cx2
+ PORT cpx_spc_data_cx2 = ccx2mb_0_cpx_spc_data_cx2
+ PORT spc_pcx_data_pa = ccx2mb_0_spc_pcx_data_pa
+ PORT spc_pcx_atom_pq = ccx2mb_0_spc_pcx_atom_pq
+ PORT spc_pcx_req_pq = ccx2mb_0_spc_pcx_req_pq
+ PORT gclk = gclk
+ PORT reset_l = sys_rst_s
+END
+
+BEGIN fsl_v20
+ PARAMETER INSTANCE = microblaze_0_to_ccx2mb_0
+ PARAMETER HW_VER = 2.11.a
+ PARAMETER C_EXT_RESET_HIGH = 0
+ PARAMETER C_ASYNC_CLKS = 1
+ PARAMETER C_READ_CLOCK_PERIOD = 20000
+ PORT FSL_M_Clk = sys_clk_s
+ PORT FSL_S_Clk = gclk
+ PORT SYS_Rst = sys_rst_s
+END
+
+BEGIN iop_fpga
+ PARAMETER INSTANCE = iop_fpga_0
+ PARAMETER HW_VER = 1.00.a
+ PARAMETER C_EXT_RESET_HIGH = 0
+ PORT cpu_id = net_gnd
+ PORT spc_pcx_req_pq = ccx2mb_0_spc_pcx_req_pq
+ PORT spc_pcx_atom_pq = ccx2mb_0_spc_pcx_atom_pq
+ PORT spc_pcx_data_pa = ccx2mb_0_spc_pcx_data_pa
+ PORT pcx_spc_grant_px = ccx2mb_0_pcx_spc_grant_px
+ PORT cpx_spc_data_rdy_cx2 = ccx2mb_0_cpx_spc_data_rdy_cx2
+ PORT cpx_spc_data_cx2 = ccx2mb_0_cpx_spc_data_cx2
+ PORT gclk = gclk
+ PORT reset_l = sys_rst_s
+END
+

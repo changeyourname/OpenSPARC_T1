@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_sthit_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This object monitors if a store hits in the L1 cache
+// Different store types are monitored: store, ldstub, cas, swap
+//  ifu_lsu_st_inst_e;    
+//  ifu_lsu_casa_e;       
+//  ifu_lsu_ldstub_e;     
+//  ifu_lsu_swap_e;       
+//  lsu_way_hit[3:0];  
+//***********************************************************************
+
+// states
+//-------
+  state s_ANY 		(TSO_LSU_ANY);
+  state s_ST_E   	(TSO_LSU_ST_E);
+  state s_CASA_E 	(TSO_LSU_CASA_E);
+  state s_LDSTUB_E 	(TSO_LSU_LDSTUB_E);
+  state s_SWAP_E	(TSO_LSU_SWAP_E);
+  state s_HIT0		(TSO_LSU_HIT0);
+  state s_HIT1		(TSO_LSU_HIT1);
+  state s_HIT2		(TSO_LSU_HIT2);
+  state s_HIT3		(TSO_LSU_HIT3);
+  state s_MISS		(TSO_LSU_MISS);
+
+// transitions 
+//------------
+  trans t_ST_MISS	(TSO_LSU_ST_E	-> TSO_LSU_ANY -> TSO_LSU_MISS);
+
+  trans t_CASA_MISS	(TSO_LSU_CASA_E	-> TSO_LSU_ANY -> TSO_LSU_MISS);
+  trans t_CASA_HIT0	(TSO_LSU_CASA_E	-> TSO_LSU_ANY -> TSO_LSU_HIT0);
+  trans t_CASA_HIT1	(TSO_LSU_CASA_E	-> TSO_LSU_ANY -> TSO_LSU_HIT1);
+  trans t_CASA_HIT2	(TSO_LSU_CASA_E	-> TSO_LSU_ANY -> TSO_LSU_HIT2);
+  trans t_CASA_HIT3	(TSO_LSU_CASA_E	-> TSO_LSU_ANY -> TSO_LSU_HIT3);
+
+  trans t_LDSTUB_MISS	(TSO_LSU_LDSTUB_E-> TSO_LSU_ANY -> TSO_LSU_MISS);
+  trans t_LDSTUB_HIT0	(TSO_LSU_LDSTUB_E-> TSO_LSU_ANY -> TSO_LSU_HIT0);
+  trans t_LDSTUB_HIT1	(TSO_LSU_LDSTUB_E-> TSO_LSU_ANY -> TSO_LSU_HIT1);
+  trans t_LDSTUB_HIT2	(TSO_LSU_LDSTUB_E-> TSO_LSU_ANY -> TSO_LSU_HIT2);
+  trans t_LDSTUB_HIT3	(TSO_LSU_LDSTUB_E-> TSO_LSU_ANY -> TSO_LSU_HIT3);
+
+  trans t_SWAP_MISS	(TSO_LSU_SWAP_E	-> TSO_LSU_ANY -> TSO_LSU_MISS);
+  trans t_SWAP_HIT0	(TSO_LSU_SWAP_E	-> TSO_LSU_ANY -> TSO_LSU_HIT0);
+  trans t_SWAP_HIT1	(TSO_LSU_SWAP_E	-> TSO_LSU_ANY -> TSO_LSU_HIT1);
+  trans t_SWAP_HIT2	(TSO_LSU_SWAP_E	-> TSO_LSU_ANY -> TSO_LSU_HIT2);
+  trans t_SWAP_HIT3	(TSO_LSU_SWAP_E	-> TSO_LSU_ANY -> TSO_LSU_HIT3);

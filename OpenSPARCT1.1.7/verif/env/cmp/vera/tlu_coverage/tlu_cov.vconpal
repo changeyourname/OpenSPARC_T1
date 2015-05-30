@@ -1,0 +1,281 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tlu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// tlu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+
+// global signals
+connect input tlu_cov_top.clk = "cmp_top.iop.sparc0.tlu.rclk" iskew -1 
+connect input tlu_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+. sub connectInstance {
+.	my ( $tluInstancePath, $coreNum, $sparcInstancePath,  $tlumonInstancePath) = @_;
+.	my $c				= $coreNum;
+.
+
+connect input tlu_cov_top.C${c}_tid_d	= "${tluInstancePath}.tcl.thrid_d" iskew -1	
+connect input tlu_cov_top.C${c}_tid_e	= "${tluInstancePath}.tcl.thrid_e" iskew -1
+connect input tlu_cov_top.C${c}_tid_m	= "${tluInstancePath}.tcl.thrid_m" iskew -1
+connect input tlu_cov_top.C${c}_tid_g	= "${tluInstancePath}.tcl.thrid_g" iskew -1
+connect input tlu_cov_top.C${c}_tid_w1	= "${tluInstancePath}.tcl.thrid_w2" iskew -1
+connect input tlu_cov_top.C${c}_ifu_inst_vld_m	= "${tluInstancePath}.ifu_tlu_inst_vld_m" iskew -1
+connect input tlu_cov_top.C${c}_inst_vld_m	= "${tluInstancePath}.tcl.inst_vld_m" iskew -1
+connect input tlu_cov_top.C${c}_inst_vld_g	= "${tluInstancePath}.tcl.inst_vld_g" iskew -1
+connect input tlu_cov_top.C${c}_inst_vld_w2	= "${tluInstancePath}.tcl.inst_vld_w2" iskew -1
+connect input tlu_cov_top.C${c}_tick_tid	= "${tluInstancePath}.tcl.tckctr" iskew -1
+
+connect input tlu_cov_top.C${c}_pstate_priv	= "${tluInstancePath}.local_pstate_priv" iskew -1
+connect input tlu_cov_top.C${c}_pstate_ie	= "${tluInstancePath}.tlu_int_pstate_ie" iskew -1
+connect input tlu_cov_top.C${c}_hpstate_ibe	= "${tluInstancePath}.tlu_hpstate_ibe" iskew -1
+connect input tlu_cov_top.C${c}_hpstate_enb	= "${tluInstancePath}.tlu_hpstate_enb" iskew -1
+connect input tlu_cov_top.C${c}_hpstate_red	= "${tluInstancePath}.tlu_int_redmode" iskew -1
+connect input tlu_cov_top.C${c}_hpstate_priv	= "${tluInstancePath}.tlu_hpstate_priv" iskew -1
+connect input tlu_cov_top.C${c}_hpstate_tlz	= "${tluInstancePath}.tlu_hpstate_tlz" iskew -1
+connect input tlu_cov_top.C${c}_true_pstate0	= "${tluInstancePath}.tdp.true_pstate0" iskew -1
+connect input tlu_cov_top.C${c}_true_pstate1	= "${tluInstancePath}.tdp.true_pstate1" iskew -1
+connect input tlu_cov_top.C${c}_true_pstate2	= "${tluInstancePath}.tdp.true_pstate2" iskew -1
+connect input tlu_cov_top.C${c}_true_pstate3	= "${tluInstancePath}.tdp.true_pstate3" iskew -1
+connect input tlu_cov_top.C${c}_true_hpstate0	= "${tluInstancePath}.tdp.true_hpstate0" iskew -1
+connect input tlu_cov_top.C${c}_true_hpstate1	= "${tluInstancePath}.tdp.true_hpstate1" iskew -1
+connect input tlu_cov_top.C${c}_true_hpstate2	= "${tluInstancePath}.tdp.true_hpstate2" iskew -1
+connect input tlu_cov_top.C${c}_true_hpstate3	= "${tluInstancePath}.tdp.true_hpstate3" iskew -1
+
+connect input tlu_cov_top.C${c}_alt_space_e = "${tluInstancePath}.ifu_lsu_alt_space_e" iskew -1
+connect input tlu_cov_top.C${c}_ld_inst_e = "${tluInstancePath}.ifu_lsu_ld_inst_e" iskew -1
+connect input tlu_cov_top.C${c}_st_inst_e = "${tluInstancePath}.ifu_lsu_st_inst_e" iskew -1
+connect input tlu_cov_top.C${c}_asi_state_e = "${tluInstancePath}.tlu_asi_state_e" iskew -1
+connect input tlu_cov_top.C${c}_ldst_va_e = "${tluInstancePath}.exu_lsu_ldst_va_e" iskew -1
+connect input tlu_cov_top.C${c}_st_rs3_data_g = "${tluInstancePath}.lsu_tlu_st_rs3_data_g" iskew -1
+connect input tlu_cov_top.C${c}_int_asi_state = "${tluInstancePath}.intctl.tlu_int_asi_state" iskew -1
+
+connect input tlu_cov_top.C${c}_sraddr_d = "${tluInstancePath}.ifu_tlu_sraddr_d" iskew -1
+connect input tlu_cov_top.C${c}_rsr_inst_d = "${tluInstancePath}.ifu_tlu_rsr_inst_d" iskew -1
+connect input tlu_cov_top.C${c}_wsr_inst_d = "${sparcInstancePath}.ifu_lsu_wsr_inst_d" iskew -1
+connect input tlu_cov_top.C${c}_wsr_inst_m = "${tluInstancePath}.tcl.wsr_inst_m" iskew -1
+connect input tlu_cov_top.C${c}_wsr_inst_g = "${tluInstancePath}.tcl.wsr_inst_g" iskew -1
+connect input tlu_cov_top.C${c}_wsr_inst_w2 = "${tluInstancePath}.tcl.wsr_inst_w2" iskew -1
+connect input tlu_cov_top.C${c}_wsr_data_m = "${tluInstancePath}.exu_tlu_wsr_data_m" iskew -1
+connect input tlu_cov_top.C${c}_wsr_data_g = "${tluInstancePath}.tlu_wsr_data_w" iskew -1
+connect input tlu_cov_top.C${c}_tl_rw_g = "${tluInstancePath}.tcl.tl_rw_g" iskew -1
+connect input tlu_cov_top.C${c}_gl_rw_g = "${tluInstancePath}.tlu_hyperv.gl_rw_g" iskew -1
+connect input tlu_cov_top.C${c}_set_sftint_m = "${tluInstancePath}.tcl.set_sftint_m" iskew -1
+connect input tlu_cov_top.C${c}_set_sftint_g = "${tluInstancePath}.tcl.set_sftint_g" iskew -1
+connect input tlu_cov_top.C${c}_sftint_rw_m = "${tluInstancePath}.tcl.sftint_rg_rw_m" iskew -1
+connect input tlu_cov_top.C${c}_sftint_rw_g = "${tluInstancePath}.tcl.sftint_rg_rw_g" iskew -1
+connect input tlu_cov_top.C${c}_softint0 = "${tluInstancePath}.tdp.sftint0" iskew -1
+connect input tlu_cov_top.C${c}_softint1 = "${tluInstancePath}.tdp.sftint1" iskew -1
+connect input tlu_cov_top.C${c}_softint2 = "${tluInstancePath}.tdp.sftint2" iskew -1
+connect input tlu_cov_top.C${c}_softint3 = "${tluInstancePath}.tdp.sftint3" iskew -1
+connect input tlu_cov_top.C${c}_softint3 = "${tluInstancePath}.tdp.sftint3" iskew -1
+connect input tlu_cov_top.C${c}_hintp = "${tluInstancePath}.tdp.tlu_hintp" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl0 = "${tluInstancePath}.tlu_gl_lvl0" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl1 = "${tluInstancePath}.tlu_gl_lvl1" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl2 = "${tluInstancePath}.tlu_gl_lvl2" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl3 = "${tluInstancePath}.tlu_gl_lvl3" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl0 = "${tluInstancePath}.tcl.trp_lvl0" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl1 = "${tluInstancePath}.tcl.trp_lvl1" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl2 = "${tluInstancePath}.tcl.trp_lvl2" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl3 = "${tluInstancePath}.tcl.trp_lvl3" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl0_new = "${tluInstancePath}.tlu_hyperv.gl_lvl0_new" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl1_new = "${tluInstancePath}.tlu_hyperv.gl_lvl1_new" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl2_new = "${tluInstancePath}.tlu_hyperv.gl_lvl2_new" iskew -1
+connect input tlu_cov_top.C${c}_gl_lvl3_new = "${tluInstancePath}.tlu_hyperv.gl_lvl3_new" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl0_new = "${tluInstancePath}.tcl.trp_lvl0_new" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl1_new = "${tluInstancePath}.tcl.trp_lvl1_new" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl2_new = "${tluInstancePath}.tcl.trp_lvl2_new" iskew -1
+connect input tlu_cov_top.C${c}_trap_lvl3_new = "${tluInstancePath}.tcl.trp_lvl3_new" iskew -1
+connect input tlu_cov_top.C${c}_tickcmp0 = "${tluInstancePath}.tdp.true_tickcmp0" iskew -1
+connect input tlu_cov_top.C${c}_tickcmp1 = "${tluInstancePath}.tdp.true_tickcmp1" iskew -1
+connect input tlu_cov_top.C${c}_tickcmp2 = "${tluInstancePath}.tdp.true_tickcmp2" iskew -1
+connect input tlu_cov_top.C${c}_tickcmp3 = "${tluInstancePath}.tdp.true_tickcmp3" iskew -1
+connect input tlu_cov_top.C${c}_stickcmp0 = "${tluInstancePath}.tdp.true_stickcmp0" iskew -1
+connect input tlu_cov_top.C${c}_stickcmp1 = "${tluInstancePath}.tdp.true_stickcmp1" iskew -1
+connect input tlu_cov_top.C${c}_stickcmp2 = "${tluInstancePath}.tdp.true_stickcmp2" iskew -1
+connect input tlu_cov_top.C${c}_stickcmp3 = "${tluInstancePath}.tdp.true_stickcmp3" iskew -1
+connect input tlu_cov_top.C${c}_htick_intdis0 = "${tluInstancePath}.tlu_hyperv.htick_intdis0" iskew -1
+connect input tlu_cov_top.C${c}_htick_intdis1 = "${tluInstancePath}.tlu_hyperv.htick_intdis1" iskew -1
+connect input tlu_cov_top.C${c}_htick_intdis2 = "${tluInstancePath}.tlu_hyperv.htick_intdis2" iskew -1
+connect input tlu_cov_top.C${c}_htick_intdis3 = "${tluInstancePath}.tlu_hyperv.htick_intdis3" iskew -1
+connect input tlu_cov_top.C${c}_pil0 = "${tluInstancePath}.tcl.true_pil0" iskew -1
+connect input tlu_cov_top.C${c}_pil1 = "${tluInstancePath}.tcl.true_pil1" iskew -1
+connect input tlu_cov_top.C${c}_pil2 = "${tluInstancePath}.tcl.true_pil2" iskew -1
+connect input tlu_cov_top.C${c}_pil3 = "${tluInstancePath}.tcl.true_pil3" iskew -1
+connect input tlu_cov_top.C${c}_tick_npt0 = "${tluInstancePath}.tcl.tick_npt0" iskew -1
+connect input tlu_cov_top.C${c}_tick_npt1 = "${tluInstancePath}.tcl.tick_npt1" iskew -1
+connect input tlu_cov_top.C${c}_tick_npt2 = "${tluInstancePath}.tcl.tick_npt2" iskew -1
+connect input tlu_cov_top.C${c}_tick_npt3 = "${tluInstancePath}.tcl.tick_npt3" iskew -1
+connect input tlu_cov_top.C${c}_tl0_gt_0 = "${tluInstancePath}.tcl.tl0_gt_0" iskew -1
+connect input tlu_cov_top.C${c}_tl1_gt_0 = "${tluInstancePath}.tcl.tl1_gt_0" iskew -1
+connect input tlu_cov_top.C${c}_tl2_gt_0 = "${tluInstancePath}.tcl.tl2_gt_0" iskew -1
+connect input tlu_cov_top.C${c}_tl3_gt_0 = "${tluInstancePath}.tcl.tl3_gt_0" iskew -1
+connect input tlu_cov_top.C${c}_tl_at_maxstl = "${tluInstancePath}.tcl.trp_lvl_at_maxstl" iskew -1
+connect input tlu_cov_top.C${c}_tl0_at_maxtlless1 = "${tluInstancePath}.tcl.trp_lvl0_at_maxtlless1" iskew -1
+connect input tlu_cov_top.C${c}_tl1_at_maxtlless1 = "${tluInstancePath}.tcl.trp_lvl1_at_maxtlless1" iskew -1
+connect input tlu_cov_top.C${c}_tl2_at_maxtlless1 = "${tluInstancePath}.tcl.trp_lvl2_at_maxtlless1" iskew -1
+connect input tlu_cov_top.C${c}_tl3_at_maxtlless1 = "${tluInstancePath}.tcl.trp_lvl3_at_maxtlless1" iskew -1
+connect input tlu_cov_top.C${c}_tl0_at_maxtl = "${tluInstancePath}.tcl.trp_lvl0_at_maxtl" iskew -1
+connect input tlu_cov_top.C${c}_tl1_at_maxtl = "${tluInstancePath}.tcl.trp_lvl1_at_maxtl" iskew -1
+connect input tlu_cov_top.C${c}_tl2_at_maxtl = "${tluInstancePath}.tcl.trp_lvl2_at_maxtl" iskew -1
+connect input tlu_cov_top.C${c}_tl3_at_maxtl = "${tluInstancePath}.tcl.trp_lvl3_at_maxtl" iskew -1
+
+connect input tlu_cov_top.C${c}_pcr0 = "${tluInstancePath}.tlu_pib.pcr0" iskew -1
+connect input tlu_cov_top.C${c}_pcr1 = "${tluInstancePath}.tlu_pib.pcr1" iskew -1
+connect input tlu_cov_top.C${c}_pcr2 = "${tluInstancePath}.tlu_pib.pcr2" iskew -1
+connect input tlu_cov_top.C${c}_pcr3 = "${tluInstancePath}.tlu_pib.pcr3" iskew -1
+connect input tlu_cov_top.C${c}_inst_vld = "${tluInstancePath}.tlu_pib.tlu_thread_inst_vld_g" iskew -1
+connect input tlu_cov_top.C${c}_curr_priv_st = "${tlumonInstancePath}.curr_priv_st" iskew -1
+connect input tlu_cov_top.C${c}_curr_priv_ut = "${tlumonInstancePath}.curr_priv_ut" iskew -1
+connect input tlu_cov_top.C${c}_pcr_st = "${tlumonInstancePath}.pcr_st" iskew -1
+connect input tlu_cov_top.C${c}_pcr_ut = "${tlumonInstancePath}.pcr_ut" iskew -1
+connect input tlu_cov_top.C${c}_picl_stb_full = "${tlumonInstancePath}.picl_stb_full" iskew -1
+connect input tlu_cov_top.C${c}_picl_fpu_inst = "${tlumonInstancePath}.picl_fpu_inst" iskew -1
+connect input tlu_cov_top.C${c}_picl_ica_miss = "${tlumonInstancePath}.picl_ica_miss" iskew -1
+connect input tlu_cov_top.C${c}_picl_dca_miss = "${tlumonInstancePath}.picl_dca_miss" iskew -1
+connect input tlu_cov_top.C${c}_picl_itlb_mis = "${tlumonInstancePath}.picl_itlb_mis" iskew -1
+connect input tlu_cov_top.C${c}_picl_dtlb_mis = "${tlumonInstancePath}.picl_dtlb_mis" iskew -1
+connect input tlu_cov_top.C${c}_picl_l2_imiss = "${tlumonInstancePath}.picl_l2_imiss" iskew -1
+connect input tlu_cov_top.C${c}_picl_l2_dmiss = "${tlumonInstancePath}.picl_l2_dmiss" iskew -1
+
+connect input tlu_cov_top.C${c}_tick_match = "${tluInstancePath}.tdp.tick_match" iskew -1
+connect input tlu_cov_top.C${c}_stick_match = "${tluInstancePath}.tdp.stick_match" iskew -1
+connect input tlu_cov_top.C${c}_htick_match = "${tluInstancePath}.tdp.tlu_htick_match" iskew -1
+connect input tlu_cov_top.C${c}_tlz_trap_m = "${tluInstancePath}.tcl.tlz_trap_m" iskew -1
+connect input tlu_cov_top.C${c}_tlz_thread = "${tluInstancePath}.tcl.tlz_thread" iskew -1
+connect input tlu_cov_top.C${c}_set_hintp_g = "${tluInstancePath}.tdp.tlu_set_hintp_g" iskew -1
+connect input tlu_cov_top.C${c}_tickcmp_int = "${tluInstancePath}.tdp.tickcmp_int" iskew -1
+connect input tlu_cov_top.C${c}_stickcmp_int = "${tluInstancePath}.tdp.stickcmp_int" iskew -1
+connect input tlu_cov_top.C${c}_pib_wrap_m = "${tluInstancePath}.tcl.pib_wrap_m" iskew -1
+connect input tlu_cov_top.C${c}_pich_wrap = "${tluInstancePath}.pib_pich_wrap" iskew -1
+connect input tlu_cov_top.C${c}_picl_wrap = "${tluInstancePath}.pib_picl_wrap" iskew -1
+connect input tlu_cov_top.C${c}_cpu_mondo_cmp = "${tluInstancePath}.tcl.tlu_cpu_mondo_cmp" iskew -1
+connect input tlu_cov_top.C${c}_dev_mondo_cmp = "${tluInstancePath}.tcl.tlu_dev_mondo_cmp" iskew -1
+connect input tlu_cov_top.C${c}_resum_err_cmp = "${tluInstancePath}.tcl.tlu_resum_err_cmp" iskew -1
+connect input tlu_cov_top.C${c}_sftint_vld = "${tluInstancePath}.tlu_sftint_vld" iskew -1
+connect input tlu_cov_top.C${c}_hintp_vld = "${tluInstancePath}.tlu_hintp_vld" iskew -1
+connect input tlu_cov_top.C${c}_hwint_i3 = "${tluInstancePath}.tlu_ifu_hwint_i3" iskew -1
+connect input tlu_cov_top.C${c}_nukeint_i2 = "${tluInstancePath}.tlu_ifu_nukeint_i2" iskew -1
+connect input tlu_cov_top.C${c}_resumint_i2 = "${tluInstancePath}.tlu_ifu_resumint_i2" iskew -1
+connect input tlu_cov_top.C${c}_rstint_i2 = "${tluInstancePath}.tlu_ifu_rstint_i2" iskew -1
+connect input tlu_cov_top.C${c}_rstthr_i2 = "${tluInstancePath}.tlu_ifu_rstthr_i2" iskew -1
+
+connect input tlu_cov_top.C${c}_t0_inrr = "${tluInstancePath}.intdp.t0_inrr_aw_i2" iskew -1
+connect input tlu_cov_top.C${c}_t1_inrr = "${tluInstancePath}.intdp.t1_inrr_aw_i2" iskew -1
+connect input tlu_cov_top.C${c}_t2_inrr = "${tluInstancePath}.intdp.t2_inrr_aw_i2" iskew -1
+connect input tlu_cov_top.C${c}_t3_inrr = "${tluInstancePath}.intdp.t3_inrr_aw_i2" iskew -1
+connect input tlu_cov_top.C${c}_inc_ind_ld_int = "${tluInstancePath}.intctl.inc_ind_ld_int_i1" iskew -1
+connect input tlu_cov_top.C${c}_ind_inc_thrid = "${tluInstancePath}.intctl.ind_inc_thrid_i1" iskew -1
+connect input tlu_cov_top.C${c}_int_id = "${tluInstancePath}.intdp.int_id_i1" iskew -1
+
+connect input tlu_cov_top.C${c}_done_inst_m = "${tluInstancePath}.tcl.done_inst_m_tmp" iskew -1
+connect input tlu_cov_top.C${c}_retry_inst_m = "${tluInstancePath}.tcl.retry_inst_m_tmp" iskew -1
+connect input tlu_cov_top.C${c}_ifu_ttype_m = "${tluInstancePath}.ifu_tlu_ttype_m" iskew -1
+connect input tlu_cov_top.C${c}_ifu_ttype_vld_m = "${tluInstancePath}.ifu_tlu_ttype_vld_m" iskew -1
+connect input tlu_cov_top.C${c}_priv_violtn_m = "${tluInstancePath}.ifu_tlu_priv_violtn_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_ttype_m = "${tluInstancePath}.exu_tlu_ttype_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_ttype_vld_m = "${tluInstancePath}.exu_tlu_ttype_vld_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_misalign_addr_jmpl_rtn_m = "${tluInstancePath}.exu_tlu_misalign_addr_jmpl_rtn_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_ue_trap_m = "${tluInstancePath}.exu_tlu_ue_trap_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_va_oor_jl_ret_m = "${tluInstancePath}.exu_tlu_va_oor_jl_ret_m" iskew -1
+connect input tlu_cov_top.C${c}_exu_va_oor_m = "${tluInstancePath}.exu_tlu_va_oor_m" iskew -1
+connect input tlu_cov_top.C${c}_lsu_ttype_m2 = "${tluInstancePath}.lsu_tlu_ttype_m2" iskew -1
+connect input tlu_cov_top.C${c}_lsu_ttype_vld_m2 = "${tluInstancePath}.lsu_tlu_ttype_vld_m2" iskew -1
+connect input tlu_cov_top.C${c}_ifu_ttype_vld_g = "${tluInstancePath}.tcl.ifu_ttype_vld_tmp_g" iskew -1
+connect input tlu_cov_top.C${c}_iside_ttype_vld_g = "${tluInstancePath}.tcl.ifu_ttype_vld_g" iskew -1
+connect input tlu_cov_top.C${c}_exu_ttype_vld_g = "${tluInstancePath}.tcl.exu_ttype_vld_g" iskew -1
+connect input tlu_cov_top.C${c}_spu_rsrv_illgl_m = "${tluInstancePath}.spu_tlu_rsrv_illgl_m" iskew -1
+connect input tlu_cov_top.C${c}_lsu_async_ttype_vld_w2 = "${tluInstancePath}.lsu_tlu_async_ttype_vld_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_async_ttype_w2 = "${tluInstancePath}.lsu_tlu_async_ttype_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_async_tid_w2 = "${tluInstancePath}.lsu_tlu_async_tid_g" iskew -1
+connect input tlu_cov_top.C${c}_fp_ill_inst_m = "${tluInstancePath}.ffu_tlu_ill_inst_m" iskew -1
+connect input tlu_cov_top.C${c}_fp_trap_ieee754 = "${tluInstancePath}.ffu_tlu_trap_ieee754" iskew -1
+connect input tlu_cov_top.C${c}_fp_trap_other = "${tluInstancePath}.ffu_tlu_trap_other" iskew -1
+connect input tlu_cov_top.C${c}_fp_trap_ue = "${tluInstancePath}.ffu_tlu_trap_ue" iskew -1
+connect input tlu_cov_top.C${c}_spill_trap = "${tluInstancePath}.exu_tlu_spill" iskew -1
+connect input tlu_cov_top.C${c}_spill_other = "${tluInstancePath}.exu_tlu_spill_other" iskew -1
+connect input tlu_cov_top.C${c}_cwp_cmplt = "${tluInstancePath}.exu_tlu_cwp_cmplt" iskew -1
+connect input tlu_cov_top.C${c}_cwp_cmplt_tid = "${tluInstancePath}.exu_tlu_cwp_cmplt_tid" iskew -1
+connect input tlu_cov_top.C${c}_trap_taken_g = "${tluInstancePath}.tcl.trap_taken_g" iskew -1
+connect input tlu_cov_top.C${c}_trap_taken_w2 = "${tluInstancePath}.tcl.trap_taken_w2" iskew -1
+connect input tlu_cov_top.C${c}_priv_traps_w2 = "${tluInstancePath}.tcl.tlu_priv_traps_w2" iskew -1
+connect input tlu_cov_top.C${c}_dnrtry_g = "${tluInstancePath}.tcl.dnrtry_inst_g" iskew -1
+connect input tlu_cov_top.C${c}_dnrtry_w2 = "${tluInstancePath}.tcl.dnrtry_inst_w2" iskew -1
+connect input tlu_cov_top.C${c}_restore_pc_sel_w1 = "${tluInstancePath}.tcl.restore_pc_sel_w1" iskew -1
+connect input tlu_cov_top.C${c}_cwp_fastcmplt_g = "${tluInstancePath}.tcl.cwp_fastcmplt_g" iskew -1
+connect input tlu_cov_top.C${c}_cwp_fastcmplt_m = "${sparcInstancePath}.exu.rml.cwp.cwp_fastcmplt_m" iskew -1
+connect input tlu_cov_top.C${c}_hwint_m = "${tluInstancePath}.ifu_tlu_hwint_m" iskew -1
+connect input tlu_cov_top.C${c}_swint_m = "${tluInstancePath}.ifu_tlu_swint_m" iskew -1
+connect input tlu_cov_top.C${c}_rstint_m = "${tluInstancePath}.ifu_tlu_rstint_m" iskew -1
+connect input tlu_cov_top.C${c}_sir_inst_m = "${tluInstancePath}.ifu_tlu_sir_inst_m" iskew -1
+connect input tlu_cov_top.C${c}_hyper_wdr_trap_w2 = "${tluInstancePath}.tcl.hyper_wdr_trap_w2" iskew -1
+connect input tlu_cov_top.C${c}_internal_wdr_g = "${tluInstancePath}.tcl.internal_wdr" iskew -1
+connect input tlu_cov_top.C${c}_sir_rst_g = "${tluInstancePath}.tcl.sir_inst_g" iskew -1
+//connect input tlu_cov_top.C${c}_reset_sel_g = "${tluInstancePath}.tcl.reset_defr_sel" iskew -1
+//connect input tlu_cov_top.C${c}_reset_id_g = "${tluInstancePath}.tcl.reset_defr_id_g" iskew -1
+connect input tlu_cov_top.C${c}_reset_sel_g = "${tluInstancePath}.tcl.reset_sel_g" iskew -1
+connect input tlu_cov_top.C${c}_reset_id_g = "${tluInstancePath}.tcl.reset_id_g" iskew -1
+connect input tlu_cov_top.C${c}_tick_priv_act_g = "${tluInstancePath}.tcl.tick_npt_priv_act_g" iskew -1
+connect input tlu_cov_top.C${c}_pib_priv_act_g = "${tluInstancePath}.tcl.pib_priv_act_trap_g" iskew -1
+connect input tlu_cov_top.C${c}_htrap_ill_inst_g = "${tluInstancePath}.tcl.htrap_ill_inst_g" iskew -1
+connect input tlu_cov_top.C${c}_local_dside_trap_g = "${tluInstancePath}.tcl.early_dside_trap_g" iskew -1
+connect input tlu_cov_top.C${c}_sync_trap_m = "${tluInstancePath}.tcl.sync_trap_taken_m" iskew -1
+connect input tlu_cov_top.C${c}_sync_trap_g = "${tluInstancePath}.tcl.sync_trap_taken_g" iskew -1
+connect input tlu_cov_top.C${c}_trappc_vld_w1 = "${tluInstancePath}.tcl.tlu_ifu_trappc_vld_w1" iskew -1
+connect input tlu_cov_top.C${c}_trap_pc_w1 = "${tluInstancePath}.misctl.trap_pc_w1" iskew -1
+connect input tlu_cov_top.C${c}_trap_pc_w2 = "${tluInstancePath}.misctl.trap_pc_w2" iskew -1
+connect input tlu_cov_top.C${c}_trap_tid_g = "${tluInstancePath}.tcl.true_trap_tid_g" iskew -1
+connect input tlu_cov_top.C${c}_trap_tid_w1 = "${tluInstancePath}.tcl.tlu_ifu_trap_tid_w1" iskew -1
+connect input tlu_cov_top.C${c}_fp_trap_tid = "${tluInstancePath}.tcl.ffu_ifu_tid_w2" iskew -1
+connect input tlu_cov_top.C${c}_spill_trap_tid = "${tluInstancePath}.tcl.exu_tlu_spill_tid" iskew -1
+
+connect input tlu_cov_top.C${c}_lsu_misalign_ldst_atm_m	 = "${tluInstancePath}.lsu_tlu_misalign_addr_ldst_atm_m" iskew -1
+connect input tlu_cov_top.C${c}_lsu_squash_va_oor_m	 = "${tluInstancePath}.lsu_tlu_squash_va_oor_m" iskew -1
+connect input tlu_cov_top.C${c}_lsu_priv_action_g	 = "${tluInstancePath}.lsu_tlu_priv_action_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_daccess_excptn_g	 = "${tluInstancePath}.lsu_tlu_daccess_excptn_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_daccess_prot_g	 = "${tluInstancePath}.lsu_tlu_daccess_prot_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_wtchpt_trp_g	 = "${tluInstancePath}.lsu_tlu_wtchpt_trp_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_defr_trp_taken_g	 = "${tluInstancePath}.lsu_tlu_defr_trp_taken_g" iskew -1
+connect input tlu_cov_top.C${c}_lsu_early_flush2_w	 = "${tluInstancePath}.lsu_tlu_early_flush2_w" iskew -1
+connect input tlu_cov_top.C${c}_lsu_early_flush_w	 = "${tluInstancePath}.lsu_tlu_early_flush_w" iskew -1
+connect input tlu_cov_top.C${c}_ifu_tlu_flush_fd_w	 = "${tluInstancePath}.ifu_tlu_flush_fd_w" iskew -1
+connect input tlu_cov_top.C${c}_ifu_tlu_flush_m	 = "${tluInstancePath}.ifu_tlu_flush_m" iskew -1
+
+
+
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $tluInst = $TLU_COV_PATHS[$core];
+. 	my $sparcInst = $SPARC_COV_PATHS[$core];
+. 	my $tlumonInst = $TLU_MON_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $tluInst, $core, $sparcInst, $tlumonInst);
+. }
+
+`endif // ifdef GATE_SIM

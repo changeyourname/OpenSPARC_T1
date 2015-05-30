@@ -1,0 +1,23 @@
+## Copyright (c) 2008 BEEcube, Inc.  All rights reserved.
+## You may copy and modify these files for your own internal use solely with
+## BEEcube hardware systems using Xilinx programmable logic devices and the
+## Xilinx EDK system.  No rights are granted to redistribute these files
+## without the explicit permission of BEEcube.
+
+## Name:        bee3_mpmc
+## Description: BEE3-enhanced Xilinx multi-port memory controller
+## Version:     1.00.a
+## Author:      Kevin Camera
+## Date:        08/15/2008
+
+OPTION psf_version = 2.1;
+
+BEGIN driver bee3_mpmc
+
+  OPTION supported_peripherals = (bee3_mpmc_v1_[0-9][0-9]_[a-z]);
+  OPTION driver_state = ACTIVE;
+  OPTION depends = (common_v1_00_a);
+  OPTION copyfiles = all;
+
+END driver
+

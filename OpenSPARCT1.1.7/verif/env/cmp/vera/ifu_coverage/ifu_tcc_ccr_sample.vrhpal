@@ -1,0 +1,69 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_tcc_ccr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_tcc_ccr_cov.vr
+// Description:
+// This coverage object monitors that all ccr values have been existant
+// with all branch types and trap type instructions. This is not done
+// on a per thread basis. The diag will exercise all 4 threads
+//
+// 22'b: opcode(8),cond(4),xcc_or_icc(2),xcc(4),icc(4)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_TCC_CCR_COV (bit [21:0] cov_vector)
+// {
+
+. @ccrs = ("00","10");
+. %tcc_insts = ("ta" 	=> 	"1000",
+.          "tn" 	=> 	"0000",
+.          "tne" 	=> 	"1001",
+.          "te" 	=>	"0001",
+.	   "tg" 	=>	"1010",
+.	   "tle"	=>	"0010",
+.	   "tge"	=> 	"1011",
+.	   "tl"		=>	"0011",
+.	   "tgu"	=> 	"1100",
+.	   "tleu"	=>	"0100",
+.	   "tcc" 	=>	"1101",
+.	   "tcs" 	=> 	"0101",
+.	   "tpos"	=>	"1110",
+.	   "tneg"	=>	"0110",
+.	   "tvc"	=>	"1111",
+.	   "tvs"	=>	"0111",
+.         );
+.   foreach $tcc_inst (keys %tcc_insts) {
+.     $j = 0;
+.     foreach $ccr (@ccrs) {
+.       for ($i = 0; $i < 16; $i++) {
+.	  if ($j == 0) {
+.           printf "	wildcard state s_%s_icc_$i \(22\'b10111010_%s_%s_xxxx_%04b\);\n", $tcc_inst,$tcc_insts{$tcc_inst}, $ccr, $i;
+.         } else {
+.           printf "	wildcard state s\_%s_xcc_$i \(22\'b10111010_%s_%s_%04b_xxxx\);\n", $tcc_inst,$tcc_insts{$tcc_inst},$ccr, $i;
+.         }
+.       }
+.     $j++;
+.     }
+.   }
+   
+// }

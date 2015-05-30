@@ -1,0 +1,76 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.iop_top
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+iop.v
+../analog/bw_temp_diode/rtl/bw_temp_diode.v
+../cmp/rtl/jbi_l2_buf2.v
+../cmp/rtl/dram_l2_buf2.v
+../cmp/rtl/dram_ddr_rptr.v
+../cmp/rtl/dram_ddr_pad_rptr.v
+../cmp/rtl/dram0_ddr0_rptr.v
+../cmp/rtl/dram1_ddr1_rptr.v
+../cmp/rtl/dram2_ddr2_rptr.v
+../cmp/rtl/dram3_ddr3_rptr.v
+../cmp/rtl/dram_ddr_rptr_south.v
+../cmp/rtl/dram_ddr_pad_rptr_south.v
+../cmp/rtl/ccx_spc_rpt.v
+../sparc/rtl/spc_pcx_buf.v
+../cmp/rtl/ff_jbi_sc0_1.v
+../cmp/rtl/ff_jbi_sc1_1.v
+../cmp/rtl/ff_jbi_sc2_1.v
+../cmp/rtl/ff_jbi_sc3_1.v
+../cmp/rtl/ff_jbi_sc0_2.v
+../cmp/rtl/ff_jbi_sc1_2.v
+../cmp/rtl/ff_jbi_sc2_2.v
+../cmp/rtl/ff_jbi_sc3_2.v
+../cmp/rtl/rep_jbi_sc0_2.v
+../cmp/rtl/rep_jbi_sc1_2.v
+../cmp/rtl/rep_jbi_sc2_2.v
+../cmp/rtl/rep_jbi_sc3_2.v
+../cmp/rtl/ff_dram_sc_bank0.v
+../cmp/rtl/ff_dram_sc_bank1.v
+../cmp/rtl/ff_dram_sc_bank2.v
+../cmp/rtl/ff_dram_sc_bank3.v
+../cmp/rtl/sctag_scbuf_rptr0.v
+../cmp/rtl/sctag_scbuf_rptr1.v
+../cmp/rtl/sctag_scbuf_rptr2.v
+../cmp/rtl/sctag_scbuf_rptr3.v
+../cmp/rtl/ctu_bottom_rptr2.v
+../cmp/rtl/ctu_top_rptr2.v
+../cmp/rtl/sc_0_1_dbg_rptr.v
+../cmp/rtl/sc_2_3_dbg_rptr.v
+../cmp/rtl/ctu_top_rptr.v
+../cmp/rtl/ctu_bottom_rptr.v
+../cmp/rtl/dram_sc_0_rep2.v
+../cmp/rtl/dram_sc_1_rep2.v
+../cmp/rtl/dram_sc_2_rep2.v
+../cmp/rtl/dram_sc_3_rep2.v
+../cmp/rtl/sctag_pcx_rptr_0.v
+../cmp/rtl/sctag_pcx_rptr_1.v
+../cmp/rtl/sctag_pcx_rptr_2.v
+../cmp/rtl/sctag_pcx_rptr_3.v
+../cmp/rtl/sctag_cpx_rptr_0.v
+../cmp/rtl/sctag_cpx_rptr_1.v
+../cmp/rtl/sctag_cpx_rptr_2.v
+../cmp/rtl/sctag_cpx_rptr_3.v
+../cmp/rtl/ccx_iob_rptr.v
+../cmp/rtl/iob_ccx_rptr.v
+../cmp/rtl/iob_jbi_rptr_0.v
+../cmp/rtl/iob_jbi_rptr_1.v

@@ -1,0 +1,819 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: core1_full.list
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+#ASI_INST_MASK_REG-test_0		#  2 section names at same address
+ASI_LSU_CTRL_MMUs_enable_disable_test
+ASI_LSU_DIAG_ASI42_VA10_test_0
+ASI_LSU_DIAG_ASI42_VA10_test_1
+ASI_LSU_DIAG_ASI42_VA10_test_2
+ASI_LSU_DIAG_ASI42_VA10_test_3
+ASI_STM_CTRL_REG
+Asi_notused
+BPcc_trap
+BPccall_trap
+BPr_trap
+DCIC_BISI_test
+DC_ASI-46-47_test_0
+DC_ASI-46-47_test_1
+DC_ASI-46-47_test_2
+DC_ASI-46-47_test_3
+D_cache_ASI_ctrl_test_0
+D_cache_ASI_ctrl_test_1
+D_cache_ASI_ctrl_test_2
+D_cache_ASI_ctrl_test_3
+#IOB_intr				# Needs interrupt events from env
+#IO_AddrSpc_known_addr_test		# Access to unsupported I/O Space
+I_cache_ASI_ctrl_test_0
+I_cache_ASI_ctrl_test_1
+I_cache_ASI_ctrl_test_2
+I_cache_ASI_ctrl_test_3
+L1_BIST_ASI_test
+#L2_CTRL_REG_DMM_test			# Access to unsupported L2 ctrl reg
+#L2_Data_Array_diag_access_test_4T	# Access to unsupported L2 ctrl reg
+#L2_Tag_Array_diag_access_test_4T	# Access to unsupported L2 ctrl_reg
+#L2_VUAD_diag_accesses_test		# Access to unsupported L2 ctrl_reg
+#L2_VUAD_diag_accesses_test_4T		# Access to unsupported L2 ctrl_reg
+MOVRall_trap
+MOVccall_trap
+Msl_regs_1_walk
+Tcc_trap
+add_corner
+add_imm_corner
+and_imm_corner
+andn_imm_corner
+asi_err_inject_reg
+asi_sparc_err_reg
+blkldst_loop
+braindead
+bug2356_0
+bug2356_1
+bug2415_0
+bug2415_1
+bug2416_0
+bug2416_1
+bug2416_2
+bug2416_3
+bug2416_4
+bug2416_5
+bug2417_0
+bug2417_1
+bug2426_0
+bug2426_1
+bug2433_0
+bug2433_1
+bug2434_0
+bug2434_1
+bug2445_0
+bug2445_1
+bug2543_0
+bug2543_1
+bug2568_0
+bug2568_1
+bug2868
+bug2880
+bug2883
+bug2943
+bug2948
+bug3070
+bug3071
+bug3138
+bug3144
+bug3144_0
+bug3155
+bug3212
+bug3273
+#bug3289				# Illegal address 0x0000000100
+bug3321
+bug3572
+bug3576
+bug3596
+bug3766
+bypass1pal
+bypass1pal_a
+bypass1pal_b
+bypass1pal_c
+bypass2pal
+bypass3pal
+bypass_win
+call_o7
+can_save_restore
+change_globals
+chase_dram
+chase_dtlb
+chase_l1hit
+chase_l2hit
+cons_save_restore
+cons_saved_restored
+cti_cc
+cwp_globals
+dcache_falseraw
+dcache_partialraw
+dcache_realraw
+dcache_war
+dcti_couple
+dexec_nf
+div_corner
+div_imm_corner
+divx_corner
+divx_imm_corner
+dly_slot
+dmiss_imiss
+#dmmu_dexec_trap			# Illegal address 0x1000250000
+dmmu_dmp_mix
+done_retry_trap
+dtlb_err_membar_sync
+dtlb_err_on_alu_1
+dtlb_err_on_alu_2
+dtlb_err_on_sir
+dtlb_err_pic_ovfl_test
+dtlb_repl_mix
+#dtlb_spu_ma_mem_perr			# thread 0 never finishes  SPU diag
+dtsb_directptr
+endian_asi
+endian_cle
+endian_page
+endian_tle
+#err_dcache_data_asi_cecc		# Illegal address 0x0000000020
+#err_dcache_data_atom_cecc		# Illegal address 0x1130018800
+#err_dcache_data_cecc			# Illegal address 0x1130018800
+#err_dcache_tag_cecc			# Illegal address 0x1130012800
+#err_dtlb_data_atom_dacc		# Illegal address 0x1130010008
+#err_dtlb_data_dacc			# Illegal address 0x1130010008
+#err_dtlb_data_dacc_lock		# Illegal address 0x1130012008
+err_dtlb_data_lda_dacc
+#err_dtlb_data_st_dacc			# Illegal address 0x1130010008
+err_dtlb_tag_lda_dacc
+err_frf_cecc_cecc
+err_frf_uecc_dacc
+#err_icache_data_cecc			# Illegal address 0x11300045E0
+#err_icache_tag_cecc			# Illegal address 0x11300065C0
+err_irf_cecc_cecc
+err_irf_uecc_dacc
+err_itlb_data_iacc
+err_itlb_data_iacc_lock
+err_itlb_data_lda_dacc
+err_itlb_tag_lda_dacc
+#err_l2cache_data_asld_cecc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_asld_cecc11		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_asld_dacc00		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_asld_dacc01		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_asld_dacc10		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_asld_dacc11		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_atom_cecc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_atom_dacc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_inst_cecc		# Illegal address 0x02115900C0
+#err_l2cache_data_inst_iacc		# Illegal address 0x0211590080
+#err_l2cache_data_ld_cecc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_ld_dacc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_qbld_cecc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_qbld_dacc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_st_cecc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_data_st_dacc		# Access to unsupported L2 Ctrl Reg
+#err_l2cache_tag_ld_cecc		# Illegal address 0x0217570000
+#err_mamem_data				# Accesses SPU
+#err_mamem_data00			# Accesses SPU
+#err_mamem_data10			# Accesses SPU
+#err_mamem_data11			# Accesses SPU
+#err_multierr_diag1			# Illegal address 0x13500145E0
+#err_multierr_diag10			# Access to unsupported L2 Ctrl Reg
+#err_multierr_diag11			# Access to unsupported L2 Ctrl Reg
+#err_multierr_diag2			# Access to unsupported L2 Ctrl Reg
+#err_multierr_diag3			# Illegal address 0x1350014800
+err_multierr_diag6
+err_multierr_diag7
+#err_multierr_diag8			# Access to unsupported L2 Ctrl Reg
+#err_multierr_diag9			# Access to unsupported L2 Ctrl Reg
+exclusive_globals
+exu_add
+exu_alu
+exu_byp_rcc_mulhit_1
+exu_byp_rs1_mulhit_1
+exu_irf_global
+exu_irf_global_traps
+exu_logical
+exu_move
+exu_muldiv
+exu_muldiv_stress
+exu_muldiv_stress_1
+exu_shift
+exu_sub
+exu_win_traps
+exu_win_traps_2
+faddd_diff_sm_near
+faddd_diff_sm_ninf
+faddd_diff_sm_pinf
+faddd_diff_sm_zero
+faddd_ieee_near1
+faddd_ieee_near2
+faddd_ieee_ninf1
+faddd_ieee_ninf2
+faddd_ieee_pinf1
+faddd_ieee_pinf2
+faddd_ieee_zero1
+faddd_ieee_zero2
+faddd_rnd_near
+faddd_rnd_ninf
+faddd_rnd_pinf
+faddd_rnd_zero
+fadds_diff_sm_near
+fadds_diff_sm_ninf
+fadds_diff_sm_pinf
+fadds_diff_sm_zero
+fadds_ieee_near1
+fadds_ieee_near2
+fadds_ieee_ninf1
+fadds_ieee_ninf2
+fadds_ieee_pinf1
+fadds_ieee_pinf2
+fadds_ieee_zero1
+fadds_ieee_zero2
+fadds_rnd_near
+fadds_rnd_ninf
+fadds_rnd_pinf
+fadds_rnd_zero
+#fcmpd_rnd_near				# Bad Trap: FP Test
+#fcmpd_rnd_ninf				# Bad Trap: FP Test
+#fcmpd_rnd_pinf				# Bad Trap: FP Test
+#fcmpd_rnd_zero				# Bad Trap: FP Test
+#fcmped_rnd_near			# Bad Trap: FP Test
+#fcmped_rnd_ninf			# Bad Trap: FP Test
+#fcmped_rnd_pinf			# Bad Trap: FP Test
+#fcmped_rnd_zero			# Bad Trap: FP Test
+#fcmpes_rnd_near			# Bad Trap: FP Test
+#fcmpes_rnd_ninf			# Bad Trap: FP Test
+#fcmpes_rnd_pinf			# Bad Trap: FP Test
+#fcmpes_rnd_zero			# Bad Trap: FP Test
+#fcmps_rnd_near				# Bad Trap: FP Test
+#fcmps_rnd_ninf				# Bad Trap: FP Test
+#fcmps_rnd_pinf				# Bad Trap: FP Test
+#fcmps_rnd_zero				# Bad Trap: FP Test
+fdivd_ieee_near1
+fdivd_ieee_near2
+fdivd_ieee_ninf1
+fdivd_ieee_ninf2
+fdivd_ieee_pinf1
+fdivd_ieee_pinf2
+fdivd_ieee_zero1
+fdivd_ieee_zero2
+fdivd_rnd_near
+fdivd_rnd_ninf
+fdivd_rnd_pinf
+fdivd_rnd_zero
+fdivs_ieee_near1
+fdivs_ieee_near2
+fdivs_ieee_ninf1
+fdivs_ieee_ninf2
+fdivs_ieee_pinf1
+fdivs_ieee_pinf2
+fdivs_ieee_zero1
+fdivs_ieee_zero2
+fdivs_rnd_near
+fdivs_rnd_ninf
+fdivs_rnd_pinf
+fdivs_rnd_zero
+fdtoi_ld0_near
+fdtoi_ld0_ninf
+fdtoi_ld0_pinf
+fdtoi_ld0_zero
+#fdtoi_rnd_near				# Bad Trap: FP test
+#fdtoi_rnd_ninf				# Bad Trap: FP test
+#fdtoi_rnd_pinf				# Bad Trap: FP test
+#fdtoi_rnd_zero				# Bad Trap: FP test
+fdtos_rnd_near
+fdtos_rnd_ninf
+fdtos_rnd_pinf
+fdtos_rnd_zero
+#fdtox_ld0_near				# Bad Trap: FP test
+#fdtox_ld0_ninf				# Bad Trap: FP test
+#fdtox_ld0_pinf				# Bad Trap: FP test
+#fdtox_ld0_zero				# Bad Trap: FP test
+fdtox_rnd_near
+fdtox_rnd_ninf
+fdtox_rnd_pinf
+fdtox_rnd_zero
+ffu_faligndata
+ffu_fpaddsub
+ffu_fplogic
+fitod_ld0_near
+fitod_ld0_ninf
+fitod_ld0_pinf
+fitod_ld0_zero
+fitod_rnd_near
+fitod_rnd_ninf
+fitod_rnd_pinf
+fitod_rnd_zero
+fitos_ld0_near
+fitos_ld0_ninf
+fitos_ld0_pinf
+fitos_ld0_zero
+fitos_rnd_near
+fitos_rnd_ninf
+fitos_rnd_pinf
+fitos_rnd_zero
+flush_pipe
+flushw_loop
+fmuld_ieee_near1
+fmuld_ieee_near2
+fmuld_ieee_near3
+fmuld_ieee_ninf1
+fmuld_ieee_ninf2
+fmuld_ieee_ninf3
+fmuld_ieee_pinf1
+fmuld_ieee_pinf2
+fmuld_ieee_pinf3
+fmuld_ieee_zero1
+fmuld_ieee_zero2
+fmuld_ieee_zero3
+fmuld_msb_near
+fmuld_msb_ninf
+fmuld_msb_pinf
+fmuld_msb_zero
+fmuld_rnd_near
+fmuld_rnd_ninf
+fmuld_rnd_pinf
+fmuld_rnd_zero
+fmuls_ieee_near1
+fmuls_ieee_near2
+fmuls_ieee_near3
+fmuls_ieee_ninf1
+fmuls_ieee_ninf2
+fmuls_ieee_ninf3
+fmuls_ieee_pinf1
+fmuls_ieee_pinf2
+fmuls_ieee_pinf3
+fmuls_ieee_zero1
+fmuls_ieee_zero2
+fmuls_ieee_zero3
+fmuls_msb_near
+fmuls_msb_ninf
+fmuls_msb_pinf
+fmuls_msb_zero
+fmuls_rnd_near
+fmuls_rnd_ninf
+fmuls_rnd_pinf
+fmuls_rnd_zero
+fp_addsub0_a
+fp_addsub0_b
+fp_arth_exc0
+fp_brfccn0
+fp_bug1623
+fp_bug1624
+fp_cmp0_a
+fp_cmp0_b
+fp_cmp1
+fp_cmp2
+fp_cmp3
+fp_cmp4
+fp_cmpmov0
+fp_fadd_align_save
+fp_fadd_mul_sticky_save
+fp_fadd_norm_save
+fp_fccfbr0
+fp_fprs0
+fp_fprs_fpdis
+fp_fsr0
+fp_fxtox0
+fp_ieee_flags
+fp_ld_trap
+fp_ldst_gen1
+fp_mov0
+fp_movixcc0
+fp_movixcc1
+fp_movixcc2
+fp_movr0
+#fp_mt_combo0				# Bad Trap: FP test
+fp_mt_combo1
+fp_muldiv0_a
+fp_pstate_fpdis
+fp_simple_all0
+fp_simple_all1
+fp_st_trap
+fpop1_reserved
+fpop1_reserved_dis
+fpop2_reserved
+fsmuld_msb_near
+fsmuld_msb_ninf
+fsmuld_msb_pinf
+fsmuld_msb_zero
+#fsmuld_rnd_near 			# Bad Trap: FP test
+#fsmuld_rnd_ninf 			# Bad Trap: FP test
+#fsmuld_rnd_pinf 			# Bad Trap: FP test
+#fsmuld_rnd_zero 			# Bad Trap: FP test
+fstod_rnd_near
+fstod_rnd_ninf
+fstod_rnd_pinf
+fstod_rnd_zero
+fstoi_ld0_near
+fstoi_ld0_ninf
+fstoi_ld0_pinf
+fstoi_ld0_zero
+#fstoi_rnd_near				# Bad Trap: FP test
+#fstoi_rnd_ninf				# Bad Trap: FP test
+#fstoi_rnd_pinf				# Bad Trap: FP test
+#fstoi_rnd_zero				# Bad Trap: FP test
+fstox_ld0_near
+fstox_ld0_ninf
+fstox_ld0_pinf
+fstox_ld0_zero
+#fstox_rnd_near				# Bad Trap: FP test
+#fstox_rnd_ninf				# Bad Trap: FP test
+#fstox_rnd_pinf				# Bad Trap: FP test
+#fstox_rnd_zero				# Bad Trap: FP test
+fsubd_diff_sm_near
+fsubd_diff_sm_ninf
+fsubd_diff_sm_pinf
+fsubd_diff_sm_zero
+fsubd_ieee_near1
+fsubd_ieee_near2
+fsubd_ieee_ninf1
+fsubd_ieee_ninf2
+fsubd_ieee_pinf1
+fsubd_ieee_pinf2
+fsubd_ieee_zero1
+fsubd_ieee_zero2
+fsubd_rnd_near
+fsubd_rnd_ninf
+fsubd_rnd_pinf
+fsubd_rnd_zero
+fsubs_diff_sm_near
+fsubs_diff_sm_ninf
+fsubs_diff_sm_pinf
+fsubs_diff_sm_zero
+fsubs_ieee_near1
+fsubs_ieee_near2
+fsubs_ieee_ninf1
+fsubs_ieee_ninf2
+fsubs_ieee_pinf1
+fsubs_ieee_pinf2
+fsubs_ieee_zero1
+fsubs_ieee_zero2
+fsubs_rnd_near
+fsubs_rnd_ninf
+fsubs_rnd_pinf
+fsubs_rnd_zero
+fxtod_ld0_near
+fxtod_ld0_ninf
+fxtod_ld0_pinf
+fxtod_ld0_zero
+fxtod_rnd_near
+fxtod_rnd_ninf
+fxtod_rnd_pinf
+fxtod_rnd_zero
+fxtos_ld0_near
+fxtos_ld0_ninf
+fxtos_ld0_pinf
+fxtos_ld0_zero
+fxtos_rnd_near
+fxtos_rnd_ninf
+fxtos_rnd_pinf
+fxtos_rnd_zero
+#halt_at_dtlb_dpa_err_on_st		# Needs interrupt events from env
+hintp_on_halted_thrd
+hp_asi
+hp_dmmu_dmp
+hp_dmmu_nzctx_ptr
+hp_dmmu_nzctx_ptr_ext
+hp_dmmu_ptr
+hp_dmmu_realpgdmp
+hp_dmmu_zctx_ptr
+hp_dmmu_zctx_ptr_ext
+hp_hsp
+hp_immu_dmp
+hp_immu_nzctx_ptr
+hp_immu_nzctx_ptr_ext
+hp_immu_realpgdmp
+hp_immu_zctx_ptr
+hp_immu_zctx_ptr_ext
+hp_intr_asi
+hp_rdwrhpr
+hp_reg_rdwr
+hp_tlz
+hp_tlz_real
+hp_trap
+icache_modes
+ifetch_traps
+ihit_sameset
+illtrap
+imiss_branches
+imiss_oddeven
+imiss_sameset
+immu_demap_mix
+int_ops
+#interthread_intr			# Stalls:  Waiting for external intr
+intr_basic1
+intr_basic2
+inv_cache
+iointr_rdg11_18_00_10
+irf_err_pic_ovfl_test
+isets
+itlb_repl_basic
+#itlb_repl_mix				# Stalls:  Probably due to smaller TLB
+jmpl_trap
+l2_access
+l2_buf
+ldst_endiansign
+ldst_quad
+ldst_quad2
+ldst_rand1
+ldst_raw
+logical_corner
+lsu_64kpg_mtest
+lsu_align_dcacheoff
+lsu_align_rand
+lsu_atomic
+lsu_diagasi
+lsu_endian_rand
+lsu_endian_rand1
+lsu_ldx
+lsu_mbar
+lsu_miss
+#lsu_noncache				# Illegal address 0x0000200000
+lsu_stb_rand
+lsu_stbar
+mmu_invldAll
+#mmu_red 				# Stalls: Probably due to smaller TLB
+mmu_trap
+move_cc
+mpids_cmp
+mt_alu_ldx
+mt_cache1
+mt_cle
+mt_dcache_falseraw
+mt_dfault_specload
+mt_dhit_sameset
+mt_dhit_specload
+mt_dmiss_sameset
+mt_dmiss_specload
+mt_dsameline
+mt_icache
+mt_ifill_l2
+mt_ihit_sameset
+mt_imiss_sameset
+mt_isameline
+mt_l1cache4
+mt_ldst1
+mt_mmumix1
+mt_muldivldx
+mt_raw
+mt_wrrdcwp
+mt_wrrdcwp_loop
+mtblkldst_loop
+mul_corner
+mul_imm_corner
+muldivldx
+#mulerr_frfce_dtlb_data_ld		# Illegal address 0x1130010008
+#mulerr_frfce_dtlb_data_st		# Illegal address 0x1130010008
+mulerr_frfce_dtlb_tag_lda
+mulerr_frfce_frfue
+mulerr_frfce_irfue
+mulerr_frfce_itlb_data
+mulerr_frfce_itlb_tag
+#mulerr_frfce_mamue			# Timeout: Test Requires SPU
+#mulerr_irfue_dcache_data_ce		# Illegal address 0x1130012000
+#mulerr_irfue_dcache_tag_ce		# Illegal address 0x1130012000
+#mulerr_irfue_dtlb_data_ld		# Illegal address 0x1130010008
+#mulerr_irfue_dtlb_data_st		# Illegal address 0x1130010008
+mulerr_irfue_dtlb_tag_lda
+#mulerr_irfue_dtlbue_irfce		# Illegal address 0x1130010008
+mulerr_irfue_frfce
+mulerr_irfue_frfue
+#mulerr_irfue_icache_data_ce		# Illegal address 0x11300065C0
+#mulerr_irfue_icache_tag_ce		# Illegal address 0x11300065C0
+mulerr_irfue_irfce
+mulerr_irfue_irfue
+mulerr_irfue_itlb_data
+mulerr_irfue_itlb_tag
+#mulerr_irfue_mamue			# Timeout:  Test Requires SPU
+mulscc_corner
+mulscc_imm_corner
+mulx_corner
+mulx_imm_corner
+nfo_bit
+nfo_bit1
+nop
+or_imm_corner
+popc_trap
+priv_rs1
+privileged_registers
+#real_non_real_pages			# Illegal address 0x1B25000000
+#real_non_real_pgs_2t			# Illegal address 0x1B25000000
+#real_red_mode				# Illegal address 0x1B25000000
+saved_restored_trap
+self_mod1
+shift_corner
+shift_imm_corner
+simple_br
+simul_faults
+#spu_ma_intr				# Test requires SPU
+#spu_maexp				# Test requires SPU
+#spu_maexp_mul				# Test requires SPU
+#spu_mamem				# Test requires SPU
+#spu_mamul				# Test requires SPU
+#spu_mared				# Test requires SPU
+#spu_matest				# Test requires SPU
+#spu_rdg09_15_19_33			# Test requires SPU
+sub_corner
+sub_imm_corner
+#sus_res_10				# Needs interrupt events from env
+#sus_res_11				# Needs interrupt events from env
+#sus_res_12				# Needs interrupt events from env
+sus_res_20
+sus_res_21
+sus_res_22
+sus_res_23
+tadd_corner
+tadd_imm_corner
+th1_lsu_ldx
+th_sync
+th_sync_moredelay
+#tick_access				# Bad Trap:  System too slow. Tick value
+tlb_dmp0
+tlb_dmp1
+tlb_dmp2
+tlb_full
+tlb_repl_exception
+tlb_rw0
+tlb_rw1
+tlb_rw2
+tlb_rw3
+tlu_asiacc_trap_1
+tlu_asracc_trap_1
+tlu_cmpr_intdis_1
+#tlu_gl_lvl_1				# Stalls:  unknown  (Reaches GOOD trap)
+tlu_hintp_update_1
+#tlu_intrp_trap_1			# Requires external events
+#tlu_intrp_trap_2			# Requires external events
+#tlu_intrp_trap_3			# Requires external events
+tlu_lsu_defr_at_done_inst
+tlu_lsu_defr_at_retry_inst
+#tlu_lsu_tt_00				# Illegal address 0x0000004000
+tlu_mtb2b_tsasr_00
+tlu_multi_intl_00
+tlu_multi_intl_01
+tlu_multi_intl_02
+tlu_multi_intl_03
+tlu_multi_intl_04
+tlu_multi_intl_05
+tlu_multi_intl_06
+tlu_multi_intl_10
+tlu_multi_intl_11
+tlu_multi_intl_12
+tlu_multi_intl_13
+tlu_multi_intl_14
+tlu_multi_intl_15
+tlu_multi_intl_16
+tlu_multi_intl_20
+tlu_multi_intl_21
+tlu_multi_intl_22
+tlu_multi_intl_23
+tlu_multi_intl_31
+tlu_multi_intl_32
+tlu_multi_intl_33
+tlu_multi_intl_90
+tlu_multi_intl_91
+tlu_multi_tsasr_1
+tlu_multi_tsasr_2
+tlu_multi_tsasr_21
+tlu_pib_bug2820
+tlu_pib_picl_fp_1
+tlu_pib_picl_fp_2
+tlu_pib_wr_pic_1
+tlu_pic_at_done_inst
+tlu_pic_at_retry_inst
+tlu_pic_ovfl_0
+tlu_pic_ovfl_2
+tlu_pic_ovfl_4
+tlu_pic_ovfl_cpu_q_1
+tlu_pic_ovfl_dev_q_1
+tlu_pic_ovfl_on_alu_1
+tlu_pic_ovfl_res_q_1
+tlu_sftint_update_10
+tlu_sftint_update_11
+tlu_sftint_update_12
+tlu_sftint_update_13
+tlu_sftint_update_20
+tlu_sftint_update_21
+tlu_sftint_update_22
+tlu_sftint_update_23
+tlu_softint_1
+tlu_softint_2
+#tlu_spu_rsrv_illgl_0			# Test requires SPU
+tlu_st_intl_extl_sync_1
+tlu_st_intl_extl_sync_2
+tlu_stb2b_trap_00
+tlu_stb2b_trap_01
+tlu_stb2b_trap_10
+tlu_stb2b_trap_20
+tlu_stb2b_trap_21
+tlu_stb2b_trap_30
+tlu_stb2b_trap_40
+tlu_stb2b_trap_41
+tlu_stb2b_trap_50
+#tlu_stb2b_trap_60			# Bad Trap:  Requires external interrupt
+#tlu_stb2b_trap_61			# Bad Trap:  Requires external interrupt
+tlu_stb2b_trap_70
+tlu_stb2b_trap_71
+tlu_stb2b_trap_80
+tlu_stb2b_trap_90
+tlu_stb2b_trap_94
+tlu_stb2b_trap_95
+tlu_stb2b_trap_97
+tlu_stb2b_tsasr_00
+tlu_tba_test
+tlu_tdb
+tlu_test_ifu_tt
+tlu_thrd_fsm_sir_0
+#tlu_thrd_fsm_xir			# Bad Trap:  Requires external interrupt
+#tlu_thrd_fsm_xir_0			# Bad Trap:  Requires external interrupt
+#tlu_thrd_fsm_xir_1			# Bad Trap:  Requires external interrupt
+#tlu_thrd_fsm_xir_2			# Bad Trap:  Requires external interrupt
+#tlu_thrd_fsm_xir_3			# Access to unsupported I/O location
+#tlu_thrd_fsm_xir_31			# Access to unsupported I/O location
+tlu_thrd_intr_3
+tlu_tick_read_1
+tlu_tick_read_2
+tlu_tick_write_1
+tlu_tl_lvl_1
+tlu_tlz_trap_1
+tlu_tlz_trap_1_0
+tlu_wd_rst_1
+#tlu_wd_rst_2				# Illegal address 0x0000000001
+tlu_wd_rst_3
+tlu_wd_rst_4
+tlu_wd_rst_5
+#tlu_wd_rst_6				# Bad trap:  Requires external interrupt
+tr_asiintr0
+tr_dctired0
+tr_iaccexc0
+tr_illegal0
+tr_illegal_asr
+tr_immumiss0
+tr_intexc0
+tr_intexc1
+tr_intr0
+tr_intr00
+tr_intr2
+tr_intr1
+tr_mmu2red
+tr_privact0
+tr_privop0
+tr_sir0
+tr_tcc
+tr_thrdstatus
+tr_tixcc0
+tr_tixcc1
+tr_trap_inst
+tr_trapreg
+#tr_trreg0				# Illegal address 0x1020008400
+tr_wdrred1
+tr_wdrred12
+tr_winexc0
+tr_wpt
+tsub_corner
+tsub_imm_corner
+user_wrprcwp
+v9_add_bpr
+v9_allasi
+v9_allinst
+v9_alu_mov
+v9_bp
+v9_div_fp
+v9_dmmudmp
+v9_immudmp
+v9_mmu_ttebit
+v9_mmureg
+v9_mov
+v9_mul_ldst
+v9_trap_ill_tag_zero
+v9_trap_illegal
+v9_trap_ldstuba
+v9_trap_mem
+v9_trap_priv
+v9_trap_sir_fp
+v9_trap_unimp_win
+v9_wmg
+v9_wmg1
+win_restore0
+wrrdcwp
+wrrdcwp_loop
+wsr_pstate_in_br
+wsr_pstate_in_jmpl
+xnor_imm_corner
+xor_imm_corner

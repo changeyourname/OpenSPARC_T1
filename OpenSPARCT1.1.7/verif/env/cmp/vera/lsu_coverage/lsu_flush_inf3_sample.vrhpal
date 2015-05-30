@@ -1,0 +1,63 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_flush_inf3_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Flush/signaling interface coverage object
+//***********************************************************************
+
+  #define FLUSHIF3_ST00		11'bxx_xxxxxxxxx
+  #define FLUSHIF3_ST01		11'b0x_100000000
+  #define FLUSHIF3_ST02		11'b11_100000000	// ld
+  #define FLUSHIF3_ST03		11'b11_010000000	// st
+  #define FLUSHIF3_ST04		11'b11_111000000	// cas
+  #define FLUSHIF3_ST05		11'b11_110100000	// ldstub
+  #define FLUSHIF3_ST06		11'b11_110010000	// swap
+  #define FLUSHIF3_ST07		11'b11_000001000	// flush
+  #define FLUSHIF3_ST08		11'b11_000000100	// pref
+  #define FLUSHIF3_ST09		11'b11_010000010	// bst
+
+  #define FLUSHIF3_ST10		11'b11_100000010	// bld (m stage)
+  #define FLUSHIF3_ST11		11'bxx_000000001	// bld (g stage)
+
+  // wildcard state s_FLUSHIF3_ST00 ( FLUSHIF3_ST00 );
+  // wildcard state s_FLUSHIF3_ST01 ( FLUSHIF3_ST01 );
+  // wildcard state s_FLUSHIF3_ST02 ( FLUSHIF3_ST02 );
+  // wildcard state s_FLUSHIF3_ST03 ( FLUSHIF3_ST03 );
+  // wildcard state s_FLUSHIF3_ST04 ( FLUSHIF3_ST04 );
+  // wildcard state s_FLUSHIF3_ST05 ( FLUSHIF3_ST05 );
+  // wildcard state s_FLUSHIF3_ST06 ( FLUSHIF3_ST06 );
+  // wildcard state s_FLUSHIF3_ST07 ( FLUSHIF3_ST07 );
+  // wildcard state s_FLUSHIF3_ST08 ( FLUSHIF3_ST08 );
+  // wildcard state s_FLUSHIF3_ST09 ( FLUSHIF3_ST09 );
+  
+  // wildcard state s_FLUSHIF3_ST10 ( FLUSHIF3_ST10 );
+  // wildcard state s_FLUSHIF3_ST11 ( FLUSHIF3_ST11 );
+
+  wildcard trans t_FLUSHIF3_0	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST02 );
+  wildcard trans t_FLUSHIF3_1	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST03 );
+  wildcard trans t_FLUSHIF3_2	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST04 );
+  wildcard trans t_FLUSHIF3_3	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST05 );
+  wildcard trans t_FLUSHIF3_4	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST06 );
+  wildcard trans t_FLUSHIF3_5	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST07 );
+  wildcard trans t_FLUSHIF3_6	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST08 );
+  wildcard trans t_FLUSHIF3_7	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> FLUSHIF3_ST09 );
+
+  wildcard trans t_FLUSHIF3_8	( FLUSHIF3_ST01 -> FLUSHIF3_ST00 -> FLUSHIF3_ST00 -> 
+                                  FLUSHIF3_ST10 -> FLUSHIF3_ST11 );

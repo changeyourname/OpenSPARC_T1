@@ -1,0 +1,43 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_rdmawb_valid_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// coverage_def L2_RDMAWB_VALID_COV(bit [3:0] valid) {
+
+    state valid_0001(4'b0001);
+    state valid_0010(4'b0010);
+    state valid_0100(4'b0100);
+    state valid_1000(4'b1000);
+    
+    state valid_0011(4'b0011);
+    state valid_0110(4'b0110);
+    state valid_1100(4'b1100);
+    state valid_0101(4'b0101);
+    state valid_1010(4'b1010);
+    state valid_1001(4'b1001);
+    
+    state valid_0111(4'b0111);
+    state valid_1011(4'b1011);
+    state valid_1101(4'b1101);
+    state valid_1110(4'b1110);
+
+    state valid_1111(4'b1111);
+// }

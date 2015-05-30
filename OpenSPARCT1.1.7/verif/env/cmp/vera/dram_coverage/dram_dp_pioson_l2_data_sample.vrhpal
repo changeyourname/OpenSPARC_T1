@@ -1,0 +1,75 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_dp_pioson_l2_data_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_dp_pioson_l2_data.vrh
+// Description:
+// Coverage object for Data piosoning by DRAM when L2 comes with MECC
+// Error. There is s_dp_pioson_l2_data, and chunk ( which is valid when 
+// data piosoned)
+//
+// ***************************************************************************
+
+
+// coverage_def dram_dp_pioson_l2_data (bit [5:0] dp_pioson_l2_data)
+// {
+
+  // Since each bit of dp_pioson_l2_data is independent of other bit.
+  // Also any combination can be possible since each bit indicates that 
+  // chunk i [i=0-3] is poisoned 
+  // state declarations
+     wildcard state s_dp_pioson_l2_data0             (6'bxx0000);
+     wildcard state s_dp_pioson_l2_data1             (6'bxx0001);
+     wildcard state s_dp_pioson_l2_data2             (6'bxx0010);
+     wildcard state s_dp_pioson_l2_data3             (6'bxx0011);
+     wildcard state s_dp_pioson_l2_data4             (6'bxx0100);
+     wildcard state s_dp_pioson_l2_data5             (6'bxx0101);
+     wildcard state s_dp_pioson_l2_data6             (6'bxx0110);
+     wildcard state s_dp_pioson_l2_data7             (6'bxx0111);
+     wildcard state s_dp_pioson_l2_data8             (6'bxx1000);
+     wildcard state s_dp_pioson_l2_data9             (6'bxx1001);
+     wildcard state s_dp_pioson_l2_data10            (6'bxx1010);
+     wildcard state s_dp_pioson_l2_data11            (6'bxx1011);
+     wildcard state s_dp_pioson_l2_data12            (6'bxx1100);
+     wildcard state s_dp_pioson_l2_data13            (6'bxx1101);
+     wildcard state s_dp_pioson_l2_data14            (6'bxx1110);
+     wildcard state s_dp_pioson_l2_data15            (6'bxx1111);
+
+     wildcard state s_dp_pioson_l2_chunk0            (6'b00xxxx);
+     wildcard state s_dp_pioson_l2_chunk1            (6'b01xxxx);
+     wildcard state s_dp_pioson_l2_chunk2            (6'b10xxxx);
+     wildcard state s_dp_pioson_l2_chunk3            (6'b11xxxx);
+
+
+
+  // transitions(to same)
+
+  // transitions(to different)
+
+
+  // bad states
+  //bad_state s_not_WR_Q_STATE (not state);
+
+  // bad transitions 
+  //bad_trans t_not_WR_Q_TRANS (not trans);
+
+// }
+

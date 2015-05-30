@@ -1,0 +1,52 @@
+
+diff -r -cbwt s.initrd/conf/conf.d/resume r.initrd/conf/conf.d/resume
+*** s.initrd/conf/conf.d/resume	
+--- r.initrd/conf/conf.d/resume	
+***************
+*** 1 ****
+! RESUME=UUID=
+--- 1 ----
+! RESUME=/dev/sunhv_disk
+
+diff -r -cbwt s.initrd/conf/modules r.initrd/conf/modules
+*** s.initrd/conf/modules	
+--- r.initrd/conf/modules	
+***************
+*** 1,3 ****
+--- 1,4 ----
+  fuse
+  capability
+  unix
++ sunhv_disk_module
+
+diff -r -cbwt s.initrd/etc/udev/rules.d/65-persistent-storage.rules r.initrd/etc/udev/rules.d/65-persistent-storage.rules
+*** s.initrd/etc/udev/rules.d/65-persistent-storage.rules	
+--- r.initrd/etc/udev/rules.d/65-persistent-storage.rules	
+***************
+*** 3,8 ****
+--- 3,10 ----
+  
+  ACTION!="add", GOTO="persistent_storage_end"
+  
++ KERNEL=="sunhv_disk", NAME="sunhv_virtual_disk", SYMLINK+="sunhv_disk", GOTO="persistent_storage_end"
++ 
+  KERNEL=="nst[0-9]", SUBSYSTEMS=="scsi", IMPORT{program}="scsi_id --export --whitelisted --fallback-to-sysfs -s %p -d $tempnode", SYMLINK+="tape/by-id/$env{ID_BUS}-$env{ID_SERIAL}-nst"
+  
+  # type 8 devices are "Medium Changers"
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: ata
+Only in r.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers/block: sunhv_disk_module.ko
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: cdrom
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: fc4
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: ide
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: ieee1394
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: net
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: parport
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: scsi
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/drivers: usb
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: ext2
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: isofs
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: nfs
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: reiserfs
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: udf
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel/fs: xfs
+Only in s.initrd/lib/modules/2.6.22-15-sparc64-smp/kernel: net

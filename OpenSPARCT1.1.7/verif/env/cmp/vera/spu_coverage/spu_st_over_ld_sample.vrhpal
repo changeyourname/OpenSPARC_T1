@@ -1,0 +1,89 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_st_over_ld_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+#include "spu_monitors.vrh"
+
+#ifndef INC__TMP_spu_st_over_ld_COV_VRH
+#define INC__TMP_spu_st_over_ld_COV_VRH
+
+/*
+ * Order of the signals in ldst_mon_state. See the defines in
+ * spu_monitors.vr.
+ *
+ * SPU_MON_ST_REQ_ASSERTED              3'h0
+ * SPU_MON_LD_REQ_ASSERTED              3'h1
+ * SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED    3'h2
+ * SPU_MON_LD_REQ_OUTSTANDING           3'h3
+ * SPU_MON_SPU_LSU_LOAD_REQ_OUTSTANDING 3'h4
+ * SPU_MON_LSU_SPU_LDST_ACK             3'h5
+ */
+
+#define ST_OVER_LD_CASE_1_STATE  6'b000001
+#define ST_OVER_LD_CASE_2_STATE  6'b001011
+#define ST_OVER_LD_CASE_3_STATE  6'b001001
+#define ST_OVER_LD_CASE_4_STATE  6'b011101
+#define ST_OVER_LD_CASE_5_STATE  6'b011001
+#define ST_OVER_LD_CASE_6_STATE  6'b111001
+
+/*
+ * spu_st_over_ld_cov
+ *
+ * This coverage object checks that we cover the 5 cases outlined in
+ * the spu testplan in the category RRLD: store priority.
+ *
+ * Here is a descrition of the cases, taken directly from the
+ * spu_testplan.tex file. 
+ *
+ *  spu_mast_streq or spu_encctl_streq is asserted:
+ *  Case 1: Before spu_mald_ldreq or spu_encctl_ldreq is asserted
+ *  Case 2: In same cycle as spu_mald_ldreq or spu_encctl_ldreq
+ *    is asserted
+ *  Case 3: After spu_mald_ldreq or spu_encctl_ldreq is asserted
+ *    but before spu_lsu_load_req is asserted
+ *  Case 4: After spu_mald_ldreq or spu_encctl_ldreq is asserted
+ *    and in the same cycle spu_lsu_load_req is asserted
+ *  Case 5: After spu_mald_ldreq or spu_encctl_ldreq is asserted,
+ *    and after spu_lsu_load_req is asserted
+ *  Case 6: After all the above and on the same cycle lsu_spu_ldst_ack
+ *    is asserted.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified. The priority of stores over loads is checked in the
+ * spu_monitor SPU_LDST_MON.
+ */
+
+#endif
+
+sample ldst_sample_monitor_C${c}.ldst_mon_state {
+  // Declare states to be covered 
+  state s_ST_OVER_LD_CASE_1_STATE (ST_OVER_LD_CASE_1_STATE);
+  state s_ST_OVER_LD_CASE_2_STATE (ST_OVER_LD_CASE_2_STATE);
+  state s_ST_OVER_LD_CASE_3_STATE (ST_OVER_LD_CASE_3_STATE);
+  state s_ST_OVER_LD_CASE_4_STATE (ST_OVER_LD_CASE_4_STATE);
+  state s_ST_OVER_LD_CASE_5_STATE (ST_OVER_LD_CASE_5_STATE);
+  state s_ST_OVER_LD_CASE_6_STATE (ST_OVER_LD_CASE_6_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

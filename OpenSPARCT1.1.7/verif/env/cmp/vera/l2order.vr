@@ -1,0 +1,634 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2order.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "l2order_ports_binds.vrh"
+#include "iop_rtl.h"
+#include "cmp_top.if.vrh"
+
+
+#define REQTYPE    19:15
+#define NC         14
+#define JBI        13
+#define CPU_ID     12:10
+#define TID        9:8
+#define INV        7
+#define PF         6
+#define BIS        5
+#define L1WAY      4:3
+#define SIZE       2:0
+
+#define CTAG_UPPER 19:18
+#define CTAG_LOWER 12:3
+
+#define L1D_INDEX 10:4
+#define L1I_INDEX 11:5
+#define INDEX 17:8
+#define WAY   21:18
+
+
+class evictStatClass {
+    integer numEvictions[12];
+    bit [11:0] wayEvicted;
+    integer numEvictRepetitions[12];
+    integer maxEvictRepetitions[12];
+
+    task new() {
+        integer i;
+
+        wayEvicted = 12'b0;
+        for(i=0; i<12; i++) {
+            numEvictions[i] = 0;
+            numEvictRepetitions[i] = 0;
+            maxEvictRepetitions[i] = 0;
+        }
+    }
+}
+
+
+task TraceL2Order() {
+
+    shadow integer i, j, k;
+    shadow l2order_port l2order_bind[4];
+    shadow l2order_port lp;
+    string flow;
+
+    shadow bit [39:0] address;
+    shadow bit [3:0] dhit;
+    shadow bit [3:0] ihit;
+    bit fail = 0;
+    shadow camhit_port camhit_bind[4];
+    shadow camhit_port cp;
+
+    shadow integer way;
+    evictStatClass B[4];
+    shadow evictstat_port evictstat_bind[4];
+    shadow evictstat_port ep;
+    integer evictStatLog;
+
+
+    // assign l2order_bind_N (defined in l2order_ports_binds.vrh) to the array of l2order_ports
+    l2order_bind[0] = l2order_bind_0;
+    l2order_bind[1] = l2order_bind_1;
+    l2order_bind[2] = l2order_bind_2;
+    l2order_bind[3] = l2order_bind_3;
+
+    camhit_bind[0] = camhit_bind_0;
+    camhit_bind[1] = camhit_bind_1;
+    camhit_bind[2] = camhit_bind_2;
+    camhit_bind[3] = camhit_bind_3;
+
+    evictstat_bind[0] = evictstat_bind_0;
+    evictstat_bind[1] = evictstat_bind_1;
+    evictstat_bind[2] = evictstat_bind_2;
+    evictstat_bind[3] = evictstat_bind_3;
+
+
+    for(i=0; i<4; i++) {
+        fork
+        /// Print out relevant information for each instruction in the pipeline during its first pass
+        {
+            lp = l2order_bind[i];
+            
+            while(1) {
+                // reset
+                if(l2order.dbginit_l == 1'b0)
+                    @(posedge l2order.dbginit_l);
+
+                // first pass of valid instruction in L2 pipeline
+                if(lp.$arbctl_inst_vld_c2 && !lp.$arbdp_inst_mb_c2 && !lp.$arbdp_inst_fb_c2) {
+                    bit [4:0] reqtype = lp.$arbdp_inst_c2[REQTYPE];
+
+                    if(lp.$mbctl_hit_c2)
+                        flow = "dep";
+                    else {
+                        if(lp.$tagctl_hit_l2orfb_c2)
+                            flow = "hit";
+                        else
+                            flow = "miss";
+                    }
+
+                    // instruction from PCX
+                    if(!lp.$arbdp_inst_c2[JBI]) {
+                        case(reqtype) {
+                            LOAD_RQ: {
+                                if(!lp.$arbctl_inst_diag_c2) {
+                                    // LOAD
+                                    if(!lp.$arbdp_inst_c2[PF] && !lp.$arbdp_inst_c2[INV]) {
+                                        printf("%0d: L2 bank %0d (%s): LOAD, core %0d, thread %0d, ",
+                                               get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (L1D$_index %x, L2_index %x), ",
+                                               lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[INDEX]);
+                                        printf("nc = %b, l1way = %0d\n", lp.$arbdp_inst_c2[NC], lp.$arbdp_inst_c2[L1WAY]);
+                                    }
+                                    // PREFETCH
+                                    else if(lp.$arbdp_inst_c2[PF]) {
+                                        printf("%0d: L2 bank %0d (%s): PREFETCH, core %0d, thread %0d, ",
+                                               get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (L2_index %x)\n", lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                                    }
+                                    // DCACHE_INV
+                                    else if(lp.$arbdp_inst_c2[INV]) {
+                                        printf("%0d: L2 bank %0d: DCACHE_INV, core %0d, thread %0d, ",
+                                               get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (L1D$_index %x)\n", lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[L1D_INDEX]);
+                                    }
+                                }
+                                else {
+                                    // DIAG_LOAD
+                                    case(lp.$arbdp_addr_c2[35:32]) {
+                                        4'h0, 4'h1, 4'h2, 4'h3: {
+                                            printf("%0d: L2 bank %0d: Data Array Read, core %0d, thread %0d, addr = %x ",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                                   lp.$arbdp_addr_c2);
+                                            printf("(index %x, way %x, addr[5:2] = %x)\n",
+                                                   lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY], lp.$arbdp_addr_c2[5:2]);
+                                        }
+                                        4'h4, 4'h5: {
+                                            printf("%0d: L2 bank %0d: Tag Array Read, core %0d, thread %0d, addr = %x ",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                                   lp.$arbdp_addr_c2);
+                                            printf("(index %x, way %x)\n", lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY]);
+                                        }
+                                        4'h6, 4'h7: {
+                                            if(lp.$arbdp_addr_c2[22]) {
+                                                printf("%0d: L2 bank %0d: Valid/Dirty Bit Array Read, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x)\n", lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                                            }
+                                            else {
+                                                printf("%0d: L2 bank %0d: Used/Alloc Bit Array Read, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x)\n", lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                                            }
+                                        }
+                                        default: {
+                                            printf("%0d: L2 bank %0d: L2 Register Read, core %0d, thread %0d, addr = %x\n",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                                   lp.$arbdp_addr_c2);
+                                        }
+                                    } // case
+                                }
+                            }
+                        
+                            IMISS_RQ: {
+                                // IMISS
+                                if(!lp.$arbdp_inst_c2[INV]) {
+                                    printf("%0d: L2 bank %0d (%s): IMISS, core %0d, thread %0d, ",
+                                           get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                    printf("addr = %x (L1I$_index %x, L2_index %x), nc = %b, l1way = %0d\n",
+                                           lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[L1I_INDEX], lp.$arbdp_addr_c2[INDEX],
+                                           lp.$arbdp_inst_c2[NC], lp.$arbdp_inst_c2[L1WAY]);
+                                }
+                                // ICACHE_INV
+                                else
+                                    printf("%0d: L2 bank %0d: ICACHE_INV, core %0d, thread %0d, addr = %x (L1I$_index %x)\n",
+                                           get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                           lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[L1I_INDEX]);
+                            }
+                        
+                            STORE_RQ: {
+                                if(!lp.$arbctl_inst_diag_c2) {
+                                    // STORE
+                                    if(!lp.$arbdp_inst_c2[BIS]) {
+                                        printf("%0d: L2 bank %0d (%s): STORE, core %0d, thread %0d, ",
+                                               get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (L1D$_index %x, L1I$_index %x, ",
+                                               lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX]);
+                                        printf("L2_index %x), size = %0d, data = %x\n",
+                                               lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE], lp.$arbdp_inst_data_c2);
+                                    }
+                                    else {
+                                        // BLKSTORE
+                                        if(lp.$arbdp_inst_c2[PF]) {
+                                            printf("%0d: L2 bank %0d (%s): BLKSTORE, core %0d, thread %0d, ",
+                                                   get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                            printf("addr = %x (L1D$_index %x, L1I$_index %x, ", lp.$arbdp_addr_c2,
+                                                   lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX]);
+                                            printf("L2_index %x), size = %0d, data = %x\n",
+                                                   lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE], lp.$arbdp_inst_data_c2);
+                                        }
+                                        // BLKINITST
+                                        else {
+                                            printf("%0d: L2 bank %0d (%s): BLKINITST, core %0d, thread %0d, ",
+                                                   get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                            printf("addr = %x (L1D$_index %x, L1I$_index %x, ", lp.$arbdp_addr_c2,
+                                                   lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX]);
+                                            printf("L2_index %x), size = %0d, data = %x\n",
+                                                   lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE], lp.$arbdp_inst_data_c2);
+                                        }
+                                    }
+                                }
+                                else {
+                                    // DIAG_STORE
+                                    case(lp.$arbdp_addr_c2[35:32]) {
+                                        4'h0, 4'h1, 4'h2, 4'h3: {
+                                            printf("%0d: L2 bank %0d: Data Array Write, core %0d, thread %0d, addr = %x ",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                                   lp.$arbdp_addr_c2);
+                                            printf("(index %x, way %x, addr[5:2] = %x), data[38:0] = %x\n",
+                                                   lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY], lp.$arbdp_addr_c2[5:2],
+                                                   lp.$arbdp_inst_data_c2[38:0]);
+                                        }
+                                        4'h4, 4'h5: {
+                                            printf("%0d: L2 bank %0d: Tag Array Write, core %0d, thread %0d, addr = %x ",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                                   lp.$arbdp_addr_c2);
+                                            printf("(index %x, way %x), data[27:0] = %x\n",
+                                                   lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY],
+                                                   lp.$arbdp_inst_data_c2[27:0]);
+                                        }
+                                        4'h6, 4'h7: {
+                                            if(lp.$arbdp_addr_c2[22]) {
+                                                printf("%0d: L2 bank %0d: Valid/Dirty Bit Array Write, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x), data[25:0] = %x\n",
+                                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX],
+                                                       lp.$arbdp_inst_data_c2[25:0]);
+                                            }
+                                            else {
+                                                printf("%0d: L2 bank %0d: Used/Alloc Bit Array Write, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x), data[25:0] = %x\n",
+                                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX],
+                                                       lp.$arbdp_inst_data_c2[25:0]);
+                                            }
+                                        }
+                                        default: {
+                                            printf("%0d: L2 bank %0d: L2 Register Write, core %0d, thread %0d, ",
+                                                   get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                            printf("addr = %x, data = %x\n", lp.$arbdp_addr_c2, lp.$arbdp_inst_data_c2);
+                                        }
+                                    } // case
+                                }
+                            }
+                        
+                            CAS1_RQ: {
+                                printf("%0d: L2 bank %0d (%s): CAS1, core %0d, thread %0d, ",
+                                       get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                printf("addr = %x (L2_index %x), size = %0d, data = %x\n",
+                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE],
+                                       lp.$arbdp_inst_data_c2);
+                            }
+                        
+                            CAS2_RQ: {
+                                printf("%0d: L2 bank %0d: CAS2, core %0d, thread %0d, ",
+                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                printf("addr = %x (L2_index %x), size = %0d, data = %x\n",
+                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE],
+                                       lp.$arbdp_inst_data_c2);
+                            }
+                        
+                            SWAP_RQ: {
+                                printf("%0d: L2 bank %0d (%s): SWAP, core %0d, thread %0d, ",
+                                       get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                printf("addr = %x (L2_index %x), size = %0d, data = %x\n",
+                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[SIZE],
+                                       lp.$arbdp_inst_data_c2);
+                            }
+                        
+                            STRLOAD_RQ: {
+                                printf("%0d: L2 bank %0d (%s): STRLOAD, core %0d, thread %0d, ",
+                                       get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                printf("addr = %x (L2_index %x), A = %b, B = %b\n",
+                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_c2[2],
+                                       lp.$arbdp_inst_c2[1]);
+                            }
+                        
+                            STRST_RQ: {
+                                printf("%0d: L2 bank %0d (%s): STRST, core %0d, thread %0d, ",
+                                       get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                printf("addr = %x (L1D$_index %x, L1I$_index %x, L2_index %x), ", lp.$arbdp_addr_c2,
+                                       lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX], lp.$arbdp_addr_c2[INDEX]);
+                                printf("A = %b, size = %0d, data = %x\n",
+                                       lp.$arbdp_inst_c2[4], lp.$arbdp_inst_c2[SIZE], lp.$arbdp_inst_data_c2);
+                            }
+                        
+                            INT_RQ: {
+                                printf("%0d: L2 bank %0d: INT, target = %0d, thread %0d, broadcast = %b, data[17:0] = %x\n",
+                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID],
+                                       lp.$arbdp_inst_c2[NC], lp.$arbdp_inst_data_c2[17:0]);
+                            }
+                        
+                            FWD_RQ: {
+                                if(!lp.$arbctl_inst_diag_c2) {
+                                    // FWDRQ_LOAD
+                                    if(lp.$arbdp_inst_c2[NC]) {
+                                        printf("%0d: L2 bank %0d (%s): FWDRQ_LOAD, core %0d, thread %0d, ",
+                                               get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (addr[5:2] = %x, L2_index %x)\n",
+                                               lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[5:2], lp.$arbdp_addr_c2[INDEX]);
+                                    }
+                                    // FWDRQ_STORE
+                                    else {
+                                        printf("%0d: L2 bank %0d (%s): FWDRQ_STORE, core %0d, thread %0d, ",
+                                               get_time(LO), i, flow, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                        printf("addr = %x (L2_index %x), data = %x\n",
+                                               lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_data_c2);
+                                    }
+                                }
+                                else {
+                                    // FWDRQ_DIAG_LOAD
+                                    if(lp.$arbdp_inst_c2[NC]) {
+                                        case(lp.$arbdp_addr_c2[35:32]) {
+                                            4'h0, 4'h1, 4'h2, 4'h3: {
+                                                printf("%0d: L2 bank %0d: FwdReq Data Array Read, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x, (index %x, way %x, addr[5:2] = %x)\n", lp.$arbdp_addr_c2,
+                                                     lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY], lp.$arbdp_addr_c2[5:2]);
+                                            }
+                                            4'h4, 4'h5: {
+                                                printf("%0d: L2 bank %0d: FwdReq Tag Array Read, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x, (index %x, way %x)\n",
+                                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY]);
+                                            }
+                                            4'h6, 4'h7: {
+                                                if(lp.$arbdp_addr_c2[22]) {
+                                                    printf("%0d: L2 bank %0d: FwdReq Valid/Dirty Bit Array Read, core %0d, ",
+                                                           get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID]);
+                                                    printf("thread %0d, addr = %x (index %x)\n", lp.$arbdp_inst_c2[TID],
+                                                           lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                                                }
+                                                else {
+                                                    printf("%0d: L2 bank %0d: FwdReq Used/Alloc Bit Array Read, core %0d, ",
+                                                           get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID]);
+                                                    printf("thread %0d, addr = %x (index %x)\n", lp.$arbdp_inst_c2[TID],
+                                                           lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                                                }
+                                            }
+                                            default: {
+                                                printf("%0d: L2 bank %0d: FwdReq L2 Register Read, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x\n", lp.$arbdp_addr_c2);
+                                            }
+                                        } // case
+                                    }
+                                    // FWDRQ_DIAG_STORE
+                                    else {
+                                        case(lp.$arbdp_addr_c2[35:32]) {
+                                            4'h0, 4'h1, 4'h2, 4'h3: {
+                                                printf("%0d: L2 bank %0d: FwdReq Data Array Write, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x, way %x, addr[5:2] = %x), data[38:0] = %x\n",
+                                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY],
+                                                       lp.$arbdp_addr_c2[5:2], lp.$arbdp_inst_data_c2[38:0]);
+                                            }
+                                            4'h4, 4'h5: {
+                                                printf("%0d: L2 bank %0d: FwdReq Tag Array Write, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x (index %x, way %x), data[27:0] = %x\n",
+                                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX], lp.$arbdp_addr_c2[WAY],
+                                                       lp.$arbdp_inst_data_c2[27:0]);
+                                            }
+                                            4'h6, 4'h7: {
+                                                if(lp.$arbdp_addr_c2[22]) {
+                                                    printf("%0d: L2 bank %0d: FwdReq Valid/Dirty Bit Array Write, core %0d, ",
+                                                           get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID]);
+                                                    printf("thread %0d, addr = %x (index %x), data[25:0] = %x\n",
+                                                           lp.$arbdp_inst_c2[TID], lp.$arbdp_addr_c2,
+                                                           lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_data_c2[25:0]);
+                                                }
+                                                else {
+                                                    printf("%0d: L2 bank %0d: FwdReq Used/Alloc Bit Array Write, core %0d, ",
+                                                           get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID]);
+                                                    printf("thread %0d, addr = %x (index %x), data[25:0] = %x\n",
+                                                           lp.$arbdp_inst_c2[TID], lp.$arbdp_addr_c2,
+                                                           lp.$arbdp_addr_c2[INDEX], lp.$arbdp_inst_data_c2[25:0]);
+                                                }
+                                            }
+                                            default: {
+                                                printf("%0d: L2 bank %0d: FwdReq L2 Register Write, core %0d, thread %0d, ",
+                                                       get_time(LO), i, lp.$arbdp_inst_c2[CPU_ID], lp.$arbdp_inst_c2[TID]);
+                                                printf("addr = %x, data = %x\n", lp.$arbdp_addr_c2, lp.$arbdp_inst_data_c2);
+                                            }
+                                        } // case
+                                    }
+                                }
+                            }
+                        } // case(reqtype)
+                    }
+                    // instruction from JBI
+                    else {
+                        case(reqtype[2:0]) {
+                            // RDD
+                            3'b001: {
+                                printf("%0d: L2 bank %0d (%s): RDD, ctag = %x, addr = %x (L2_index %x)\n",
+                                       get_time(LO), i, flow, {lp.$arbdp_inst_c2[CTAG_UPPER], lp.$arbdp_inst_c2[CTAG_LOWER]},
+                                       lp.$arbdp_addr_c2, lp.$arbdp_addr_c2[INDEX]);
+                            }
+
+                            // WR8
+                            3'b010: {
+                                printf("%0d: L2 bank %0d (%s): WR8, ctag = %x, addr = %x ", get_time(LO), i, flow,
+                                       {lp.$arbdp_inst_c2[CTAG_UPPER], lp.$arbdp_inst_c2[CTAG_LOWER]}, lp.$arbdp_addr_c2);
+                                printf("(L1D$_index %x, L1I$_index %x, L2_index %x), size = %0d, data = %x\n",
+                                       lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX], lp.$arbdp_addr_c2[INDEX],
+                                       lp.$arbdp_inst_c2[SIZE], lp.$arbdp_inst_data_c2);
+                            }
+
+                            // WRI
+                            3'b100: {
+                                printf("%0d: L2 bank %0d (%s): WRI, ctag = %x, addr = %x ", get_time(LO), i, flow,
+                                       {lp.$arbdp_inst_c2[CTAG_UPPER], lp.$arbdp_inst_c2[CTAG_LOWER]}, lp.$arbdp_addr_c2);
+                                printf("(L1D$_index %x, L1I$_index %x, L2_index %x), (64B data not shown)\n",
+                                       lp.$arbdp_addr_c2[L1D_INDEX], lp.$arbdp_addr_c2[L1I_INDEX], lp.$arbdp_addr_c2[INDEX]);
+                            }
+                        } // case(reqtype[2:0])
+                    }
+                } // if(lp.$arbctl_inst_vld_c2 && !lp.$arbdp_inst_mb_c2 && !lp.$arbdp_inst_fb_c2)
+                
+                @(posedge l2order.rclk);
+            } // while(1)
+        }
+
+        /// Check if there are multiple CAM hits within the same Core for the same address (this should not happen)
+        {
+            cp = camhit_bind[i];
+            
+            while(1) {
+                // reset
+                if(l2order.dbginit_l == 1'b0) {
+                    address = 40'b0;
+                    dhit = 4'b0;
+                    ihit = 4'b0;
+                    fail = 1'b0;
+
+                    @(posedge l2order.dbginit_l);
+                }
+
+                // directory CAM is occurring
+                if(cp.$dc_lkup_panel_dec_c4 != 0 && cp.$dc_lkup_row_dec_c4 != 0 ||
+                   cp.$ic_lkup_panel_dec_c4 != 0 && cp.$ic_lkup_row_dec_c4 != 0) {
+                    // store address of (store) instruction that is causing the directory CAM
+                    address = cp.$arbdp_addr_c4;
+
+                    fork
+                    {
+                        // wait till C6
+                        repeat(2) @(posedge l2order.rclk);
+
+                        // addr[5:4] = 0,1,2,3
+                        for(j=0; j<4; j++) {
+                            // 8 Cores
+                            for(k=0; k<8; k++) {
+                                // dhit[3:0] and ihit[3:0] are the CAM hits for the 4 ways of the D$ and I$ of the same Core
+                                dhit = cp.$dc_cam_hit_c6[(j*32 + k*4 + 3):(j*32 + k*4)];
+                                ihit = (j == 1 || j == 3) ? (4'b0) : (cp.$ic_cam_hit_c6[(j*32 + k*4 + 3):(j*32 + k*4)]);
+
+                                // -- dhit[3:0] must be 1-hot or zero
+                                if(dhit != 4'h0 && dhit != 4'h1 && dhit != 4'h2 && dhit != 4'h4 && dhit != 4'h8) {
+                                    printf("%d: L2DIR ERROR: Core %0d previously issued Loads to ", get_time(LO), k);
+                                    printf("address[39:4] = 36'h%9x with ways: ", address[39:4]);
+                                    if(dhit[0])
+                                        printf("0 ");
+                                    if(dhit[1])
+                                        printf("1 ");
+                                    if(dhit[2])
+                                        printf("2 ");
+                                    if(dhit[3])
+                                        printf("3 ");
+                                    printf("\n");
+
+                                    fail = 1;
+                                }
+                                     
+                                // -- ihit[3:0] must be 1-hot or zero
+                                if(ihit != 4'h0 && ihit != 4'h1 && ihit != 4'h2 && ihit != 4'h4 && ihit != 4'h8) {
+                                    printf("%d: L2DIR ERROR: Core %0d previously issued Ifetches to ", get_time(LO), k);
+                                    printf("address[39:4] = 36'h%9x with ways: ", {address[39:5], 1'b0});
+                                    if(ihit[0])
+                                        printf("0 ");
+                                    if(ihit[1])
+                                        printf("1 ");
+                                    if(ihit[2])
+                                        printf("2 ");
+                                    if(ihit[3])
+                                        printf("3 ");
+                                    printf("\n");
+
+                                    fail = 1;
+                                }
+
+                                // -- dhit[3:0] and ihit[3:0] cannot both be non-zero
+                                if(dhit != 4'h0 && ihit != 4'h0) {
+                                    printf("%d: L2DIR ERROR: Core %0d did not preserve exclusiveness ", get_time(LO), k);
+                                    printf("between ICache and DCache for address[39:4] = 36'h%9x\n", address[39:4]);
+
+                                    fail = 1;
+                                }
+                            } // for(k=0; k<8; k++)
+                        } // for(j=0; j<4; j++)
+
+                        if(fail)
+                            error("\n");
+                    }
+                    join none
+                } // if directory CAM is occurring
+                
+                @(posedge l2order.rclk);
+            } // while(1)
+        }
+
+        /// Track L2 cache way allocation
+        {
+            B[i] = new();
+            ep = evictstat_bind[i];
+            
+            while(1) {
+                // reset
+                if(l2order.dbginit_l == 1'b0)
+                    @(posedge l2order.dbginit_l);
+
+                if(ep.$vuad_evict_c3) {
+                    // decode way allocated
+                    for(j=0; j<12; j++) {
+                        if(ep.$lru_way_c3[j]) {
+                            way = j;
+                            break;
+                        }
+                    }
+
+                    // cumulative number of times each way is allocated
+                    B[i].numEvictions[way]++;
+                    
+                    // vector of ways that have been allocated
+                    // since the last time all 12 ways were allocated at least once
+                    B[i].wayEvicted[way] = 1'b1;
+                    
+                    // number of times each way has been allocated
+                    // since the last time all 12 ways were allocated at least once
+                    B[i].numEvictRepetitions[way]++;
+                    
+                    // store maximum value of numEvictRepetitions[i]
+                    for(j=0; j<12; j++) {
+                        if(B[i].numEvictRepetitions[j] > B[i].maxEvictRepetitions[j])
+                            B[i].maxEvictRepetitions[j] = B[i].numEvictRepetitions[j];
+                    }
+
+                    // if all 12 ways have been allocated, clear wayEvicted
+                    // and numEvictRepetitions, and restart filling wayEvicted
+                    if( &(B[i].wayEvicted) ) {
+                        B[i].wayEvicted = 12'b0;
+                        for(j=0; j<12; j++)
+                            B[i].numEvictRepetitions[j] = 0;
+                    }
+                } // if(ep.$vuad_evict_c3)
+
+                @(posedge l2order.rclk);
+            } // while(1)
+        }
+            
+        join none
+    } // for(i=0; i<4; i++)
+
+
+    /// Print out L2 cache way allocation statistics at the end of the diag
+    fork
+    {
+        @(posedge l2order.cmp_diag_done);
+
+        evictStatLog = fopen("l2way.log", "w");
+
+        // 4 banks
+        for(i=0; i<4; i++) {
+            j = 0;
+            for(k=0; k<12; k++)
+                j += B[i].numEvictions[k];
+            
+            if(j != 0) {
+                fprintf(evictStatLog, "\nBank %0d\n", i);
+                fprintf(evictStatLog, "------\n");
+                fprintf(evictStatLog, "\tNumber of evictions\tPercentage of total\tMaximum number of repetitions\n");
+                for(k=0; k<12; k++)
+                    fprintf(evictStatLog, "way %02d:\t\t%4d\t\t\t%2d%%\t\t\t%4d\n",
+                            k, B[i].numEvictions[k], 100*(B[i].numEvictions[k])/j, B[i].maxEvictRepetitions[k]);
+            }
+            else {
+                fprintf(evictStatLog, "\nBank %0d\n", i);                
+                fprintf(evictStatLog, "------\n");
+                fprintf(evictStatLog, "(No evictions)\n");
+            }
+        }
+
+        fclose(evictStatLog);
+    }
+    join none
+}

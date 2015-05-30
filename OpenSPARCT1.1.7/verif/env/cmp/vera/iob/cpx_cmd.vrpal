@@ -1,0 +1,177 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cpx_cmd.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/* 
+//
+//  Module Name:        cpx_cmd.vrpal
+//  Description:        Class and Method definitions for IOB to CPX 
+//                      command
+*/
+////////////////////////////////////////////////////////////////////////
+#ifndef INC_CPX_CMD_VR
+#define INC_CPX_CMD_VR
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class CPX_CMD
+{
+  string info_msg ;
+
+  bit valid;
+  bit [3:0] rtntyp;
+  bit [1:0] err;
+  bit nc;
+  bit [7:0] shared;
+  bit [2:0] coreid;
+  bit [1:0] threadid;
+  bit [127:0] data;
+  bit [5:0] intvect;
+
+  static integer counter = 0 ;
+  
+  task new ((bit valid = 1'b0), (bit[3:0] rtntyp = 4'b0), (bit[1:0] err = 'h0),
+            (bit nc = 1'b1), (bit[7:0] shared = 'h0),
+            (bit [2:0] coreid = 3'b0), (bit [1:0] threadid = 2'b0),
+            (bit [127:0] data = 128'b0),
+            (bit[5:0] intvect = 6'b0));
+  task print ((string name="MISC")) ;
+  task print_header ((string name="MISC")) ;
+  function bit compare (CPX_CMD cpx_cmd) ;
+  function bit comp(CPX_CMD new_pkt);
+  function bit comp_no_dat(CPX_CMD new_pkt);
+  function bit comp_int(CPX_CMD new_cmd);
+}
+
+MakeVeraList(CPX_CMD)
+
+////////////////////////////////////////////////////////////////////////
+// new
+////////////////////////////////////////////////////////////////////////
+task CPX_CMD::new ((bit valid = 1'b0), (bit [3:0] rtntyp = 4'b0),
+                   (bit [1:0] err = 'h0), (bit nc = 1'b1), (bit [7:0] shared = 'h0),
+                   (bit [2:0] coreid = 3'b0), (bit [1:0] threadid = 2'b0),
+                   (bit [127:0] data = 128'b0),
+                   (bit[5:0] intvect = 6'b0)) {
+  this.valid  = valid;
+  this.rtntyp = rtntyp;
+  this.err    = err;
+  this.nc     = nc;
+  this.shared = shared;
+  this.coreid = coreid;
+  this.threadid = threadid;
+  this.data   = data;
+  this.intvect = intvect;
+}
+
+////////////////////////////////////////////////////////////////////////
+// compare all the valid fields of a cpx_cmd
+////////////////////////////////////////////////////////////////////////
+function bit CPX_CMD::compare (CPX_CMD cpx_cmd)
+{
+  compare  =  (this.valid == cpx_cmd.valid) &&
+              (this.rtntyp == cpx_cmd.rtntyp) && 
+              (this.coreid == cpx_cmd.coreid) && 
+              (this.threadid == cpx_cmd.threadid) && 
+              (this.intvect == cpx_cmd.intvect) ;
+}
+
+task CPX_CMD::print_header ((string name="MISC"))
+{
+  printf ("| CPX_CMD ") ;
+  printf ("|            ") ;
+  printf ("| Time       ") ;
+  printf ("| CId ") ;
+  printf ("| TId ") ;
+  printf ("| Vld ") ;
+  printf ("| Type         ") ;
+  printf ("| Vec ") ;
+  printf ("| Data                             ") ;
+  printf ("|\n") ;
+
+  this.counter++ ;
+}
+
+////////////////////////////////////////////////////////////////////////
+// print out the cpx command
+////////////////////////////////////////////////////////////////////////
+task CPX_CMD::print ((string name="MISC"))
+{
+  if ((counter % 40) == 0)
+  {
+    print_header (name) ;
+  }
+
+  // print out command data
+
+  printf ("| CPX_CMD ") ;
+  printf ("| %10s ", name) ;
+  printf ("| %10d ", get_time (LO)) ;
+  printf ("| %1H   ", this.coreid) ;
+  printf ("| %1H   ", this.threadid) ;
+  printf ("| %1b   ", this.valid) ;
+  
+  case (this.rtntyp)
+  {
+    4'b0001  : printf ("| Ifill Ack    ") ;
+    4'b0000  : printf ("| Load Ack     ") ;
+    4'b0100  : printf ("| Store Ack    ") ;
+    4'b0111  : printf ("| Interrupt    ") ;
+    default  : printf ("| Invalid      ") ;
+  }
+  
+  printf ("| %2H  ", this.intvect) ;
+  printf ("| %32H ", this.data) ;
+  printf ("|\n") ;
+
+  this.counter++ ;
+}
+
+function bit CPX_CMD::comp(CPX_CMD new_cmd) {
+  comp = ((this.valid == new_cmd.valid) &&
+      (this.rtntyp == new_cmd.rtntyp) &&
+      (this.err =?= new_cmd.err) && 
+      (this.nc == new_cmd.nc) && 
+      (this.shared == new_cmd.shared) && 
+      (this.coreid == new_cmd.coreid) && 
+      (this.threadid == new_cmd.threadid) && 
+      (this.data == new_cmd.data));
+}
+
+function bit CPX_CMD::comp_no_dat(CPX_CMD new_cmd) {
+  comp_no_dat = ((this.valid == new_cmd.valid) &&
+      (this.rtntyp == new_cmd.rtntyp) &&
+      (this.err =?= new_cmd.err) && 
+      (this.nc == new_cmd.nc) && 
+      (this.shared == new_cmd.shared) && 
+      (this.coreid == new_cmd.coreid) && 
+      (this.threadid == new_cmd.threadid));
+}
+
+function bit CPX_CMD::comp_int(CPX_CMD new_cmd) {
+  comp_int = (this.intvect == new_cmd.intvect);
+}
+
+#endif
+

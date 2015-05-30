@@ -1,0 +1,1695 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_monitors.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        spu_monitors.vr
+//  Description:	Class definitions for monitors of spu interfaces, state
+//                      machines, and memories.
+////////////////////////////////////////////////////////////////////////
+
+#include <vera_defines.vrh>
+#include "spu.if.vrh"
+#include "spu_ports_binds.vrh"
+#include "spu_rtl.vrh"
+
+#define LOCAL_DEBUG 1
+#define DBG(lvl,str) if (LOCAL_DEBUG && this.enableDebugMsgs) \
+  printf("%s: @cycle %0d, time %0d %s\n", this.name, get_cycle(), get_time(LO), str)
+
+#define SPU_MON_ST_REQ_ASSERTED              3'h0
+#define SPU_MON_LD_REQ_ASSERTED              3'h1
+#define SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED    3'h2
+#define SPU_MON_LD_REQ_OUTSTANDING           3'h3
+#define SPU_MON_SPU_LSU_LOAD_REQ_OUTSTANDING 3'h4
+#define SPU_MON_LSU_SPU_LDST_ACK             3'h5
+
+#define MA_CTL_PERRINJ_MASK 1'b1
+#define MA_CTL_PERRINJ_LSB 13
+#define MA_CTL_THREAD_MASK 3'h3
+#define MA_CTL_THREAD_LSB 11
+#define MA_CTL_BUSY_MASK 1'b1
+#define MA_CTL_BUSY_LSB 10
+#define MA_CTL_INT_MASK 1'b1
+#define MA_CTL_INT_LSB 9
+#define MA_CTL_OP_MASK 3'h7
+#define MA_CTL_OP_LSB 6
+#define MA_CTL_LENGTH_MASK 6'h3f
+#define MA_CTL_LENGTH_LSB 0
+
+#define MA_OP_LD_MAMEM 3'h0
+#define MA_OP_ST_MAMEM 3'h1
+#define MA_OP_MUL 3'h2
+#define MA_OP_RED 3'h3
+#define MA_OP_EXP 3'h4
+    
+/*
+ * Timing of stages: e -> m -> w
+ * Stage w is called g in some of the spu files. Apparently
+ * w used to come after g, but they were merged at some time.
+ * 
+ */
+    
+/*
+ * SPU_MONITOR
+ * This is the virtual base class that all monitors inherit from. This is
+ * ripped off from the class GASKET used in the IO verif team's GASKET
+ * class.
+ */
+
+virtual class SPU_MONITOR
+{
+  protected string name;
+  protected string prefix_str;
+  protected string dbstr;
+  protected bit monitorEnabled;
+  protected bit enableDebugMsgs;
+  
+  task enableMonitor()
+  {
+    this.enableDebugMsgs = 1;
+    this.monitorEnabled = 1;
+    DBG(2, "Enabled monitor");
+  }
+
+  task disableMonitor()
+  {
+    this.monitorEnabled = 0;
+    DBG(2, "Disabled monitor");
+  }
+
+  /* Public methods */
+  virtual task finalCheck() {}
+  virtual task monitor() {}
+
+  /* Private methods */
+}
+
+/*
+ * SPU_TRAP_MON
+ * This class monitors the trap related signals in the spu for the ma unit,
+ * and the interface to the ifu.
+ *
+ * maTrapPending means a trap has been signalled to the ifu but has
+ * not been ack'd yet.
+ */
+
+class SPU_TRAP_MON extends SPU_MONITOR
+{
+  protected bit maTrapPending;
+  protected spu_simul_compl_cov_port covPort;
+    
+  /* Public methods */
+  task new(spu_simul_compl_cov_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_TRAP_MON::finalCheck()
+{
+}
+
+task SPU_TRAP_MON::new(spu_simul_compl_cov_port covPort)
+{
+  this.name = "SPU_TRAP_MON";
+  this.prefix_str = "SPU_MON: Trap:";
+  this.maTrapPending = 0;
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+}
+
+/* Add debug code, and fix error msgs */
+
+task SPU_TRAP_MON::monitor()
+{
+  bit ifu_spu_trap_ack;
+  bit spu_ifu_ttype_vld_w2;
+  bit spu_ifu_ttype_w2;
+  bit nceen_set;
+  bit squash_completion_interrupt;
+  
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Code to set maTrapPending */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        spu_ifu_ttype_vld_w2 = this.covPort.$spu_ifu_ttype_vld_w2;
+        spu_ifu_ttype_w2 = this.covPort.$spu_ifu_ttype_w2;
+        /*
+         * squash_completion_interrupt is used to ignore the false completion
+         * interrupt that the SPU sends in the {INT,NCEEN} = {1,1} case. We
+         * ignore it because the ifu ignores it in this case.
+         */
+        nceen_set = (this.covPort.$ifu_spu_nceen >> this.covPort.$spu_ifu_ttype_tid_w2) & 1;
+        squash_completion_interrupt = nceen_set &
+          (this.covPort.$spu_ifu_unc_err_w1.1 | this.covPort.$spu_ifu_mamem_err_w1.1);
+        if (spu_ifu_ttype_vld_w2) {
+          sprintf(dbstr, "%s: Detected spu_ifu_ttype_vld_w2\n", this.name, spu_ifu_ttype_vld_w2);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: ifu_spu_nceen = %4b\n", this.name, this.covPort.$ifu_spu_nceen);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: spu_ifu_ttype_tid_w2 = %2b\n", this.name, this.covPort.$spu_ifu_ttype_tid_w2);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: nceen_set = %b\n", this.name, nceen_set);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: spu_ifu_unc_err_w1.1 = %b\n", this.name, this.covPort.$spu_ifu_unc_err_w1.1);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: spu_ifu_mamem_err_w1.1 = %b\n", this.name, this.covPort.$spu_ifu_mamem_err_w1.1);
+          DBG(2, dbstr);
+          sprintf(dbstr, "%s: squash_completion_interrupt = %b\n", this.name, squash_completion_interrupt);
+          DBG(2, dbstr);
+          if(!spu_ifu_ttype_w2) {
+            /* We're signalling an su trap */
+            error("%d: %s: monitor: Signalled an obselete su trap to the ifu.\n", get_time(LO), this.name);
+          }
+          else if (!squash_completion_interrupt) {
+            /* We're signalling an ma trap */
+            if (this.maTrapPending) {
+              error("%d: %s: monitor: SPU asserted completion trap while previous trap outstanding.\n", get_time(LO), this.name);
+            }
+            this.maTrapPending = 1;
+            DBG(2, "monitor: Setting maTrapPending");
+          }
+        }
+      }
+    }
+    {
+      /* Code to clr maTrapPending */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        ifu_spu_trap_ack = this.covPort.$ifu_spu_trap_ack;
+        if (ifu_spu_trap_ack) {
+          if (!this.maTrapPending) {
+            error("%d: %s: monitor: Received ifu_spu_trap_ack for ma, but no ma trap pending.\n", get_time(LO), this.name);
+          }
+          this.maTrapPending = 0;
+          DBG(2, "monitor: Clearing maTrapPending");
+        }
+      }
+    } join none
+  }
+}
+
+/*
+ * SPU_LDST_MON
+ * This class monitors the streaming load and store requests from the MA unit to
+ * the LSU.
+ *
+ */
+
+class SPU_LDST_MON extends SPU_MONITOR
+{
+  protected spu_ldst_mon_port covPort;
+  bit [5:0] ldst_mon_state;
+
+  /* Public methods */
+  task new(spu_ldst_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_LDST_MON::finalCheck()
+{
+}
+
+task SPU_LDST_MON::new(spu_ldst_mon_port covPort)
+{
+  this.name = "SPU_LDST_MON";
+  this.prefix_str = "SPU_MON: LDST:";
+  this.monitorEnabled = 0;
+  this.ldst_mon_state[SPU_MON_ST_REQ_ASSERTED] = 0;
+  this.ldst_mon_state[SPU_MON_LD_REQ_ASSERTED] = 0;
+  this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED] = 0;
+  this.ldst_mon_state[SPU_MON_LD_REQ_OUTSTANDING] = 0;
+  this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_OUTSTANDING] = 0;
+  this.ldst_mon_state[SPU_MON_LSU_SPU_LDST_ACK] = 0;
+  this.covPort = covPort;
+}
+
+/* Add debug code, and fix error msgs */
+
+task SPU_LDST_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Check to see that stores have priority over loads */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$spu_mactl_streq && this.covPort.$spu_wen_mald_ack) {
+            error("%d: %s: monitor: SPU arbitration error - an streaming load was ack'd when a streaming store request was outstanding. Stores should have priority over loads.\n", get_time(LO), this.name);
+        }
+      }
+    }
+    {
+      /*
+       * Generate state signals that will be sampled by the
+       * spu_st_over_ld_cov object.
+       */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        /* Reset */
+        if (this.covPort.$reset) {
+          this.ldst_mon_state[SPU_MON_ST_REQ_ASSERTED] = 0;
+          this.ldst_mon_state[SPU_MON_LD_REQ_ASSERTED] = 0;
+          this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED] = 0;
+          this.ldst_mon_state[SPU_MON_LD_REQ_OUTSTANDING] = 0;
+          this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_OUTSTANDING] = 0;
+          this.ldst_mon_state[SPU_MON_LSU_SPU_LDST_ACK] = 0;
+        }
+
+        /* stRequestAsserted */
+        if (this.covPort.$spu_mactl_streq && !this.covPort.$spu_mactl_streq.1) {
+          this.ldst_mon_state[SPU_MON_ST_REQ_ASSERTED] = 1;
+          DBG(2, "ldst_monitor: spu_mactl_streq signal asserted");
+        }
+        else {
+          this.ldst_mon_state[SPU_MON_ST_REQ_ASSERTED] = 0;
+        }
+
+        /* ldRequestAsserted */
+        if (this.covPort.$spu_mald_ldreq && !this.covPort.$spu_mald_ldreq.1) {
+          this.ldst_mon_state[SPU_MON_LD_REQ_ASSERTED] = 1;
+          DBG(2, "ldst_monitor: spu_mald_ldreq signal asserted");
+        }
+        else {
+          this.ldst_mon_state[SPU_MON_LD_REQ_ASSERTED] = 0;
+        }
+
+        /* spuLsuLoadReqAsserted */
+        if (this.covPort.$spu_lsu_load_req &&
+            !this.covPort.$spu_lsu_load_req.1) {
+          this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED] = 1;
+          DBG(2, "ldst_monitor: spu_lsu_load_req signal asserted");
+        }
+        else {
+          this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_ASSERTED] = 0;
+        }
+
+        /* ldReqOutstanding */
+        this.ldst_mon_state[SPU_MON_LD_REQ_OUTSTANDING] =
+          this.covPort.$spu_mald_ldreq;
+
+        /* Sample spu_lsu_load_req. This is just so it can be
+         * passed to the st_over_ld cov obj. Then the obj will
+         * only have to monitor all vera signals instead of a
+         * mix of vera and rtl. I don't know how to pass a mix
+         * of vera and rtl signals since the cov obj sample
+         * takes a single vector.
+         */
+        this.ldst_mon_state[SPU_MON_SPU_LSU_LOAD_REQ_OUTSTANDING] = this.covPort.$spu_lsu_load_req;
+
+        /* Sample lsu_spu_ldst_ack, similar to spu_lsu_load_req */
+        this.ldst_mon_state[SPU_MON_LSU_SPU_LDST_ACK] = this.covPort.$lsu_spu_ldst_ack;
+      }
+    } join none
+  }
+}
+
+/*
+ * SPU_MUL_MON
+ * This class monitors the interface between the SPU and EXU with the MUL
+ * block. It is used by some of the coverage objects to detect simultaneous
+ * request for the MUL block by the SPU and EXU.
+ */
+
+class SPU_MUL_MON extends SPU_MONITOR
+{
+  protected bit spuMulReqAsserted;
+  protected bit spuMulReqOutstanding;
+  protected bit exuMulReqAsserted;
+  protected bit exuMulReqOutstanding;
+  protected spu_mul_mon_port covPort;
+  bit [1:0] simul_spu_exu_sample_state;
+  bit [1:0] spu_while_exu_sample_state;
+
+  /* Public methods */
+  task new(spu_mul_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MUL_MON::finalCheck()
+{
+}
+
+task SPU_MUL_MON::new(spu_mul_mon_port covPort)
+{
+  this.name = "SPU_MUL_MON";
+  this.prefix_str = "SPU_MON: MUL:";
+  this.monitorEnabled = 0;
+  this.spuMulReqAsserted = 0;
+  this.spuMulReqOutstanding = 0;
+  this.exuMulReqAsserted = 0;
+  this.exuMulReqOutstanding = 0;
+  this.simul_spu_exu_sample_state = {this.spuMulReqAsserted,this.exuMulReqAsserted};
+  this.spu_while_exu_sample_state = {this.spuMulReqAsserted,this.exuMulReqAsserted};
+  this.covPort = covPort;
+}
+
+/* Add debug code, and fix error msgs */
+
+task SPU_MUL_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Generate the *Asserted signals */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        /* Reset */
+        if (this.covPort.$reset) {
+          this.spuMulReqAsserted = 0;
+          this.spuMulReqOutstanding = 0;
+          this.exuMulReqAsserted = 0;
+          this.exuMulReqOutstanding = 0;
+        }
+      }
+    }
+    {
+      /* Generate *Asserted signals */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        if (!this.spuMulReqOutstanding && this.covPort.$spu_mul_req_vld) {
+          this.spuMulReqAsserted = 1;
+          DBG(2, "mul_monitor: spu asserted MUL request");
+        }
+        else {
+          this.spuMulReqAsserted = 0;
+        }
+
+        if (!this.exuMulReqOutstanding && this.covPort.$exu_mul_input_vld) {
+          this.exuMulReqAsserted = 1;
+          DBG(2, "mul_monitor: exu asserted MUL request");
+        }
+        else {
+          this.exuMulReqAsserted = 0;
+        }
+      }
+    }
+    {
+      while (1)
+      {
+        /* Generate *Outstanding signals */
+        @(posedge this.covPort.$cmp_clk);
+
+        if (this.covPort.$spu_mul_req_vld && !this.covPort.$mul_spu_ack) {
+          this.spuMulReqOutstanding = 1;
+          DBG(2, "mul_monitor: spu has an outstanding MUL request");
+        }
+        else {
+          this.spuMulReqOutstanding = 0;
+        }
+
+        if (this.covPort.$exu_mul_input_vld && !this.covPort.$mul_exu_ack) {
+          this.exuMulReqOutstanding = 1;
+          DBG(2, "mul_monitor: exu has an outstanding MUL request");
+        }
+        else {
+          this.exuMulReqOutstanding = 0;
+        }
+      }
+    }
+    {
+      while (1)
+      {
+        /* Generate simul_spu_exu_sample_state to pass to spu_simul_spu_exu_sample */
+        @(posedge this.covPort.$cmp_clk);
+        this.simul_spu_exu_sample_state = {this.spuMulReqAsserted,this.exuMulReqAsserted};
+        this.spu_while_exu_sample_state = {this.spuMulReqAsserted,this.exuMulReqAsserted};
+      }
+    } join none
+  }
+}
+
+/*
+ * SPU_MALDST_MON
+ * This class monitors the a subset of the spu_mald, spu_mast, and spu_maaddr
+ * logic that does load/stores to/from MAMEM. It provides some signals to
+ * the spu_maadr_sample coverage object, and does some checking for illegal
+ * address wrapping, and lengths.
+ */
+
+class SPU_MALDST_MON extends SPU_MONITOR
+{
+  protected bit spuStartMaLoad;
+  protected bit spuStartMaStore;
+  protected bit [6:0] spuMaLdStLength;
+  protected bit [7:0] spuMaLdStOffset;
+  protected bit maldFirstWrite;
+  protected bit mastFirstRead;
+  protected spu_maldst_mon_port covPort;
+  bit [9:0] maadr_sample_state;
+  bit [8:0] malen_sample_state;
+    
+  /* Public methods */
+  task new(spu_maldst_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MALDST_MON::finalCheck()
+{
+}
+
+task SPU_MALDST_MON::new(spu_maldst_mon_port covPort)
+{
+  this.name = "SPU_MALDST_MON";
+  this.prefix_str = "SPU_MON: MALDST:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.spuStartMaLoad = 0;
+  this.spuStartMaStore = 0;
+  this.spuMaLdStLength = 7'h0;
+  this.spuMaLdStOffset = 8'h0;
+  this.maldFirstWrite = 1;
+  this.mastFirstRead = 1;
+  this.maadr_sample_state = {this.spuStartMaLoad,
+    this.spuStartMaStore,
+    this.spuMaLdStOffset};
+  this.malen_sample_state = {this.spuStartMaLoad,
+    this.spuStartMaStore,
+    this.spuMaLdStLength};
+}
+
+/* Add debug code, and fix error msgs */
+
+task SPU_MALDST_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Reset */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        if (this.covPort.$reset) {
+          this.spuStartMaLoad = 0;
+          this.spuStartMaStore = 0;
+          this.spuMaLdStLength = 7'h0;
+          this.spuMaLdStOffset = 8'h0;
+          this.maldFirstWrite = 1'b1;
+          this.mastFirstRead = 1'b1;
+        }
+      }
+    }
+    {
+      /* Generate the load signals (loading from main mem to mamem).
+       * Need to capture the value of the length and offset on the
+       * first write to mamem when we are in the mamemwr state.
+       */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$mald_idle_state) {
+          this.maldFirstWrite = 1'b1;
+        }
+        else if (this.maldFirstWrite && this.covPort.$mald_mamemwr_state) {
+          this.spuMaLdStLength = this.covPort.$spu_maaddr_len_cntr;
+          this.spuMaLdStOffset = this.covPort.$spu_maaddr_memindx;
+          this.spuStartMaLoad = 1'b1;
+          this.maldFirstWrite = 1'b0;
+          sprintf(dbstr, "maldst_monitor: Started an Load MA Memory Op with offset = 0x%0x, length = %0d\n", this.spuMaLdStOffset, this.spuMaLdStLength);
+          DBG(2, dbstr);
+        }
+        else {
+          this.spuStartMaLoad = 1'b0;
+        }
+      }
+    }
+    {
+      /* Generate the store signals (storing from mamem to main mem).
+       * Need to capture the value of the length and offset on the
+       * first read from mamem when we are in the cur_rdmem_state.
+       */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$mast_idle_state) {
+          this.mastFirstRead = 1'b1;
+        }
+        else if (this.mastFirstRead && this.covPort.$mast_rdmem_state) {
+          this.spuMaLdStLength = this.covPort.$spu_maaddr_len_cntr;
+          this.spuMaLdStOffset = this.covPort.$spu_maaddr_memindx;
+          this.spuStartMaStore = 1'b1;
+          this.mastFirstRead = 1'b0;
+          sprintf(dbstr, "maldst_monitor: Started an Store MA Memory Op with offset = 0x%0x, length = %0d\n", this.spuMaLdStOffset, this.spuMaLdStLength);
+          DBG(2, dbstr);
+        }
+        else {
+          this.spuStartMaStore = 1'b0;
+        }
+      }
+    }
+    {
+      /*
+       * Do some error checking on the range of the offset and length,
+       * and to make sure ld and st do not happen simultaneously.
+       */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+      }
+    }
+    {
+      /* Assign the state vector. */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+        this.maadr_sample_state = {this.spuStartMaLoad,
+          this.spuStartMaStore,
+          this.spuMaLdStOffset};
+        this.malen_sample_state = {this.spuStartMaLoad,
+          this.spuStartMaStore,
+          this.spuMaLdStLength};
+      }
+    } join none
+  }
+}
+
+/*
+ * SPU_LDST_ALT
+ * This class is used to keep track of the details of
+ * stxas and ldxas.
+ */
+
+virtual class SPU_LDST_ALT
+{
+  protected string name;
+  protected bit [7:0] address;
+  protected bit [63:0] data;
+  protected bit [1:0] threadId;
+  protected bit cancelled;
+  protected bit outstanding;
+  
+  /* Public methods */
+  task new();
+  //task getOutstanding();
+  //task cancelTransaction();
+  
+  /* Private methods */
+}
+
+class SPU_LDXA extends SPU_LDST_ALT
+{
+  
+  /* Public methods */
+  task new();
+  //task issueLdxa(bit [7:0] address, bit [1:0] threadId);
+  //task completeLdxa(bit [63:0] data, bit [1:0] threadId);
+
+  /* Private methods */
+}
+
+class SPU_STXA extends SPU_LDST_ALT
+{
+  
+  /* Public methods */
+  task new();
+  //task issueStxa(bit [7:0] address, bit [1:0] threadId, bit [63:0] data);
+  //task completeStxa(bit [1:0] threadId);
+
+  /* Private methods */
+}
+
+/*
+ * SPU_LDSTXA_MON
+ * This class monitors the ldxa/stxa interface between the spu and lsu.
+ * It monitors and indicates the following:
+ * ldxa/stxa transactions
+ * flush
+ * reg address
+ * thread id
+ * store or load data
+ * info on precise errors (do this later)
+ */
+
+class SPU_LDSTXA_MON extends SPU_MONITOR
+{
+  protected spu_ldstxa_mon_port covPort;
+  protected SPU_LDXA ldxaQueue[4]; // indexed by threadId
+  protected SPU_STXA stxaQueue[4];
+  protected bit [1:0] curThreadId;
+  protected bit [1:0] prevThreadId;
+  protected bit firstTransaction;
+  protected bit newThreadId;
+  protected bit [3:0] ldxaOutstanding;
+  protected bit [3:0] stxaOutstanding;
+
+  protected integer ldxaIntervalCounter;
+  protected integer lastLdxaCycle;
+  protected bit lastLdxaCycleValid;
+  protected bit ldxaIntervalOverflow;
+  protected integer minLdxaInterval;
+  protected bit minLdxaIntervalValid;
+  protected integer curLdxaInterval;
+
+  protected integer stxaIntervalCounter;
+  protected integer lastStxaCycle;
+  protected bit lastStxaCycleValid;
+  protected bit stxaIntervalOverflow;
+  protected integer minStxaInterval;
+  protected bit minStxaIntervalValid;
+  protected integer curStxaInterval;
+
+  bit [3:0] simul_ldxa_sample_state;
+  bit [3:0] simul_stxa_sample_state;
+  bit [2:0] ldstxa_thrid_sample_state;
+  bit [4:0] data_acc_case_3_sample_state;
+  bit ldxaIssued;
+  bit ldxaFlushed;
+  bit stxaIssued;
+  bit stxaFlushed;
+  bit [7:0] ldstxaVa;
+  bit [63:0] ldstxaData;
+  
+  /* Public methods */
+  task new(spu_ldstxa_mon_port covPort);
+  task monitor();
+  task finalCheck();
+  task disableDebugMsgs();
+
+  /* Private methods */
+  protected task setLdxaOutstanding(bit [1:0] threadId);
+  protected task clrLdxaOutstanding(bit [1:0] threadId, bit [63:0] data, bit illegalVa);
+  protected task setStxaOutstanding(bit [1:0] threadId);
+  protected task clrStxaOutstanding(bit [1:0] threadId);
+  protected function bit regWithStxaAck(bit [7:0] addr);
+  protected function string spuRegAdrDecode(bit [7:0] addr);
+  protected function string spuRegDecode(bit [7:0] addr, bit [63:0] data);
+  protected function string spuMaOpToString(bit [2:0] op);
+}
+
+task SPU_LDSTXA_MON::finalCheck()
+{
+}
+
+task SPU_LDSTXA_MON::new(spu_ldstxa_mon_port covPort)
+{
+  this.name = "SPU_LDSTXA_MON";
+  this.prefix_str = "SPU_MON: LDSTXA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.firstTransaction = 1;
+  this.ldxaIssued = 0;
+  this.stxaIssued = 0;
+  this.ldxaOutstanding = 4'b0000;
+  this.stxaOutstanding = 4'b0000;
+  this.newThreadId = 0;
+  this.simul_ldxa_sample_state = this.ldxaOutstanding;
+  this.simul_stxa_sample_state = this.stxaOutstanding;
+  this.ldstxa_thrid_sample_state = {this.ldxaIssued, this.stxaIssued, this.newThreadId};
+  this.data_acc_case_3_sample_state = {this.ldxaFlushed, this.stxaFlushed, this.covPort.$exu_lsu_ldst_va_e.2[2:0]};
+
+  this.ldxaIntervalCounter = 0;
+  this.lastLdxaCycleValid = 0;
+  this.ldxaIntervalOverflow = 0;
+  this.minLdxaIntervalValid = 0;
+
+  this.stxaIntervalCounter = 0;
+  this.lastStxaCycleValid = 0;
+  this.stxaIntervalOverflow = 0;
+  this.minStxaIntervalValid = 0;
+}
+
+/*
+ * Notes
+ * + Spu_lsu_stxa_ack is only asserted for stxa's to the sdata reg. I think
+ *   all other registers just take their store data immediately, but the
+ *   spu may not "consume" the sdata data until it is ready to accept it,
+ *   so the ack is not sent until the spu is ready to take the data.
+ * + Get clear on the possible concurrency of operations.
+ */
+
+task SPU_LDSTXA_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* ldxa state machine */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        if (this.covPort.$ifu_spu_inst_vld_w &&
+            this.covPort.$ifu_lsu_alt_space_e.2 &&
+            (this.covPort.$lsu_spu_asi_state_e.2 == 8'h40) &&
+            this.covPort.$ifu_lsu_ld_inst_e.2) {
+          this.ldstxaVa = this.covPort.$exu_lsu_ldst_va_e.2;
+          if (!this.covPort.$all_flush) {
+            sprintf(dbstr, "ldxa issued to SPU register %s from thread %d\n", this.spuRegAdrDecode(this.covPort.$exu_lsu_ldst_va_e.2), this.covPort.$ifu_tlu_thrid_e.2);
+            DBG(3, dbstr);
+            this.ldxaIssued = 1;
+            this.ldxaFlushed = 0;
+            this.setLdxaOutstanding(this.covPort.$ifu_tlu_thrid_e.2);
+            this.curThreadId = this.covPort.$ifu_tlu_thrid_e.2;
+          }
+          else {
+            sprintf(dbstr, "ldxa issued to SPU register %s from thread %d was flushed\n", this.spuRegAdrDecode(this.covPort.$exu_lsu_ldst_va_e.2), this.covPort.$ifu_tlu_thrid_e.2);
+            DBG(3, dbstr);
+            this.ldxaIssued = 0;
+            this.ldxaFlushed = 1;
+          }
+        }
+        else {
+          this.ldxaIssued = 0;
+          this.ldxaFlushed = 0;
+        }
+
+        if (this.covPort.$spu_lsu_ldxa_data_vld_w2 == 1'b1) {
+          this.clrLdxaOutstanding(this.covPort.$spu_lsu_ldxa_tid_w2,
+                                  this.covPort.$spu_lsu_ldxa_data_w2,
+                                  this.covPort.$spu_lsu_ldxa_illgl_va_w2);
+        }
+      }
+    }
+    {
+      /* stxa state machine */
+      while (1)
+      {
+        @(posedge this.covPort.$cmp_clk);
+
+        if (this.covPort.$ifu_spu_inst_vld_w &&
+            this.covPort.$ifu_lsu_alt_space_e.2 &&
+            (this.covPort.$lsu_spu_asi_state_e.2 == 8'h40) &&
+            this.covPort.$ifu_lsu_st_inst_e.2) {
+          this.ldstxaVa = this.covPort.$exu_lsu_ldst_va_e.2;
+          if (!this.covPort.$all_flush) {
+            sprintf(dbstr, "stxa issued to SPU %s register from thread %d, with data value 0x%x.\n", this.spuRegAdrDecode(this.covPort.$exu_lsu_ldst_va_e.2), this.covPort.$ifu_tlu_thrid_e.2, this.covPort.$exu_lsu_rs3_data_e.2);
+            DBG(3, dbstr);
+            sprintf(dbstr, "%s\n", this.spuRegDecode(this.covPort.$exu_lsu_ldst_va_e.2, this.covPort.$exu_lsu_rs3_data_e.2));
+            DBG(3, dbstr);
+            this.stxaIssued = 1;
+            this.stxaFlushed = 0;
+            this.ldstxaData = this.covPort.$exu_lsu_rs3_data_e.2;
+          }
+          else {
+            sprintf(dbstr, "stxa issued to SPU register %s from thread %d was flushed\n", this.spuRegAdrDecode(this.covPort.$exu_lsu_ldst_va_e.2), this.covPort.$ifu_tlu_thrid_e.2);
+            DBG(3, dbstr);
+            this.stxaIssued = 0;
+            this.stxaFlushed = 1;
+          }
+	  // [Viranjit 11/19/03] only setStxaOutstanding if stxa not flushed
+          if ( this.regWithStxaAck(this.covPort.$exu_lsu_ldst_va_e.2) &&
+	       !this.stxaFlushed )
+	  {
+            this.setStxaOutstanding(this.covPort.$ifu_tlu_thrid_e.2);
+          }
+          this.curThreadId = this.covPort.$ifu_tlu_thrid_e.2;
+        }
+        else {
+          this.stxaIssued = 0;
+          this.stxaFlushed = 0;
+        }
+
+        if (this.covPort.$spu_lsu_stxa_ack) {
+          this.clrStxaOutstanding(this.covPort.$spu_lsu_stxa_ack_tid);
+        }
+      }
+    }
+    {
+      /* See if current thread is equal to the previous thread id
+       * and set newThreadId if they are not equal. This is used
+       * by the coverage object to detect that we've done back to
+       * back ldxas or stxas with differing thread ids.
+       */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (!this.firstTransaction && (this.ldxaIssued || this.stxaIssued)) {
+          if (this.curThreadId != this.prevThreadId) {
+            this.newThreadId = 1;
+          }
+          else {
+            this.newThreadId = 0;
+          }
+          this.prevThreadId = this.curThreadId;
+        }
+        else {
+          this.firstTransaction = 0;
+        }
+      }
+    }
+    {
+      /* Ldxa interval count logic */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        
+        if (this.ldxaIssued) {
+          if (this.ldxaIntervalOverflow) {
+            /* Throw away this sample */
+            this.ldxaIntervalOverflow = 0;
+            this.lastLdxaCycleValid = 0;
+          }
+          else if (this.lastLdxaCycleValid) {
+            this.curLdxaInterval = this.ldxaIntervalCounter - this.lastLdxaCycle;
+            if (!this.minLdxaIntervalValid ||
+                (this.curLdxaInterval < this.minLdxaInterval)) {
+              this.minLdxaInterval = this.curLdxaInterval;
+              this.minLdxaIntervalValid = 1;
+            }
+            sprintf(dbstr, "Cycles between this ldxa and the last one = %0d\n", this.curLdxaInterval);
+            DBG(3, dbstr);
+            sprintf(dbstr, "So far the min interval between ldxas = %0d cycles\n", this.minLdxaInterval);
+            DBG(3, dbstr);
+            this.lastLdxaCycle = this.ldxaIntervalCounter;
+          }
+          else {
+            this.lastLdxaCycle = this.ldxaIntervalCounter;
+            this.lastLdxaCycleValid = 1;
+          }
+        }
+        
+        /* Increment counter and check for overflow */
+        this.ldxaIntervalCounter++;
+        if (this.ldxaIntervalCounter == 0) {
+          this.ldxaIntervalOverflow = 1;
+        }
+      }
+    }
+    {
+      /* Stxa interval count logic */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        
+        if (this.stxaIssued) {
+          if (this.stxaIntervalOverflow) {
+            /* Throw away this sample */
+            this.stxaIntervalOverflow = 0;
+            this.lastStxaCycleValid = 0;
+          }
+          else if (this.lastStxaCycleValid) {
+            this.curStxaInterval = this.stxaIntervalCounter - this.lastStxaCycle;
+            if (!this.minStxaIntervalValid ||
+                (this.curStxaInterval < this.minStxaInterval)) {
+              this.minStxaInterval = this.curStxaInterval;
+              this.minStxaIntervalValid = 1;
+            }
+            sprintf(dbstr, "Cycles between this stxa and the last one = %0d\n", this.curStxaInterval);
+            DBG(3, dbstr);
+            sprintf(dbstr, "So far the min interval between stxas = %0d\n", this.minStxaInterval);
+            DBG(3, dbstr);
+            this.lastStxaCycle = this.stxaIntervalCounter;
+          }
+          else {
+            this.lastStxaCycle = this.stxaIntervalCounter;
+            this.lastStxaCycleValid = 1;
+          }
+        }
+        
+        /* Increment counter and check for overflow */
+        this.stxaIntervalCounter++;
+        if (this.stxaIntervalCounter == 0) {
+          this.stxaIntervalOverflow = 1;
+        }
+      }
+    }
+    {
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        
+        /* Assign the sample_state vectors */
+        this.simul_ldxa_sample_state = this.ldxaOutstanding;
+        this.simul_stxa_sample_state = this.stxaOutstanding;
+        this.ldstxa_thrid_sample_state = {this.ldxaIssued, this.stxaIssued, this.newThreadId};
+        this.data_acc_case_3_sample_state = {this.ldxaFlushed, this.stxaFlushed, this.covPort.$exu_lsu_ldst_va_e.2[2:0]};
+      }
+    } join none
+  }
+}
+
+task SPU_LDSTXA_MON::setLdxaOutstanding(bit [1:0] threadId)
+{
+  if (this.ldxaOutstanding[threadId]) {
+    error("%d: %s: monitor: Received an ldxa for thread %d, but one is already outstanding\n", get_time(LO), this.name, threadId);
+  }
+  else {
+    this.ldxaOutstanding[threadId] = 1;
+    sprintf(dbstr, "Setting outstanding ldxa for thread %d\n", threadId);
+    DBG(2, dbstr);
+  }
+  sprintf(dbstr, "The value of ldxaOutstanding is 4'b%4b\n", this.ldxaOutstanding);
+  DBG(3, dbstr);
+}
+
+task SPU_LDSTXA_MON::clrLdxaOutstanding(bit [1:0] threadId, bit [63:0] data, bit illegalVa)
+{
+  if (!this.ldxaOutstanding[threadId]) {
+    error("%d: %s: monitor: Received an ldxa response for thread %d, but none is outstanding\n", get_time(LO), this.name, threadId);
+  }
+  else {
+    this.ldxaOutstanding[threadId] = 0;
+    sprintf(dbstr, "Cleared outstanding ldxa for thread %d, data = 0x%x\n", threadId, data);
+    DBG(2, dbstr);
+    if (illegalVa) {
+      sprintf(dbstr, "Note: spu_lsu_ldxa_illgl_va_w2 was asserted for this ldxa return.\n");
+      DBG(2, dbstr);
+    }
+  }
+  sprintf(dbstr, "The value of ldxaOutstanding is 4'b%4b\n", this.ldxaOutstanding);
+  DBG(3, dbstr);
+}
+
+task SPU_LDSTXA_MON::setStxaOutstanding(bit [1:0] threadId)
+{
+  if (this.stxaOutstanding[threadId]) {
+    error("%d: %s: monitor: Received an stxa for thread %d, but one is already outstanding\n", get_time(LO), this.name, threadId);
+  }
+  else {
+    this.stxaOutstanding[threadId] = 1;
+    sprintf(dbstr, "Setting outstanding stxa for thread %d\n", threadId);
+    DBG(2, dbstr);
+  }
+  sprintf(dbstr, "The value of stxaOutstanding is 4'b%4b\n", this.stxaOutstanding);
+  DBG(3, dbstr);
+}
+
+task SPU_LDSTXA_MON::clrStxaOutstanding(bit [1:0] threadId)
+{
+  if (!this.stxaOutstanding[threadId]) {
+    error("%d: %s: monitor: Received an stxa response for thread %d, but none is outstanding\n", get_time(LO), this.name, threadId);
+  }
+  else {
+    this.stxaOutstanding[threadId] = 0;
+    sprintf(dbstr, "Cleared outstanding stxa for thread %d\n", threadId);
+    DBG(2, dbstr);
+  }
+  sprintf(dbstr, "The value of stxaOutstanding is 4'b%4b\n", this.stxaOutstanding);
+  DBG(3, dbstr);
+}
+
+function bit SPU_LDSTXA_MON::regWithStxaAck(bit [7:0] addr)
+{
+  case(addr)
+  {
+    SPU_ASI_MA_CONTROL_REG_ADDR:
+    {
+      regWithStxaAck = 1'b1;
+    }
+    default:
+    {
+      regWithStxaAck = 1'b0;
+    }
+  }
+}
+
+function string SPU_LDSTXA_MON::spuRegAdrDecode(bit [7:0] addr)
+{
+  case (addr)
+  {
+    SPU_ASI_STREAM_CONTROL_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_CONTROL_REG";
+    }
+    SPU_ASI_STREAM_SRC_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_SRC_REG";
+    }
+    SPU_ASI_STREAM_DEST_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_DEST_REG";
+    }
+    SPU_ASI_STREAM_DATA_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_DATA_REG";
+    }
+    SPU_ASI_STREAM_IV1_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_IV1_REG";
+    }
+    SPU_ASI_STREAM_KEY1_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_KEY1_REG";
+    }
+    SPU_ASI_STREAM_KEY2_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_KEY2_REG";
+    }
+    SPU_ASI_STREAM_KEY3_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_KEY3_REG";
+    }
+    SPU_ASI_STREAM_HASH_LO_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_HASH_LO_REG";
+    }
+    SPU_ASI_STREAM_HASH_MID_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_HASH_MID_REG";
+    }
+    SPU_ASI_STREAM_HASH_HI_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_HASH_HI_REG";
+    }
+    SPU_ASI_STREAM_SYNC_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_STREAM_SYNC_REG";
+    }
+    SPU_ASI_MA_CONTROL_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_MA_CONTROL_REG";
+    }
+    SPU_ASI_MA_ADDR_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_MA_ADDR_REG";
+    }
+    SPU_ASI_MA_MPA_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_MA_MPA_REG";
+    }
+    SPU_ASI_MA_NP_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_MA_NP_REG";
+    }
+    SPU_ASI_MA_SYNC_REG_ADDR:
+    {
+      spuRegAdrDecode = "ASI_MA_SYNC_REG";
+    }
+    default:
+    {
+      spuRegAdrDecode = "UNKNOWN";
+    }
+  }
+}
+
+function string SPU_LDSTXA_MON::spuRegDecode(bit [7:0] addr, bit [63:0] data)
+{
+  string regNameString;
+  string regDecodeValueString;
+  integer opcode;
+  integer lengthMinusOne;
+  integer intr;
+  integer busy;
+  integer thread;
+  integer perrinj;
+  
+  sprintf(regNameString, "%s", this.spuRegAdrDecode(addr));
+
+  case (regNameString)
+  {
+    "ASI_MA_CONTROL_REG":
+    {
+      // Decode the value, and create a string of the fields.
+      opcode = (data >> MA_CTL_OP_LSB) & MA_CTL_OP_MASK;
+      lengthMinusOne = (data >> MA_CTL_LENGTH_LSB) & MA_CTL_LENGTH_MASK;
+      intr  = (data >> MA_CTL_INT_LSB) & MA_CTL_INT_MASK;
+      busy  = (data >> MA_CTL_BUSY_LSB) & MA_CTL_BUSY_MASK;
+      thread  = (data >> MA_CTL_THREAD_LSB) & MA_CTL_THREAD_MASK;
+      perrinj  = (data >> MA_CTL_PERRINJ_LSB) & MA_CTL_PERRINJ_MASK;
+      sprintf(regDecodeValueString, "MA CONTROL: OP = %s, LENGTH = %0d, INT = %1b, BUSY = %1b, THREAD = %0d, PERRINJ = %1b", this.spuMaOpToString(opcode), lengthMinusOne + 1, intr, busy, thread, perrinj);
+      spuRegDecode = regDecodeValueString;
+    }
+    default:
+    {
+      spuRegDecode = "";
+    }
+  }
+}
+
+function string SPU_LDSTXA_MON::spuMaOpToString(bit [2:0] op)
+{
+  case (op)
+  {
+    MA_OP_LD_MAMEM:
+    {
+      spuMaOpToString = "Load MA Memory";
+    }
+    MA_OP_ST_MAMEM:
+    {
+      spuMaOpToString = "Store MA Memory";
+    }
+    MA_OP_MUL:
+    {
+      spuMaOpToString = "Modular Multiply";
+    }
+    MA_OP_RED:
+    {
+      spuMaOpToString = "Modular Reduction";
+    }
+    MA_OP_EXP:
+    {
+      spuMaOpToString = "Modular Exponentiation";
+    }
+    default:
+    {
+      spuMaOpToString = "Reserved=";
+    }
+  }
+}
+
+task SPU_LDSTXA_MON::disableDebugMsgs()
+{
+  this.enableDebugMsgs = 0;
+}
+
+/*
+ * SPU_MARED_MON
+ * This class monitors the spu_mared state machine.
+ */
+
+class SPU_MARED_MON extends SPU_MONITOR
+{
+  protected spu_mared_mon_port covPort;
+  bit mared_idle;
+
+  /* Public methods */
+  task new(spu_mared_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MARED_MON::new(spu_mared_mon_port covPort)
+{
+  this.name = "SPU_MARED_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.mared_idle = 1;
+}
+
+task SPU_MARED_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Sample the signals */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$spu_mared_idle && !this.mared_idle) {
+          sprintf(dbstr, "Transitioned from not idle to idle.\n");
+          DBG(3, dbstr);
+        }
+        else if (!this.covPort.$spu_mared_idle && this.mared_idle) {
+          sprintf(dbstr, "Transitioned from idle to not idle.\n");
+          DBG(3, dbstr);
+        }
+        this.mared_idle = this.covPort.$spu_mared_idle;
+      }
+    } join none
+  }
+}
+
+task SPU_MARED_MON::finalCheck()
+{
+}
+
+/*
+ * SPU_MAEXP_MON
+ * This class monitors the spu_maexp state machine.
+ */
+
+class SPU_MAEXP_MON extends SPU_MONITOR
+{
+  protected spu_maexp_mon_port covPort;
+  bit maexp_idle;
+
+  /* Public methods */
+  task new(spu_maexp_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MAEXP_MON::new(spu_maexp_mon_port covPort)
+{
+  this.name = "SPU_MAEXP_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.maexp_idle = 1;
+}
+
+task SPU_MAEXP_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Sample the signals */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$spu_maexp_idle && !this.maexp_idle) {
+          sprintf(dbstr, "Transitioned from not idle to idle.\n");
+          DBG(3, dbstr);
+        }
+        else if (!this.covPort.$spu_maexp_idle && this.maexp_idle) {
+          sprintf(dbstr, "Transitioned from idle to not idle.\n");
+          DBG(3, dbstr);
+        }
+        this.maexp_idle = this.covPort.$spu_maexp_idle;
+      }
+    } join none
+  }
+}
+
+task SPU_MAEXP_MON::finalCheck()
+{
+}
+
+/*
+ * SPU_MAMUL_MON
+ * This class monitors the spu_mamul state machine.
+ */
+
+class SPU_MAMUL_MON extends SPU_MONITOR
+{
+  protected spu_mamul_mon_port covPort;
+  bit mamul_idle;
+
+  /* Public methods */
+  task new(spu_mamul_mon_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MAMUL_MON::new(spu_mamul_mon_port covPort)
+{
+  this.name = "SPU_MAMUL_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.mamul_idle = 1;
+}
+
+task SPU_MAMUL_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Sample the signals */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$spu_mamul_idle && !this.mamul_idle) {
+          sprintf(dbstr, "Transitioned from not idle to idle.\n");
+          DBG(3, dbstr);
+        }
+        else if (!this.covPort.$spu_mamul_idle && this.mamul_idle) {
+          sprintf(dbstr, "Transitioned from idle to not idle.\n");
+          DBG(3, dbstr);
+        }
+        this.mamul_idle = this.covPort.$spu_mamul_idle;
+      }
+    } join none
+  }
+}
+
+task SPU_MAMUL_MON::finalCheck()
+{
+}
+
+/*
+ * SPU_MA_MON
+ * This class monitors the MA state machines.
+ */
+
+class SPU_MA_MON extends SPU_MONITOR
+{
+  protected spu_ma_mon_port covPort;
+  protected SPU_MARED_MON maredMon;
+  protected SPU_MAEXP_MON maexpMon;
+  protected SPU_MAMUL_MON mamulMon;
+  bit ma_idle;
+  bit ma_idle_q;
+  bit ma_busy;
+  bit ma_first_op_occured;
+
+  /* Public methods */
+  task new(spu_ma_mon_port covPort,
+           spu_mared_mon_port maredPort,
+           spu_maexp_mon_port maexpPort,
+           spu_mamul_mon_port mamulPort);
+  task enableMonitor();
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MA_MON::new(spu_ma_mon_port covPort,
+                     spu_mared_mon_port maredPort,
+                     spu_maexp_mon_port maexpPort,
+                     spu_mamul_mon_port mamulPort)
+{
+  this.name = "SPU_MA_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.maredMon = new(maredPort);
+  this.maexpMon = new(maexpPort);
+  this.mamulMon = new(mamulPort);
+  this.ma_idle = 1;
+  this.ma_idle_q = 1;
+  this.ma_busy = 0;
+  this.ma_first_op_occured = 0;
+}
+
+task SPU_MA_MON::enableMonitor()
+{
+  // Todo: need to call super class enableMonitor here.
+  super.enableMonitor();
+  this.maredMon.enableMonitor();
+  this.maexpMon.enableMonitor();
+  this.mamulMon.enableMonitor();
+}
+
+task SPU_MA_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        this.ma_idle = this.maredMon.mared_idle && this.maexpMon.maexp_idle &&
+                       this.mamulMon.mamul_idle;
+        if (this.ma_idle && !this.ma_idle_q) {
+          sprintf(dbstr, "Transitioned from not idle to idle.\n");
+          DBG(3, dbstr);
+        }
+        else if (!this.ma_idle && this.ma_idle_q) {
+          sprintf(dbstr, "Transitioned from idle to not idle.\n");
+          DBG(3, dbstr);
+          if (this.ma_first_op_occured == 0) {
+            this.ma_first_op_occured = 1;
+            sprintf(dbstr, "Starting first MA op.\n");
+            DBG(3, dbstr);
+          }
+        }
+        this.ma_idle_q = this.ma_idle;
+      }
+    } join none
+  }
+  this.maredMon.monitor();
+  this.maexpMon.monitor();
+  this.mamulMon.monitor();
+}
+
+task SPU_MA_MON::finalCheck()
+{
+}
+
+/*
+ * SPU_MASYNC_SAMPLE_MON
+ * The purpose of this class is to provide the state required
+ * by the coverage object spu_masync_sample. It instantiates
+ * the classes SPU_LDSTXA_MON and SPU_MA_MON.
+ */
+
+class SPU_MASYNC_SAMPLE_MON extends SPU_MONITOR
+{
+  protected spu_ldstxa_mon_port covPort;
+  protected SPU_LDSTXA_MON ldstxaMon;
+  protected SPU_MA_MON maMon;
+  protected bit ldxa_from_ma_sync_before_first_op;
+  protected bit ldxa_from_ma_sync_while_ma_idle;
+  bit [1:0] masync_state;
+
+  /* Public methods */
+  task new(spu_ldstxa_mon_port ldstxaPort,
+           spu_ma_mon_port maPort,
+           spu_mared_mon_port maredPort,
+           spu_maexp_mon_port maexpPort,
+           spu_mamul_mon_port mamulPort);
+  task enableMonitor();
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+}
+
+task SPU_MASYNC_SAMPLE_MON::new(spu_ldstxa_mon_port ldstxaPort,
+                                spu_ma_mon_port maPort,
+                                spu_mared_mon_port maredPort,
+                                spu_maexp_mon_port maexpPort,
+                                spu_mamul_mon_port mamulPort)
+{
+  this.name = "SPU_MA_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = ldstxaPort; // Just using for the clock
+  this.ldstxaMon = new(ldstxaPort);
+  this.maMon = new(maPort, maredPort, maexpPort, mamulPort);
+  this.ldxa_from_ma_sync_before_first_op = 0;
+  this.ldxa_from_ma_sync_while_ma_idle = 0;
+  this.masync_state = {this.ldxa_from_ma_sync_before_first_op,this.ldxa_from_ma_sync_while_ma_idle};
+}
+
+// Todo: See if this is the correct setup to override enableMonitor
+
+task SPU_MASYNC_SAMPLE_MON::enableMonitor()
+{
+  super.enableMonitor();
+  this.ldstxaMon.enableMonitor();
+  // Turn off the debug messages for this ldstxaMon, since there
+  // is already another instance running and we don't want double
+  // debug messages.
+  this.ldstxaMon.disableDebugMsgs();
+  this.maMon.enableMonitor();
+}
+
+task SPU_MASYNC_SAMPLE_MON::monitor()
+{
+  this.ldstxaMon.monitor();
+  this.maMon.monitor();
+  
+  if (this.monitorEnabled) {
+    fork
+    {
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        
+        if (!this.maMon.ma_first_op_occured && this.ldstxaMon.ldxaIssued &&
+            (this.ldstxaMon.ldstxaVa == SPU_ASI_MA_SYNC_REG_ADDR)) {
+          this.ldxa_from_ma_sync_before_first_op = 1;
+        }
+        else {
+          this.ldxa_from_ma_sync_before_first_op = 0;
+        }
+
+        if (this.maMon.ma_idle && this.ldstxaMon.ldxaIssued &&
+            (this.ldstxaMon.ldstxaVa == SPU_ASI_MA_SYNC_REG_ADDR)) {
+          this.ldxa_from_ma_sync_while_ma_idle = 1;
+        }
+        else {
+          this.ldxa_from_ma_sync_while_ma_idle = 0;
+        }
+
+        /* Assign the sample_state vectors */
+        this.masync_state = {this.ldxa_from_ma_sync_before_first_op,this.ldxa_from_ma_sync_while_ma_idle};
+      }
+    }
+    /* Monitor for SPU abort operation - this happens when we get a stxa to
+     * the CTL register and the MA is busy.
+     */
+    {
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        
+        if (!this.maMon.ma_idle && this.ldstxaMon.stxaIssued &&
+            (this.ldstxaMon.ldstxaVa == SPU_ASI_MA_CONTROL_REG_ADDR)) {
+          sprintf(dbstr, "A stxa to the MA CONTROL register clobbered an ongoing MA op.\n");
+          DBG(3, dbstr);
+        }
+      }
+    } join none
+  }
+}
+
+task SPU_MASYNC_SAMPLE_MON::finalCheck()
+{
+}
+
+/*
+ * SPU_ABORT_FSM_MON
+ * This class monitors the "abort" fsm in spu_mactl.
+ */
+
+class SPU_ABORT_FSM_MON extends SPU_MONITOR
+{
+  protected spu_ma_abort_fsm_cov_port covPort;
+  protected bit [3:0] curStateVector;
+  protected bit [3:0] prevStateVector;
+  protected bit issuedOp;
+  
+  /* Public methods */
+  task new(spu_ma_abort_fsm_cov_port covPort);
+  task monitor();
+  task finalCheck();
+
+  /* Private methods */
+  function bit [1:0] encodeAbortState(bit [3:0] stateVector);
+}
+
+task SPU_ABORT_FSM_MON::new(spu_ma_abort_fsm_cov_port covPort)
+{
+  this.name = "SPU_ABORT_FSM_MON";
+  this.prefix_str = "SPU_MON: MA:";
+  this.monitorEnabled = 0;
+  this.covPort = covPort;
+  this.prevStateVector = 4'h0;
+  this.issuedOp = 0;
+}
+
+task SPU_ABORT_FSM_MON::monitor()
+{
+  if (this.monitorEnabled) {
+    fork
+    {
+      /* Monitor the fsm and it's transitions */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        this.curStateVector = {this.covPort.$cur_state_11,
+          this.covPort.$cur_state_10,
+          this.covPort.$cur_state_01,
+          this.covPort.$cur_state_00};
+        this.issuedOp = 0;
+        if (this.curStateVector != this.prevStateVector) {
+          /* We've made a state transition */
+          sprintf(dbstr, "Transitioned from state %2b to %2b: ", this.encodeAbortState(this.prevStateVector), this.encodeAbortState(this.curStateVector));
+          case (this.curStateVector)
+          {
+            4'b0001:
+            {
+              /* 00 state */
+              if (this.covPort.$state_reset.1) {
+                sprintf(dbstr, "%s state_reset = 1", dbstr);
+              }
+              if (this.covPort.$spu_mactl_done.1) {
+                sprintf(dbstr, "%s spu_mactl_done = 1", dbstr);
+              }
+            }
+            4'b0010:
+            {
+              /* 01 state */
+              this.issuedOp = 1;
+              if (this.covPort.$cur_state_00.1 & this.covPort.$stxa_2ctl_reg.1 & this.covPort.$wait_4stb_tobecome_empty.1) {
+                sprintf(dbstr, "%s cur_state_00 & stxa_2ctl_reg & ~wait_4stb_tobecome_empty\n", dbstr);
+              }
+              else if (this.covPort.$cur_state_10.1 & ~(this.covPort.$stxa_2ctl_reg.1 | this.covPort.$waiting_4stb_tobecome_empty.1)) {
+                sprintf(dbstr, "%s cur_state_10 & ~(stxa_2ctl_reg | waiting_4stb_tobecome_empty)\n", dbstr);
+              }
+            }
+            4'b0100:
+            {
+              /* 10 state */
+              if (this.covPort.$cur_state_11.1 & ~this.covPort.$stxa_2ctl_reg.1 & this.covPort.$ma_op_complete_mask.1) {
+                sprintf(dbstr, "%s cur_state_11 & ~stxa_2ctl_reg & ma_op_complete_mask\n", dbstr);
+              }
+              else if (this.covPort.$cur_state_00.1 & this.covPort.$wait_4stb_tobecome_empty.1) {
+                sprintf(dbstr, "%s cur_state_00 & wait_4stb_tobecome_empty\n", dbstr);
+              }
+            }
+            4'b1000:
+            {
+              /* 11 state */
+              if (this.covPort.$cur_state_01.1 & this.covPort.$stxa_2ctl_reg.1) {
+                sprintf(dbstr, "%s cur_state_01 & stxa_2ctl_reg\n", dbstr);
+              }
+            }
+            default:
+            {
+              error("%d: %s: Entered illegal state %x", get_time(LO), this.name, this.curStateVector);
+            }
+          }
+          sprintf(dbstr, "%s\n", dbstr);
+          DBG(3, dbstr);
+          this.prevStateVector = this.curStateVector;
+        }
+      }
+    }
+    {
+      /* Triggers */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.covPort.$stxa_2ctl_reg & this.covPort.$wait4_trap_ack_set) {
+          sprintf(dbstr, "Trigger: stxa_2ctl_reg & wait4_trap_ack_set asserted\n", dbstr);
+          DBG(3, dbstr);
+        }
+        if (this.covPort.$stxa_2ctl_reg & this.covPort.$cur_state_11) {
+          sprintf(dbstr, "Trigger: stxa_2ctl_reg & cur_state_11\n", dbstr);
+          DBG(3, dbstr);
+        }
+        if (this.covPort.$stxa_2ctl_reg & this.covPort.$cur_state_10) {
+          sprintf(dbstr, "Trigger: stxa_2ctl_reg & cur_state_10\n", dbstr);
+          DBG(3, dbstr);
+        }
+      }
+    }
+    {
+      /* Assertions */
+      while (1) {
+        @(posedge this.covPort.$cmp_clk);
+        if (this.issuedOp & (this.covPort.$ma_stack_cntr_q != 6'h0)) {
+          error("%d: %s: Assertion: ma_stack_cntr_q = %d when op issued, it should be 0.\n", get_time(LO), this.name, this.covPort.$ma_stack_cntr_q);
+        }
+      }
+    } join none
+  }
+}
+
+
+task SPU_ABORT_FSM_MON::finalCheck()
+{
+}
+
+function bit [1:0] SPU_ABORT_FSM_MON::encodeAbortState(bit [3:0] stateVector)
+{
+  case(stateVector)
+  {
+    4'b0001:
+    {
+      encodeAbortState = 2'b00;
+    }
+    4'b0010:
+    {
+      encodeAbortState = 2'b01;
+    }
+    4'b0100:
+    {
+      encodeAbortState = 2'b10;
+    }
+    4'b1000:
+    {
+      encodeAbortState = 2'b11;
+    }
+  }
+}
+

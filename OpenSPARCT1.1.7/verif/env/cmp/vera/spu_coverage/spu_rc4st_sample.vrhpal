@@ -1,0 +1,74 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_rc4st_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_rc4st_COV_VRH
+#define INC__TMP_spu_rc4st_COV_VRH
+#define RC4ST_IDLEST_STATE		`RC4ST_STATE_WIDTH'b10_0000
+#define RC4ST_IDLEST_DLY_STATE		`RC4ST_STATE_WIDTH'b01_0000
+#define RC4ST_RDMEM_STATE		`RC4ST_STATE_WIDTH'b00_1000
+#define RC4ST_WAIT4STDRAIN_STATE	`RC4ST_STATE_WIDTH'b00_0100
+#define RC4ST_RC4RDX_STATE		`RC4ST_STATE_WIDTH'b00_0010
+#define RC4ST_RC4RDY_STATE		`RC4ST_STATE_WIDTH'b00_0001
+
+#endif
+sample spu_rc4st_sample_bind_C${c}.\$rc4st_state {
+  //state declarations
+  state s_RC4ST_IDLEST_STATE		(RC4ST_IDLEST_STATE);
+  state s_RC4ST_IDLEST_DLY_STATE	(RC4ST_IDLEST_DLY_STATE);
+  state s_RC4ST_RDMEM_STATE		(RC4ST_RDMEM_STATE);
+  state s_RC4ST_WAIT4STDRAIN_STATE	(RC4ST_WAIT4STDRAIN_STATE);
+  state s_RC4ST_RC4RDX_STATE		(RC4ST_RC4RDX_STATE);
+  state s_RC4ST_RC4RDY_STATE		(RC4ST_RC4RDY_STATE);
+
+  bad_state s_not_RC4ST_STATE (not state);
+
+  // Transitions to RC4ST_IDLEST_STATE
+
+  trans t_RC4ST_IDLEST_2_IDLEST_STATE (RC4ST_IDLEST_STATE -> RC4ST_IDLEST_STATE);
+  trans t_RC4ST_WAIT4STDRAIN_2_IDLEST_STATE (RC4ST_WAIT4STDRAIN_STATE -> RC4ST_IDLEST_STATE);
+
+  // Transitions to RC4ST_IDLEST_DLY_STATE
+
+  trans t_RC4ST_IDLEST_2_IDLEST_DLY_STATE (RC4ST_IDLEST_STATE -> RC4ST_IDLEST_DLY_STATE);
+
+  // Transitions to RC4ST_RDMEM_STATE
+
+  trans t_RC4ST_IDLEST_DLY_2_RDMEM_STATE (RC4ST_IDLEST_DLY_STATE -> RC4ST_RDMEM_STATE);
+  trans t_RC4ST_WAIT4STDRAIN_2_RDMEM_STATE (RC4ST_WAIT4STDRAIN_STATE -> RC4ST_RDMEM_STATE);
+
+  // Transitions to RC4ST_WAIT4STDRAIN_STATE
+
+  trans t_RC4ST_WAIT4STDRAIN_2_WAIT4STDRAIN_STATE (RC4ST_WAIT4STDRAIN_STATE -> RC4ST_WAIT4STDRAIN_STATE);
+  trans t_RC4ST_RDMEM_2_WAIT4STDRAIN_STATE (RC4ST_RDMEM_STATE -> RC4ST_WAIT4STDRAIN_STATE);
+  trans t_RC4ST_RC4RDY_2_WAIT4STDRAIN_STATE (RC4ST_RC4RDY_STATE -> RC4ST_WAIT4STDRAIN_STATE);
+
+  // Transitions to RC4ST_RC4RDX_STATE
+
+  trans t_RC4ST_RDMEM_2_RC4RDX_STATE (RC4ST_RDMEM_STATE -> RC4ST_RC4RDX_STATE);
+
+  // Transitions to RC4ST_RC4RDY_STATE
+
+  trans t_RC4ST_RC4RDX_2_RC4RDY_STATE (RC4ST_RC4RDX_STATE -> RC4ST_RC4RDY_STATE);
+
+  bad_trans t_not_RC4ST_TRANS (not trans);
+}

@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_mb_hit_bypass_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+/*
+assign tmp_cam_hit_vec_c1 = ( cam_hit_vec_c1 | hit_on_bypass_vec_c1 ) & ~hit_off_bypass_vec_c1 ;
+
+assign tmp_cam_hit_c1_3to0 = |( tmp_cam_hit_vec_c1[3:0] ) ;
+
+dff   #(1)  ff_tmp_cam_hit_c2_3to0    (.din(tmp_cam_hit_c1_3to0), 
+				.clk(rclk), 
+		.q(tmp_cam_hit_c2_3to0), .se(se), .si(), .so());
+
+assign	tmp_cam_hit_c2 = ( tmp_cam_hit_c2_3to0 | tmp_cam_hit_c2_7to4 | tmp_cam_hit_c2_11to8 | tmp_cam_hit_c2_15to12 );
+
+assign tmp_hit_unqual_c2 = ( mbctl_c1c2_match_c1_d1_1 & mbf_insert_c3_tmp_1 ) | // C2 insert bypass
+    ( mbctl_c1c2_match_c1_d1_1 & inst_mb_c3_2 & mb_inst_vld_c3_2 & ~mbf_delete_c3_tmp_1 ) ; // C2 not delete bypass  
+
+assign mbctl_tagctl_hit_unqual_c2 = ( tmp_hit_unqual_c2 | tmp_cam_hit_c2 ) & ~mb_hit_off_c1_d1 ;  // cam hit + c3 bypass
+
+assign mbctl_hit_c2 = mbctl_tagctl_hit_unqual_c2 & arbctl_mbctl_inst_vld_c2 ;
+*/
+
+
+// The 3 conditions below are deliberately encoded to be mutually exclusive, even though more than 1 bypass condition
+// can occur simultaneously.
+
+
+// l2_mb_hit_bypass_state[19:0] = {mbctl_hit_c2, tmp_hit_unqual_c2, tmp_cam_hit_c2, mbf_insert_c3_tmp, cam_hit_vec_c1[15:0]}
+
+wildcard state c2_insert_bypass                                   ( {1'b1, 1'b1, 1'b0, 1'b1, 16'bx} );
+wildcard state c2_notdelete_bypass                                ( {1'b1, 1'b1, 1'b0, 1'b0, 16'bx} );
+wildcard trans c3_insert_bypass( {1'bx, 1'bx, 1'bx, 1'bx, 16'b0} -> {1'b1, 1'b0, 1'b1, 1'b1, 16'bx} );

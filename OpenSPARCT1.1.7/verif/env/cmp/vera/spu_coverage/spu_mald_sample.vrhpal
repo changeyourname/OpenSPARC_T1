@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mald_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_mald_COV_VRH
+#define INC__TMP_spu_mald_COV_VRH
+#define MALD_IDLE_STATE			`MA_LD_STATE_WIDTH'b10_0000
+#define MALD_LDREQ_STATE		`MA_LD_STATE_WIDTH'b01_0000
+#define MALD_WAIT4LN_STATE		`MA_LD_STATE_WIDTH'b00_1000
+#define MALD_MAMEMWR_STATE		`MA_LD_STATE_WIDTH'b00_0100
+#define MALD_CHK4MPA1MADDR0_STATE	`MA_LD_STATE_WIDTH'b00_0010
+#define MALD_MEMWEN_DLY_STATE		`MA_LD_STATE_WIDTH'b00_0001
+
+#endif
+sample spu_mald_sample_bind_C${c}.\$ma_ld_state {
+  //state declarations
+
+  state s_MALD_IDLE_STATE	(MALD_IDLE_STATE);
+  state s_MALD_LDREQ_STATE	(MALD_LDREQ_STATE);
+  state s_MALD_WAIT4LN_STATE	(MALD_WAIT4LN_STATE);
+  state s_MALD_MAMEMWR_STATE	(MALD_MAMEMWR_STATE);
+  state s_MALD_CHK4MPA1MADDR0_STATE	(MALD_CHK4MPA1MADDR0_STATE);
+  state s_MALD_MEMWEN_DLY_STATE	(MALD_MEMWEN_DLY_STATE);
+
+  bad_state s_not_MALD_STATE (not state);
+
+  // transitions
+
+  trans t_MALD_IDLE_2_IDLE_STATE (MALD_IDLE_STATE -> MALD_IDLE_STATE);
+  trans t_MALD_CHK4MPA1MADDR0_2_IDLE_STATE (MALD_CHK4MPA1MADDR0_STATE -> MALD_IDLE_STATE);
+
+  trans t_MALD_LDREQ_2_LDREQ_STATE (MALD_LDREQ_STATE -> MALD_LDREQ_STATE);
+  trans t_MALD_IDLE_2_LDREQ_STATE (MALD_IDLE_STATE -> MALD_LDREQ_STATE);
+  trans t_MALD_CHK4MPA1MADDR0_2_LDREQ_STATE (MALD_CHK4MPA1MADDR0_STATE -> MALD_LDREQ_STATE);
+
+  trans t_MALD_WAIT4LN_2_WAIT4LN_STATE (MALD_WAIT4LN_STATE -> MALD_WAIT4LN_STATE);
+  trans t_MALD_LDREQ_2_WAIT4LN_STATE (MALD_LDREQ_STATE -> MALD_WAIT4LN_STATE);
+
+  trans t_MALD_MEMWEN_DLY_2_MAMEMWR_STATE (MALD_MEMWEN_DLY_STATE -> MALD_MAMEMWR_STATE);
+
+  trans t_MALD_MAMEMWR_2_CHK4MPA1MADDR0_STATE (MALD_MAMEMWR_STATE -> MALD_CHK4MPA1MADDR0_STATE);
+
+  trans t_MALD_CHK4MPA1MADDR0_2_MEMWEN_DLY_STATE (MALD_CHK4MPA1MADDR0_STATE -> MALD_MEMWEN_DLY_STATE);
+  trans t_MALD_WAIT4LN_2_MEMWEN_DLY_STATE (MALD_WAIT4LN_STATE -> MALD_MEMWEN_DLY_STATE);
+
+  //bad_trans t_not_MALD_TRANS (not trans);
+}
+ 

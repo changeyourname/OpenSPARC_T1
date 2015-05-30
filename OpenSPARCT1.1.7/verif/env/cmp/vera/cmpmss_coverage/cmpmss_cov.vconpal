@@ -1,0 +1,260 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpmss_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "cmpmss_cov_inc.pal"
+
+connect input cmpmss_cov.clk = "cmp_top.iop.ccx.rclk" iskew -1
+connect input cmpmss_cov.diag_done = "cmp_top.diag_done" iskew -1
+
+// CCX_PCX_REQ_COV, CCX_PCX_SEQUENCE_COV
+connect input cmpmss_cov.spc0_pcx_req = "$CCX_PATH.spc0_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc1_pcx_req = "$CCX_PATH.spc1_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc2_pcx_req = "$CCX_PATH.spc2_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc3_pcx_req = "$CCX_PATH.spc3_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc4_pcx_req = "$CCX_PATH.spc4_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc5_pcx_req = "$CCX_PATH.spc5_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc6_pcx_req = "$CCX_PATH.spc6_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc7_pcx_req = "$CCX_PATH.spc7_pcx_req_pq[3:0]" iskew -1
+connect input cmpmss_cov.spc0_pcx_atom = "$CCX_PATH.spc0_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc1_pcx_atom = "$CCX_PATH.spc1_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc2_pcx_atom = "$CCX_PATH.spc2_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc3_pcx_atom = "$CCX_PATH.spc3_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc4_pcx_atom = "$CCX_PATH.spc4_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc5_pcx_atom = "$CCX_PATH.spc5_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc6_pcx_atom = "$CCX_PATH.spc6_pcx_atom_pq" iskew -1
+connect input cmpmss_cov.spc7_pcx_atom = "$CCX_PATH.spc7_pcx_atom_pq" iskew -1
+
+// CCX_PCX_SEQUENCE_COV
+connect input cmpmss_cov.pcx_spc0_grant = "$CCX_PATH.pcx_spc0_grant_px[3:0]" iskew -1
+    
+// CCX_CPX_REQ_COV, CCX_CPX_SEQUENCE_COV
+connect input cmpmss_cov.sctag0_cpx_req = "$CCX_PATH.sctag0_cpx_req_cq" iskew -1
+connect input cmpmss_cov.sctag1_cpx_req = "$CCX_PATH.sctag1_cpx_req_cq" iskew -1
+connect input cmpmss_cov.sctag2_cpx_req = "$CCX_PATH.sctag2_cpx_req_cq" iskew -1
+connect input cmpmss_cov.sctag3_cpx_req = "$CCX_PATH.sctag3_cpx_req_cq" iskew -1
+connect input cmpmss_cov.sctag0_cpx_atom = "$CCX_PATH.sctag0_cpx_atom_cq" iskew -1
+connect input cmpmss_cov.sctag1_cpx_atom = "$CCX_PATH.sctag1_cpx_atom_cq" iskew -1
+connect input cmpmss_cov.sctag2_cpx_atom = "$CCX_PATH.sctag2_cpx_atom_cq" iskew -1
+connect input cmpmss_cov.sctag3_cpx_atom = "$CCX_PATH.sctag3_cpx_atom_cq" iskew -1
+
+// CCX_CPX_SEQUENCE_COV
+connect input cmpmss_cov.cpx_sctag0_grant = "$CCX_PATH.cpx_sctag0_grant_cx" iskew -1
+
+// CCX_PCX_QFULL_COV
+connect input cmpmss_cov.pcx_arb0_qfull = "$CCX_PATH.pcx.arb0.qfull" iskew -1
+connect input cmpmss_cov.pcx_arb1_qfull = "$CCX_PATH.pcx.arb1.qfull" iskew -1
+connect input cmpmss_cov.pcx_arb2_qfull = "$CCX_PATH.pcx.arb2.qfull" iskew -1
+connect input cmpmss_cov.pcx_arb3_qfull = "$CCX_PATH.pcx.arb3.qfull" iskew -1
+    
+// CCX_CPX_QFULL_COV
+connect input cmpmss_cov.cpx_arb0_qfull = "$CCX_PATH.cpx.arb0.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb1_qfull = "$CCX_PATH.cpx.arb1.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb2_qfull = "$CCX_PATH.cpx.arb2.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb3_qfull = "$CCX_PATH.cpx.arb3.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb4_qfull = "$CCX_PATH.cpx.arb4.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb5_qfull = "$CCX_PATH.cpx.arb5.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb6_qfull = "$CCX_PATH.cpx.arb6.ccx_arb.qfull[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb7_qfull = "$CCX_PATH.cpx.arb7.ccx_arb.qfull[3:0]" iskew -1
+
+// CCX_PCX_STALLATOM_COV
+connect input cmpmss_cov.pcx_arb0_atom = "$CCX_PATH.pcx.arb0.arbdp.atom" iskew -1
+connect input cmpmss_cov.pcx_arb0_grant_a = "$CCX_PATH.pcx.arb0.arbdp.grant_a" iskew -1
+connect input cmpmss_cov.pcx_arb0_stall_a = "$CCX_PATH.pcx.arb0.arbdp.stall_a" iskew -1
+
+// CCX_CPX_STALLATOM_COV
+connect input cmpmss_cov.cpx_arb0_atom = "$CCX_PATH.cpx.arb0.ccx_arb.arbdp.atom[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb0_grant_a = "$CCX_PATH.cpx.arb0.ccx_arb.arbdp.grant_a[3:0]" iskew -1
+connect input cmpmss_cov.cpx_arb0_stall_a = "$CCX_PATH.cpx.arb0.ccx_arb.arbdp.stall_a" iskew -1
+
+
+.for($b=0; $b<$BANKS; $b++) {
+/*
+// L2_CPX_FIELDS_COV
+connect input cmpmss_cov.sctag${b}_cpx_data = "$SCTAG_PATH[$b].sctag_cpx_data_ca" iskew -1
+*/
+
+connect input cmpmss_cov.arbctl_inst_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_vld_c2" iskew -1
+connect input cmpmss_cov.arbctl_inst_diag_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_diag_c2" iskew -1
+connect input cmpmss_cov.arbctl_inval_inst_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inval_inst_c2" iskew -1
+connect input cmpmss_cov.decdp_inst_int_c2_${b} = "$SCTAG_PATH[$b].arbctl.decdp_inst_int_c2" iskew -1
+connect input cmpmss_cov.arbdp_addr_c2_${b} = "$SCTAG_PATH[$b].arbaddrdp.arbdp_addr_c2" iskew -1
+
+// L2_JBI_FIELDS_COV
+connect input cmpmss_cov.jbi_sctag${b}_req_vld = "$SCTAG_PATH[$b].jbi_sctag_req_vld" iskew -1
+connect input cmpmss_cov.jbi_sctag${b}_req = "$SCTAG_PATH[$b].jbi_sctag_req" iskew -1
+
+// L2_DIR_WRITE_COV
+connect input cmpmss_cov.ic_wr_en_c4_${b} = "$SCTAG_PATH[$b].ic_wr_en_c4" iskew -1
+connect input cmpmss_cov.dir_panel_icd_c4_${b} = "$SCTAG_PATH[$b].dirrep.dir_panel_icd_c4" iskew -1
+connect input cmpmss_cov.wr_ic_dir_entry_c4_${b} = "$SCTAG_PATH[$b].wr_ic_dir_entry_c4" iskew -1
+connect input cmpmss_cov.dc_wr_en_c4_${b} = "$SCTAG_PATH[$b].dc_wr_en_c4" iskew -1
+connect input cmpmss_cov.dir_panel_dcd_c4_${b} = "$SCTAG_PATH[$b].dirrep.dir_panel_dcd_c4" iskew -1
+connect input cmpmss_cov.wr_dc_dir_entry_c4_${b} = "$SCTAG_PATH[$b].wr_dc_dir_entry_c4" iskew -1
+
+// L2_DIR_LOOKUP_COV
+connect input cmpmss_cov.ic_lkup_row_dec_c4_${b} = "$SCTAG_PATH[$b].ic_lkup_row_dec_c4" iskew -1
+connect input cmpmss_cov.lkup_row_addr_icd_c4_${b} = "$SCTAG_PATH[$b].dirrep.lkup_row_addr_icd_c4" iskew -1
+connect input cmpmss_cov.dc_lkup_row_dec_c4_${b} = "$SCTAG_PATH[$b].dc_lkup_row_dec_c4" iskew -1
+connect input cmpmss_cov.lkup_row_addr_dcd_c4_${b} = "$SCTAG_PATH[$b].dirrep.lkup_row_addr_dcd_c4" iskew -1
+
+// L2_IQ_COUNT_COV
+connect input cmpmss_cov.iq_count_${b} = "$SCTAG_PATH[$b].iqctl.que_cnt" iskew -1
+
+// L2_IQ_OVERFLOW_COV
+connect input cmpmss_cov.pcx_sctag${b}_data = "$SCTAG_PATH[$b].pcx_sctag_data_px2" iskew -1
+connect input cmpmss_cov.pcx_sctag${b}_data_rdy = "$SCTAG_PATH[$b].iqctl.pcx_sctag_data_rdy_px2" iskew -1
+
+// L2_OQ_COUNT_COV
+connect input cmpmss_cov.oq_count_${b} = "$SCTAG_PATH[$b].oqctl.oq_count_p" iskew -1
+
+// L2_OQ_IFILL12_COV
+connect input cmpmss_cov.imiss1_to_xbarq_c6_${b} = "$SCTAG_PATH[$b].oqctl.imiss1_to_xbarq_c6" iskew -1
+connect input cmpmss_cov.sel_old_req_${b} = "$SCTAG_PATH[$b].oqctl.sel_old_req" iskew -1
+
+// L2_OQ_OVERFLOW_COV
+connect input cmpmss_cov.oqarray_wr_en_${b} = "$SCTAG_PATH[$b].oqctl.oqarray_wr_en" iskew -1
+connect input cmpmss_cov.oq_array_data_in_${b} = "$SCTAG_PATH[$b].oqdp.oq_array_data_in" iskew -1
+
+// L2_MB_COUNT_COV
+connect input cmpmss_cov.mb_count_${b} = "$SCTAG_PATH[$b].mbctl.mb_count_c4" iskew -1
+
+// L2_MB_SAMEINDEX_COV
+connect input cmpmss_cov.mb_sameindex_count_${b} = "$SCTAG_PATH[$b].mbctl.hit_count_c4" iskew -1
+
+// L2_MB_HIT_BYPASS_COV
+connect input cmpmss_cov.tmp_hit_unqual_c2_${b} = "$SCTAG_PATH[$b].mbctl.tmp_hit_unqual_c2" iskew -1
+connect input cmpmss_cov.tmp_cam_hit_c2_${b} = "$SCTAG_PATH[$b].mbctl.tmp_cam_hit_c2" iskew -1
+connect input cmpmss_cov.mbf_insert_c3_tmp_${b} = "$SCTAG_PATH[$b].mbctl.mbf_insert_c3_tmp" iskew -1
+connect input cmpmss_cov.cam_hit_vec_c1_${b} = "$SCTAG_PATH[$b].mbctl.cam_hit_vec_c1" iskew -1
+    
+// L2_MB_OVERFLOW_COV
+connect input cmpmss_cov.mbf_insert_c2_${b} = "$SCTAG_PATH[$b].mbctl.mbf_insert_c2" iskew -1
+    
+// L2_FB_COUNT_COV
+connect input cmpmss_cov.fb_count_${b} = "$SCTAG_PATH[$b].fbctl.fb_count" iskew -1
+
+// L2_FBMB_MISS_ENTRIES_COV
+connect input cmpmss_cov.fbf_ready_miss_r1_${b} = "$SCTAG_PATH[$b].fbctl.fbf_ready_miss_r1" iskew -1
+connect input cmpmss_cov.dram_rd_req_id_r0_d1_${b} = "$SCTAG_PATH[$b].fbctl.dram_rd_req_id_r0_d1" iskew -1
+connect input cmpmss_cov.fbf_enc_ld_mbid_r1_${b} = "$SCTAG_PATH[$b].fbctl.fbf_enc_ld_mbid_r1" iskew -1
+
+// L2_FBMB_STDEP_ENTRIES_COV
+connect input cmpmss_cov.fbf_st_or_dep_rdy_c4_${b} = "$SCTAG_PATH[$b].fbctl.fbf_st_or_dep_rdy_c4" iskew -1
+connect input cmpmss_cov.fill_complete_c4_${b} = "$SCTAG_PATH[$b].fbctl.fill_complete_c4" iskew -1
+connect input cmpmss_cov.fbf_enc_dep_mbid_c4_${b} = "$SCTAG_PATH[$b].fbctl.fbf_enc_dep_mbid_c4" iskew -1
+
+// L2_FB_BYPASS_ENTRIES_COV
+connect input cmpmss_cov.fbctl_hit_c2_${b} = "$SCTAG_PATH[$b].fbctl.fbctl_hit_c2" iskew -1
+connect input cmpmss_cov.fb_hit_vec_c2_${b} = "$SCTAG_PATH[$b].fbctl.fb_hit_vec_c2" iskew -1
+
+// L2_FB_BYPASS_INSTS_COV
+connect input cmpmss_cov.arbdp_inst_c2_${b} = "$SCTAG_PATH[$b].arbdecdp.arbdp_inst_c2" iskew -1
+
+// L2_FILL_COMPLETE_COV
+connect input cmpmss_cov.dec_fill_entry_c3_${b} = "$SCTAG_PATH[$b].fbctl.dec_fill_entry_c3" iskew -1
+connect input cmpmss_cov.no_fill_entry_dequeue_c3_${b} = "$SCTAG_PATH[$b].fbctl.no_fill_entry_dequeue_c3" iskew -1
+connect input cmpmss_cov.en_hit_dequeue_c2_${b} = "$SCTAG_PATH[$b].fbctl.en_hit_dequeue_c2" iskew -1
+connect input cmpmss_cov.rdma_inst_c2_${b} = "$SCTAG_PATH[$b].fbctl.rdma_inst_c2" iskew -1
+connect input cmpmss_cov.mbctl_rdma_reg_vld_c2_${b} = "$SCTAG_PATH[$b].fbctl.mbctl_rdma_reg_vld_c2" iskew -1
+
+// L2_WB_COUNT_COV
+connect input cmpmss_cov.wb_count_${b} = "$SCTAG_PATH[$b].wbctl.wb_count" iskew -1
+
+// L2_WB_HIT_BYPASS_COV
+connect input cmpmss_cov.bypass_hit_en_c2_${b} = "$SCTAG_PATH[$b].wbctl.bypass_hit_en_c2" iskew -1
+connect input cmpmss_cov.wb_cam_hit_vec_tmp_c2_${b} = "$SCTAG_PATH[$b].wbctl.wb_cam_hit_vec_tmp_c2" iskew -1
+
+// L2_SNPIQ_VALID_COV
+connect input cmpmss_cov.snpq_valid_${b} = "$SCTAG_PATH[$b].snpctl.snpq_valid" iskew -1
+
+// L2_RDMAWB_VALID_COV
+connect input cmpmss_cov.rdma_valid_${b} = "$SCTAG_PATH[$b].rdmatctl.rdma_valid" iskew -1
+
+// L2_PIPELINE_FULL_COV
+connect input cmpmss_cov.arbctl_inst_vld_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_vld_c1" iskew -1
+
+// L2_STALLED_INSTS1_COV
+connect input cmpmss_cov.same_col_stall_c1_${b} = "$SCTAG_PATH[$b].arbctl.same_col_stall_c1" iskew -1
+connect input cmpmss_cov.imiss_stall_op_c1inc1_${b} = "$SCTAG_PATH[$b].arbctl.imiss_stall_op_c1inc1" iskew -1
+connect input cmpmss_cov.arbctl_fill_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_fill_vld_c2" iskew -1
+connect input cmpmss_cov.arbctl_fill_vld_c3_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_fill_vld_c3" iskew -1
+connect input cmpmss_cov.rdma_64B_stall_${b} = "$SCTAG_PATH[$b].arbctl.rdma_64B_stall" iskew -1
+connect input cmpmss_cov.inval_inst_vld_c3_${b} = "$SCTAG_PATH[$b].arbctl.inval_inst_vld_c3" iskew -1
+connect input cmpmss_cov.inval_inst_vld_c4_${b} = "$SCTAG_PATH[$b].arbctl.inval_inst_vld_c4" iskew -1
+connect input cmpmss_cov.inst_l2data_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2data_vld_c2" iskew -1
+connect input cmpmss_cov.inst_l2tag_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2tag_vld_c2" iskew -1
+connect input cmpmss_cov.inst_l2tag_vld_c3_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2tag_vld_c3" iskew -1
+connect input cmpmss_cov.inst_l2vuad_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2vuad_vld_c2" iskew -1
+connect input cmpmss_cov.inst_l2vuad_vld_c3_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2vuad_vld_c3" iskew -1
+connect input cmpmss_cov.inst_l2vuad_vld_c4_${b} = "$SCTAG_PATH[$b].arbctl.inst_l2vuad_vld_c4" iskew -1
+connect input cmpmss_cov.inc_tag_ecc_cnt_c2_${b} = "$SCTAG_PATH[$b].arbctl.inc_tag_ecc_cnt_c2" iskew -1
+connect input cmpmss_cov.inc_tag_ecc_cnt_c3_${b} = "$SCTAG_PATH[$b].arbctl.inc_tag_ecc_cnt_c3" iskew -1
+connect input cmpmss_cov.data_ecc_active_c4_${b} = "$SCTAG_PATH[$b].arbctl.data_ecc_active_c4" iskew -1
+connect input cmpmss_cov.arbctl_inst_diag_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_diag_c1" iskew -1
+connect input cmpmss_cov.arbdp_inst_c1_${b} = "$SCTAG_PATH[$b].arbdecdp.arbdp_inst_c1" iskew -1
+
+// L2_STALLED_INSTS2_COV
+connect input cmpmss_cov.arbdp_evict_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbdp_evict_c1" iskew -1
+connect input cmpmss_cov.arbdp_inst_fb_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbdp_inst_fb_c1" iskew -1
+connect input cmpmss_cov.decdp_imiss_inst_c1_${b} = "$SCTAG_PATH[$b].arbctl.decdp_imiss_inst_c1" iskew -1
+connect input cmpmss_cov.decdp_ic_inval_c1_${b} = "$SCTAG_PATH[$b].arbctl.decdp_ic_inval_c1" iskew -1
+connect input cmpmss_cov.decdp_dc_inval_c1_${b} = "$SCTAG_PATH[$b].arbctl.decdp_dc_inval_c1" iskew -1
+connect input cmpmss_cov.arbdp_tecc_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbdp_tecc_c1" iskew -1
+connect input cmpmss_cov.arbdp_inst_rsvd_c1_${b} = "$SCTAG_PATH[$b].arbctl.arbdp_inst_rsvd_c1" iskew -1
+connect input cmpmss_cov.arbctl_stall_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_stall_c2" iskew -1
+
+// L2_VUAD_BYPASS_COV
+connect input cmpmss_cov.vuad_sel_c2orc3_${b} = "$SCTAG_PATH[$b].vuaddp_ctl.vuad_sel_c2orc3" iskew -1
+connect input cmpmss_cov.vuad_sel_c2_${b} = "$SCTAG_PATH[$b].vuaddp_ctl.vuad_sel_c2" iskew -1
+connect input cmpmss_cov.vuad_sel_c4orc5_${b} = "$SCTAG_PATH[$b].vuaddp_ctl.vuad_sel_c4orc5" iskew -1
+connect input cmpmss_cov.vuad_sel_c4_${b} = "$SCTAG_PATH[$b].vuaddp_ctl.vuad_sel_c4" iskew -1
+
+// L2_OFFMODE_DIRECTMAP_INSTS_COV
+connect input cmpmss_cov.l2_bypass_mode_on_d1_${b} = "$SCTAG_PATH[$b].tagctl.l2_bypass_mode_on_d1" iskew -1
+connect input cmpmss_cov.l2_dir_map_on_d1_${b} = "$SCTAG_PATH[$b].tagdp_ctl.l2_dir_map_on_d1" iskew -1
+
+// L2_INST_FLOW_COV
+connect input cmpmss_cov.tagctl_hit_l2orfb_c2_${b} = "$SCTAG_PATH[$b].tagctl.tagctl_hit_l2orfb_c2" iskew -1
+connect input cmpmss_cov.mbctl_hit_c2_${b} = "$SCTAG_PATH[$b].mbctl.mbctl_hit_c2" iskew -1
+connect input cmpmss_cov.arbdp_inst_mb_c2_${b} = "$SCTAG_PATH[$b].arbdecdp.arbdp_inst_mb_c2" iskew -1
+connect input cmpmss_cov.arbctl_evict_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_evict_vld_c2" iskew -1
+
+// L2_BUFFER_HITS_COV
+connect input cmpmss_cov.fbctl_mbctl_match_c2_${b} = "$SCTAG_PATH[$b].fbctl.fbctl_mbctl_match_c2" iskew -1
+connect input cmpmss_cov.wbctl_hit_qual_c2_${b} = "$SCTAG_PATH[$b].wbctl.wbctl_hit_qual_c2" iskew -1
+connect input cmpmss_cov.rdmatctl_hit_qual_c2_${b} = "$SCTAG_PATH[$b].rdmatctl.rdmatctl_hit_qual_c2" iskew -1
+
+// L2_ERROR_STATUS_REG_COV
+connect input cmpmss_cov.err_state_new_c9_${b} = "$SCTAG_PATH[$b].csr_ctl.err_state_new_c9" iskew -1
+connect input cmpmss_cov.err_status_in_${b} = "$SCTAG_PATH[$b].csr_ctl.err_status_in" iskew -1
+
+// L2_ERROR_TRANS_COV
+connect input cmpmss_cov.csr_l2_errstate_reg_${b} = "$SCTAG_PATH[$b].csr.csr_l2_errstate_reg" iskew -1
+
+// L2_ERROR_TAG_COV
+connect input cmpmss_cov.tecc_c2_${b} = "$SCTAG_PATH[$b].tagctl.tecc_c2" iskew -1
+connect input cmpmss_cov.par_err_c2_${b} = "$SCTAG_PATH[$b].tagdp_ctl.par_err_c2" iskew -1
+connect input cmpmss_cov.arbdp_pst_with_ctrue_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbdp_pst_with_ctrue_c2" iskew -1
+
+// L2_ERROR_OFFMODE_COV
+connect input cmpmss_cov.fbuerr0_d1_${b} = "$SCTAG_PATH[$b].fbctl.fbuerr0_d1" iskew -1
+connect input cmpmss_cov.fbcerr0_d1_${b} = "$SCTAG_PATH[$b].fbctl.fbcerr0_d1" iskew -1
+
+.}

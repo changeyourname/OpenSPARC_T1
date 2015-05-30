@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_div_fsm_xx_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+  
+
+
+
+
+// coverage_def EXU_DIV_FSM_XX_COV (bit[`EXU_DIV_FSM_XX_WIDTH-1:0] exu_div_fsm_xx_state) {
+  //state declarations
+
+wildcard   state s_IDLE     	(XX_IDLE     );
+wildcard   state s_RUN      	(XX_RUN      );
+wildcard   state s_LAST_CALC	(XX_LAST_CALC);
+wildcard   state s_CHK_OVFL 	(XX_CHK_OVFL );
+wildcard   state s_FIX_OVFL 	(XX_FIX_OVFL );
+wildcard   state s_DONE     	(XX_DONE     );
+wildcard   state s_IGNORE_M1	(IGNORE_M1);
+wildcard   state s_IGNORE_M2     (IGNORE_M2);
+wildcard   state s_IGNORE_M3	(IGNORE_M3);
+wildcard   state s_IGNORE_M4	(IGNORE_M4);
+wildcard   state s_IGNORE_W1	(IGNORE_W1);
+wildcard   state s_IGNORE_W2	(IGNORE_W2);
+wildcard   state s_IGNORE_W3	(IGNORE_W3);
+wildcard   state s_IGNORE_W4	(IGNORE_W4);
+
+
+bad_state s_not_DIV_FSM_XX_STATE (not state);
+
+// }
+ 

@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_stb_multiple_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This coverage object detects when interrupts, membar instructions and
+// flush instructrions reach W stage with the corrsponding store buffer
+// non-empty. It also detects various fullness levels of the store buffer.
+// The following signals are being monitored:
+// intr_disp_asi_g flsh_inst_g mb_inst_g no_spc_rmo_st stb_full, 
+// stb_ne (not-empty)
+//***********************************************************************
+
+// state declarations
+//===================
+   state s_STB_STATE_idle	(STB_STATE_idle);
+   state s_STB_STATE_sb_full	(STB_STATE_sb_full);
+   state s_STB_STATE_sb_ne	(STB_STATE_sb_ne);
+   state s_STB_STATE_rmo_ne	(STB_STATE_rmo_ne);
+   state s_STB_STATE_rmo_sb_ne	(STB_STATE_rmo_sb_ne);
+   state s_STB_STATE_rmo_sb_full (STB_STATE_rmo_sb_full);
+
+   state s_STB_STATE_mb		(STB_STATE_mb);
+   state s_STB_STATE_fl		(STB_STATE_fl);
+   state s_STB_STATE_intr	(STB_STATE_intr);
+
+   state s_STB_STATE_mb_ne	(STB_STATE_mb_ne);
+   state s_STB_STATE_mb_full	(STB_STATE_mb_full);
+   state s_STB_STATE_mb_rmo	(STB_STATE_mb_rmo);
+   state s_STB_STATE_mb_rmo_ne	(STB_STATE_mb_rmo_ne);
+   state s_STB_STATE_mb_rmo_full (STB_STATE_mb_rmo_full);
+
+   state s_STB_STATE_fl_ne	(STB_STATE_fl_ne);
+   state s_STB_STATE_intr_ne	(STB_STATE_intr_ne);
+
+// transitions
+//============
+   trans t_STB_STATE_st_mb_b2b  	(STB_STATE_idle -> STB_STATE_mb_ne);
+   trans t_STB_STATE_st_fl_b2b  	(STB_STATE_idle -> STB_STATE_fl_ne);
+   trans t_STB_STATE_st_intr_b2b  	(STB_STATE_idle -> STB_STATE_intr_ne);
+
+   trans t_STB_STATE_rmo_mb_b2b  	(STB_STATE_idle -> STB_STATE_mb_rmo);
+

@@ -1,0 +1,81 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_cov_tasks.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        MMU_COV_TASKS.vr
+//  Description:        Tasks for comparing TTE written with that looked up from TLB
+//                      
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+#ifndef MMU_COV_TASKS__
+#define MMU_COV_TASKS__
+
+#include <vera_defines.vrh>
+#include "mmu.if.vrh"
+#include "mmu_ports_binds.vrh"
+
+////////////////////////////
+// Definitions of MMU_COV_TASKS
+////////////////////////////
+
+//------------------------------------------------------------------------------------------
+
+function bit compare_addr( bit [58:0] cam_tag, bit [58:0] tte_write_tag )
+{
+    integer valid = 26;
+    integer nfo   = 10;
+    integer ie    = 9;
+    integer l     = 8;
+    integer cp    = 7;
+    integer cv    = 6;
+    integer e     = 5;
+    integer p     = 4;
+    integer w     = 3;
+
+    bit data_47_to_22_vld ;
+    bit data_21_to_16_vld ;
+    bit data_15_to_13_vld ;
+
+    data_47_to_22_vld = ~tte_write_tag[22];
+    data_21_to_16_vld = ~tte_write_tag[15];
+    data_15_to_13_vld = ~tte_write_tag[12];
+
+    if(tte_write_tag[valid] == 1'b1){
+        if( ((tte_write_tag[53:34] != cam_tag[53:34])) ||			// don't check for PID anymore
+            (data_47_to_22_vld && (tte_write_tag[33:28] != cam_tag[33:28])) ||
+            (data_21_to_16_vld && (tte_write_tag[23:18] != cam_tag[23:18])) ||
+            (data_15_to_13_vld && (tte_write_tag[16:14] != cam_tag[16:14])) ||
+            (tte_write_tag[55] != cam_tag[55]) ||                                // real bit
+            (tte_write_tag[12:0] != cam_tag[12:0]))                              // context
+         {
+              compare_addr = 1'b0;
+         }else{
+              compare_addr = 1'b1;
+         }
+    }else{
+         compare_addr = 1'b0;
+    }
+}
+
+
+#endif

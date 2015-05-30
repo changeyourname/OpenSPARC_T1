@@ -1,0 +1,224 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is the main body of tso_coverage - instantiating all the
+// coverage groups and starting the whole business.
+//***********************************************************************
+
+#inc "tso_cov_inc.pal";
+#include <vera_defines.vrh>
+#include "tso.if.vrh"
+#include "tso_ports_binds.vrh"
+#include "tso_defines.vrh"
+
+class tso_coverage
+{
+  coverage_group tso_coverage_group {
+
+	const_sample_reference	= 1;	// reference to sampled vars is const
+	sample_event		= @(posedge tso_cov_top.tso_clk);
+	cov_weight		= 0;	// default, unless diag_done is true
+					// i.e. diag. passes
+
+// L2 queues related stuff 
+//------------------------
+.  for ( $t = 0; $t < 4; $t++ ) {               ## per bank
+    sample tso_l2_mb_info_bind_sample_sctag${t}.\$l2_q_info {
+#inc "tso_l2_q_info_sample.vrhpal";
+    }
+    sample tso_l2_oq_info_bind_sample_sctag${t}.\$l2_q_info {
+#inc "tso_l2_q_info_sample.vrhpal";
+    }
+    sample tso_l2_iq_info_bind_sample_sctag${t}.\$l2_q_info {
+#inc "tso_l2_q_info_sample.vrhpal";
+    }
+    sample tso_l2_fb_info_bind_sample_sctag${t}.\$l2_q_info {
+#inc "tso_l2_q_info_sample.vrhpal";
+    }
+    sample tso_l2_wb_info_bind_sample_sctag${t}.\$l2_q_info {
+#inc "tso_l2_q_info_sample.vrhpal";
+    }
+
+    sample tso_l2_rdma_snpq_full_bind_sample_sctag${t}.\$the_bits {
+#inc "tso_8bit_generic_sample.vrhpal";
+    }
+
+
+    sample tso_l2_wbhit_bind_sample_sctag${t}.\$hit_info {
+#inc "tso_l2_wbhit_sample.vrhpal";
+    }
+
+    sample tso_l2_rdmahit_bind_sample_sctag${t}.\$hit_info {
+#inc "tso_l2_wbhit_sample.vrhpal";
+    }
+
+    sample tso_cpx_inv_fanout_bind_sample_sctag${t}.\$inv_fanout {
+#inc "tso_cpx_inv_fanout_sample.vrhpal";
+    }
+
+.  for ( $e = 0; $e < 16; $e++ ) {               ## per entry
+     	sample tso_l2_l2mb_bind1_sample_sctag${t}_entry${e}.\$the_bits {
+#inc "tso_8bit_generic_sample.vrhpal";
+     	}
+     	sample tso_l2_l2mb_state_bind_sample_sctag${t}_entry${e}.\$l2mb_state {
+#inc "tso_l2_l2mb_state_sample.vrhpal";
+     	}
+.  } # for $e
+
+.} # for $t
+//----------------------------------------------------------------------------
+
+// bank and core independent coverage
+//-----------------------------------
+    sample tso_l2_fsm1_bind_sample.\$fsm_ext_state {
+#inc "tso_l2_fsm1_sample.vrhpal";
+    }
+    sample tso_l2_fsm2_bind_sample.\$fsm_ext_state {
+#inc "tso_l2_fsm1_sample.vrhpal";
+    }
+    sample tso_l2_fsm3_bind_sample.\$fsm_ext_state {
+#inc "tso_l2_fsm1_sample.vrhpal";
+    }
+    sample tso_l2_fsm4_bind_sample.\$fsm_ext_state {
+#inc "tso_l2_fsm1_sample.vrhpal";
+    }
+
+    sample tso_cpx_inv_fanout2_bind_sample.\$multiple_fanout_info {
+#inc "tso_cpx_inv_fanout2_sample.vrhpal";
+    }
+//----------------------------------------------------------------------------
+
+. foreach $c ( @CORE_STR ) {
+.   for ( $t = 0; $t < 4; $t++ ) {	## per thread
+      sample tso_lsu_stb_multiple_bind_sample_c${c}t${t}.\$state_vector {
+#inc "tso_lsu_stb_multiple_sample.vrhpal";
+      }
+.   } ## for $t
+
+    sample tso_lsu_incoming_int_bind_sample_c${c}.\$state_vector{
+#inc "tso_lsu_incoming_int_sample.vrhpal";
+    }
+    sample tso_lsu_sthit_bind_sample_c${c}.\$st_state {
+#inc "tso_lsu_sthit_sample.vrhpal";
+    }
+    sample tso_lsu_nc_bind_sample_c${c}.\$nc_state {
+#inc "tso_lsu_nc_sample.vrhpal";
+    }
+    sample tso_lsu_misc_bind_sample_c${c}.\$the_bits {
+#inc "tso_8bit_generic_sample.vrhpal";
+    }
+
+    sample tso_lsu_blkst_bind_sample_c${c}.\$state_vector {
+#inc "tso_lsu_rmost_sample.vrhpal";
+    }
+    sample tso_lsu_inist_bind_sample_c${c}.\$state_vector {
+#inc "tso_lsu_rmost_sample.vrhpal";
+    }
+
+    sample tso_lsu_stb_ld_hit_bind_sample_c${c}.\$stb_ld_hit_info {
+#inc "tso_lsu_stb_ld_hit_sample.vrhpal";
+    }
+
+    sample tso_lsu_ackcnt_bind_sample_${c}0.\$ackcnt {
+#inc "tso_lsu_ackcnt_sample.vrhpal";
+    }
+    sample tso_lsu_ackcnt_bind_sample_${c}1.\$ackcnt {
+#inc "tso_lsu_ackcnt_sample.vrhpal";
+    }
+    sample tso_lsu_ackcnt_bind_sample_${c}2.\$ackcnt {
+#inc "tso_lsu_ackcnt_sample.vrhpal";
+    }
+    sample tso_lsu_ackcnt_bind_sample_${c}3.\$ackcnt {
+#inc "tso_lsu_ackcnt_sample.vrhpal";
+    }
+
+    sample    tso_cpx_spc_st_ack_icdc_inval_1c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_st_ack_icdc_inval_1c_sample.vrhpal";
+    }
+    sample    tso_cpx_spc_evict_icdc_inval_1c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_evict_icdc_inval_1c_sample.vrhpal";
+    }
+    sample    tso_cpx_spc_st_ack_dc_inval_8c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_st_ack_dc_inval_8c_sample.vrhpal";
+    }
+    sample    tso_cpx_spc_st_ack_ic_inval_8c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_st_ack_ic_inval_8c_sample.vrhpal";
+    }
+    sample    tso_cpx_spc_evict_dc_inval_8c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_evict_dc_inval_8c_sample.vrhpal";
+    }
+    sample    tso_cpx_spc_evict_ic_inval_8c_bind_sample_${c}.\$inv_pkt {
+#inc "tso_cpx_spc_evict_ic_inval_8c_sample.vrhpal";
+    }
+
+. } ## for $c
+
+  } // coverage_group
+
+// the constructor task
+//---------------------
+  task                  new();
+} // class
+
+//-----------------------------------------------------------------------
+
+// Now define the constructor
+//===========================
+task tso_coverage::new()
+{
+
+// check coverage options
+//===========================================
+  bit                  coverage_on;
+  coverage_on	= 0;
+  if ( get_plus_arg( CHECK, "tso_coverage" ) ||
+       get_plus_arg( CHECK, "coverage_on" )){
+	coverage_on	= 1;
+  }
+
+  if ( get_plus_arg( CHECK, "coverage_off" ) ){
+	coverage_on	= 0; 
+  }
+
+// Start the business if coverage on
+//----------------------------------
+  if(coverage_on){
+    tso_coverage_group	= new();
+    printf("%d : Coverage turned on for the  TSO objects!\n", get_time(LO));
+
+// Now wait for the end of the diag end report
+//---------------------------------------------
+    fork
+      {
+  	  printf("%d : TSO coverage is waiting for  cmp diag done %x \n", get_time(LO), tso_cov_top.cmp_diag_done);
+          @(posedge tso_cov_top.cmp_diag_done) ;
+  	  printf("%d : TSO coverage is past  cmp diag done %x \n", get_time(LO), tso_cov_top.cmp_diag_done);
+	  tso_coverage_group.set_cov_weight(1);		// since diag passed
+	  coverage_save_database(1);
+  	  printf("%d : Coverage for TSO generated!\n", get_time(LO));
+      }
+    join none
+  } 	// if coverage on
+}	// of the new method
+
+//----------------------------------------------
+//- end of file --------------------------------
+//----------------------------------------------

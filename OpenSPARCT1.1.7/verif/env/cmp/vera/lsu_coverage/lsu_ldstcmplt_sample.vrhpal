@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldstcmplt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+  state s_LDSTCMPLT0   (LDSTCMPLT0);
+  state s_LDSTCMPLT1   (LDSTCMPLT1);
+  state s_LDSTCMPLT2   (LDSTCMPLT2);
+  state s_LDSTCMPLT3   (LDSTCMPLT3);
+  state s_LDSTCMPLT4   (LDSTCMPLT4);
+  state s_LDSTCMPLT5   (LDSTCMPLT5);
+  state s_LDSTCMPLT6   (LDSTCMPLT6);
+  state s_LDSTCMPLT7   (LDSTCMPLT7);
+  state s_LDSTCMPLT8   (LDSTCMPLT8);
+  state s_LDSTCMPLT9   (LDSTCMPLT9);
+  state s_LDSTCMPLT10  (LDSTCMPLT10);
+  state s_LDSTCMPLT11  (LDSTCMPLT11);
+  state s_LDSTCMPLT12  (LDSTCMPLT12);
+  state s_LDSTCMPLT13  (LDSTCMPLT13);
+  state s_LDSTCMPLT14  (LDSTCMPLT14);
+  state s_LDSTCMPLT15  (LDSTCMPLT15);
+
+// Well aings/sanjay both say ldst_cmplt need not be one hot..
+// However they also say it's source constrained
+// constrain it now to see if it ever hits it..
+
+  bad_state s_not_STATE (not state);
+
+  m_trans t_back2back_1 (1:15 -> 1:15);
+
+// Removed 2nd order coverage object so that they will 
+// be part of lsu_coverage_ext 
+// Will be added separately as another coverage group in lsu_coverage.vrpal
+//   m_trans t_back2back_2 (1:15 -> 1:15 -> 1:15);
+

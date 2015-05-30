@@ -1,0 +1,53 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_tte_attributes_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU Sync ASI Ops
+//
+//
+// ***************************************************************************
+
+
+
+
+// coverage_def TTE_ATTRIBUTES_COV (bit [44:0] tte_attributes_state)
+// {
+  // state declarations
+
+
+    wildcard state s_TTE_ATTR_V        (TTE_ATTR_V) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_NFO      (TTE_ATTR_NFO) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_IE       (TTE_ATTR_IE) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_L        (TTE_ATTR_L) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_CP       (TTE_ATTR_CP) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_CV       (TTE_ATTR_CV) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_NO_P_NO_E        (TTE_ATTR_NO_P_NO_E) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_E_P        (TTE_ATTR_E_P) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_E_NO_P        (TTE_ATTR_E_NO_P) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_P_NO_E        (TTE_ATTR_P_NO_E) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+    wildcard state s_TTE_ATTR_W        (TTE_ATTR_W) if(mmu_coverage_ifc.C${c}_cam_vld && mmu_coverage_ifc.C${c}_tlb_cam_hit);
+
+
+  // bad states
+
+  // bad transitions
+
+// }

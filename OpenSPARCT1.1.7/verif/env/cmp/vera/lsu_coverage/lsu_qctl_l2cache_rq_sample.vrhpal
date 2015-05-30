@@ -1,0 +1,102 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_qctl_l2cache_rq_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_qctl_l2cache_rq_state = {ld3_inst_vld_g, ld2_inst_vld_g, ld1_inst_vld_g, ld0_inst_vld_g, 
+//                              ld3_l2cache_rq_g, ld2_l2cache_rq_g, ld1_l2cache_rq_g, ld0_l2cache_rq_g,
+//                              lsu_ld_miss_g,
+//                              ld3_inst_vld_w2, ld2_inst_vld_w2, ld1_inst_vld_w2, ld0_inst_vld_w2, 
+//                              ld3_ldbl_rq_w2, ld2_ldbl_rq_w2, ld1_ldbl_rq_w2, ld0_ldbl_rq_w2,
+//                              ld_stb_full_raw_w2, ld_stb_partial_raw_w2,
+//                              ld3_l2cache_rq_kill, ld2_l2cache_rq_kill, ld1_l2cache_rq_kill, ld0_l2cache_rq_kill,
+//                              perr_ld_rq_kill_w2};
+
+//                             vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_Dcache_hit( {4'b0001, 4'b0000, 1'b0,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                              {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0000, 2'b00, 4'b0000, 1'b0} );
+wildcard trans T1_Dcache_hit( {4'b0010, 4'b0000, 1'b0,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                              {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0000, 2'b00, 4'b0000, 1'b0} );
+wildcard trans T2_Dcache_hit( {4'b0100, 4'b0000, 1'b0,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                              {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0000, 2'b00, 4'b0000, 1'b0} );
+wildcard trans T3_Dcache_hit( {4'b1000, 4'b0000, 1'b0,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                              {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b0000, 2'b00, 4'b0000, 1'b0} );
+
+//                              vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_Dcache_miss( {4'b0001, 4'b0001, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                               {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0000, 2'bxx, 4'b0000, 1'b0} );
+wildcard trans T1_Dcache_miss( {4'b0010, 4'b0010, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                               {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0000, 2'bxx, 4'b0000, 1'b0} );
+wildcard trans T2_Dcache_miss( {4'b0100, 4'b0100, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                               {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0000, 2'bxx, 4'b0000, 1'b0} );
+wildcard trans T3_Dcache_miss( {4'b1000, 4'b1000, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                               {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b0000, 2'bxx, 4'b0000, 1'b0} );
+
+//                                     vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_Dcache_miss_killw2( {4'b0001, 4'b0001, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                      {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0000, 2'bxx, 4'b0001, 1'b0} );
+wildcard trans T1_Dcache_miss_killw2( {4'b0010, 4'b0010, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                      {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0000, 2'bxx, 4'b0010, 1'b0} );
+wildcard trans T2_Dcache_miss_killw2( {4'b0100, 4'b0100, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                      {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0000, 2'bxx, 4'b0100, 1'b0} );
+wildcard trans T3_Dcache_miss_killw2( {4'b1000, 4'b1000, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                      {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b0000, 2'bxx, 4'b1000, 1'b0} );
+
+//                                          vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_Dcache_miss_perr_killw2( {4'b0001, 4'b0001, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                           {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0000, 2'bxx, 4'b0001, 1'b1} );
+wildcard trans T1_Dcache_miss_perr_killw2( {4'b0010, 4'b0010, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                           {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0000, 2'bxx, 4'b0010, 1'b1} );
+wildcard trans T2_Dcache_miss_perr_killw2( {4'b0100, 4'b0100, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                           {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0000, 2'bxx, 4'b0100, 1'b1} );
+wildcard trans T3_Dcache_miss_perr_killw2( {4'b1000, 4'b1000, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                           {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b0000, 2'bxx, 4'b1000, 1'b1} );
+
+//                                  vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_stb_partial_hit( {4'b0001, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                   {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0001, 2'b01, 4'b0000, 1'b0} );
+wildcard trans T1_stb_partial_hit( {4'b0010, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                   {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0010, 2'b01, 4'b0000, 1'b0} );
+wildcard trans T2_stb_partial_hit( {4'b0100, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                   {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0100, 2'b01, 4'b0000, 1'b0} );
+wildcard trans T3_stb_partial_hit( {4'b1000, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                   {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b1000, 2'b01, 4'b0000, 1'b0} );
+
+//                                    vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_stb_full_hit_ldbl( {4'b0001, 4'b0001, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                     {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0001, 2'b10, 4'b0000, 1'b0} );
+wildcard trans T1_stb_full_hit_ldbl( {4'b0010, 4'b0010, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                     {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0010, 2'b10, 4'b0000, 1'b0} );
+wildcard trans T2_stb_full_hit_ldbl( {4'b0100, 4'b0100, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                     {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0100, 2'b10, 4'b0000, 1'b0} );
+wildcard trans T3_stb_full_hit_ldbl( {4'b1000, 4'b1000, 1'b1,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                     {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b1000, 2'b10, 4'b0000, 1'b0} );
+
+/*
+ld_stb_full_raw_w2 and ld_stb_partial_raw_w2 are mutually exclusive
+//                                       vld_g    l2rq_g   miss_g  vld_w2   l2rq_w2  raw_w2 kill_w2  perr_w2
+wildcard trans T0_stb_full_partial_hit( {4'b0001, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                        {4'bxxxx, 4'bxxxx, 1'bx,   4'b0001, 4'b0001, 2'b11, 4'b0000, 1'b0} );
+wildcard trans T1_stb_full_partial_hit( {4'b0010, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                        {4'bxxxx, 4'bxxxx, 1'bx,   4'b0010, 4'b0010, 2'b11, 4'b0000, 1'b0} );
+wildcard trans T2_stb_full_partial_hit( {4'b0100, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                        {4'bxxxx, 4'bxxxx, 1'bx,   4'b0100, 4'b0100, 2'b11, 4'b0000, 1'b0} );
+wildcard trans T3_stb_full_partial_hit( {4'b1000, 4'b0000, 1'bx,   4'bxxxx, 4'bxxxx, 2'bxx, 4'bxxxx, 1'bx} ->
+                                        {4'bxxxx, 4'bxxxx, 1'bx,   4'b1000, 4'b1000, 2'b11, 4'b0000, 1'b0} );
+*/

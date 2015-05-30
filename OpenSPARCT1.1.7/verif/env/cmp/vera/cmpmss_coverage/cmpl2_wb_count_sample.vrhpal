@@ -1,0 +1,42 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_wb_count_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// coverage_def L2_WB_COUNT_COV(bit [3:0] wb_count) {
+
+    //state qcount_0 (4'h0);
+    state qcount_1 (4'h1);
+    state qcount_2 (4'h2);
+    state qcount_3 (4'h3);
+    state qcount_4 (4'h4);
+    state qcount_5 (4'h5);
+    state qcount_6 (4'h6);
+    state qcount_7 (4'h7);
+    state qcount_8 (4'h8);
+    
+    bad_state qcount_9 (4'h9);
+    bad_state qcount_10(4'ha);
+    bad_state qcount_11(4'hb);
+    bad_state qcount_12(4'hc);
+    bad_state qcount_13(4'hd);
+    bad_state qcount_14(4'he);
+    bad_state qcount_15(4'hf);
+// }

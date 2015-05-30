@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_lsu_trap_stat_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the lsu to tlu trap status assisting signals
+//***************************************************************************
+
+
+// coverage_def TLU_LSU_TRAP_STAT (bit [9:0] tlu_lsu_trap_stat_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_LSU_MISALIGN_LDST_ATM	(LSU_MISALIGN_LDST_ATM	);
+  wildcard state s_LSU_SQUASH_VA_OOR		(LSU_SQUASH_VA_OOR	);
+  wildcard state s_LSU_PRIV_ACTION		(LSU_PRIV_ACTION	);
+  wildcard state s_LSU_DACCESS_EXCPTN		(LSU_DACCESS_EXCPTN	);
+  wildcard state s_LSU_DACCESS_PROT		(LSU_DACCESS_PROT	);
+  wildcard state s_LSU_WATCHPT_TRP		(LSU_WATCHPT_TRP	);
+  wildcard state s_LSU_DEFR_TRP_TAKEN		(LSU_DEFR_TRP_TAKEN	);
+  wildcard state s_LSU_EARLY_FLUSH2		(LSU_EARLY_FLUSH2	);
+  wildcard state s_LSU_EARLY_FLUSH		(LSU_EARLY_FLUSH	);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

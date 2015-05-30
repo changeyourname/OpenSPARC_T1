@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_sync_exu_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the synchronous trap types reported by exu.
+//***************************************************************************
+
+
+// coverage_def TLU_SYNC_EXU_TTYPE (bit [13:0] tlu_sync_exu_ttype_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_EXU_TT_TAG_OVERFLOW		(EXU_TT_TAG_OVERFLOW);
+  wildcard state s_EXU_TT_DIV_BY_ZERO		(EXU_TT_DIV_BY_ZERO);
+  wildcard state s_EXU_TT_UNCORR_ECC_ERR	(EXU_TT_UNCORR_ECC_ERR);
+  wildcard state s_EXU_TT_ADDR_NOT_ALIGN	(EXU_TT_ADDR_NOT_ALIGN);
+  wildcard state s_EXU_TT_CLEAN_WIN		(EXU_TT_CLEAN_WIN);
+  wildcard state s_EXU_TT_FILL_N_NORMAL		(EXU_TT_FILL_N_NORMAL);
+  wildcard state s_EXU_TT_FILL_N_OTHER		(EXU_TT_FILL_N_OTHER);
+  wildcard state s_EXU_TT_TRAP_INST		(EXU_TT_TRAP_INST);
+  wildcard state s_EXU_TT_HTRAP_INST		(EXU_TT_HTRAP_INST);
+  wildcard state s_EXU_MISALIGN_JMPL_RET	(EXU_MISALIGN_JMPL_RET);
+  wildcard state s_EXU_UE_TRAP			(EXU_UE_TRAP);
+  wildcard state s_EXU_VA_OOR_JL_RET		(EXU_VA_OOR_JL_RET);
+  wildcard state s_EXU_VA_OOR			(EXU_VA_OOR);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

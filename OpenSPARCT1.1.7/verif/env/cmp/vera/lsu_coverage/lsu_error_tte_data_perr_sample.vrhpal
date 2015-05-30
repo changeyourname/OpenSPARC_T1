@@ -1,0 +1,35 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_tte_data_perr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// tlb tte data parity error on translation
+
+wildcard state s_TTE_PERR_TRAN         (12'b1_xxxxxxxxx_00);
+state s_TTE_PERR_TRAN_LD               (12'b1_100000000_00);
+state s_TTE_PERR_TRAN_ST               (12'b1_010000000_00);
+state s_TTE_PERR_TRAN_CASA             (12'b1_001000000_00);
+state s_TTE_PERR_TRAN_SWAP             (12'b1_000100000_00);
+state s_TTE_PERR_TRAN_LDSTUB           (12'b1_000010000_00);
+state s_TTE_PERR_TRAN_BLD              (12'b1_000001000_00);
+state s_TTE_PERR_TRAN_BLKST            (12'b1_000000100_00);
+state s_TTE_PERR_TRAN_LDQUAD           (12'b1_000000010_00);
+state s_TTE_PERR_TRAN_PREFETCH         (12'b1_000000001_00);
+wildcard state s_TTE_PERR_TRAN_WO_VLD  (12'b0_xxxxxxxxx_10);
+wildcard state s_TTE_PERR_TRAN_W_FLUSH (12'b0_xxxxxxxxx_01);
+

@@ -1,0 +1,70 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_bld_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+  state s_BLDST0   (BLDST0);
+  state s_BLDST1   (BLDST1);
+  state s_BLDST2   (BLDST2);
+  state s_BLDST3   (BLDST3);
+  state s_BLDST4   (BLDST4);
+  state s_BLDST5   (BLDST5);
+  state s_BLDST6   (BLDST6);
+  state s_BLDST7   (BLDST7);
+  state s_BLDST8   (BLDST8);
+  state s_BLDST9   (BLDST9);
+  state s_BLDST10  (BLDST10);
+  state s_BLDST11  (BLDST11);
+  state s_BLDST12  (BLDST12);
+  state s_BLDST13  (BLDST13);
+  state s_BLDST14  (BLDST14);
+  // state s_BLDST15  (BLDST15);
+
+  state s_HBLDST0   (HBLDST0);
+  state s_HBLDST1   (HBLDST1);
+  state s_HBLDST2   (HBLDST2);
+  state s_HBLDST3   (HBLDST3);
+  state s_HBLDST4   (HBLDST4);
+  state s_HBLDST5   (HBLDST5);
+  state s_HBLDST6   (HBLDST6);
+  state s_HBLDST7   (HBLDST7);
+  state s_HBLDST8   (HBLDST8);
+  state s_HBLDST9   (HBLDST9);
+  state s_HBLDST10  (HBLDST10);
+  state s_HBLDST11  (HBLDST11);
+  state s_HBLDST12  (HBLDST12);
+  state s_HBLDST13  (HBLDST13);
+  state s_HBLDST14  (HBLDST14);
+  // state s_HBLDST15  (HBLDST15);
+
+  state s_HRBLDST0   (HRBLDST0);
+  state s_HRBLDST1   (HRBLDST1);
+  state s_HRBLDST2   (HRBLDST2);
+  state s_HRBLDST3   (HRBLDST3);
+  state s_HRBLDST4   (HRBLDST4);
+  state s_HRBLDST5   (HRBLDST5);
+  state s_HRBLDST6   (HRBLDST6);
+  state s_HRBLDST7   (HRBLDST7);
+  state s_HRBLDST8   (HRBLDST8);
+  state s_HRBLDST9   (HRBLDST9);
+  state s_HRBLDST10  (HRBLDST10);
+  state s_HRBLDST11  (HRBLDST11);
+  state s_HRBLDST12  (HRBLDST12);
+  state s_HRBLDST13  (HRBLDST13);
+  state s_HRBLDST14  (HRBLDST14);
+  // state s_HRBLDST15  (HRBLDST15);

@@ -1,0 +1,16 @@
+
+
+	Bitfiles Directory:  Pre-generated FPGA Bit files
+	=================================================
+
+
+
+This directory contains pre-generated bit files to enable users to get
+a quick start on building systems.  
+
+The directory contains the following files:
+
+1.  download_4t_16tlb_lx110t.bit:
+
+    This file is an OpenSPARC T1 core with 4-threads, no SPU, and 16 TLB
+    entries, synthesized for an ML505 board with an XC5VLX110T FPGA.

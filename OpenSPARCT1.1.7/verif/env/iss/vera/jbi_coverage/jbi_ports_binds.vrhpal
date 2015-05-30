@@ -1,0 +1,246 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "jbi_cov_inc.pal";
+#ifndef __JBI_PORTS_VRH__
+#define __JBI_PORTS_VRH__
+
+#include <vera_defines.vrh>
+
+////////////////////////////////////////////////////////////////
+// The clock port
+////////////////////////////////////////////////////////////////
+
+port jbi_clk_port {
+  clk;
+  cmp_clk;
+  jbus_diag_done;
+}
+
+////////////////////////////////////////////////////////////////
+// jbi_min Request Issue Block
+////////////////////////////////////////////////////////////////
+
+//-------------
+// MIN
+//-------------
+port jbi_min_wdq_full_port {
+        jbi_min_wdq_full;
+}
+
+port jbi_min_issue_pop_sm_port {
+	issue_pop_sm;
+}
+port jbi_min_rdq_full_port {
+	jbi_min_rdq_full;
+}
+port jbi_min_rhq_full_port {
+	jbi_min_rhq_full;
+}
+port jbi_min_rhq_ndrdy_byps_port {
+	jbi_min_rhq_ndrdy_byps;
+}
+port jbi_min_rq_stall_ib_port {
+	jbi_min_rq_stall_ib;
+}
+port jbi_min_rq_stall_wib_port {
+	jbi_min_rq_stall_wib;
+}
+port jbi_min_rq_nwib_port {
+	jbi_min_rq_nwib;
+}
+
+
+//-------------
+// NCIO
+//-------------
+port jbi_ncio_prqq_full_port {
+	jbi_ncio_prqq_full;
+}
+port jbi_ncio_max_pend_cnt_port {
+	jbi_ncio_max_pend_cnt;
+}
+port jbi_ncio_prtq_full_port {
+	jbi_ncio_prtq_full;
+}
+port jbi_ncio_prtq_drdy_stall_port {
+	jbi_ncio_prtq_drdy_stall;
+}
+port jbi_ncio_mrqq_full_port {
+	jbi_ncio_mrqq_full;
+}
+port jbi_ncio_mrqq_drdy_stall_port {
+	jbi_ncio_mrqq_drdy_stall;
+}
+
+//-------------
+// DBG
+//-------------
+port jbi_dbg_full_port {
+        jbi_dbg_full;
+}
+
+//-------------
+// MOUT
+//-------------
+port jbi_mout_pktout_ctlr_port {
+        jbi_mout_pktout_ctlr;
+}
+
+port jbi_mout_j_pack_out_gen_port {
+	jbi_mout_j_pack_out_gen;
+}
+
+port jbi_mout_ncrd_timer_port {
+	jbi_mout_ncrd_timer;
+}
+
+port jbi_mout_sct_out_queues_port {
+        jbi_mout_sct_out_queues;
+}
+
+port jbi_mout_sct_rdq_port {
+        jbi_mout_sct_rdq;
+}
+
+////////////////////////////////////////////////////////////////
+// Bindings
+////////////////////////////////////////////////////////////////
+
+bind jbi_clk_port jbi_clk_bind {
+  clk                   jbi_jbuscov_ifc.clk;
+  cmp_clk               jbi_cmpcov_ifc.cmp_clk;
+  jbus_diag_done        jbi_jbuscov_ifc.jbus_diag_done;
+}
+
+//----------------
+// MIN
+//----------------
+
+// WDQ FULL
+bind jbi_min_wdq_full_port   jbi_min_wdq_full_sample_bind
+  { jbi_min_wdq_full         { jbi_jbuscov_ifc.min_parse_wdq_push,
+                             jbi_jbuscov_ifc.min_next_wdq_level[$JBI_WDQ_ADDR_WIDTH:0] };
+  }
+
+// RQ
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+  bind jbi_min_issue_pop_sm_port    jbi_min_issue_pop_sm_sample_bind${rq} {
+    issue_pop_sm                    jbi_cmpcov_ifc.rq${rq}_issue_pop_sm;
+  }
+
+  bind jbi_min_rdq_full_port       jbi_min_rdq_full_sample_bind${rq} {
+    jbi_min_rdq_full               jbi_jbuscov_ifc.min_rdq${rq}_full;
+  }
+
+  bind jbi_min_rhq_full_port       jbi_min_rhq_full_sample_bind${rq} {
+    jbi_min_rhq_full               jbi_jbuscov_ifc.min_rhq${rq}_full;
+  }
+
+  bind jbi_min_rhq_ndrdy_byps_port jbi_min_rhq_ndrdy_byps_sample_bind${rq} {
+    jbi_min_rhq_ndrdy_byps         {jbi_cmpcov_ifc.min_rhq${rq}_drdy,
+                                    jbi_cmpcov_ifc.min_rhq${rq}_empty,
+                                    jbi_cmpcov_ifc.min_rhq${rq}_rdata_tag_byps};
+  }
+
+  bind jbi_min_rq_stall_ib_port    jbi_min_rq_stall_ib_sample_bind${rq} {
+    jbi_min_rq_stall_ib            {jbi_cmpcov_ifc.min_rhq${rq}_drdy,
+                                    jbi_cmpcov_ifc.min_rq${rq}_issue_stall_ib};
+  }
+
+  bind jbi_min_rq_stall_wib_port   jbi_min_rq_stall_wib_sample_bind${rq} {
+    jbi_min_rq_stall_wib           {jbi_cmpcov_ifc.min_rhq${rq}_drdy,
+                                    jbi_cmpcov_ifc.min_rq${rq}_issue_stall_wib,
+                                    jbi_cmpcov_ifc.min_rhq${rq}_rdata_req[$JBI_SCTAG_REQ_WRI_BIT]};
+  }
+
+  bind jbi_min_rq_nwib_port        jbi_min_rq_nwib_sample_bind${rq} {
+    jbi_min_rq_nwib                {jbi_cmpcov_ifc.min_rhq${rq}_drdy_ok,
+                                   jbi_cmpcov_ifc.min_rq${rq}_issue_stall_wib};
+  }
+. }
+
+//----------------
+// NCIO
+//----------------
+
+bind jbi_ncio_prqq_full_port       jbi_ncio_prqq_full_sample_bind {
+  jbi_ncio_prqq_full               {jbi_jbuscov_ifc.ncio_prqq_push,
+                                    jbi_jbuscov_ifc.ncio_next_prqq_level};
+}
+
+bind jbi_ncio_max_pend_cnt_port    jbi_ncio_max_pend_cnt_sample_bind {
+  jbi_ncio_max_pend_cnt            {jbi_jbuscov_ifc.ncio_prqq_entry_drdy,
+                                    jbi_jbuscov_ifc.ncio_pio_req_rw,
+                                    jbi_jbuscov_ifc.ncio_prqq_stall_rd};
+}
+
+bind jbi_ncio_prtq_full_port       jbi_ncio_prtq_full_sample_bind {
+  jbi_ncio_prtq_full               {jbi_jbuscov_ifc.ncio_prtq_full};
+}
+
+bind jbi_ncio_prtq_drdy_stall_port jbi_ncio_prtq_drdy_stall_sample_bind {
+  jbi_ncio_prtq_drdy_stall         {jbi_jbuscov_ifc.ncio_prtq_drdy_stall};
+}
+
+bind jbi_ncio_mrqq_full_port       jbi_ncio_mrqq_full_sample_bind {
+  jbi_ncio_mrqq_full               {jbi_jbuscov_ifc.ncio_mrqq_full};
+}
+
+bind jbi_ncio_mrqq_drdy_stall_port jbi_ncio_mrqq_drdy_stall_sample_bind {
+  jbi_ncio_mrqq_drdy_stall         {jbi_jbuscov_ifc.ncio_mrqq_drdy_stall};
+}
+
+//----------------
+// DBG
+//----------------
+bind jbi_dbg_full_port             jbi_dbg_full_sample_bind {
+  jbi_dbg_full                     {jbi_jbuscov_ifc.dbgq_hi_full,
+                                   jbi_jbuscov_ifc.dbgq_lo_full};
+}
+
+
+//----------------
+// MOUT
+//----------------
+bind jbi_mout_pktout_ctlr_port     jbi_mout_pktout_ctlr_sample_bind {
+  jbi_mout_pktout_ctlr             {jbi_jbuscov_ifc.mout_pktout_ctlr_state};
+}
+
+bind jbi_mout_j_pack_out_gen_port  jbi_mout_j_pack_out_gen_sample_bind {
+  jbi_mout_j_pack_out_gen          {jbi_jbuscov_ifc.mout_j_pack_out_gen_state};
+}
+
+. for ($num = 0; $num < 16; $num++) {
+bind jbi_mout_ncrd_timer_port      jbi_mout_ncrd_timer_sample_bind${num} {
+  jbi_mout_ncrd_timer              {jbi_jbuscov_ifc.mout_ncrd_${num}_timer_state};
+}
+.}
+
+. for ($num = 0; $num < 4; $num++) {
+bind jbi_mout_sct_out_queues_port  jbi_mout_sct_out_queues_sample_bind${num} {
+  jbi_mout_sct_out_queues          {jbi_cmpcov_ifc.mout_sct${num}_out_queues_state};
+}
+bind jbi_mout_sct_rdq_port         jbi_mout_sct_rdq_sample_bind${num} {
+  jbi_mout_sct_rdq                 {jbi_cmpcov_ifc.mout_sct${num}_rdq_state};
+}
+.}
+
+#endif

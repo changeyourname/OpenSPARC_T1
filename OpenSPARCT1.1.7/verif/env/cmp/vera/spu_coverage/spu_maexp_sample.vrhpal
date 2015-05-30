@@ -1,0 +1,68 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_maexp_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_maexp_COV_VRH
+#define INC__TMP_spu_maexp_COV_VRH
+#define MAEXP_IDLE_STATE	`MA_EXP_STATE_WIDTH'b10_0000
+#define MAEXP_RDE_STATE		`MA_EXP_STATE_WIDTH'b01_0000
+#define MAEXP_GOTOMULRED1_STATE	`MA_EXP_STATE_WIDTH'b00_1000
+#define MAEXP_GOTOMULRED2_STATE	`MA_EXP_STATE_WIDTH'b00_0100
+#define MAEXP_ECHK_STATE	`MA_EXP_STATE_WIDTH'b00_0010
+#define MAEXP_ESMAX_STATE	`MA_EXP_STATE_WIDTH'b00_0001
+
+#endif
+sample spu_maexp_sample_bind_C${c}.\$ma_exp_state {
+  //state declarations
+
+  state s_MAEXP_IDLE_STATE		(MAEXP_IDLE_STATE);
+  state s_MAEXP_RDE_STATE		(MAEXP_RDE_STATE);
+  state s_MAEXP_GOTOMULRED1_STATE	(MAEXP_GOTOMULRED1_STATE);
+  state s_MAEXP_GOTOMULRED2_STATE	(MAEXP_GOTOMULRED2_STATE);
+  state s_MAEXP_ECHK_STATE		(MAEXP_ECHK_STATE);
+  state s_MAEXP_ESMAX_STATE		(MAEXP_ESMAX_STATE);
+
+  bad_state s_not_MAEXP_STATE (not state);
+
+  // transitions
+
+  trans t_MAEXP_IDLE_2_IDLE_STATE (MAEXP_IDLE_STATE -> MAEXP_IDLE_STATE);
+  trans t_MAEXP_ESMAX_2_IDLE_STATE (MAEXP_ESMAX_STATE -> MAEXP_IDLE_STATE);
+
+  trans t_MAEXP_IDLE_2_RDE_STATE (MAEXP_IDLE_STATE -> MAEXP_RDE_STATE);
+  trans t_MAEXP_ESMAX_2_RDE_STATE (MAEXP_ESMAX_STATE -> MAEXP_RDE_STATE);
+
+  trans t_MAEXP_GOTOMULRED1_2_GOTOMULRED1_STATE (MAEXP_GOTOMULRED1_STATE -> MAEXP_GOTOMULRED1_STATE);
+  trans t_MAEXP_RDE_2_GOTOMULRED1_STATE (MAEXP_RDE_STATE -> MAEXP_GOTOMULRED1_STATE);
+  trans t_MAEXP_ESMAX_2_GOTOMULRED1_STATE (MAEXP_ESMAX_STATE -> MAEXP_GOTOMULRED1_STATE);
+
+  trans t_MAEXP_GOTOMULRED2_2_GOTOMULRED2_STATE (MAEXP_GOTOMULRED2_STATE -> MAEXP_GOTOMULRED2_STATE);
+  trans t_MAEXP_ECHK_2_GOTOMULRED2_STATE (MAEXP_ECHK_STATE -> MAEXP_GOTOMULRED2_STATE);
+
+  trans t_MAEXP_GOTOMULRED1_2_ECHK_STATE (MAEXP_GOTOMULRED1_STATE -> MAEXP_ECHK_STATE);
+
+  trans t_MAEXP_GOTOMULRED2_2_ESMAX_STATE (MAEXP_GOTOMULRED2_STATE -> MAEXP_ESMAX_STATE);
+  trans t_MAEXP_ECHK_2_ESMAX_STATE (MAEXP_ECHK_STATE -> MAEXP_ESMAX_STATE);
+
+  //bad_trans t_not_MAEXP_TRANS (not trans);
+}
+ 

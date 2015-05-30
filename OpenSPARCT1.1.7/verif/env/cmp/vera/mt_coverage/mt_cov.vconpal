@@ -1,0 +1,197 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mt_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// mt coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+// global signals
+connect input mt_cov_top.cmp_clk = "cmp_top.cmp_gclk" iskew -1 
+connect input mt_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+. sub connectInstance {
+.	my ( $instancePath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+// XBAR
+connect input mt_cov_top.cpx_fp_req = "cmp_top.iop.fp_cpx_req_cq" iskew -1
+connect input mt_cov_top.cpx_io_req = "cmp_top.iop.iob_cpx_req_cq" iskew -1
+connect input mt_cov_top.cpx_sc0_req = "cmp_top.iop.sctag0_cpx_req_cq" iskew -1
+connect input mt_cov_top.cpx_sc1_req = "cmp_top.iop.sctag1_cpx_req_cq" iskew -1
+connect input mt_cov_top.cpx_sc2_req = "cmp_top.iop.sctag2_cpx_req_cq" iskew -1
+connect input mt_cov_top.cpx_sc3_req = "cmp_top.iop.sctag3_cpx_req_cq" iskew -1
+
+connect input mt_cov_top.cpx_rdy_spc0 = "cmp_top.iop.cpx_spc0_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc1 = "cmp_top.iop.cpx_spc1_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc2 = "cmp_top.iop.cpx_spc2_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc3 = "cmp_top.iop.cpx_spc3_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc4 = "cmp_top.iop.cpx_spc4_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc5 = "cmp_top.iop.cpx_spc5_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc6 = "cmp_top.iop.cpx_spc6_data_rdy_cx2" iskew -1
+connect input mt_cov_top.cpx_rdy_spc7 = "cmp_top.iop.cpx_spc7_data_rdy_cx2" iskew -1
+
+connect input mt_cov_top.spc0_pcx_req = "cmp_top.iop.spc0_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc1_pcx_req = "cmp_top.iop.spc1_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc2_pcx_req = "cmp_top.iop.spc2_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc3_pcx_req = "cmp_top.iop.spc3_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc4_pcx_req = "cmp_top.iop.spc4_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc5_pcx_req = "cmp_top.iop.spc5_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc6_pcx_req = "cmp_top.iop.spc6_pcx_req_pq" iskew -1
+connect input mt_cov_top.spc7_pcx_req = "cmp_top.iop.spc7_pcx_req_pq" iskew -1
+
+connect input mt_cov_top.pcx_fpio_rdy = "cmp_top.iop.pcx_iob_data_rdy_px2" iskew -1
+connect input mt_cov_top.pcx_sc0_rdy = "cmp_top.iop.pcx_sctag0_data_rdy_px1" iskew -1
+connect input mt_cov_top.pcx_sc1_rdy = "cmp_top.iop.pcx_sctag1_data_rdy_px1" iskew -1
+connect input mt_cov_top.pcx_sc2_rdy = "cmp_top.iop.pcx_sctag2_data_rdy_px1" iskew -1
+connect input mt_cov_top.pcx_sc3_rdy = "cmp_top.iop.pcx_sctag3_data_rdy_px1" iskew -1
+
+// bypass coverage
+connect input mt_cov_top.C${c}_byp_rs1_ld = "${instancePath}.exu.bypass.ecl_byp_rs1_mux2_sel_ld" iskew -1
+connect input mt_cov_top.C${c}_byp_rs2_ld = "${instancePath}.exu.bypass.ecl_byp_rs2_mux2_sel_ld" iskew -1
+
+connect input mt_cov_top.C${c}_byp_rs1_e = "${instancePath}.exu.bypass.ecl_byp_rs1_mux2_sel_e" iskew -1
+connect input mt_cov_top.C${c}_byp_rs2_e = "${instancePath}.exu.bypass.ecl_byp_rs2_mux2_sel_e" iskew -1
+
+connect input mt_cov_top.C${c}_byp_rs1_m = "${instancePath}.exu.bypass.ecl_byp_rs1_mux1_sel_m" iskew -1
+connect input mt_cov_top.C${c}_byp_rs2_m = "${instancePath}.exu.bypass.ecl_byp_rs2_mux1_sel_m" iskew -1
+
+connect input mt_cov_top.C${c}_byp_rs1_w = "${instancePath}.exu.bypass.ecl_byp_rs1_mux1_sel_w" iskew -1
+connect input mt_cov_top.C${c}_byp_rs2_w = "${instancePath}.exu.bypass.ecl_byp_rs2_mux1_sel_w" iskew -1
+
+
+connect input mt_cov_top.C${c}_byp_dfq = "${instancePath}.lsu.qctl2.dfq_byp_vld" iskew -1
+connect input mt_cov_top.C${c}_byp_dfq_thrid = "${instancePath}.lsu.qctl2.lsu_dfq_byp_tid" iskew -1
+
+// starve
+connect input mt_cov_top.C${c}_lsu_ifu_stallreq = "${instancePath}.ifu.lsu_ifu_stallreq" iskew -1
+connect input mt_cov_top.C${c}_ffu_ifu_stallreq_never = "${instancePath}.ifu.ffu_ifu_stallreq" iskew -1
+connect input mt_cov_top.C${c}_itlb_starv_alert = "${instancePath}.ifu.fcl.itlb_starv_alert" iskew -1
+connect input mt_cov_top.C${c}_ifqctl_starv_alert = "${instancePath}.ifu.ifqctl.starv_alert" iskew -1
+
+
+// flush
+connect input mt_cov_top.C${c}_lsu_tlu_early_flush = "${instancePath}.lsu.excpctl.lsu_tlu_early_flush_w" iskew -1
+connect input mt_cov_top.C${c}_ffu_lsu_kill_fst_w = "${instancePath}.lsu.ffu_lsu_kill_fst_w" iskew -1
+
+
+connect input mt_cov_top.C${c}_instr_s = "${instancePath}.ifu.fdp_dtu_inst_s" iskew -1
+
+connect input mt_cov_top.C${c}_thr_f = "${instancePath}.ifu.fcl.thr_f" iskew -1
+connect input mt_cov_top.C${c}_thr_s = "${instancePath}.ifu.fcl.thr_s1" iskew -1
+connect input mt_cov_top.C${c}_thr_d = "${instancePath}.ifu.fcl.thr_d" iskew -1
+connect input mt_cov_top.C${c}_thr_e = "${instancePath}.ifu.fcl.thr_e" iskew -1
+connect input mt_cov_top.C${c}_thr_m = "${instancePath}.ifu.fcl.thr_m" iskew -1
+connect input mt_cov_top.C${c}_thr_w = "${instancePath}.ifu.fcl.thr_w" iskew -1
+
+connect input mt_cov_top.C${c}_pc_s = "${instancePath}.ifu.fdp.pc_s" iskew -1
+connect input mt_cov_top.C${c}_pc_d = "${instancePath}.ifu.fdp.pc_d" iskew -1
+connect input mt_cov_top.C${c}_pc_e = "${instancePath}.ifu.fdp.pc_e" iskew -1
+connect input mt_cov_top.C${c}_pc_m = "${instancePath}.ifu.fdp.pc_m" iskew -1
+connect input mt_cov_top.C${c}_pc_w = "${instancePath}.ifu.fdp.pc_w" iskew -1
+
+
+connect input mt_cov_top.C${c}_vld_f = "${instancePath}.ifu.fcl.inst_vld_f" iskew -1
+connect input mt_cov_top.C${c}_vld_s = "${instancePath}.ifu.fcl.inst_vld_s" iskew -1
+connect input mt_cov_top.C${c}_vld_d = "${instancePath}.ifu.fcl.inst_vld_d" iskew -1
+connect input mt_cov_top.C${c}_vld_e = "${instancePath}.ifu.fcl.inst_vld_e" iskew -1
+connect input mt_cov_top.C${c}_vld_m = "${instancePath}.ifu.fcl.inst_vld_m" iskew -1
+connect input mt_cov_top.C${c}_vld_w = "${instancePath}.ifu.fcl.inst_vld_w" iskew -1
+
+connect input mt_cov_top.C${c}_trap_e = "${instancePath}.ifu.fcl.trap_e" iskew -1
+connect input mt_cov_top.C${c}_ttype_e = "${instancePath}.ifu.fcl.ttype_e" iskew -1
+
+connect input mt_cov_top.C${c}_trap_m = "${instancePath}.ifu.fcl.trap_m" iskew -1
+connect input mt_cov_top.C${c}_ttype_m = "${instancePath}.ifu.fcl.ifu_tlu_ttype_m" iskew -1
+
+connect input mt_cov_top.C${c}_trap_0w1 = "${instancePath}.tlu.tcl.thrd0_traps" iskew -1
+connect input mt_cov_top.C${c}_trap_1w1 = "${instancePath}.tlu.tcl.thrd1_traps" iskew -1
+connect input mt_cov_top.C${c}_trap_2w1 = "${instancePath}.tlu.tcl.thrd2_traps" iskew -1
+connect input mt_cov_top.C${c}_trap_3w1 = "${instancePath}.tlu.tcl.thrd3_traps" iskew -1
+
+connect input mt_cov_top.C${c}_ttype_exu_e  = "${instancePath}.exu.ecl.early2_ttype_e" iskew -1
+
+
+//connect input mt_cov_top.C${c}_trap_exu_e = "${instancePath}.exu.ecl.exu_tlu_ttype_vld_e" iskew -1
+// split into 2
+
+connect input mt_cov_top.C${c}_early_ttype_vld_e  = "${instancePath}.exu.ecl.early_ttype_vld_e" iskew -1
+
+connect input mt_cov_top.C${c}_ecc_ue_trap_exu_e = "${instancePath}.exu.ecl.ecc_ue_trap_m" iskew -1
+
+connect input mt_cov_top.C${c}_ifu_rst_m = "${instancePath}.tlu.tcl.ifu_rstint_m" iskew -1
+connect input mt_cov_top.C${c}_thrid_m = "${instancePath}.tlu.tcl.thrid_m" iskew -1
+
+connect input mt_cov_top.C${c}_fsm_state0 = "${instancePath}.ifu.swl.thrfsm0.thr_state" iskew -1
+connect input mt_cov_top.C${c}_fsm_state1 = "${instancePath}.ifu.swl.thrfsm1.thr_state" iskew -1
+connect input mt_cov_top.C${c}_fsm_state2 = "${instancePath}.ifu.swl.thrfsm2.thr_state" iskew -1
+connect input mt_cov_top.C${c}_fsm_state3 = "${instancePath}.ifu.swl.thrfsm3.thr_state" iskew -1
+/*
+connect input mt_cov_top.C${c}_rollback_load   = "${instancePath}.ifu.swl.rollback_g" iskew -1
+connect input mt_cov_top.C${c}_rollback_hazard = "${instancePath}.ifu.swl.dtu_fcl_retract_d" iskew -1
+*/
+connect input mt_cov_top.C${c}_rb_stg_d  = "${instancePath}.ifu.fcl.rb_stg_d" iskew -1
+connect input mt_cov_top.C${c}_rb_stg_e  = "${instancePath}.ifu.fcl.rb_stg_e" iskew -1
+connect input mt_cov_top.C${c}_rb_stg_w  = "${instancePath}.ifu.fcl.rb_stg_w" iskew -1
+
+
+connect input mt_cov_top.C${c}_intr_vld = "${instancePath}.lsu.qctl2.lsu_tlu_cpx_vld" iskew -1
+connect input mt_cov_top.C${c}_intr_req = "${instancePath}.lsu.qctl2.lsu_tlu_cpx_req" iskew -1
+connect input mt_cov_top.C${c}_int_thid = "${instancePath}.lsu.qctl2.lsu_tlu_intpkt" iskew -1
+
+
+// MUL_DIV obj
+connect input mt_cov_top.C${c}_new_div_d = "${instancePath}.exu.ecl.mdqctl.new_div_vld" iskew -1
+connect input mt_cov_top.C${c}_new_mul_d = "${instancePath}.exu.ecl.mdqctl.new_mul_d" iskew -1
+
+// for reg write port W1
+connect input mt_cov_top.C${c}_ecl_byp_sel_load_m = "${instancePath}.exu.ecl.writeback.ecl_byp_sel_load_m" iskew -1
+connect input mt_cov_top.C${c}_ecl_byp_sel_pipe_m = "${instancePath}.exu.ecl.writeback.ecl_byp_sel_pipe_m" iskew -1
+connect input mt_cov_top.C${c}_ecl_byp_sel_restore_m = "${instancePath}.exu.ecl.writeback.ecl_byp_sel_restore_m" iskew -1
+connect input mt_cov_top.C${c}_ecl_irf_tid_m = "${instancePath}.exu.ecl.writeback.ecl_irf_tid_m" iskew -1
+
+// for reg write port W2 changed!!! Thu Jul 24 10:42:10 PDT 2003
+connect input mt_cov_top.C${c}_ecl_byp_sel_load_g = "${instancePath}.exu.ecl.writeback.ecl_byp_sel_load_g" iskew -1
+connect input mt_cov_top.C${c}_ecl_byp_sel_restore_g = "${instancePath}.exu.ecl.writeback.ecl_byp_sel_restore_g" iskew -1
+connect input mt_cov_top.C${c}_ecl_sel_mul_g = "${instancePath}.exu.ecl.writeback.ecl_sel_mul_g" iskew -1
+connect input mt_cov_top.C${c}_ecl_sel_div_g = "${instancePath}.exu.ecl.writeback.ecl_sel_div_g" iskew -1
+connect input mt_cov_top.C${c}_ecl_irf_tid_g = "${instancePath}.exu.ecl.writeback.ecl_irf_tid_g" iskew -1
+
+
+// for long op wake up
+connect input mt_cov_top.C${c}_exu_ifu_longop_done_g = "${instancePath}.exu.ecl.writeback.exu_ifu_longop_done_g" iskew -1
+
+// bug 2770
+connect input mt_cov_top.C${c}_ifu_lsu_ibuf_busy = "${instancePath}.ifu.ifu_lsu_ibuf_busy" iskew -1
+ 
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $MT_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }
+

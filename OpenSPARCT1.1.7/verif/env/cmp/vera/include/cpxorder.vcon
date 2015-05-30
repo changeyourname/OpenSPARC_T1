@@ -1,0 +1,85 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cpxorder.vcon
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef GATE_SIM
+
+connect input cpxorder.ccx_rclk = "cmp_top.iop.ccx.rclk"
+connect input cpxorder.ccx_gdbginit_l = "cmp_top.iop.ccx.ccx_gdbginit_l" iskew -1
+
+// cpxport 0,1,2,3,4,5,6,7
+
+connect input cpxorder.cpx_spc_data_cx2_0 = "cmp_top.iop.ccx.cpx_spc0_data_cx2" iskew -1
+connect input cpxorder.dir_a_0 = "cmp_top.iop.ccx.cpx.arb0.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_1 = "cmp_top.iop.ccx.cpx_spc1_data_cx2" iskew -1
+connect input cpxorder.dir_a_1 = "cmp_top.iop.ccx.cpx.arb1.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_2 = "cmp_top.iop.ccx.cpx_spc2_data_cx2" iskew -1
+connect input cpxorder.dir_a_2 = "cmp_top.iop.ccx.cpx.arb2.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_3 = "cmp_top.iop.ccx.cpx_spc3_data_cx2" iskew -1
+connect input cpxorder.dir_a_3 = "cmp_top.iop.ccx.cpx.arb3.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_4 = "cmp_top.iop.ccx.cpx_spc4_data_cx2" iskew -1
+connect input cpxorder.dir_a_4 = "cmp_top.iop.ccx.cpx.arb4.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_5 = "cmp_top.iop.ccx.cpx_spc5_data_cx2" iskew -1
+connect input cpxorder.dir_a_5 = "cmp_top.iop.ccx.cpx.arb5.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_6 = "cmp_top.iop.ccx.cpx_spc6_data_cx2" iskew -1
+connect input cpxorder.dir_a_6 = "cmp_top.iop.ccx.cpx.arb6.ccx_arb.arbdp.dir_a" iskew -1
+
+connect input cpxorder.cpx_spc_data_cx2_7 = "cmp_top.iop.ccx.cpx_spc7_data_cx2" iskew -1
+connect input cpxorder.dir_a_7 = "cmp_top.iop.ccx.cpx.arb7.ccx_arb.arbdp.dir_a" iskew -1
+
+
+// l2port 0,1,2,3
+
+connect input cpxorder.sctag_cpx_req_cq_0 = "cmp_top.iop.sctag0.sctag_cpx_req_cq" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_0 = "cmp_top.iop.sctag0.sctag_cpx_atom_cq" iskew -1
+connect input cpxorder.cpx_sctag_grant_cx_0 = "cmp_top.iop.sctag0.cpx_sctag_grant_cx" iskew -1
+connect input cpxorder.sctag_cpx_data_ca_0 = "cmp_top.iop.sctag0.sctag_cpx_data_ca" iskew -1
+
+connect input cpxorder.sctag_cpx_req_cq_1 = "cmp_top.iop.sctag1.sctag_cpx_req_cq" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_1 = "cmp_top.iop.sctag1.sctag_cpx_atom_cq" iskew -1
+connect input cpxorder.cpx_sctag_grant_cx_1 = "cmp_top.iop.sctag1.cpx_sctag_grant_cx" iskew -1
+connect input cpxorder.sctag_cpx_data_ca_1 = "cmp_top.iop.sctag1.sctag_cpx_data_ca" iskew -1
+
+connect input cpxorder.sctag_cpx_req_cq_2 = "cmp_top.iop.sctag2.sctag_cpx_req_cq" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_2 = "cmp_top.iop.sctag2.sctag_cpx_atom_cq" iskew -1
+connect input cpxorder.cpx_sctag_grant_cx_2 = "cmp_top.iop.sctag2.cpx_sctag_grant_cx" iskew -1
+connect input cpxorder.sctag_cpx_data_ca_2 = "cmp_top.iop.sctag2.sctag_cpx_data_ca" iskew -1
+
+connect input cpxorder.sctag_cpx_req_cq_3 = "cmp_top.iop.sctag3.sctag_cpx_req_cq" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_3 = "cmp_top.iop.sctag3.sctag_cpx_atom_cq" iskew -1
+connect input cpxorder.cpx_sctag_grant_cx_3 = "cmp_top.iop.sctag3.cpx_sctag_grant_cx" iskew -1
+connect input cpxorder.sctag_cpx_data_ca_3 = "cmp_top.iop.sctag3.sctag_cpx_data_ca" iskew -1
+
+connect input cpxorder.sctag_cpx_req_cq_4 = "cmp_top.iop.ccx.cpx.buf_top.ff_io.io_cpx_req_cq2" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_4 = "1'b0"
+connect input cpxorder.cpx_sctag_grant_cx_4 = "cmp_top.iop.cpx_iob_grant_cx2" iskew -1
+connect input cpxorder.sctag_cpx_data_ca_4 = "cmp_top.iop.ccx.cpx.buf_top.ff_io.io_cpx_data_ca2" iskew -1
+
+connect input cpxorder.sctag_cpx_req_cq_5 = "cmp_top.iop.fpu.fp_cpx_req_cq" iskew -1
+connect input cpxorder.sctag_cpx_atom_cq_5 = "1'b0"
+connect input cpxorder.cpx_sctag_grant_cx_5 = "8'b0"
+connect input cpxorder.sctag_cpx_data_ca_5 = "cmp_top.iop.fpu.fp_cpx_data_ca" iskew -1
+
+#endif

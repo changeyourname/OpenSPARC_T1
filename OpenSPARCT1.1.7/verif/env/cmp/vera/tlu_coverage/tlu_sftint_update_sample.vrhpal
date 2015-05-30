@@ -1,0 +1,98 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_sftint_update_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for HW and SW updatting the SOFTINT register at
+// same time
+//
+//***************************************************************************
+
+
+// coverage_def TLU_SFTINT_UPDATE_COV (bit [31:0] tlu_sftint_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_CLR_HINTP0		(CLR_HINTP0);
+  wildcard state s_WR_CLEAR_SFTINT0	(WR_CLEAR_SFTINT0);
+  wildcard state s_CLR_SFTINT0		(CLR_SFTINT0);
+  wildcard state s_WR_CLEAR_SFTINT16	(WR_CLEAR_SFTINT16);
+  wildcard state s_CLR_SFTINT16		(CLR_SFTINT16);
+
+  wildcard state s_WR_SET_SFTINT_N0		(WR_SET_SFTINT_N0, 
+											WR_SET_SFTINT_16_N0, WR_SET_SFTINT_15_N0,
+											WR_SET_SFTINT_14_N0, WR_SET_SFTINT_13_N0,
+											WR_SET_SFTINT_12_N0, WR_SET_SFTINT_11_N0,
+											WR_SET_SFTINT_10_N0, WR_SET_SFTINT_09_N0,
+											WR_SET_SFTINT_08_N0, WR_SET_SFTINT_07_N0,
+											WR_SET_SFTINT_06_N0, WR_SET_SFTINT_05_N0,
+											WR_SET_SFTINT_04_N0, WR_SET_SFTINT_03_N0,
+											WR_SET_SFTINT_02_N0, WR_SET_SFTINT_01_N0
+										);
+
+  wildcard state s_SET_SFTINT_N0		(SET_SFTINT_N0,
+											SET_SFTINT_16_N0, SET_SFTINT_15_N0,
+											SET_SFTINT_14_N0, SET_SFTINT_13_N0,
+											SET_SFTINT_12_N0, SET_SFTINT_11_N0,
+											SET_SFTINT_10_N0, SET_SFTINT_09_N0,
+											SET_SFTINT_08_N0, SET_SFTINT_07_N0,
+											SET_SFTINT_06_N0, SET_SFTINT_05_N0,
+											SET_SFTINT_04_N0, SET_SFTINT_03_N0,
+											SET_SFTINT_02_N0, SET_SFTINT_01_N0
+										);
+
+  wildcard state s_WR_SET_SFTINT_N16	(WR_SET_SFTINT_N16,
+											WR_SET_SFTINT_00_N16, WR_SET_SFTINT_01_N16,
+											WR_SET_SFTINT_02_N16, WR_SET_SFTINT_03_N16,
+											WR_SET_SFTINT_04_N16, WR_SET_SFTINT_05_N16,
+											WR_SET_SFTINT_06_N16, WR_SET_SFTINT_07_N16,
+											WR_SET_SFTINT_08_N16, WR_SET_SFTINT_09_N16,
+											WR_SET_SFTINT_10_N16, WR_SET_SFTINT_11_N16,
+											WR_SET_SFTINT_12_N16, WR_SET_SFTINT_13_N16,
+											WR_SET_SFTINT_14_N16, WR_SET_SFTINT_15_N16
+										);
+
+  wildcard state s_SET_SFTINT_N16		(SET_SFTINT_N16,
+											SET_SFTINT_00_N16, SET_SFTINT_01_N16,
+											SET_SFTINT_02_N16, SET_SFTINT_03_N16,
+											SET_SFTINT_04_N16, SET_SFTINT_05_N16,
+											SET_SFTINT_06_N16, SET_SFTINT_07_N16,
+											SET_SFTINT_08_N16, SET_SFTINT_09_N16,
+											SET_SFTINT_10_N16, SET_SFTINT_11_N16,
+											SET_SFTINT_12_N16, SET_SFTINT_13_N16,
+											SET_SFTINT_14_N16, SET_SFTINT_15_N16
+										);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_CLR_SFTINT15		(CLR_SFTINT15);
+  wildcard bad_state s_WR_CLEAR_SFTINT15	(WR_CLEAR_SFTINT15);
+  wildcard bad_state s_SET_SFTINT_N15		(SET_SFTINT_N15);
+  wildcard bad_state s_WR_SET_SFTINT_N15	(WR_SET_SFTINT_N15);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

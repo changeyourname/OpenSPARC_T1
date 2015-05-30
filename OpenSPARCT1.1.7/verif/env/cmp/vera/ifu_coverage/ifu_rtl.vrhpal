@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_rtl.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef __IFU_RTL_H__
+#define __IFU_RTL_H__
+// ***************************************************************************
+//
+// File:	ifu_rtl.vrh
+// Description: The defines from IFU RTL
+//
+// ***************************************************************************
+
+#define IFILL_RET  4'b0001
+#define IFILL_RET_FOR_ERR 4'b0001
+#define ST_ACK 	   4'b0100
+
+. $dv_root = $ENV{DV_ROOT};
+. open (FILE, "$dv_root/design/sys/iop/include/ifu.h");
+. @lines = <FILE>;
+. $pr = 0;
+. foreach $line (@lines) {
+.   $_ = $line;
+.   if (/THRFSM/ || /MILFSM/ || ($pr == 1 && /`define/)) {
+.     $line =~ s/`define/#define/;
+.     if (/THRFSM/) {
+.       @words = split (/\s+/,$line);
+.       $words[1] =~ s/THRFSM_//;
+.       $words[2] =~ s/^5'b//;
+.       print "#define $words[1]\_STATE $words[2]\n";
+.       print "$line";
+.     } elsif ($pr == 1) {
+.     @words = split (/\s+/,$line);
+.       $encoding = $words[2];
+.       $words[2] =~ s/9\'h//;
+.       $words[2] =~ s/^0/2/;
+.       $words[2] =~ s/^1/3/;
+.       $words[2] =~ s/^/10'h/;
+.       print "@words \t\t/* $encoding */\n";
+.     } else {
+.       print "$line";
+.     }
+.   }
+.   if (/IFU Traps/) {
+.     $pr = 1;
+.   }
+. }
+. close (FILE);
+
+#endif
+

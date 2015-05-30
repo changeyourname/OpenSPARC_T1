@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_asiqueue_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// tlb asiqueue
+//***********************************************************************
+
+  // state  s_ASIQUEUE_ST00  (7'b0000_00_0);
+  bad_state s_ASIQUEUE_ST01  (7'b0000_01_0);
+  state     s_ASIQUEUE_ST02  (7'b0000_10_0);
+  state     s_ASIQUEUE_ST03  (7'b0000_11_0);
+
+  state     s_ASIQUEUE_ST04  (7'b1000_00_0);
+  state     s_ASIQUEUE_ST05  (7'b1000_01_0);
+  state     s_ASIQUEUE_ST06  (7'b1000_10_0);
+  state     s_ASIQUEUE_ST07  (7'b1000_11_0);
+
+  state     s_ASIQUEUE_ST08  (7'b1100_00_0);
+  state     s_ASIQUEUE_ST09  (7'b1100_01_0);
+  state     s_ASIQUEUE_ST10  (7'b1100_10_0);
+  state     s_ASIQUEUE_ST11  (7'b1100_11_0);
+
+  state     s_ASIQUEUE_ST12  (7'b1110_00_0);
+  state     s_ASIQUEUE_ST13  (7'b1110_01_0);
+  state     s_ASIQUEUE_ST14  (7'b1110_10_0);
+  state     s_ASIQUEUE_ST15  (7'b1110_11_0);
+
+  state     s_ASIQUEUE_ST16  (7'b1111_00_0);
+  state     s_ASIQUEUE_ST17  (7'b1111_01_0);
+  bad_state s_ASIQUEUE_ST18  (7'b1111_10_0);
+  state     s_ASIQUEUE_ST19  (7'b1111_11_0);

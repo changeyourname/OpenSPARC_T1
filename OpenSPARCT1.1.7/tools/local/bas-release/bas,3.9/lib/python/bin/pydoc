@@ -1,0 +1,4 @@
+#!/import/n2-svl-dump1/wangjc/riesling/release/nas,2.0/lib/python/bin/python
+
+import pydoc
+pydoc.cli()

@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_rrld_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_rrld_COV_VRH
+#define INC__TMP_spu_rrld_COV_VRH
+#define SIMUL_MA_DES_SHA_LD_STATE 14'b11_1100_0000_0000
+#define SIMUL_MA_RC4_SHA_LD_STATE 14'b11_0011_0000_0000
+#define SIMUL_MA_DES_LD_STATE     14'b11_0000_1100_0000
+#define SIMUL_MA_SHA_LD_STATE     14'b11_0000_0011_0000
+#define SIMUL_MA_RC4_LD_STATE     14'b11_0000_0000_1100
+#define SIMUL_MA_RC4LD_LD_STATE   14'b11_0000_0000_0011
+
+/*
+ * Order of the signals in rrld_state:
+ * spu_mald_ldreq, spu_encctl_ldreq,
+ * des_sha_vld_qual, des_sha_ldreq,
+ * sha_rc4_vld_qual, sha_rc4_ldreq,
+ * des_vld_qual, spu_desctl_ldreq_vld,
+ * sha_vld_qual, spu_shactl_ldreq_vld,
+ * rc4_vld_qual, spu_rc4ctl_ldreq_vld,
+ * spu_encctl_rc4_ld_vld, spu_rc4ldst_ldreq
+ */
+
+/*
+ * spu_rrld_cov
+ *
+ * This coverage object checks that the input requests spu_mald_ldreq and
+ * spu_encctl_ldreq to the rrld arbiter are asserted simultaneously. It also
+ * checks that spu_encctl_ldreq is asserted for all possible causes.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ *
+ * Todo: The logic that generates spu_encctl_ldreq from all the qual*
+ * and vld* signals is actually a priority encoder. So the states should
+ * really be defined as the following, where x means dont-care:
+ * #define SIMUL_MA_DES_SHA_LD_STATE 14'b11_11xx_xxxx_xxxx
+ * #define SIMUL_MA_RC4_SHA_LD_STATE 14'b11_0011_xxxx_xxxx
+ * #define SIMUL_MA_DES_LD_STATE     14'b11_0000_11xx_xxxx
+ * #define SIMUL_MA_SHA_LD_STATE     14'b11_0000_0011_xxxx
+ * #define SIMUL_MA_RC4_LD_STATE     14'b11_0000_0000_11xx
+ * #define SIMUL_MA_RC4LD_LD_STATE   14'b11_0000_0000_0011
+ *
+ * But I can't really do that right now.
+ * 
+ */
+
+#endif
+sample spu_rrld_sample_bind_C${c}.\$rrld_state {
+  // Declare states to be covered 
+  state s_SIMUL_MA_DES_SHA_LD_STATE (SIMUL_MA_DES_SHA_LD_STATE);
+  state s_SIMUL_MA_RC4_SHA_LD_STATE (SIMUL_MA_RC4_SHA_LD_STATE);
+  state s_SIMUL_MA_DES_LD_STATE (SIMUL_MA_DES_LD_STATE);
+  state s_SIMUL_MA_SHA_LD_STATE (SIMUL_MA_SHA_LD_STATE);
+  state s_SIMUL_MA_RC4_LD_STATE (SIMUL_MA_RC4_LD_STATE);
+  state s_SIMUL_MA_RC4LD_LD_STATE (SIMUL_MA_RC4LD_LD_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_pib_pich0_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for the Performace Intrumentation Counter Logic
+//***************************************************************************
+
+
+// coverage_def TLU_PIB_PICH0_COV (bit [4:0] tlu_bib_pich_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_HT_PCR_NONE_PCIH0	(HT_PCR_NONE_PCIH);	
+  wildcard state s_ST_PCR_NONE_PCIH0	(ST_PCR_NONE_PCIH);
+  wildcard state s_UT_PCR_NONE_PCIH0	(UT_PCR_NONE_PCIH);
+  wildcard state s_HT_PCR_STUT_PCIH0	(HT_PCR_STUT_PCIH);
+  wildcard state s_ST_PCR_STUT_PCIH0	(ST_PCR_STUT_PCIH);
+  wildcard state s_UT_PCR_STUT_PCIH0	(UT_PCR_STUT_PCIH);
+  wildcard state s_HT_PCR_ST_PCIH0	(HT_PCR_ST_PCIH	);
+  wildcard state s_ST_PCR_ST_PCIH0	(ST_PCR_ST_PCIH	);
+  wildcard state s_UT_PCR_ST_PCIH0	(UT_PCR_ST_PCIH	);
+  wildcard state s_HT_PCR_UT_PCIH0	(HT_PCR_UT_PCIH	);
+  wildcard state s_ST_PCR_UT_PCIH0	(ST_PCR_UT_PCIH	);
+  wildcard state s_UT_PCR_UT_PCIH0	(UT_PCR_UT_PCIH	);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

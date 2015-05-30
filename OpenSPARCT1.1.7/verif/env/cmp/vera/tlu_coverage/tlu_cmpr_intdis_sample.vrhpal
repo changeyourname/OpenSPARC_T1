@@ -1,0 +1,81 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_cmpr_intdis_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for concurent accurance of tick, stick, hstick match
+// events with different 'intdis' bit settings on same/different threads.
+//
+//***************************************************************************
+
+
+// coverage_def TLU_CMPR_INTDIS_COV (bit [15:0] tlu_cmpr_intdis_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_IE1_ALL_EVT_TICK_DIS		(IE1_ALL_EVT_TICK_DIS);
+  wildcard state s_IE1_ALL_EVT_STICK_DIS	(IE1_ALL_EVT_STICK_DIS);
+  wildcard state s_IE1_ALL_EVT_HSTICK_DIS	(IE1_ALL_EVT_HSTICK_DIS);
+  wildcard state s_IE1_ALL_EVT_TK_STK_DIS	(IE1_ALL_EVT_TK_STK_DIS);
+  wildcard state s_IE1_ALL_EVT_TK_HSTK_DIS	(IE1_ALL_EVT_TK_HSTK_DIS);
+  wildcard state s_IE1_ALL_EVT_STK_HSTK_DIS	(IE1_ALL_EVT_STK_HSTK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH0_TK_DIS       (IE1_ALL_EVT_TH0_TK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH1_TK_DIS       (IE1_ALL_EVT_TH1_TK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH2_TK_DIS       (IE1_ALL_EVT_TH2_TK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH3_TK_DIS       (IE1_ALL_EVT_TH3_TK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH0_STK_DIS      (IE1_ALL_EVT_TH0_STK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH1_STK_DIS      (IE1_ALL_EVT_TH1_STK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH2_STK_DIS      (IE1_ALL_EVT_TH2_STK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH3_STK_DIS      (IE1_ALL_EVT_TH3_STK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH0_HSTK_DIS     (IE1_ALL_EVT_TH0_HSTK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH1_HSTK_DIS     (IE1_ALL_EVT_TH1_HSTK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH2_HSTK_DIS     (IE1_ALL_EVT_TH2_HSTK_DIS);
+  wildcard state s_IE1_ALL_EVT_TH3_HSTK_DIS     (IE1_ALL_EVT_TH3_HSTK_DIS);
+
+  wildcard state s_IE0_ALL_EVT_TICK_DIS		(IE0_ALL_EVT_TICK_DIS);
+  wildcard state s_IE0_ALL_EVT_STICK_DIS	(IE0_ALL_EVT_STICK_DIS);
+  wildcard state s_IE0_ALL_EVT_HSTICK_DIS	(IE0_ALL_EVT_HSTICK_DIS);
+  wildcard state s_IE0_ALL_EVT_TK_STK_DIS	(IE0_ALL_EVT_TK_STK_DIS);
+  wildcard state s_IE0_ALL_EVT_TK_HSTK_DIS	(IE0_ALL_EVT_TK_HSTK_DIS);
+  wildcard state s_IE0_ALL_EVT_STK_HSTK_DIS	(IE0_ALL_EVT_STK_HSTK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH0_TK_DIS       (IE0_ALL_EVT_TH0_TK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH1_TK_DIS       (IE0_ALL_EVT_TH1_TK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH2_TK_DIS       (IE0_ALL_EVT_TH2_TK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH3_TK_DIS       (IE0_ALL_EVT_TH3_TK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH0_STK_DIS      (IE0_ALL_EVT_TH0_STK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH1_STK_DIS      (IE0_ALL_EVT_TH1_STK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH2_STK_DIS      (IE0_ALL_EVT_TH2_STK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH3_STK_DIS      (IE0_ALL_EVT_TH3_STK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH0_HSTK_DIS     (IE0_ALL_EVT_TH0_HSTK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH1_HSTK_DIS     (IE0_ALL_EVT_TH1_HSTK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH2_HSTK_DIS     (IE0_ALL_EVT_TH2_HSTK_DIS);
+  wildcard state s_IE0_ALL_EVT_TH3_HSTK_DIS     (IE0_ALL_EVT_TH3_HSTK_DIS);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

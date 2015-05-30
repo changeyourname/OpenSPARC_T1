@@ -1,0 +1,322 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: rsynp,1.4
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+
+#######################################################################
+# Run Synplicity script
+#
+# rsynp -help for help
+#######################################################################
+
+use warnings;
+use strict;
+use Cwd;
+use Cwd 'chdir';
+use Getopt::Long ;
+use Shell qw(rm);
+
+$| = 1;
+
+$SIG{__DIE__} = \&sighandler ;
+
+#######################################################################
+# Global variables
+#######################################################################
+
+my $prg = $0;
+$prg =~ s/.*\/// ;
+$prg =~ s/,.*// ;
+
+my $all = 0;
+my $flat = 0;
+my $clean = 0;
+my $syn_q = "/bin/sh";
+my $device = "XC4VLX200";
+my $syn_dir = "";
+my $blk_list = "";
+my $blk_dir;
+
+my @blocks = ();
+my @block_list = ();
+
+$blk_list = $ENV{DV_ROOT};
+$blk_list .= "/design/sys/synplicity/block.list";
+
+$syn_dir = $ENV{DV_ROOT};
+$syn_dir .= "/design/sys/iop";
+#######################################################################
+# Check command line options
+#######################################################################
+
+foreach my $argv (@ARGV)
+{
+    if ($argv =~ /-all/)
+    {
+	$all = 1;
+    } elsif (($argv =~ /-h/) or ($argv =~ /-help/))
+    {
+	&usage;
+	exit(0);
+    } elsif ($argv =~ /-syn_q_command/)
+    {
+	$syn_q = $argv;
+	$syn_q =~ s/-syn_q_command=(.*)/$1/ ;
+    } elsif ($argv =~ /-device/)
+    {
+	$device = $argv;
+	$device =~ s/-device=(.*)/$1/ ;
+    } elsif ($argv =~ /-flat/) {
+	$flat = 1;
+    } elsif ($argv =~ /-clean/) {
+        $clean = 1;
+    } else 
+    {
+	push @blocks, $argv;
+    }
+}
+
+my $count = 0;
+
+open (BLK_IN, "< $blk_list") or die ("DIE. could not open $blk_list");
+if ($all) {
+        while (<BLK_IN>) 
+	{
+	    my $line = $_ ;
+	    $line =~ s/\s+$//;
+	    $count++;
+	    push @block_list, $line ;
+	}
+        print "$prg: Running Synplicity for all $count modules\n";
+} elsif ($clean) {
+    while (<BLK_IN>)
+    {
+      chop($_);
+      chdir "$syn_dir/$_/synplicity" or die "DIE. cannot cd to $syn_dir/$_/synplicity\n";
+
+      unlink 'proj.prj';
+      unlink 'stdout.log';
+      rm("-rf" , "$device"); 
+
+      chdir "$syn_dir" or die "DIE. cannot return to $syn_dir\n";      
+    }      
+    exit(0);
+} else {
+    my @all_blocks = <BLK_IN>;
+    foreach my $block (@blocks)
+    {
+	my (@search) = grep (/$block/, @all_blocks);
+	foreach my $line (@search) 
+	{
+	    $line =~ s/\s+$//;
+	    push @block_list, $line ;
+	    $count++;
+	}
+    }
+    if ($count) {
+        print "$prg: Running Synplicity for $count modules\n";
+    } else {
+	print "$prg: No matching modules found.\n";
+	&usage;
+    }
+}
+close(BLK_IN);
+
+# check the memory list and add memory to block list if needed
+
+foreach my $block (@block_list) {
+    $blk_dir = $ENV{DV_ROOT};
+    $blk_dir .= "/design/sys/iop/$block";
+    $blk_dir .= "/synplicity";
+    my $mod_name = $block;
+    $mod_name =~ s/.*\/// ;
+    my $mlist = $blk_dir;
+    $mlist .= "/$mod_name";
+    $mlist .= ".mlist";
+    if ((!$flat) && ( -f $mlist )) {
+	print "$prg: $mlist found.\n";
+	open (BLK_IN, "< $mlist") or 
+		die("DIE. could not open $mlist");
+	while (<BLK_IN>)
+	{
+	    my $line = $_ ;
+	    $line =~ s/\s+$//;
+	    $count++;
+	    my $sub_blk = $ENV{DV_ROOT};
+    	    $sub_blk .= "/design/sys/iop/$line";
+    	    $sub_blk .= "/synplicity";
+	    my $sub_blk_mod = $sub_blk;
+	    my $line_mod = $line;
+    	    $line_mod =~ s/.*\/// ;
+	    $sub_blk_mod .= "/$device/$line_mod";
+	    $sub_blk_mod .= ".vm";
+	    if ( -f $sub_blk_mod ) {
+		print "$prg: Pre-compiled $line found.\n";
+	    } else {
+		my $cmd = "rsynp -device='$device' ";
+		$cmd .= "$line";
+		print "$prg: Pre-compiled $line not found.\n";
+		print "$prg: Running $cmd\n";
+		system($cmd);
+	    }
+	}
+	close(BLK_IN);
+    }
+}
+
+foreach my $block (@block_list) {
+    print "$prg: Running Synplicity for $block\n";
+    my $cmd = $syn_q;
+    $blk_dir = $ENV{DV_ROOT};
+    $blk_dir .= "/design/sys/iop/$block";
+    $blk_dir .= "/synplicity";
+    chdir $blk_dir;
+    my $mod_name = $block;
+    $mod_name =~ s/.*\/// ;
+    &create_prj_file($mod_name);
+    print "$prg: module name $mod_name\n";
+    $cmd .= " $ENV{DV_ROOT}/tools/bin/synp_command";
+    system($cmd);
+
+    # if ed script exists, run it
+
+    my $sed_scr = $mod_name;
+    $sed_scr .= ".sed";
+    if (-f $sed_scr) {
+	my $cmd = "/bin/ed ";
+	$cmd .= "$device/$mod_name";
+	$cmd .= ".vm < $sed_scr";
+	print "$prg: Running script: $cmd\n";
+        system($cmd);
+    }
+}
+
+#######################################################################
+sub create_prj_file {
+    my $mod = shift;
+    my $flist = $mod;
+    $flist .= ".flist";
+
+    open (FLIST_IN, "< $flist") or die ("DIE. could not open $flist");
+    open OUT, ">proj.prj";
+    print OUT "# Synplicity Project File\n\n";
+    print OUT "set topmodule $mod\n";
+    print OUT "set rev $device\n";
+    print OUT "set dv_root [get_env DV_ROOT]\n\n";
+
+    while (<FLIST_IN>) {
+	next if(/^\/\//);
+	next if(/^#/);
+	chop;
+	if (/design/) {
+	  print OUT "add_file -verilog \$dv_root/";
+	  print OUT;
+	  print OUT "\n";
+	  next;
+	}
+	if (/lib/) {
+	  print OUT "add_file -verilog \$dv_root/";
+	  print OUT;
+	  print OUT "\n";
+	  next;
+	}
+    }
+    close FLIST_IN;
+
+    if ($flat) {
+      my $fmlist = $mod;
+      $fmlist .= ".fmlist";
+      if ( -f $fmlist ) {
+	open (FLIST_IN, "< $fmlist") or die ("DIE. could not open $fmlist");
+        while (<FLIST_IN>) {
+	    next if(/^\/\//);
+	    next if(/^#/);
+	    chop;
+	    if (/design/) {
+	      print OUT "add_file -verilog \$dv_root/";
+	      print OUT;
+	      print OUT "\n";
+	      next;
+	    }
+	    if (/lib/) {
+	      print OUT "add_file -verilog \$dv_root/";
+	      print OUT;
+	      print OUT "\n";
+	      next;
+	    }
+        }
+	close FLIST_IN;
+      }
+    } else {
+     my $mlist = $mod;
+     $mlist .= ".mlist";
+     if ( -f $mlist ) {
+	print "$prg: $mlist found.\n";
+	open (BLK_IN, "< $mlist") or 
+		die("DIE. could not open $mlist");
+	while (<BLK_IN>)
+	{
+	    my $line = $_ ;
+	    $line =~ s/\s+$//;
+	    $count++;
+	    my $sub_blk = $ENV{DV_ROOT};
+    	    $sub_blk .= "/design/sys/iop/$line";
+    	    $sub_blk .= "/synplicity";
+	    my $sub_blk_mod = $sub_blk;
+	    my $line_mod = $line;
+    	    $line_mod =~ s/.*\/// ;
+	    $sub_blk_mod .= "/$device/$line_mod";
+	    $sub_blk_mod .= ".vm";
+	    if ( -f $sub_blk_mod ) {
+		print OUT "add_file -verilog $sub_blk_mod\n";
+	    }
+	}
+
+	close(BLK_IN);
+     }
+    }
+
+    my $prj_file = $mod;
+    $prj_file .= ".prj";
+    if ( -f $prj_file ) {
+        print OUT "\nsource $prj_file\n";
+    } else {
+        print OUT "\nsource \$dv_root/design/sys/synplicity/env.prj\n";
+    }
+    print OUT "source \$dv_root/design/sys/synplicity/$device.prj\n";
+    print OUT "source \$dv_root/design/sys/synplicity/pre_syn_settings.prj\n";
+    close OUT;
+
+}
+#######################################################################
+sub usage {
+    print "\n$prg : Run Synplicity for OpenSPARC T1\n\n";
+    print "Options are :\n";
+    print "  -all \n\tto run Synplicity for all blocks\n";
+    print "  -h / -help\n\tto print help\n";
+    print "  -syn_q_command='Your job Queue command'\n\tto specify Job queue command\n";
+    print "  -device='Target Device'\n\tto specify Target FPGA device\n";
+    print "  -flat \n\tTo run synthesis flat, must use this for Altera parts.\n";
+    print "  -clean \n\tto remove all unneeded files and/or directories.\n\tNeed to specify target device when not using default device\n\n";
+    print "  block_list :\n\tspecify list of blocks to synthesize\n\n";
+    print "Examples:\n\n";
+    print "\t$prg -all\n\t$prg -device=XC4VLX200 sparc\n";
+    print "\t$prg -flat -device=EP2S180 sparc\n\n";
+}
+#######################################################################

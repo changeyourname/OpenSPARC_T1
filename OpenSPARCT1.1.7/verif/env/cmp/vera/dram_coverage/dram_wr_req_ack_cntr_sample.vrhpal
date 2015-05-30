@@ -1,0 +1,54 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_wr_req_ack_cntr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_wr_req_ack_cntr_sample.vrh
+// Description:
+// Coverage object to observe how many clocks are spent from wr req to 
+// wr ack .This can be fine tuned depending on the pattern.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_wr_req_ack_cntr_sample (bit [10:0] cntr)
+// {
+     state s_cnt_0             (0);
+     state s_cnt_1_10          (1:10);
+     state s_cnt_11_20         (11:20);
+     state s_cnt_21_40         (21:40);
+     state s_cnt_41_60         (41:60);
+     state s_cnt_61_100        (61:100);
+     state s_cnt_101_200       (101:200);
+
+     trans t_cnt_1_10_0         ([1:10] -> 0);
+     trans t_cnt_11_20_0        ([11:20] -> 0);
+     trans t_cnt_21_40_0        ([21:40] -> 0);
+     trans t_cnt_41_60_0        ([41:60] -> 0);
+     trans t_cnt_61_100_0       ([61:100] -> 0);
+     trans t_cnt_101_200_0      ([101:200] -> 0);
+     trans t_cnt_201_500_0      ([201:500] -> 0);
+     trans t_cnt_501_1000_0      ([501:1000] -> 0);
+     trans t_cnt_1001_2000_0      ([1001:2000] -> 0);
+
+
+
+// }
+// }

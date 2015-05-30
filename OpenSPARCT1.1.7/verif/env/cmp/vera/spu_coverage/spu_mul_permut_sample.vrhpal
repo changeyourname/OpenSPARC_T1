@@ -1,0 +1,61 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_mul_permut_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_mul_permut_COV_VRH
+#define INC__TMP_spu_mul_permut_COV_VRH
+
+#define MUL_PERMUT_MAMUL_IDLE_STATE  2'b10
+#define MUL_PERMUT_MAAEQB_IDLE_STATE 2'b01
+
+/* TODO:
+ */
+
+/*
+ * Order of the signals in mul_permut_state:
+ * spu_mamul_cur_idle_state, spu_maaeqb_cur_idle_state
+ */
+
+/*
+ * spu_mul_permut_cov
+ *
+ * This coverage object checks to make sure that both the mamul and maaeqb
+ * state machines are in the idle state. This is just used to be crossed
+ * with the spu_simul_spu_exu_sample and spu_spu_while_exu_sample sample
+ * objects. We want to make sure that each of those are run for mamul, which
+ * is the A!=B case, and for maaeqb, which is the A==B case.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample spu_mul_permut_sample_bind_C${c}.\$mul_permut_state {
+  // Declare states to be covered 
+  state s_MUL_PERMUT_MAMUL_IDLE_STATE (MUL_PERMUT_MAMUL_IDLE_STATE);
+  state s_MUL_PERMUT_MAAEQB_IDLE_STATE (MUL_PERMUT_MAAEQB_IDLE_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

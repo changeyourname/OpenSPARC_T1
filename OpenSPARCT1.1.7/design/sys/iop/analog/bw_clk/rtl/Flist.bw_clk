@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.bw_clk
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+-v bw_clk_gl_rstce_rtl.v
+//-v bw_clk_gclkflop.v
+-v bw_clk_gl.v
+-v bw_clk_gl_fdbk.v
+-v bw_clk_gl_hz.v
+-v bw_clk_gl_vrt_all.v
+-v bw_clk_gclk_inv_192x.v
+-v bw_clk_gclk_inv_224x.v
+//bw_clk_gclk_inv_256x.v
+-v bw_clk_gclk_inv_288x.v
+//bw_clk_gclk_inv_320x.v
+-v bw_clk_gclk_inv_r90_192x.v
+-v bw_clk_gclk_inv_r90_224x.v
+-v bw_clk_gclk_inv_r90_256x.v
+//bw_clk_gclk_inv_r90_288x.v
+//bw_clk_gclk_inv_r90_320x.v
+-v bw_clk_gclk_center_3inv.v
+-v bw_clk_cclk_inv_64x.v
+-v bw_clk_cclk_inv_128x.v
+-v bw_clk_cclk_inv_48x.v
+-v bw_clk_gclk_sctag_3inv.v
+-v bw_clk_cclk_hdr_64x.v
+-v bw_clk_cclk_inv_96x.v
+-v bw_clk_cclk_hdr_48x.v
+-v flop_rptrs_xa0.v
+-v flop_rptrs_xa1.v
+-v flop_rptrs_xb0.v
+-v flop_rptrs_xb1.v
+-v flop_rptrs_xb2.v
+-v flop_rptrs_xb3.v
+-v flop_rptrs_xc0.v
+-v flop_rptrs_xc1.v
+-v flop_rptrs_xc2.v
+-v flop_rptrs_xc3.v
+-v flop_rptrs_xc4.v
+-v flop_rptrs_xc5.v
+-v flop_rptrs_xc6.v
+-v flop_rptrs_xc7.v
+

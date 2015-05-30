@@ -1,0 +1,33 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_rwctl_st_wr_cancel_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for store write cancelled because preceeding store from same
+// thread is flushed
+
+state s_ST_CANCEL_0 (7'b1111000);
+state s_ST_CANCEL_1 (7'b1110100);
+state s_ST_CANCEL_2 (7'b1110010);
+state s_ST_CANCEL_3 (7'b1110001);
+
+state s_ST_NOCANCEL_0 (7'b1101000);
+state s_ST_NOCANCEL_1 (7'b1100100);
+state s_ST_NOCANCEL_2 (7'b1100010);
+state s_ST_NOCANCEL_3 (7'b1100001);
+

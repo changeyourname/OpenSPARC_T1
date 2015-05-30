@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_rtl.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+#ifndef __FFU_RTL_H__
+#define __FFU_RTL_H__
+
+#define LSU_FSM_STATE_WIDTH 3
+#define MOV_ABS_NEG_WIDTH   8
+#define VIS_ADD_SUB_WIDTH   8
+#define VIS_LOG_WIDTH       7
+#define RND_WIDTH           6
+#define IEEE_754_TRAP_EN_WIDTH  11
+#define IEEE_754_TRAP_DIS_WIDTH 16
+#define IEEE_754_TRAP_FUL_WIDTH 16
+#define FLUSH_STAGE_WIDTH  16
+#define STALL_BLKST_WIDTH  1
+#define CE_BLKST_WIDTH     5
+#define UE_BLKST_WIDTH     6
+#define ECC_CE_WIDTH       5
+#define ECC_UE_WIDTH       8
+
+#endif

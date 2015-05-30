@@ -1,0 +1,66 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_mt_intl_extl_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for the accurance of synchronous and asynchronous 
+// traps reported by other sparc core units (ifu, exu, lsu, ffu), and
+// different types of internal (tlu) traps at same time on different threads.
+//***************************************************************************
+
+
+// coverage_def TLU_INTL_EXTL_COV (bit [9:0] tlu_intl_extl_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_QCPU_FP_ASYNC_TRAP           (QCPU_FP_ASYNC_TRAP);
+  wildcard state s_QDEV_FP_ASYNC_TRAP           (QDEV_FP_ASYNC_TRAP);
+  wildcard state s_QRES_FP_ASYNC_TRAP           (QRES_FP_ASYNC_TRAP);
+  wildcard state s_QCPU_SPILL_ASYNC_TRAP        (QCPU_SPILL_ASYNC_TRAP);
+  wildcard state s_QDEV_SPILL_ASYNC_TRAP        (QDEV_SPILL_ASYNC_TRAP);
+  wildcard state s_QRES_SPILL_ASYNC_TRAP        (QRES_SPILL_ASYNC_TRAP);
+
+  wildcard state s_QCPU_IFU_SYNC_TRAP	        (QCPU_IFU_SYNC_TRAP);
+  wildcard state s_QDEV_IFU_SYNC_TRAP	        (QDEV_IFU_SYNC_TRAP);
+  wildcard state s_QRES_IFU_SYNC_TRAP	        (QRES_IFU_SYNC_TRAP);
+  wildcard state s_QCPU_EXU_SYNC_TRAP           (QCPU_EXU_SYNC_TRAP);
+  wildcard state s_QDEV_EXU_SYNC_TRAP           (QDEV_EXU_SYNC_TRAP);
+  wildcard state s_QRES_EXU_SYNC_TRAP           (QRES_EXU_SYNC_TRAP);
+  wildcard state s_QCPU_LSU_SYNC_TRAP           (QCPU_LSU_SYNC_TRAP);
+  wildcard state s_QDEV_LSU_SYNC_TRAP           (QDEV_LSU_SYNC_TRAP);
+  wildcard state s_QRES_LSU_SYNC_TRAP           (QRES_LSU_SYNC_TRAP);
+
+  wildcard state s_TLZ_FP_ASYNC_TRAP		(TLZ_FP_ASYNC_TRAP);
+  wildcard state s_TLZ_SPILL_ASYNC_TRAP		(TLZ_SPILL_ASYNC_TRAP);
+  wildcard state s_TLZ_IFU_SYNC_TRAP		(TLZ_IFU_SYNC_TRAP);
+  wildcard state s_TLZ_EXU_SYNC_TRAP		(TLZ_EXU_SYNC_TRAP);
+  wildcard state s_TLZ_LSU_SYNC_TRAP		(TLZ_LSU_SYNC_TRAP);
+  
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

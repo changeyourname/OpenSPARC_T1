@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_excp_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+  state s_EXCPN0   (EXCPN0);
+  state s_EXCPN1   (EXCPN1);
+  state s_EXCPN2   (EXCPN2);
+  state s_EXCPN3   (EXCPN3);
+  state s_EXCPN4   (EXCPN4);
+  state s_EXCPN5   (EXCPN5);
+  state s_EXCPN6   (EXCPN6);
+  state s_EXCPN7   (EXCPN7);
+  state s_EXCPN8   (EXCPN8);
+  state s_EXCPN9   (EXCPN9);
+  state s_EXCPN10  (EXCPN10);
+  state s_EXCPN11  (EXCPN11);
+  state s_EXCPN12  (EXCPN12);
+  state s_EXCPN13  (EXCPN13);
+
+// Note 13 has multiple errors collapese
+// we might have un-roll it once we elimate
+// some redundant stuff or identify some
+
+
+  bad_state s_not_STATE (not state);
+
+  m_trans t_b2b_excpn (1:13 -> 1:13);
+
+

@@ -1,0 +1,94 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_dir_lookup_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// banken_rowaddr[13:0] = {ic_lkup_row_dec_c4[3:0], lkup_row_addr_icd_c4[2:0],
+//                         dc_lkup_row_dec_c4[3:0], lkup_row_addr_dcd_c4[2:0]};
+
+
+// coverage_def L2_DIR_LOOKUP_COV(bit [13:0] banken_rowaddr) {
+
+    wildcard state idir_bank0_row0( { 4'bxxx1, 3'h0, 7'bx} );
+    wildcard state idir_bank0_row1( { 4'bxxx1, 3'h1, 7'bx} );
+    wildcard state idir_bank0_row2( { 4'bxxx1, 3'h2, 7'bx} );
+    wildcard state idir_bank0_row3( { 4'bxxx1, 3'h3, 7'bx} );
+    wildcard state idir_bank0_row4( { 4'bxxx1, 3'h4, 7'bx} );
+    wildcard state idir_bank0_row5( { 4'bxxx1, 3'h5, 7'bx} );
+    wildcard state idir_bank0_row6( { 4'bxxx1, 3'h6, 7'bx} );
+    wildcard state idir_bank0_row7( { 4'bxxx1, 3'h7, 7'bx} );
+    wildcard state idir_bank1_row0( { 4'bxx1x, 3'h0, 7'bx} );
+    wildcard state idir_bank1_row1( { 4'bxx1x, 3'h1, 7'bx} );
+    wildcard state idir_bank1_row2( { 4'bxx1x, 3'h2, 7'bx} );
+    wildcard state idir_bank1_row3( { 4'bxx1x, 3'h3, 7'bx} );
+    wildcard state idir_bank1_row4( { 4'bxx1x, 3'h4, 7'bx} );
+    wildcard state idir_bank1_row5( { 4'bxx1x, 3'h5, 7'bx} );
+    wildcard state idir_bank1_row6( { 4'bxx1x, 3'h6, 7'bx} );
+    wildcard state idir_bank1_row7( { 4'bxx1x, 3'h7, 7'bx} );
+    wildcard state idir_bank2_row0( { 4'bx1xx, 3'h0, 7'bx} );
+    wildcard state idir_bank2_row1( { 4'bx1xx, 3'h1, 7'bx} );
+    wildcard state idir_bank2_row2( { 4'bx1xx, 3'h2, 7'bx} );
+    wildcard state idir_bank2_row3( { 4'bx1xx, 3'h3, 7'bx} );
+    wildcard state idir_bank2_row4( { 4'bx1xx, 3'h4, 7'bx} );
+    wildcard state idir_bank2_row5( { 4'bx1xx, 3'h5, 7'bx} );
+    wildcard state idir_bank2_row6( { 4'bx1xx, 3'h6, 7'bx} );
+    wildcard state idir_bank2_row7( { 4'bx1xx, 3'h7, 7'bx} );
+    wildcard state idir_bank3_row0( { 4'b1xxx, 3'h0, 7'bx} );
+    wildcard state idir_bank3_row1( { 4'b1xxx, 3'h1, 7'bx} );
+    wildcard state idir_bank3_row2( { 4'b1xxx, 3'h2, 7'bx} );
+    wildcard state idir_bank3_row3( { 4'b1xxx, 3'h3, 7'bx} );
+    wildcard state idir_bank3_row4( { 4'b1xxx, 3'h4, 7'bx} );
+    wildcard state idir_bank3_row5( { 4'b1xxx, 3'h5, 7'bx} );
+    wildcard state idir_bank3_row6( { 4'b1xxx, 3'h6, 7'bx} );
+    wildcard state idir_bank3_row7( { 4'b1xxx, 3'h7, 7'bx} );
+
+    wildcard state ddir_bank0_row0( { 7'bx, 4'bxxx1, 3'h0} );
+    wildcard state ddir_bank0_row1( { 7'bx, 4'bxxx1, 3'h1} );
+    wildcard state ddir_bank0_row2( { 7'bx, 4'bxxx1, 3'h2} );
+    wildcard state ddir_bank0_row3( { 7'bx, 4'bxxx1, 3'h3} );
+    wildcard state ddir_bank0_row4( { 7'bx, 4'bxxx1, 3'h4} );
+    wildcard state ddir_bank0_row5( { 7'bx, 4'bxxx1, 3'h5} );
+    wildcard state ddir_bank0_row6( { 7'bx, 4'bxxx1, 3'h6} );
+    wildcard state ddir_bank0_row7( { 7'bx, 4'bxxx1, 3'h7} );
+    wildcard state ddir_bank1_row0( { 7'bx, 4'bxx1x, 3'h0} );
+    wildcard state ddir_bank1_row1( { 7'bx, 4'bxx1x, 3'h1} );
+    wildcard state ddir_bank1_row2( { 7'bx, 4'bxx1x, 3'h2} );
+    wildcard state ddir_bank1_row3( { 7'bx, 4'bxx1x, 3'h3} );
+    wildcard state ddir_bank1_row4( { 7'bx, 4'bxx1x, 3'h4} );
+    wildcard state ddir_bank1_row5( { 7'bx, 4'bxx1x, 3'h5} );
+    wildcard state ddir_bank1_row6( { 7'bx, 4'bxx1x, 3'h6} );
+    wildcard state ddir_bank1_row7( { 7'bx, 4'bxx1x, 3'h7} );
+    wildcard state ddir_bank2_row0( { 7'bx, 4'bx1xx, 3'h0} );
+    wildcard state ddir_bank2_row1( { 7'bx, 4'bx1xx, 3'h1} );
+    wildcard state ddir_bank2_row2( { 7'bx, 4'bx1xx, 3'h2} );
+    wildcard state ddir_bank2_row3( { 7'bx, 4'bx1xx, 3'h3} );
+    wildcard state ddir_bank2_row4( { 7'bx, 4'bx1xx, 3'h4} );
+    wildcard state ddir_bank2_row5( { 7'bx, 4'bx1xx, 3'h5} );
+    wildcard state ddir_bank2_row6( { 7'bx, 4'bx1xx, 3'h6} );
+    wildcard state ddir_bank2_row7( { 7'bx, 4'bx1xx, 3'h7} );
+    wildcard state ddir_bank3_row0( { 7'bx, 4'b1xxx, 3'h0} );
+    wildcard state ddir_bank3_row1( { 7'bx, 4'b1xxx, 3'h1} );
+    wildcard state ddir_bank3_row2( { 7'bx, 4'b1xxx, 3'h2} );
+    wildcard state ddir_bank3_row3( { 7'bx, 4'b1xxx, 3'h3} );
+    wildcard state ddir_bank3_row4( { 7'bx, 4'b1xxx, 3'h4} );
+    wildcard state ddir_bank3_row5( { 7'bx, 4'b1xxx, 3'h5} );
+    wildcard state ddir_bank3_row6( { 7'bx, 4'b1xxx, 3'h6} );
+    wildcard state ddir_bank3_row7( { 7'bx, 4'b1xxx, 3'h7} );
+// }

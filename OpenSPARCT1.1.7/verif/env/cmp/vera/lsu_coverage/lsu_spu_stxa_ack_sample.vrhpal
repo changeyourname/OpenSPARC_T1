@@ -1,0 +1,27 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_spu_stxa_ack_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_spu_stxa_ack_state = {st_inst_vld_g, stxa_stall_asi_g, thrid_g[1:0], lsu_spu_stb_empty[3:0]};
+
+wildcard trans store_stbempty_strmstxa_stbnotempty( {1'b1, 1'b0, 2'b00, 4'bxxx1} -> {1'b1, 1'b1, 2'b00, 4'bxxx0},
+                                                    {1'b1, 1'b0, 2'b01, 4'bxx1x} -> {1'b1, 1'b1, 2'b01, 4'bxx0x},
+                                                    {1'b1, 1'b0, 2'b10, 4'bx1xx} -> {1'b1, 1'b1, 2'b10, 4'bx0xx},
+                                                    {1'b1, 1'b0, 2'b11, 4'b1xxx} -> {1'b1, 1'b1, 2'b11, 4'b0xxx} );

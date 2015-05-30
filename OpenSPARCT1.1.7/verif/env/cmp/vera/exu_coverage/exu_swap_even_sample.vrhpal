@@ -1,0 +1,74 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_swap_even_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// coverage_def EXU_SWAP_INOUT_COV exu_swap_even_state
+//state declarations
+
+state s_T0_E_0_2		(T0_E_0_2);
+state s_T0_E_0_4		(T0_E_0_4);
+state s_T0_E_0_6		(T0_E_0_6);
+state s_T0_E_2_0		(T0_E_2_0);
+state s_T0_E_2_4		(T0_E_2_4);
+state s_T0_E_2_6		(T0_E_2_6);
+state s_T0_E_4_0		(T0_E_4_0);
+state s_T0_E_4_2		(T0_E_4_2);
+state s_T0_E_4_6		(T0_E_4_6);
+state s_T0_E_6_0		(T0_E_6_0);
+state s_T0_E_6_2		(T0_E_6_2);
+state s_T0_E_6_4		(T0_E_6_4);
+
+state s_T1_E_0_2		(T1_E_0_2);
+state s_T1_E_0_4		(T1_E_0_4);
+state s_T1_E_0_6		(T1_E_0_6);
+state s_T1_E_2_0		(T1_E_2_0);
+state s_T1_E_2_4		(T1_E_2_4);
+state s_T1_E_2_6		(T1_E_2_6);
+state s_T1_E_4_0		(T1_E_4_0);
+state s_T1_E_4_2		(T1_E_4_2);
+state s_T1_E_4_6		(T1_E_4_6);
+state s_T1_E_6_0		(T1_E_6_0);
+state s_T1_E_6_2		(T1_E_6_2);
+state s_T1_E_6_4		(T1_E_6_4);
+
+state s_T2_E_0_2		(T2_E_0_2);
+state s_T2_E_0_4		(T2_E_0_4);
+state s_T2_E_0_6		(T2_E_0_6);
+state s_T2_E_2_0		(T2_E_2_0);
+state s_T2_E_2_4		(T2_E_2_4);
+state s_T2_E_2_6		(T2_E_2_6);
+state s_T2_E_4_0		(T2_E_4_0);
+state s_T2_E_4_2		(T2_E_4_2);
+state s_T2_E_4_6		(T2_E_4_6);
+state s_T2_E_6_0		(T2_E_6_0);
+state s_T2_E_6_2		(T2_E_6_2);
+state s_T2_E_6_4		(T2_E_6_4);
+
+state s_T3_E_0_2		(T3_E_0_2);
+state s_T3_E_0_4		(T3_E_0_4);
+state s_T3_E_0_6		(T3_E_0_6);
+state s_T3_E_2_0		(T3_E_2_0);
+state s_T3_E_2_4		(T3_E_2_4);
+state s_T3_E_2_6		(T3_E_2_6);
+state s_T3_E_4_0		(T3_E_4_0);
+state s_T3_E_4_2		(T3_E_4_2);
+state s_T3_E_4_6		(T3_E_4_6);
+state s_T3_E_6_0		(T3_E_6_0);
+state s_T3_E_6_2		(T3_E_6_2);
+state s_T3_E_6_4		(T3_E_6_4);

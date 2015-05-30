@@ -1,0 +1,2 @@
+svf2ace -wtck -d -m 16776192 -i full_bee3.svf -o full_bee3.ace
+quit

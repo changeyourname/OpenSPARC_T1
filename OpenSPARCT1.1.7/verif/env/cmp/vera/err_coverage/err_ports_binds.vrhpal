@@ -1,0 +1,100 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "err_cov_inc.pal";
+#ifndef __ERR_PORTS_VRH__
+#define __ERR_PORTS_VRH__
+
+port err_dram_port {
+  dram_err_status_ch0;
+  dram_err_status_ch1;
+  dram_err_status_ch2;
+  dram_err_status_ch3;
+}
+
+port err_l2_port {
+  l2_err_status_bank0;
+  l2_err_status_bank1;
+  l2_err_status_bank2;
+  l2_err_status_bank3;
+}
+
+port err_sparc_port {
+.     for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+  sparc_err_status_${t};
+.     }
+}
+
+bind err_dram_port err_dram_sample {
+  dram_err_status_ch0 {err_coverage_ifc.DRAM0_Err_Stat};
+  dram_err_status_ch1 {err_coverage_ifc.DRAM1_Err_Stat};
+  dram_err_status_ch2 {err_coverage_ifc.DRAM2_Err_Stat};
+  dram_err_status_ch3 {err_coverage_ifc.DRAM3_Err_Stat};
+}
+
+bind err_l2_port err_l2_sample {
+  l2_err_status_bank0 {err_coverage_ifc.L2_Bank0_Err_Stat};
+  l2_err_status_bank1 {err_coverage_ifc.L2_Bank1_Err_Stat};
+  l2_err_status_bank2 {err_coverage_ifc.L2_Bank2_Err_Stat};
+  l2_err_status_bank3 {err_coverage_ifc.L2_Bank3_Err_Stat};
+}
+
+. sub coreBindings {
+.  my($core_num) = @_;
+.  my $c        = $core_num;
+
+bind err_sparc_port err_sparc_sample_C${c} {
+.     for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+  sparc_err_status_${t}	  {
+			     err_coverage_ifc.C${c}_meu[$t],
+			     err_coverage_ifc.C${c}_mec[$t],
+			     err_coverage_ifc.C${c}_imdu[$t],
+			     err_coverage_ifc.C${c}_imtu[$t],
+			     err_coverage_ifc.C${c}_dmdu[$t],
+			     err_coverage_ifc.C${c}_dmtu[$t],
+			     err_coverage_ifc.C${c}_idc[$t],
+			     err_coverage_ifc.C${c}_itc[$t],
+			     err_coverage_ifc.C${c}_ddc[$t],
+			     err_coverage_ifc.C${c}_dtc[$t],
+			     err_coverage_ifc.C${c}_irc[$t],
+			     err_coverage_ifc.C${c}_iru[$t],
+			     err_coverage_ifc.C${c}_frc[$t],
+			     err_coverage_ifc.C${c}_fru[$t],
+			     err_coverage_ifc.C${c}_ldau[$t],
+			     err_coverage_ifc.C${c}_ncu[$t],
+			     err_coverage_ifc.C${c}_dmsu[$t],
+			     err_coverage_ifc.C${c}_mau[$t]
+			  };
+.  }
+}
+
+.
+. } # coreBindings
+.
+
+// ***********************************************************
+// Declare bindings for each core
+// ***********************************************************
+
+. foreach $core (@CORE_STR) {
+.  &coreBindings( $core );
+. }
+
+#endif

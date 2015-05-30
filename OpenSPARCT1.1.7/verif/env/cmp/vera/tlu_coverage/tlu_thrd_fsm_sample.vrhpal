@@ -1,0 +1,189 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_thrd_fsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU thread state machine
+//
+//***************************************************************************
+ 
+
+// coverage_def TLU_THRD_FSM_COV (bit [49:0] tlu_thrd_fsm_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_THRD_RED_ST			(THRD_RED_ST);
+  wildcard state s_RED_ST_BY_TRAP_OR_RST	(RED_ST_BY_TRAP_OR_RST);
+  wildcard state s_TRAP_AT_RED_ST_MAXSTL	(TRAP_AT_RED_ST_MAXSTL);
+  wildcard state s_TRAP_AT_RED_ST_TL_LT5	(TRAP_AT_RED_ST_TL_LT5);
+  wildcard state s_TRAP_AT_RED_ST_MAXTL1	(TRAP_AT_RED_ST_MAXTL1);
+  wildcard state s_TRAP_AT_RED_ST_MAXTL		(TRAP_AT_RED_ST_MAXTL);
+  wildcard state s_DNRTRY_AT_RED_ST_TO_R	(DNRTRY_AT_RED_ST_TO_R);
+  wildcard state s_DNRTRY_AT_RED_ST_TO_H	(DNRTRY_AT_RED_ST_TO_H);
+  wildcard state s_DNRTRY_AT_RED_ST_TO_S	(DNRTRY_AT_RED_ST_TO_S);
+  wildcard state s_DNRTRY_AT_RED_ST_TO_U	(DNRTRY_AT_RED_ST_TO_U);
+  wildcard state s_WSR_AT_RED_ST_TO_H		(WSR_AT_RED_ST_TO_H);
+  wildcard state s_WSR_AT_RED_ST_TO_S		(WSR_AT_RED_ST_TO_S);
+  wildcard state s_WSR_AT_RED_ST_TO_U		(WSR_AT_RED_ST_TO_U);
+  wildcard state s_WDG_RST_AT_RED_ST		(WDG_RST_AT_RED_ST);
+  wildcard state s_XIR_RST_AT_RED_ST		(XIR_RST_AT_RED_ST);
+  wildcard state s_SIR_RST_AT_RED_ST_MAXTL	(SIR_RST_AT_RED_ST_MAXTL);
+  wildcard state s_SIR_RST_AT_RED_ST_TLLT6	(SIR_RST_AT_RED_ST_TLLT6);
+  wildcard state s_THRD_HYPERVISOR_ST		(THRD_HYPERVISOR_ST);
+  wildcard state s_HPV_ST_BY_TRAP		(HPV_ST_BY_TRAP);
+  wildcard state s_HTRAP_AT_HPV_ST_MAXSTL	(HTRAP_AT_HPV_ST_MAXSTL);
+  wildcard state s_HTRAP_AT_HPV_ST_TL_LT5	(HTRAP_AT_HPV_ST_TL_LT5);
+  wildcard state s_HTRAP_AT_HPV_ST_MAXTL1	(HTRAP_AT_HPV_ST_MAXTL1);
+  wildcard state s_HTRAP_AT_HPV_ST_MAXTL	(HTRAP_AT_HPV_ST_MAXTL);
+  wildcard state s_STRAP_AT_HPV_ST_MAXSTL	(STRAP_AT_HPV_ST_MAXSTL);
+  wildcard state s_STRAP_AT_HPV_ST_TL_LT5	(STRAP_AT_HPV_ST_TL_LT5);
+  wildcard state s_STRAP_AT_HPV_ST_MAXTL1	(STRAP_AT_HPV_ST_MAXTL1);
+  wildcard state s_STRAP_AT_HPV_ST_MAXTL	(STRAP_AT_HPV_ST_MAXTL);
+  wildcard state s_DNRTRY_AT_HPV_ST_TO_H	(DNRTRY_AT_HPV_ST_TO_H);
+  wildcard state s_DNRTRY_AT_HPV_ST_TO_S	(DNRTRY_AT_HPV_ST_TO_S);
+  wildcard state s_DNRTRY_AT_HPV_ST_TO_U	(DNRTRY_AT_HPV_ST_TO_U);
+  wildcard state s_WSR_AT_HPV_ST_TO_R		(WSR_AT_HPV_ST_TO_R);
+  wildcard state s_WSR_AT_HPV_ST_TO_S		(WSR_AT_HPV_ST_TO_S);
+  wildcard state s_WSR_AT_HPV_ST_TO_U		(WSR_AT_HPV_ST_TO_U);
+  wildcard state s_XIR_RST_AT_HPV_ST		(XIR_RST_AT_HPV_ST);
+  wildcard state s_SIR_RST_AT_HPV_ST_MAXTL	(SIR_RST_AT_HPV_ST_MAXTL);
+  wildcard state s_SIR_RST_AT_HPV_ST_TLLT6	(SIR_RST_AT_HPV_ST_TLLT6);
+  wildcard state s_THRD_SUPERVISOR_ST		(THRD_SUPERVISOR_ST);
+  wildcard state s_HTRAP_AT_SUP_ST_MAXSTL	(HTRAP_AT_SUP_ST_MAXSTL);
+  wildcard state s_HTRAP_AT_SUP_ST_NMAXSTL	(HTRAP_AT_SUP_ST_NMAXSTL);
+  wildcard state s_STRAP_AT_SUP_ST_MAXSTL	(STRAP_AT_SUP_ST_MAXSTL);
+  wildcard state s_STRAP_AT_SUP_ST_NMAXSTL	(STRAP_AT_SUP_ST_NMAXSTL);
+  wildcard state s_DNRTRY_AT_SUP_ST_TO_H	(DNRTRY_AT_SUP_ST_TO_H);
+  wildcard state s_DNRTRY_AT_SUP_ST_TO_S	(DNRTRY_AT_SUP_ST_TO_S);
+  wildcard state s_DNRTRY_AT_SUP_ST_TO_U	(DNRTRY_AT_SUP_ST_TO_U);
+  wildcard state s_WSR_AT_SUP_ST_TO_U		(WSR_AT_SUP_ST_TO_U);
+  wildcard state s_XIR_RST_AT_SUP_ST		(XIR_RST_AT_SUP_ST);
+  wildcard state s_SIR_RST_AT_SUP_ST_TLLT6	(SIR_RST_AT_SUP_ST_TLLT6);
+  wildcard state s_THRD_USER_ST			(THRD_USER_ST);
+  wildcard state s_HTRAP_AT_USER_ST_MAXSTL	(HTRAP_AT_USER_ST_MAXSTL);
+  wildcard state s_HTRAP_AT_USER_ST_NMAXSTL	(HTRAP_AT_USER_ST_NMAXSTL);
+  wildcard state s_STRAP_AT_USER_ST_MAXSTL	(STRAP_AT_USER_ST_MAXSTL);
+  wildcard state s_STRAP_AT_USER_ST_NMAXSTL	(STRAP_AT_USER_ST_NMAXSTL);
+  wildcard state s_XIR_RST_AT_USER_ST		(XIR_RST_AT_USER_ST);
+  wildcard state s_HPL_ST_BY_TRAP		(HPL_ST_BY_TRAP);
+  wildcard state s_HTRAP_AT_HPL_ST_MAXSTL	(HTRAP_AT_HPL_ST_MAXSTL);
+  wildcard state s_HTRAP_AT_HPL_ST_TL_LT5	(HTRAP_AT_HPL_ST_TL_LT5);
+  wildcard state s_HTRAP_AT_HPL_ST_MAXTL1	(HTRAP_AT_HPL_ST_MAXTL1);
+  wildcard state s_HTRAP_AT_HPL_ST_MAXTL	(HTRAP_AT_HPL_ST_MAXTL);
+  wildcard state s_STRAP_AT_HPL_ST_MAXSTL	(STRAP_AT_HPL_ST_MAXSTL);
+  wildcard state s_STRAP_AT_HPL_ST_TL_LT5	(STRAP_AT_HPL_ST_TL_LT5);
+  wildcard state s_STRAP_AT_HPL_ST_MAXTL1	(STRAP_AT_HPL_ST_MAXTL1);
+  wildcard state s_STRAP_AT_HPL_ST_MAXTL	(STRAP_AT_HPL_ST_MAXTL);
+  wildcard state s_DNRTRY_AT_HPL_ST_TO_S	(DNRTRY_AT_HPL_ST_TO_S);
+  wildcard state s_DNRTRY_AT_HPL_ST_TO_U	(DNRTRY_AT_HPL_ST_TO_U);
+  wildcard state s_WSR_AT_HPL_ST_TO_U		(WSR_AT_HPL_ST_TO_U);
+  wildcard state s_XIR_RST_AT_HPL_ST		(XIR_RST_AT_HPL_ST);
+  wildcard state s_SIR_RST_AT_HPL_ST_MAXTL	(SIR_RST_AT_HPL_ST_MAXTL);
+  wildcard state s_SIR_RST_AT_HPL_ST_TLLT6	(SIR_RST_AT_HPL_ST_TLLT6);
+
+  //////////////
+  // Transitions
+
+  // Red State
+  wildcard trans t_s_TRAP_AT_RED_ST_MAXSTL_s_RED_ST_BY_TRAP_OR_RST	([TRAP_AT_RED_ST_MAXSTL] -> [RED_ST_BY_TRAP_TLLT5]);
+  wildcard trans t_s_TRAP_AT_RED_ST_TL_LT5_s_RED_ST_BY_TRAP_OR_RST	([TRAP_AT_RED_ST_TL_LT5] -> [RED_ST_BY_TRAP_TLLT5]);
+  wildcard trans t_s_TRAP_AT_RED_ST_MAXTL1_s_RED_ST_BY_TRAP_OR_RST	([TRAP_AT_RED_ST_MAXTL1] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_TRAP_AT_RED_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([TRAP_AT_RED_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_DNRTRY_AT_RED_ST_TO_R_s_THRD_RED_ST		([DNRTRY_AT_RED_ST_TO_R] -> [THRD_RED_ST]);
+  wildcard trans t_s_DNRTRY_AT_RED_ST_TO_H_s_THRD_SUPERVISOR_ST		([DNRTRY_AT_RED_ST_TO_H] -> [THRD_HYPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_RED_ST_TO_S_s_THRD_SUPERVISOR_ST		([DNRTRY_AT_RED_ST_TO_S] -> [THRD_SUPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_RED_ST_TO_U_s_THRD_USER_ST		([DNRTRY_AT_RED_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_WSR_AT_RED_ST_TO_H_s_THRD_HYPERVISOR_ST		([WSR_AT_RED_ST_TO_H] -> [THRD_HYPERVISOR_ST]);
+  wildcard trans t_s_WSR_AT_RED_ST_TO_S_s_THRD_SUPERVISOR_ST		([WSR_AT_RED_ST_TO_S] -> [THRD_SUPERVISOR_ST]);
+  wildcard trans t_s_WSR_AT_RED_ST_TO_U_s_THRD_USER_ST			([WSR_AT_RED_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_WDG_RST_AT_RED_ST_s_RED_ST_BY_TRAP_OR_RST		([WDG_RST_AT_RED_ST] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_XIR_RST_AT_RED_ST_s_RED_ST_BY_TRAP_OR_RST		([XIR_RST_AT_RED_ST] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_SIR_RST_AT_RED_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_RED_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_SIR_RST_AT_RED_ST_TLLT6_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_RED_ST_TLLT6] -> [RED_ST_BY_TRAP_OR_RST]);
+
+  // Hypervisor State
+  wildcard trans t_s_HTRAP_AT_HPV_ST_MAXSTL_s_HPV_ST_BY_TRAP		([HTRAP_AT_HPV_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_HPV_ST_TL_LT5_s_HPV_ST_BY_TRAP		([HTRAP_AT_HPV_ST_TL_LT5] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_HPV_ST_MAXTL1_s_RED_ST_BY_TRAP_OR_RST	([HTRAP_AT_HPV_ST_MAXTL1] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_HTRAP_AT_HPV_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([HTRAP_AT_HPV_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_STRAP_AT_HPV_ST_MAXSTL_s_HPV_ST_BY_TRAP		([STRAP_AT_HPV_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_HPV_ST_TL_LT5_s_HPV_ST_BY_TRAP		([STRAP_AT_HPV_ST_TL_LT5] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_HPV_ST_MAXTL1_s_RED_ST_BY_TRAP_OR_RST	([STRAP_AT_HPV_ST_MAXTL1] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_STRAP_AT_HPV_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([STRAP_AT_HPV_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_DNRTRY_AT_HPV_ST_TO_H_s_THRD_HYPERVISOR_ST		([DNRTRY_AT_HPV_ST_TO_H] -> [THRD_HYPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_HPV_ST_TO_S_s_THRD_SUPERVISOR_ST		([DNRTRY_AT_HPV_ST_TO_S] -> [THRD_SUPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_HPV_ST_TO_U_s_THRD_USER_ST		([DNRTRY_AT_HPV_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_WSR_AT_HPV_ST_TO_R_s_THRD_RED_ST			([WSR_AT_HPV_ST_TO_R] -> [THRD_RED_ST]);
+  wildcard trans t_s_WSR_AT_HPV_ST_TO_S_s_THRD_SUPERVISOR_ST		([WSR_AT_HPV_ST_TO_S] -> [THRD_SUPERVISOR_ST]);
+  wildcard trans t_s_WSR_AT_HPV_ST_TO_U_s_THRD_USER_ST			([WSR_AT_HPV_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_XIR_RST_AT_HPV_ST_s_RED_ST_BY_TRAP_OR_RST		([XIR_RST_AT_HPV_ST] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_SIR_RST_AT_HPV_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_HPV_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_SIR_RST_AT_HPV_ST_TLLT6_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_HPV_ST_TLLT6] -> [RED_ST_BY_TRAP_OR_RST]);
+
+  // Supervisor State
+  wildcard trans t_s_HTRAP_AT_SUP_ST_MAXSTL_s_HPV_ST_BY_TRAP		([HTRAP_AT_SUP_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_SUP_ST_NMAXSTL_s_HPV_ST_BY_TRAP		([HTRAP_AT_SUP_ST_NMAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_SUP_ST_MAXSTL_s_HPV_ST_BY_TRAP		([STRAP_AT_SUP_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_SUP_ST_NMAXSTL_s_HPV_ST_BY_TRAP		([STRAP_AT_SUP_ST_NMAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_DNRTRY_AT_SUP_ST_TO_H_s_THRD_HYPERVISOR_ST		([DNRTRY_AT_SUP_ST_TO_H] -> [THRD_HYPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_SUP_ST_TO_S_s_THRD_SUPERVISOR_ST		([DNRTRY_AT_SUP_ST_TO_S] -> [THRD_SUPERVISOR_ST]);
+  wildcard trans t_s_DNRTRY_AT_SUP_ST_TO_U_s_THRD_USER_ST		([DNRTRY_AT_SUP_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_WSR_AT_SUP_ST_TO_U_s_THRD_USER_ST			([WSR_AT_SUP_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_XIR_RST_AT_SUP_ST_s_RED_ST_BY_TRAP_OR_RST		([XIR_RST_AT_SUP_ST] -> [RED_ST_BY_TRAP_TLLT5]);
+  wildcard trans t_s_SIR_RST_AT_SUP_ST_TLLT6_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_SUP_ST_TLLT6] -> [RED_ST_BY_TRAP_TLLT5]);
+
+  // User State
+  wildcard trans t_s_HTRAP_AT_USER_ST_MAXSTL_s_HPV_ST_BY_TRAP		([HTRAP_AT_USER_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_USER_ST_NMAXSTL_s_HPV_ST_BY_TRAP		([HTRAP_AT_USER_ST_NMAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_USER_ST_MAXSTL_s_HPV_ST_BY_TRAP		([STRAP_AT_USER_ST_MAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_USER_ST_NMAXSTL_s_HPV_ST_BY_TRAP		([STRAP_AT_USER_ST_NMAXSTL] -> [HPV_ST_BY_TRAP]);
+  wildcard trans t_s_XIR_RST_AT_USER_ST_s_RED_ST_BY_TRAP_OR_RST		([XIR_RST_AT_USER_ST] -> [RED_ST_BY_TRAP_TLLT5]);
+
+  // Hypervisor-Light State
+  wildcard trans t_s_HTRAP_AT_HPL_ST_MAXSTL_s_HPL_ST_BY_TRAP		([HTRAP_AT_HPL_ST_MAXSTL] -> [HPL_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_HPL_ST_TL_LT5_s_HPL_ST_BY_TRAP		([HTRAP_AT_HPL_ST_TL_LT5] -> [HPL_ST_BY_TRAP]);
+  wildcard trans t_s_HTRAP_AT_HPL_ST_MAXTL1_s_RED_ST_BY_TRAP_OR_RST	([HTRAP_AT_HPL_ST_MAXTL1] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_HTRAP_AT_HPL_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([HTRAP_AT_HPL_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_STRAP_AT_HPL_ST_MAXSTL_s_HPL_ST_BY_TRAP		([STRAP_AT_HPL_ST_MAXSTL] -> [HPL_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_HPL_ST_TL_LT5_s_HPL_ST_BY_TRAP		([STRAP_AT_HPL_ST_TL_LT5] -> [HPL_ST_BY_TRAP]);
+  wildcard trans t_s_STRAP_AT_HPL_ST_MAXTL1_s_RED_ST_BY_TRAP_OR_RST	([STRAP_AT_HPL_ST_MAXTL1] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_STRAP_AT_HPL_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([STRAP_AT_HPL_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_DNRTRY_AT_HPL_ST_TO_S_s_HPL_ST_BY_TRAP		([DNRTRY_AT_HPL_ST_TO_S] -> [HPL_ST_BY_TRAP]);
+  wildcard trans t_s_DNRTRY_AT_HPL_ST_TO_U_s_THRD_USER_ST		([DNRTRY_AT_HPL_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_WSR_AT_HPL_ST_TO_U_s_THRD_USER_ST			([WSR_AT_HPL_ST_TO_U] -> [THRD_USER_ST]);
+  wildcard trans t_s_XIR_RST_AT_HPL_ST_s_RED_ST_BY_TRAP_OR_RST		([XIR_RST_AT_HPL_ST] -> [RED_ST_BY_TRAP_TLLT5]);
+  wildcard trans t_s_SIR_RST_AT_HPL_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_HPL_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard trans t_s_SIR_RST_AT_HPL_ST_TLLT6_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_HPL_ST_TLLT6] -> [RED_ST_BY_TRAP_OR_RST]);
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_SIR_RST_AT_USER_ST_MAXTL	(SIR_RST_AT_USER_ST_MAXTL);
+  wildcard bad_state s_SIR_RST_AT_USER_ST_TLLT6	(SIR_RST_AT_USER_ST_TLLT6);
+  wildcard bad_state s_SIR_RST_AT_SUP_ST_MAXTL	(SIR_RST_AT_SUP_ST_MAXTL);
+
+  ///////////////////
+  // Bad Transitions 
+  wildcard bad_trans t_s_SIR_RST_AT_USER_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_USER_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard bad_trans t_s_SIR_RST_AT_USER_ST_TLLT6_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_USER_ST_TLLT6] -> [RED_ST_BY_TRAP_OR_RST]);
+  wildcard bad_trans t_s_SIR_RST_AT_SUP_ST_MAXTL_s_RED_ST_BY_TRAP_OR_RST	([SIR_RST_AT_SUP_ST_MAXTL] -> [RED_ST_BY_TRAP_OR_RST]);
+
+// }

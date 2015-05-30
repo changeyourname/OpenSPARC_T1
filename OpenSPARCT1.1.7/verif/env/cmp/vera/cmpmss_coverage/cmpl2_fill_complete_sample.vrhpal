@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_fill_complete_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// fill_complete_c3[7:1] = dec_fill_entry_c3[7:1] | no_fill_entry_dequeue_c3[7:1];
+// fill_complete_c3[0]   = dec_fill_entry_c3[0]   | no_fill_entry_dequeue_c3[0]   | en_hit_dequeue_c2;
+//
+// en_hit_dequeue_c2 = arbdp_inst_mb_c2 & arbctl_fbctl_inst_vld_c2 & ~(rdma_inst_c2 & mbctl_rdma_reg_vld_c2) &
+//                     fb_hit_vec_c2[0] & ~fb_stinst[0] & ~fb_nofill[0] & l2_bypass_mode_on_d1;
+
+
+// state[18:0] = {dec_fill_entry_c3[7:0], no_fill_entry_dequeue_c3[7:0],
+//                en_hit_dequeue_c2, rdma_inst_c2, mbctl_rdma_reg_vld_c2};
+
+
+wildcard state dec_fill_entry_0       ( {8'b00000001, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_1       ( {8'b00000010, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_2       ( {8'b00000100, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_3       ( {8'b00001000, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_4       ( {8'b00010000, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_5       ( {8'b00100000, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_6       ( {8'b01000000, 8'b0, 3'b0xx} );
+wildcard state dec_fill_entry_7       ( {8'b10000000, 8'b0, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_0( {8'b0, 8'b00000001, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_1( {8'b0, 8'b00000010, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_2( {8'b0, 8'b00000100, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_3( {8'b0, 8'b00001000, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_4( {8'b0, 8'b00010000, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_5( {8'b0, 8'b00100000, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_6( {8'b0, 8'b01000000, 3'b0xx} );
+wildcard state no_fill_entry_dequeue_7( {8'b0, 8'b10000000, 3'b0xx} );
+wildcard state en_hit_dequeue_0       ( {8'b0, 8'b0, 3'b10x} );
+wildcard state en_hit_dequeue_1       ( {8'b0, 8'b0, 3'b1x0} );

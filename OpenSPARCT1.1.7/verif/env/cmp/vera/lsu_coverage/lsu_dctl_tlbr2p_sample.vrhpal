@@ -1,0 +1,32 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_tlbr2p_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// tlb r->p translation
+//***********************************************************************
+
+  wildcard state	s_TLBR2P_ST0	( 8'b1x0_xxxxx );
+  wildcard state	s_TLBR2P_ST1	( 8'b101_xxxxx );
+  wildcard state	s_TLBR2P_ST2	( 8'b111_xxxxx );
+
+  wildcard state	s_TLBR2P_ST3	( 8'bxx1_11xxx );
+  wildcard state	s_TLBR2P_ST4	( 8'bxx1_1x1xx );
+  wildcard state	s_TLBR2P_ST5	( 8'bxx1_1xx1x );
+  wildcard state	s_TLBR2P_ST6	( 8'bxx1_1xxx1 );

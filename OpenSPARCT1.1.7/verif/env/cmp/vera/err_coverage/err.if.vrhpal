@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "err_cov_inc.pal";
+#ifndef __ERR_IF_VRH__
+#define __ERR_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface err_coverage_ifc
+{
+  // Common & Clock Signals
+  input clk                  CLOCK;
+  input cmp_diag_done        PSAMPLE;
+
+  // DRAM Error signals
+  input   [22:0] DRAM0_Err_Stat  PSAMPLE;
+  input   [22:0] DRAM1_Err_Stat  PSAMPLE;
+  input   [22:0] DRAM2_Err_Stat  PSAMPLE;
+  input   [22:0] DRAM3_Err_Stat  PSAMPLE;
+
+  // L2 Error signals
+  input   [31:0] L2_Bank0_Err_Stat  PSAMPLE;
+  input   [31:0] L2_Bank1_Err_Stat  PSAMPLE;
+  input   [31:0] L2_Bank2_Err_Stat  PSAMPLE;
+  input   [31:0] L2_Bank3_Err_Stat  PSAMPLE;
+
+  // Sparc Error signals
+. sub coreSignals {
+.    my( $core_str ) = @_;
+.    my $c = $core_str;
+  input    [3:0] C${c}_meu        PSAMPLE;
+  input    [3:0] C${c}_mec        PSAMPLE;
+  input    [3:0] C${c}_imdu       PSAMPLE;
+  input    [3:0] C${c}_imtu       PSAMPLE;
+  input    [3:0] C${c}_dmdu       PSAMPLE;
+  input    [3:0] C${c}_dmtu       PSAMPLE;
+  input    [3:0] C${c}_idc        PSAMPLE;
+  input    [3:0] C${c}_itc        PSAMPLE;
+  input    [3:0] C${c}_ddc        PSAMPLE;
+  input    [3:0] C${c}_dtc        PSAMPLE;
+  input    [3:0] C${c}_irc        PSAMPLE;
+  input    [3:0] C${c}_iru        PSAMPLE;
+  input    [3:0] C${c}_frc        PSAMPLE;
+  input    [3:0] C${c}_fru        PSAMPLE;
+  input    [3:0] C${c}_ldau       PSAMPLE;
+  input    [3:0] C${c}_ncu        PSAMPLE;
+  input    [3:0] C${c}_dmsu       PSAMPLE;
+  input    [3:0] C${c}_mau        PSAMPLE;
+
+.}
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.    &coreSignals( $core );
+. }
+}
+
+#endif
+
+
+

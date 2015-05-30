@@ -1,0 +1,36 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_l2_fsm1_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is the state machine from tso_mon which detects 
+// 2 stores A and B, followed but two loads to B and A
+// The first store misses. The second may hit or miss.
+// See more details in tso_mon.v
+// The coverage monitors these signals:
+//  input [3:0] tso_l2_fsm     - the state machine (see tso_mon)
+//***********************************************************************
+state s_L2_FSM_IDLE 	(L2_FSM_IDLE);
+state s_L2_FSM_ST1 	(L2_FSM_ST1);
+state s_L2_FSM_ST2M 	(L2_FSM_ST2M);
+state s_L2_FSM_LD1M 	(L2_FSM_LD1M);
+state s_L2_FSM_LD2M 	(L2_FSM_LD2M);
+state s_L2_FSM_ST2H 	(L2_FSM_ST2H);
+state s_L2_FSM_LD1H 	(L2_FSM_LD1H);
+state s_L2_FSM_LD2H 	(L2_FSM_LD2H);

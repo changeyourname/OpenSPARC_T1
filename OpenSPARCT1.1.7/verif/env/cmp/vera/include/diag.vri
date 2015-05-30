@@ -1,0 +1,88 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: diag.vri
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC__DIAG_VRI
+#define INC__DIAG_VRI
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "cmp_defines.vri"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "dram.vrh"
+#include "vera_event.vrh"
+#include "pcxpacket.vrh"
+#include "cpxpacket.vrh"
+#include "pcx_record.vrh"
+#include "cpx_record.vrh"
+//#include "gen_rand.vrh"
+//#include "range.vrh"
+#include "cmp_tasks.vrh"
+//#include "bsc_record.vrh"
+ExternVeraList(integer)
+ExternVeraList(string)
+//#include "bscpacket.vrh"
+//#include "req_record.vrh"
+//#include "diag_record.vrh"
+//#include "inst_record.vrh"
+//#include "directory.vrh"
+//#include "direct.vrh"
+
+extern  bit        fail_flag, time_flag;
+extern  string     why;
+extern  bit        reset;
+extern  bit [63:0] mainMem[];
+extern  bit        mecc[];
+extern  bit [63:0] data_section;
+extern  bsc_port   bsc_bind[4];
+extern  dram_port  dram_bind[4];
+extern  VeraList_string  str_list ;
+extern  VeraList_vera_event vera_tasks[];
+extern  VeraList_PcxPacket pcx_list ;
+extern  VeraList_CpxPacket cpx_list ;
+extern  bit [31:0] thread_status;
+extern  bit thread_start;
+extern  VeraList_PcxPacket soft_list;
+extern  VeraList_PcxPacket io_list;
+//extern  VeraList_req_record req_list;
+extern  VeraListIterator_PcxPacket pcx_it;
+extern  VeraListIterator_vera_event event_it;
+extern  bit [1:0] Qsel[8];
+extern  dimm_port dimm_bind[4];
+extern  integer              round_robin, bsc_seq, bsc_size, config;
+extern  bit [63:0]           d_data;
+extern  pcx_port             pcx_bind[8];
+extern  cpx_port             cpx_bind[8];
+extern  xbar_port            xbar_bind[4];
+extern  l2_port              l2_bind[4];
+extern  ucb_port             ucb_bind[2];
+//extern  direct dir;
+extern  bit [1:0]            depend_flag;
+extern  bit [63:0]           depend_addr;
+extern  bit [4:0]            depend_inst;
+
+extern hdl_task start_thr(bit [2:0] cpu, bit [1:0] thread, bit [63:0] pc) ;
+extern hdl_task i_dump(bit [3:0] cpu_id) ;
+extern hdl_task d_dump(bit [3:0] cpu_id) ;
+extern hdl_task action(bit[1023:0] path, bit[255:0] val, bit[7:0] msb, bit[7:0] lsb, bit[7:0] type) ;
+extern hdl_task fail(bit [1023:0]     comment) ;
+
+#endif
+

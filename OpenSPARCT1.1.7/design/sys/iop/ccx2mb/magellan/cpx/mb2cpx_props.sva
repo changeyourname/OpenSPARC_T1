@@ -1,0 +1,130 @@
+/***************************************************************************
+ * mb2cpx_props.sva:	Properties written for the mb2cpx module.
+ *		Check for:  State machine one-hot, Every request gets a
+ *		grant.  Atomics are granted twice.  No overflow occurs,
+ *		and no stalls
+ *
+ *		Written By:	Tom Thatcher
+ *		Date:		11/1/2006
+ ***************************************************************************/
+
+`include "ccx2mb.h"
+
+module mb2cpx_props (
+	input clk,
+	input reset_l,
+
+	// Input signals
+	input                    fsl_cpx_s_exists,
+	input                    fsl_cpx_s_control,
+	input [`FSL_D_WIDTH-1:0] fsl_cpx_s_data,
+
+	// Output signals
+	input                  cpx_spc_data_rdy_cx2,
+	input [`CPX_WIDTH-1:0] cpx_spc_data_cx2,
+
+	input                  cpx_fsl_s_read,
+
+	// Internal signals
+	input [2:0] cpx_sm_state,
+	input       atomic_second_d1
+	);
+
+
+    // Constraint:  Exists bit will stay high until read
+    property p_exists_high_till_read;
+	@(posedge clk)
+	    fsl_cpx_s_exists && !cpx_fsl_s_read |-> ##1 fsl_cpx_s_exists;
+    endproperty
+    constr_exists_high_till_read: assert property (p_exists_high_till_read);
+    
+    
+    // Requirement:  Block does not add or drop data.
+    //		Every 5 reads from the FIFO results in 1 write to SPC
+    //		We cheat to figure out an atomic is being sent.
+    wire valid_data;
+    reg [2:0] vld_cnt;
+    reg       txn_accept;
+    reg [3:0] txn_credits;
+
+    always @ (posedge clk or negedge reset_l) begin
+	if (!reset_l) begin
+	    vld_cnt <= 3'd0;
+	    txn_accept <= 1'b0;
+	end
+	// Found the beginning of a new packet
+	else if (vld_cnt == 3'd0 && fsl_cpx_s_exists && fsl_cpx_s_control &&
+		cpx_fsl_s_read) begin
+	    vld_cnt <= 3'd4;
+	    txn_accept <= 1'b1;
+	end
+	else if (vld_cnt > 3'd0 && fsl_cpx_s_exists && cpx_fsl_s_read) begin
+	    vld_cnt <= vld_cnt - 3'd1;
+	    txn_accept <= 1'b1;
+	end
+	else begin
+	    vld_cnt <= vld_cnt;
+	    txn_accept <= 1'b0;
+	end
+    end
+
+    always @ (posedge clk or negedge reset_l) begin
+	if (!reset_l) begin
+	    txn_credits <= 4'd10;
+	end
+	else begin
+	    txn_credits <=
+	    (txn_accept && cpx_spc_data_rdy_cx2 && atomic_second_d1) ? 
+			    txn_credits + 4'd9 : (
+	    (txn_accept && cpx_spc_data_rdy_cx2 && !atomic_second_d1) ?
+			    txn_credits + 4'd4 : (
+	    (!txn_accept && cpx_spc_data_rdy_cx2 && atomic_second_d1) ?
+			    txn_credits + 4'd10 : (
+	    (!txn_accept && cpx_spc_data_rdy_cx2 && !atomic_second_d1) ?
+			    txn_credits + 4'd5 : (
+	    (txn_accept && !cpx_spc_data_rdy_cx2) ?
+			    txn_credits - 4'd1 :
+			    txn_credits))));
+
+	end
+    end
+
+    property p_always_accept_new;
+	@(posedge clk)
+	    cpx_fsl_s_read == fsl_cpx_s_exists;
+    endproperty
+    a_always_accept_new: assert property (p_always_accept_new);
+
+    property p_no_credit_overflow;
+	@(posedge clk)
+	    txn_credits <= 4'd10;
+    endproperty
+    a_no_credit_overflow: assert property (p_no_credit_overflow);
+
+
+    // Requirement:  Internal state machine variable is one-hot
+    property p_cpx_sm_one_hot;
+	@(posedge clk) $onehot(cpx_sm_state);
+    endproperty
+    a_cpx_sm_one_hot: assert property (p_cpx_sm_one_hot);
+endmodule
+
+bind mb2cpx mb2cpx_props areq (
+	.clk(rclk),
+	.reset_l(reset_l),
+
+	// Input signals
+	.fsl_cpx_s_exists(fsl_cpx_s_exists),
+	.fsl_cpx_s_control(fsl_cpx_s_control),
+	.fsl_cpx_s_data(fsl_cpx_s_data),
+
+	// Output signals
+	.cpx_spc_data_rdy_cx2(cpx_spc_data_rdy_cx2),
+	.cpx_spc_data_cx2(cpx_spc_data_cx2),
+
+	.cpx_fsl_s_read(cpx_fsl_s_read),
+
+	// Internal signals
+	.cpx_sm_state(cpx_sm.curr_state),
+	.atomic_second_d1(cpx_sm.atomic_second_d1)
+	);

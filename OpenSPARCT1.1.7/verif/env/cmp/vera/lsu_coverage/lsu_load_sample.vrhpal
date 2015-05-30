@@ -1,0 +1,121 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_load_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//	State machine for Load in lsu_dctl.v
+//
+//***********************************************************************
+
+  state		s_LDSTATE_IDLE     	(4'b0000);
+  state		s_LDSTATE_FULLRAW     	(4'b0001);
+  state		s_LDSTATE_PRSFILLIRF	(4'b0010);
+  bad_state	s_LDSTATE_03		(4'b0011);
+  state		s_LDSTATE_TRANS1	(4'b0100);	
+  bad_state	s_LDSTATE_05		(4'b0101);
+  bad_state	s_LDSTATE_SNDRYLD     	(4'b0110);
+  bad_state	s_LDSTATE_07		(4'b0111);
+  state		s_LDSTATE_REQ2L2	(4'b1000);
+  bad_state	s_LDSTATE_09		(4'b1001);
+  bad_state	s_LDSTATE_10		(4'b1010);
+  bad_state	s_LDSTATE_11		(4'b1011);
+  state		s_LDSTATE_PRAWVLD	(4'b1100);
+  bad_state	s_LDSTATE_13		(4'b1101);
+  bad_state	s_LDSTATE_14		(4'b1110);
+  bad_state	s_LDSTATE_15		(4'b1111);
+
+  state		s_LDSTATE_ERR		(4'b00x0);
+
+  // bad_state s_not_LDSTATE (not state);
+
+  // transitions 
+  trans t_s_LDSTATE_IDLE_to_s_LDSTATE_IDLE 		(LDSTATE_IDLE -> LDSTATE_IDLE);
+  trans t_s_LDSTATE_FULLRAW_to_s_LDSTATE_FULLRAW	(LDSTATE_FULLRAW -> LDSTATE_FULLRAW);
+  bad_trans t_s_LDSTATE_PRSFILLIRF_to_s_LDSTATE_PRSFILLIRF	(LDSTATE_PRSFILLIRF -> LDSTATE_PRSFILLIRF);
+  // trans t_s_LDSTATE_SNDRYLD_to_s_LDSTATE_SNDRYLD	(LDSTATE_SNDRYLD -> LDSTATE_SNDRYLD);
+  bad_trans t_s_LDSTATE_TRANS1_to_s_LDSTATE_TRANS1	(LDSTATE_TRANS1 -> LDSTATE_TRANS1);
+  trans t_s_LDSTATE_PRAWVLD_to_s_LDSTATE_PRAWVLD	(LDSTATE_PRAWVLD -> LDSTATE_PRAWVLD);
+  trans t_s_LDSTATE_REQ2L2_to_s_LDSTATE_REQ2L2		(LDSTATE_REQ2L2 -> LDSTATE_REQ2L2);
+  trans t_s_LDSTATE_IDLE_to_s_LDSTATE_REQ2L2		(LDSTATE_IDLE -> LDSTATE_REQ2L2);
+
+  // Full Raw transitions 
+  trans t_s_LDSTATE_IDLE_to_s_LDSTATE_FULLRAW		(LDSTATE_IDLE -> LDSTATE_FULLRAW);
+  trans t_s_LDSTATE_FULLRAW_to_s_LDSTATE_IDLE		(LDSTATE_FULLRAW -> LDSTATE_IDLE);
+
+  // Partial Raw for Primary load
+  bad_trans t_s_LDSTATE_IDLE_to_s_LDSTATE_PRAWVLD	(LDSTATE_IDLE -> LDSTATE_PRAWVLD);
+  trans t_s_LDSTATE_IDLE_to_s_LDSTATE_TRANS1		(LDSTATE_IDLE -> LDSTATE_TRANS1);
+  bad_trans t_s_LDSTATE_TRANS1_to_s_LDSTATE_IDLE	(LDSTATE_TRANS1 -> LDSTATE_IDLE);
+  trans t_s_LDSTATE_PRAWVLD_to_s_LDSTATE_REQ2L2		(LDSTATE_PRAWVLD -> LDSTATE_REQ2L2);
+  trans t_s_LDSTATE_REQ2L2_to_s_LDSTATE_IDLE		(LDSTATE_REQ2L2 -> LDSTATE_IDLE);
+
+  // Partial Raw for Secondary load
+  // trans t_s_LDSTATE_IDLE_to_s_LDSTATE_SNDRYLD	(LDSTATE_IDLE -> LDSTATE_SNDRYLD);
+  // trans t_s_LDSTATE_SNDRYLD_to_s_LDSTATE_PRSFILLIRF	(LDSTATE_SNDRYLD -> LDSTATE_PRSFILLIRF);
+  trans t_s_LDSTATE_PRSFILLIRF_to_s_LDSTATE_IDLE	(LDSTATE_PRSFILLIRF -> LDSTATE_IDLE);
+
+  // secondary load 
+  trans t_s_LDSTATE_IDLE_to_s_LDSTATE_PRSFILLIRF	(LDSTATE_IDLE -> LDSTATE_PRSFILLIRF);
+
+  // load marked req to L2
+  trans t_LDSTATE_0 (
+  	LDSTATE_IDLE            ->		// 0000
+	LDSTATE_REQ2L2 [.1:64.] ->		// 1000
+        LDSTATE_IDLE				// 0000
+  );
+
+  // full raw 
+  trans t_LDSTATE_1 (
+  	LDSTATE_IDLE             ->		// 0000
+	LDSTATE_FULLRAW [.1:64.] ->		// 0001
+        LDSTATE_IDLE				// 0000
+  );
+
+  // case1 of secondary load
+  trans t_LDSTATE_2 (
+  	LDSTATE_IDLE                ->		// 0000
+	LDSTATE_PRSFILLIRF [.1:64.] ->		// 0010
+        LDSTATE_IDLE				// 0000
+  );
+
+  // case2 of secondary load
+  // partial raw for secondary load 
+  trans t_LDSTATE_3 (
+  	LDSTATE_IDLE             ->		// 0000
+	LDSTATE_PRSFILLIRF       ->		// 0010
+	LDSTATE_REQ2L2  [.1:64.] -> 		// 1000
+  	LDSTATE_IDLE				// 0000
+  );
+
+  // partial raw for primary load 
+  trans t_LDSTATE_4 (
+	LDSTATE_IDLE             ->		// 0000
+	LDSTATE_TRANS1           ->		// 0100
+	LDSTATE_PRAWVLD [.1:64.] -> 		// 1100
+	LDSTATE_REQ2L2  [.1:64.] -> 		// 1000
+	LDSTATE_IDLE				// 0000		
+  );
+
+  trans t_LDSTATE_5 (
+  	LDSTATE_IDLE             ->		// 0000
+	LDSTATE_TRANS1           ->		// 0100
+	LDSTATE_REQ2L2  [.1:64.] -> 		// 1000
+  	LDSTATE_IDLE				// 0000
+  );

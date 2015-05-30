@@ -1,0 +1,107 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_picker2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_picker2_state = {pick_presented_count[2:0], pick_destbusy_count[2:0], pick_atompend_count[2:0]};
+//
+// count[2:0] = {numbits>2, numbits>1, numbits>0};
+
+//state presented0_destbusy0_atompend0( {3'b000, 3'b000, 3'b000} );
+bad_state presented0_destbusy0_atompend1( {3'b000, 3'b000, 3'b001} );
+bad_state presented0_destbusy0_atompend2( {3'b000, 3'b000, 3'b011} );
+bad_state presented0_destbusy0_atompend3( {3'b000, 3'b000, 3'b111} );
+
+state presented0_destbusy1_atompend0( {3'b000, 3'b001, 3'b000} );
+state presented0_destbusy1_atompend1( {3'b000, 3'b001, 3'b001} );
+bad_state presented0_destbusy1_atompend2( {3'b000, 3'b001, 3'b011} );
+bad_state presented0_destbusy1_atompend3( {3'b000, 3'b001, 3'b111} );
+
+state presented0_destbusy2_atompend0( {3'b000, 3'b011, 3'b000} );
+state presented0_destbusy2_atompend1( {3'b000, 3'b011, 3'b001} );
+state presented0_destbusy2_atompend2( {3'b000, 3'b011, 3'b011} );
+bad_state presented0_destbusy2_atompend3( {3'b000, 3'b011, 3'b111} );
+
+state presented0_destbusy3_atompend0( {3'b000, 3'b111, 3'b000} );
+state presented0_destbusy3_atompend1( {3'b000, 3'b111, 3'b001} );
+state presented0_destbusy3_atompend2( {3'b000, 3'b111, 3'b011} );
+state presented0_destbusy3_atompend3( {3'b000, 3'b111, 3'b111} );
+
+
+state presented1_destbusy0_atompend0( {3'b001, 3'b000, 3'b000} );
+state presented1_destbusy0_atompend1( {3'b001, 3'b000, 3'b001} );
+state presented1_destbusy0_atompend2( {3'b001, 3'b000, 3'b011} );
+state presented1_destbusy0_atompend3( {3'b001, 3'b000, 3'b111} );
+
+state presented1_destbusy1_atompend0( {3'b001, 3'b001, 3'b000} );
+state presented1_destbusy1_atompend1( {3'b001, 3'b001, 3'b001} );
+state presented1_destbusy1_atompend2( {3'b001, 3'b001, 3'b011} );
+state presented1_destbusy1_atompend3( {3'b001, 3'b001, 3'b111} );
+
+state presented1_destbusy2_atompend0( {3'b001, 3'b011, 3'b000} );
+state presented1_destbusy2_atompend1( {3'b001, 3'b011, 3'b001} );
+state presented1_destbusy2_atompend2( {3'b001, 3'b011, 3'b011} );
+state presented1_destbusy2_atompend3( {3'b001, 3'b011, 3'b111} );
+
+state presented1_destbusy3_atompend0( {3'b001, 3'b111, 3'b000} );
+state presented1_destbusy3_atompend1( {3'b001, 3'b111, 3'b001} );
+state presented1_destbusy3_atompend2( {3'b001, 3'b111, 3'b011} );
+state presented1_destbusy3_atompend3( {3'b001, 3'b111, 3'b111} );
+
+
+state presented2_destbusy0_atompend0( {3'b011, 3'b000, 3'b000} );
+state presented2_destbusy0_atompend1( {3'b011, 3'b000, 3'b001} );
+state presented2_destbusy0_atompend2( {3'b011, 3'b000, 3'b011} );
+state presented2_destbusy0_atompend3( {3'b011, 3'b000, 3'b111} );
+
+state presented2_destbusy1_atompend0( {3'b011, 3'b001, 3'b000} );
+state presented2_destbusy1_atompend1( {3'b011, 3'b001, 3'b001} );
+state presented2_destbusy1_atompend2( {3'b011, 3'b001, 3'b011} );
+state presented2_destbusy1_atompend3( {3'b011, 3'b001, 3'b111} );
+
+state presented2_destbusy2_atompend0( {3'b011, 3'b011, 3'b000} );
+state presented2_destbusy2_atompend1( {3'b011, 3'b011, 3'b001} );
+state presented2_destbusy2_atompend2( {3'b011, 3'b011, 3'b011} );
+state presented2_destbusy2_atompend3( {3'b011, 3'b011, 3'b111} );
+
+state presented2_destbusy3_atompend0( {3'b011, 3'b111, 3'b000} );
+state presented2_destbusy3_atompend1( {3'b011, 3'b111, 3'b001} );
+state presented2_destbusy3_atompend2( {3'b011, 3'b111, 3'b011} );
+state presented2_destbusy3_atompend3( {3'b011, 3'b111, 3'b111} );
+
+
+state presented3_destbusy0_atompend0( {3'b111, 3'b000, 3'b000} );
+state presented3_destbusy0_atompend1( {3'b111, 3'b000, 3'b001} );
+state presented3_destbusy0_atompend2( {3'b111, 3'b000, 3'b011} );
+state presented3_destbusy0_atompend3( {3'b111, 3'b000, 3'b111} );
+
+state presented3_destbusy1_atompend0( {3'b111, 3'b001, 3'b000} );
+state presented3_destbusy1_atompend1( {3'b111, 3'b001, 3'b001} );
+state presented3_destbusy1_atompend2( {3'b111, 3'b001, 3'b011} );
+state presented3_destbusy1_atompend3( {3'b111, 3'b001, 3'b111} );
+
+state presented3_destbusy2_atompend0( {3'b111, 3'b011, 3'b000} );
+state presented3_destbusy2_atompend1( {3'b111, 3'b011, 3'b001} );
+state presented3_destbusy2_atompend2( {3'b111, 3'b011, 3'b011} );
+state presented3_destbusy2_atompend3( {3'b111, 3'b011, 3'b111} );
+
+state presented3_destbusy3_atompend0( {3'b111, 3'b111, 3'b000} );
+state presented3_destbusy3_atompend1( {3'b111, 3'b111, 3'b001} );
+state presented3_destbusy3_atompend2( {3'b111, 3'b111, 3'b011} );
+state presented3_destbusy3_atompend3( {3'b111, 3'b111, 3'b111} );

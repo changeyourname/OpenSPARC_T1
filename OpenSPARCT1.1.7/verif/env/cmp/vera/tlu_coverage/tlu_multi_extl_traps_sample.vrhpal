@@ -1,0 +1,227 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_multi_extl_traps_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// Cross coverage between all the synchronous trap types reported by ifu/exu/lsu
+// and the side band signals from those units.
+//***************************************************************************
+
+
+// coverage_def TLU_MULTI_EXTL_TRAPS (bit [45:0] tlu_multi_extl_traps_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_IFU_TRAP_EXU_TRAP	(IFU_TRAP_EXU_TRAP);
+  wildcard state s_IFU_TRAP_LSU_TRAP	(IFU_TRAP_LSU_TRAP);
+  wildcard state s_IFU_TRAP_LSU_DEFR	(IFU_TRAP_LSU_DEFR);
+  wildcard state s_IFU_TRAP_TLU_TLZ 	(IFU_TRAP_TLU_TLZ );
+                                                          
+  wildcard state s_EXU_TRAP_IFU_TRAP	(EXU_TRAP_IFU_TRAP);
+  wildcard state s_EXU_TRAP_LSU_TRAP	(EXU_TRAP_LSU_TRAP);
+  wildcard state s_EXU_TRAP_LSU_DEFR	(EXU_TRAP_LSU_DEFR);
+  wildcard state s_EXU_TRAP_TLU_TLZ 	(EXU_TRAP_TLU_TLZ );
+                                                          
+  wildcard state s_LSU_TRAP_IFU_TRAP	(LSU_TRAP_IFU_TRAP);
+  wildcard state s_LSU_TRAP_EXU_TRAP	(LSU_TRAP_EXU_TRAP);
+  wildcard state s_LSU_TRAP_LSU_DEFR	(LSU_TRAP_LSU_DEFR);
+  wildcard state s_LSU_TRAP_TLU_TLZ	(LSU_TRAP_TLU_TLZ);
+
+  wildcard state s_IFU_FLUSH_FD_W_IFU_TT			(IFU_FLUSH_FD_W_IFU_TT);
+  wildcard state s_IFU_FLUSH_FD_W_EXU_TT			(IFU_FLUSH_FD_W_EXU_TT);
+  wildcard state s_IFU_FLUSH_FD_W_LSU_TT			(IFU_FLUSH_FD_W_LSU_TT);
+  wildcard state s_IFU_FLUSH_FD_W_TLU_TLZ			(IFU_FLUSH_FD_W_TLU_TLZ);
+                                                                                                        
+  wildcard state s_IFU_FLUSH_M_IFU_TT			        (IFU_FLUSH_M_IFU_TT);
+  wildcard state s_IFU_FLUSH_M_EXU_TT			        (IFU_FLUSH_M_EXU_TT);
+  wildcard state s_IFU_FLUSH_M_LSU_TT			        (IFU_FLUSH_M_LSU_TT);
+  wildcard state s_IFU_FLUSH_M_TLU_TLZ			        (IFU_FLUSH_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_IFU_PRIV_VIOLTN_M_IFU_TT		        (IFU_PRIV_VIOLTN_M_IFU_TT);
+  wildcard state s_IFU_PRIV_VIOLTN_M_EXU_TT		        (IFU_PRIV_VIOLTN_M_EXU_TT);
+  wildcard state s_IFU_PRIV_VIOLTN_M_LSU_TT		        (IFU_PRIV_VIOLTN_M_LSU_TT);
+  wildcard state s_IFU_PRIV_VIOLTN_M_TLU_TLZ		        (IFU_PRIV_VIOLTN_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_EXU_MISALIGN_ADDR_JMPL_RTN_M_IFU_TT	        (EXU_MISALIGN_ADDR_JMPL_RTN_M_IFU_TT);
+  wildcard state s_EXU_MISALIGN_ADDR_JMPL_RTN_M_EXU_TT	        (EXU_MISALIGN_ADDR_JMPL_RTN_M_EXU_TT);
+  wildcard state s_EXU_MISALIGN_ADDR_JMPL_RTN_M_TLU_TLZ	        (EXU_MISALIGN_ADDR_JMPL_RTN_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_EXU_UE_TRAP_M_IFU_TT			        (EXU_UE_TRAP_M_IFU_TT);
+  wildcard state s_EXU_UE_TRAP_M_EXU_TT_29			(EXU_UE_TRAP_M_EXU_TT_29);
+  wildcard state s_EXU_UE_TRAP_M_LSU_TT			        (EXU_UE_TRAP_M_LSU_TT);
+  wildcard state s_EXU_UE_TRAP_M_TLU_TLZ			(EXU_UE_TRAP_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_EXU_VA_OOR_JL_RET_M_IFU_TT		        (EXU_VA_OOR_JL_RET_M_IFU_TT);
+  wildcard state s_EXU_VA_OOR_JL_RET_M_EXU_TT_29		(EXU_VA_OOR_JL_RET_M_EXU_TT_29);
+  wildcard state s_EXU_VA_OOR_JL_RET_M_EXU_TT_34		(EXU_VA_OOR_JL_RET_M_EXU_TT_34);
+  wildcard state s_EXU_VA_OOR_JL_RET_M_EXU_TT_FILL_N_NOR	(EXU_VA_OOR_JL_RET_M_EXU_TT_FILL_N_NOR);
+  wildcard state s_EXU_VA_OOR_JL_RET_M_EXU_TT_FILL_N_OTH	(EXU_VA_OOR_JL_RET_M_EXU_TT_FILL_N_OTH);
+  wildcard state s_EXU_VA_OOR_JL_RET_M_TLU_TLZ		        (EXU_VA_OOR_JL_RET_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_EXU_VA_OOR_M_IFU_TT			        (EXU_VA_OOR_M_IFU_TT	);
+  wildcard state s_EXU_VA_OOR_M_EXU_TT_29			(EXU_VA_OOR_M_EXU_TT_29	);
+  wildcard state s_EXU_VA_OOR_M_EXU_TT_34			(EXU_VA_OOR_M_EXU_TT_34	);
+  wildcard state s_EXU_VA_OOR_M_LSU_TT			        (EXU_VA_OOR_M_LSU_TT);
+  wildcard state s_EXU_VA_OOR_M_TLU_TLZ			        (EXU_VA_OOR_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_IFU_TT		(LSU_MISALIGN_LDST_ATM_M_IFU_TT	);
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_EXU_TT		(LSU_MISALIGN_LDST_ATM_M_EXU_TT	);
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_34	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_34);
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_35	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_35);
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_36	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_36);
+  wildcard state s_LSU_MISALIGN_LDST_ATM_M_TLU_TLZ		(LSU_MISALIGN_LDST_ATM_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_LSU_SQUASH_VA_OOR_M_IFU_TT		        (LSU_SQUASH_VA_OOR_M_IFU_TT);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_EXU_TT		        (LSU_SQUASH_VA_OOR_M_EXU_TT);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_30		(LSU_SQUASH_VA_OOR_M_LSU_TT_30);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_34		(LSU_SQUASH_VA_OOR_M_LSU_TT_34);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_35		(LSU_SQUASH_VA_OOR_M_LSU_TT_35);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_36		(LSU_SQUASH_VA_OOR_M_LSU_TT_36);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_37		(LSU_SQUASH_VA_OOR_M_LSU_TT_37);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_62		(LSU_SQUASH_VA_OOR_M_LSU_TT_62);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_TLU_TLZ		        (LSU_SQUASH_VA_OOR_M_TLU_TLZ);
+  wildcard state s_LSU_SQUASH_VA_OOR_M_LSU_TT_68		(LSU_SQUASH_VA_OOR_M_LSU_TT_68);
+                                                                                                        
+  wildcard state s_LSU_PRIV_ACTION_M_IFU_TT		        (LSU_PRIV_ACTION_M_IFU_TT);
+  wildcard state s_LSU_PRIV_ACTION_M_EXU_TT		        (LSU_PRIV_ACTION_M_EXU_TT);
+  wildcard state s_LSU_PRIV_ACTION_M_LSU_TT_34		        (LSU_PRIV_ACTION_M_LSU_TT_34);
+  wildcard state s_LSU_PRIV_ACTION_M_LSU_TT_35		        (LSU_PRIV_ACTION_M_LSU_TT_35);
+  wildcard state s_LSU_PRIV_ACTION_M_LSU_TT_36		        (LSU_PRIV_ACTION_M_LSU_TT_36);
+  wildcard state s_LSU_PRIV_ACTION_M_LSU_TT_37		        (LSU_PRIV_ACTION_M_LSU_TT_37);
+  wildcard state s_LSU_PRIV_ACTION_M_TLU_TLZ		        (LSU_PRIV_ACTION_M_TLU_TLZ);
+                                                                                                        
+  wildcard state s_LSU_DACCESS_EXCPTN_G_IFU_TT		        (LSU_DACCESS_EXCPTN_G_IFU_TT);
+  wildcard state s_LSU_DACCESS_EXCPTN_G_EXU_TT		        (LSU_DACCESS_EXCPTN_G_EXU_TT);
+  wildcard state s_LSU_DACCESS_EXCPTN_G_LSU_TT_30		(LSU_DACCESS_EXCPTN_G_LSU_TT_30	);
+  wildcard state s_LSU_DACCESS_EXCPTN_G_TLU_TLZ		        (LSU_DACCESS_EXCPTN_G_TLU_TLZ);
+  wildcard state s_LSU_DACCESS_EXCPTN_G_LSU_TT_3f		(LSU_DACCESS_EXCPTN_G_LSU_TT_3f	);
+                                                                                                        
+  wildcard state s_LSU_DACCESS_PROT_G_IFU_TT		        (LSU_DACCESS_PROT_G_IFU_TT);
+  wildcard state s_LSU_DACCESS_PROT_G_EXU_TT		        (LSU_DACCESS_PROT_G_EXU_TT);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_30		        (LSU_DACCESS_PROT_G_LSU_TT_30);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_34		        (LSU_DACCESS_PROT_G_LSU_TT_34);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_35		        (LSU_DACCESS_PROT_G_LSU_TT_35);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_36		        (LSU_DACCESS_PROT_G_LSU_TT_36);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_37		        (LSU_DACCESS_PROT_G_LSU_TT_37);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_62		        (LSU_DACCESS_PROT_G_LSU_TT_62);
+  wildcard state s_LSU_DACCESS_PROT_G_LSU_TT_6c		        (LSU_DACCESS_PROT_G_LSU_TT_6c);
+  wildcard state s_LSU_DACCESS_PROT_G_TLU_TLZ		        (LSU_DACCESS_PROT_G_TLU_TLZ);
+                                                                                                        
+  wildcard state s_LSU_WTCH_TRAP_G_IFU_TT			(LSU_WTCH_TRAP_G_IFU_TT	);
+  wildcard state s_LSU_WTCH_TRAP_G_EXU_TT			(LSU_WTCH_TRAP_G_EXU_TT	);
+  wildcard state s_LSU_WTCH_TRAP_G_LSU_TT_34		        (LSU_WTCH_TRAP_G_LSU_TT_34);
+  wildcard state s_LSU_WTCH_TRAP_G_LSU_TT_35		        (LSU_WTCH_TRAP_G_LSU_TT_35);
+  wildcard state s_LSU_WTCH_TRAP_G_LSU_TT_36		        (LSU_WTCH_TRAP_G_LSU_TT_36);
+  wildcard state s_LSU_WTCH_TRAP_G_LSU_TT_37		        (LSU_WTCH_TRAP_G_LSU_TT_37);
+  wildcard state s_LSU_WTCH_TRAP_G_LSU_TT_62		        (LSU_WTCH_TRAP_G_LSU_TT_62);
+  wildcard state s_LSU_WTCH_TRAP_G_TLU_TLZ			(LSU_WTCH_TRAP_G_TLU_TLZ);
+                                                                                                        
+  wildcard state s_LSU_DEFR_TRAP_G_IFU_TT			(LSU_DEFR_TRAP_G_IFU_TT	);
+  wildcard state s_LSU_DEFR_TRAP_G_EXU_TT			(LSU_DEFR_TRAP_G_EXU_TT	);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_30		        (LSU_DEFR_TRAP_G_LSU_TT_30);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_34		        (LSU_DEFR_TRAP_G_LSU_TT_34);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_35		        (LSU_DEFR_TRAP_G_LSU_TT_35);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_36		        (LSU_DEFR_TRAP_G_LSU_TT_36);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_37		        (LSU_DEFR_TRAP_G_LSU_TT_37);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_3f		        (LSU_DEFR_TRAP_G_LSU_TT_3f);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_62		        (LSU_DEFR_TRAP_G_LSU_TT_62);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_68		        (LSU_DEFR_TRAP_G_LSU_TT_68);
+  wildcard state s_LSU_DEFR_TRAP_G_LSU_TT_6c		        (LSU_DEFR_TRAP_G_LSU_TT_6c);
+                                                                                                        
+  wildcard state s_LSU_EARLY_FLUSH_W_IFU_TT		        (LSU_EARLY_FLUSH_W_IFU_TT);
+  wildcard state s_LSU_EARLY_FLUSH_W_EXU_TT		        (LSU_EARLY_FLUSH_W_EXU_TT);
+  wildcard state s_LSU_EARLY_FLUSH_W_LSU_TT		        (LSU_EARLY_FLUSH_W_LSU_TT);
+  wildcard state s_LSU_EARLY_FLUSH_W_TLU_TLZ		        (LSU_EARLY_FLUSH_W_TLU_TLZ);
+
+  wildcard state s_LSU_DACCESS_EXCPTN_G_LSU_TT_68		(LSU_DACCESS_EXCPTN_G_LSU_TT_68	);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_EXU_VA_OOR_JL_RET_M_LSU_TT		        (EXU_VA_OOR_JL_RET_M_LSU_TT);
+  wildcard bad_state s_EXU_MISALIGN_ADDR_JMPL_RTN_M_LSU_SYNC_TT     (EXU_MISALIGN_ADDR_JMPL_RTN_M_LSU_SYNC_TT);
+  wildcard bad_state s_LSU_DEFR_TRAP_G_TLU_TLZ			(LSU_DEFR_TRAP_G_TLU_TLZ);
+  wildcard bad_state s_EXU_VA_OOR_JL_RET_M_EXU_TT_23		(EXU_VA_OOR_JL_RET_M_EXU_TT_23);
+  wildcard bad_state s_EXU_VA_OOR_JL_RET_M_EXU_TT_28		(EXU_VA_OOR_JL_RET_M_EXU_TT_28);
+  wildcard bad_state s_EXU_VA_OOR_JL_RET_M_EXU_TT_CLWIN	        (EXU_VA_OOR_JL_RET_M_EXU_TT_CLWIN);
+  wildcard bad_state s_EXU_VA_OOR_JL_RET_M_EXU_TT_TRAP_INST	(EXU_VA_OOR_JL_RET_M_EXU_TT_TRAP_INST);
+
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_23			(EXU_UE_TRAP_M_EXU_TT_23);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_28			(EXU_UE_TRAP_M_EXU_TT_28);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_34			(EXU_UE_TRAP_M_EXU_TT_34);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_CLWIN		        (EXU_UE_TRAP_M_EXU_TT_CLWIN);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_FILL_N_NOR		(EXU_UE_TRAP_M_EXU_TT_FILL_N_NOR);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_FILL_N_OTH		(EXU_UE_TRAP_M_EXU_TT_FILL_N_OTH);
+  wildcard bad_state s_EXU_UE_TRAP_M_EXU_TT_TRAP_INST		(EXU_UE_TRAP_M_EXU_TT_TRAP_INST	);
+
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_23			(EXU_VA_OOR_M_EXU_TT_23	);
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_28			(EXU_VA_OOR_M_EXU_TT_28	);
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_CLWIN		(EXU_VA_OOR_M_EXU_TT_CLWIN	);
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_FILL_N_NOR		(EXU_VA_OOR_M_EXU_TT_FILL_N_NOR	);
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_FILL_N_OTH		(EXU_VA_OOR_M_EXU_TT_FILL_N_OTH	);
+  wildcard bad_state s_EXU_VA_OOR_M_EXU_TT_TRAP_INST		(EXU_VA_OOR_M_EXU_TT_TRAP_INST	);
+
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_32	(LSU_MISALIGN_LDST_ATM_M_LSU_TT_32);
+  wildcard bad_state s_LSU_SQUASH_VA_OOR_M_LSU_TT_32		(LSU_SQUASH_VA_OOR_M_LSU_TT_32);
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_32		(LSU_PRIV_ACTION_M_LSU_TT_32);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_32		(LSU_DACCESS_EXCPTN_G_LSU_TT_32	);
+  wildcard bad_state s_LSU_DACCESS_PROT_G_LSU_TT_32		(LSU_DACCESS_PROT_G_LSU_TT_32);
+  wildcard bad_state s_LSU_WTCH_TRAP_G_LSU_TT_32		(LSU_WTCH_TRAP_G_LSU_TT_32);
+  wildcard bad_state s_LSU_DEFR_TRAP_G_LSU_TT_32		(LSU_DEFR_TRAP_G_LSU_TT_32);
+
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_34		(LSU_DACCESS_EXCPTN_G_LSU_TT_34	);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_35		(LSU_DACCESS_EXCPTN_G_LSU_TT_35	);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_36		(LSU_DACCESS_EXCPTN_G_LSU_TT_36	);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_37		(LSU_DACCESS_EXCPTN_G_LSU_TT_37	);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_62		(LSU_DACCESS_EXCPTN_G_LSU_TT_62	);
+  wildcard bad_state s_LSU_DACCESS_EXCPTN_G_LSU_TT_6c		(LSU_DACCESS_EXCPTN_G_LSU_TT_6c);
+
+  wildcard bad_state s_LSU_DACCESS_PROT_G_LSU_TT_3f		        (LSU_DACCESS_PROT_G_LSU_TT_3f);
+  wildcard bad_state s_LSU_DACCESS_PROT_G_LSU_TT_68		        (LSU_DACCESS_PROT_G_LSU_TT_68);
+
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_30	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_30);
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_37	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_37);
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_3f	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_3f);
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_62	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_62);
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_68	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_68);
+  wildcard bad_state s_LSU_MISALIGN_LDST_ATM_M_LSU_TT_6c	        (LSU_MISALIGN_LDST_ATM_M_LSU_TT_6c);
+
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_30		        (LSU_PRIV_ACTION_M_LSU_TT_30);
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_3f		        (LSU_PRIV_ACTION_M_LSU_TT_3f);
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_62		        (LSU_PRIV_ACTION_M_LSU_TT_62);
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_68		        (LSU_PRIV_ACTION_M_LSU_TT_68);
+  wildcard bad_state s_LSU_PRIV_ACTION_M_LSU_TT_6c		        (LSU_PRIV_ACTION_M_LSU_TT_6c);
+
+  wildcard bad_state s_LSU_WTCH_TRAP_G_LSU_TT_30		        (LSU_WTCH_TRAP_G_LSU_TT_30);
+  wildcard bad_state s_LSU_WTCH_TRAP_G_LSU_TT_3f		        (LSU_WTCH_TRAP_G_LSU_TT_3f);
+  wildcard bad_state s_LSU_WTCH_TRAP_G_LSU_TT_68		        (LSU_WTCH_TRAP_G_LSU_TT_68);
+  wildcard bad_state s_LSU_WTCH_TRAP_G_LSU_TT_6c		        (LSU_WTCH_TRAP_G_LSU_TT_6c);
+
+  wildcard bad_state s_LSU_SQUASH_VA_OOR_M_LSU_TT_3f		(LSU_SQUASH_VA_OOR_M_LSU_TT_3f);
+  wildcard bad_state s_LSU_SQUASH_VA_OOR_M_LSU_TT_6c		(LSU_SQUASH_VA_OOR_M_LSU_TT_6c);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

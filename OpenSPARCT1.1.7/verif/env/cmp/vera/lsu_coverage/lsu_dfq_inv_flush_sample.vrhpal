@@ -1,0 +1,118 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dfq_inv_flush_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// invalidation packets followed by flush at head of DFQ
+
+// lsu_dfq_inv_flush_sample = {dfq_rd_vld_d1, dfq_rd_advance, dfq_byp_mx_data[151], dfq_byp_mx_data_local,
+//                             dfq_byp_mx_data_Dinv, dfq_byp_mx_data_Iinv, dfq_byp_mx_data[144:96]};
+
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Load_inv_flush            ( {1'b1, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,  6'bx,      3'b1xx, 1'bx, 2'b00, 32'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Ifill2_inv_flush          ( {1'b1, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET, 6'bx,      3'b1xx, 1'b0, 2'b10, 32'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Dcache_inv_flush          ( {1'b1, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00001,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Icache_inv_flush          ( {1'b1, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00010,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+                                           
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Store_local_Dupdate_flush ( {1'b1, 1'b1, 1'b1, 1'b1, 1'bx, 1'bx, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Store_local_Iinv_flush    ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Store_foreign_Dinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Store_foreign_Iinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Blkst_local_Dupdate_flush ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Blkst_local_Iinv_flush    ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Blkst_foreign_Dinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Blkst_foreign_Iinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b0x, 5'b00100,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Atmst_local_Dupdate_flush ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Atmst_local_Iinv_flush    ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Atmst_foreign_Dinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Atmst_foreign_Iinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, ST_ACK,    6'bx,      3'bxxx, 1'bx, 2'b1x, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Strst_local_Dupdate_flush ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b1, 1'b0, 1'b1, STRST_ACK, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Strst_local_Iinv_flush    ( {1'b1, 1'b1, 1'bx, 1'b1, 1'b0, 1'b1, 1'b1, STRST_ACK, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Strst_foreign_Dinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Strst_foreign_Iinv_flush  ( {1'b1, 1'b1, 1'bx, 1'b0, 1'b0, 1'b1, 1'b1, STRST_ACK, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+wildcard trans Evict_Dinv_flush          ( {1'b1, 1'b1, 1'bx, 1'bx, 1'b1, 1'b0, 1'b1, EVICT_REQ, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Evict_Iinv_flush          ( {1'b1, 1'b1, 1'bx, 1'bx, 1'b0, 1'b1, 1'b1, EVICT_REQ, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+//                                          dfqrd rdadv b151  local Dinv  Iinv  vld   reqtype               invway  f4b   at pf  data[127:96]
+//wildcard trans Evict_IandDinv_flush      ( {1'b1, 1'b1, 1'bx, 1'bx, 1'b1, 1'b1, 1'b1, EVICT_REQ, 6'bx,      3'bxxx, 1'bx, 2'bxx, 5'b00000,27'bx} ->
+//                                           {1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,   6'bxxx1xx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+

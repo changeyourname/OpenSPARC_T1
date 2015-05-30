@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_cpx_req_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// req_atom[35:0] = {sctag3_cpx_req[7:0], ... , sctag0_cpx_req[7:0],
+//                   sctag3_cpx_atom, ... , sctag0_cpx_atom}
+
+// coverage_def CCX_CPX_REQ_COV(bit [35:0] req_atom) {
+
+    // 1-packet requests
+
+    state allbanks_core0(36'h010101010);
+    state allbanks_core1(36'h020202020);
+    state allbanks_core2(36'h040404040);
+    state allbanks_core3(36'h080808080);
+    state allbanks_core4(36'h101010100);
+    state allbanks_core5(36'h202020200);
+    state allbanks_core6(36'h404040400);
+    state allbanks_core7(36'h808080800);
+
+    // 2-packet requests
+
+    state allbanks_core0_atom(36'h01010101f);
+    state allbanks_core1_atom(36'h02020202f);
+    state allbanks_core2_atom(36'h04040404f);
+    state allbanks_core3_atom(36'h08080808f);
+    state allbanks_core4_atom(36'h10101010f);
+    state allbanks_core5_atom(36'h20202020f);
+    state allbanks_core6_atom(36'h40404040f);
+    state allbanks_core7_atom(36'h80808080f);
+// }

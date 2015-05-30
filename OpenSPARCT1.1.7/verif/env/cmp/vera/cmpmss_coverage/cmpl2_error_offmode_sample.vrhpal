@@ -1,0 +1,84 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_error_offmode_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// inst[20:0] = {l2_bypass_mode_on_d1, fbuerr0_d1, fbcerr0_d1, fbctl_hit_c2,
+//               arbctl_inst_vld_c2, arbctl_inst_diag_c2, arbdp_inst_c2[19:5]};
+
+// LOAD                  off   ue,ce  fbhit vld   diag  reqtype  nc    jbi   cputh inv   pf    bis
+wildcard state LOAD_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state LOAD_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// PREFETCH                  off   ue,ce  fbhit vld   diag  reqtype  nc    jbi   cputh inv   pf    bis
+wildcard state PREFETCH_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b1, 1'b0} );
+wildcard state PREFETCH_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b1, 1'b0} );
+
+// IMISS                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi   cputh inv   pf    bis
+wildcard state IMISS_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, IMISS_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state IMISS_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, IMISS_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// STORE                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi   cputh inv   pf    bis
+wildcard state STORE_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state STORE_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// BLKSTORE                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi   cputh inv   pf    bis
+wildcard state BLKSTORE_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b1, 1'b1} );
+wildcard state BLKSTORE_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b1, 1'b1} );
+
+// BLKINITST                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi   cputh inv   pf    bis
+wildcard state BLKINITST_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b1} );
+wildcard state BLKINITST_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b1} );
+
+// CAS1                  off   ue,ce  fbhit vld   diag  reqtype  nc    jbi   cputh inv   pf    bis
+wildcard state CAS1_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state CAS1_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// SWAP                  off   ue,ce  fbhit vld   diag  reqtype  nc    jbi   cputh inv   pf    bis
+wildcard state SWAP_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state SWAP_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// STRLOAD                  off   ue,ce  fbhit vld   diag  reqtype     nc    jbi   cputh inv   pf    bis
+wildcard state STRLOAD_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state STRLOAD_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// STRST                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi   cputh inv   pf    bis
+wildcard state STRST_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state STRST_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// FWDRQ_LOAD                  off   ue,ce  fbhit vld   diag  reqtype nc    jbi   cputh inv   pf    bis
+wildcard state FWDRQ_LOAD_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state FWDRQ_LOAD_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// FWDRQ_STORE                  off   ue,ce  fbhit vld   diag  reqtype nc    jbi   cputh inv   pf    bis
+wildcard state FWDRQ_STORE_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+wildcard state FWDRQ_STORE_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 5'bx, 1'b0, 1'b0, 1'b0} );
+
+// RDD                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi
+wildcard state RDD_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, 5'bxx001, 1'b0, 1'b1, 8'bx} );
+wildcard state RDD_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, 5'bxx001, 1'b0, 1'b1, 8'bx} );
+
+// WR8                  off   ue,ce  fbhit vld   diag  reqtype   nc    jbi
+wildcard state WR8_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, 5'bxx010, 1'b0, 1'b1, 8'bx} );
+wildcard state WR8_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, 5'bxx010, 1'b0, 1'b1, 8'bx} );
+
+// WRI does not make a DRAM read request and does not hit the FB
+// WRI                    off   ue,ce  fbhit vld   diag  reqtype   nc    jbi
+//wildcard state WRI_ue( {1'b1, 2'b1x, 1'b1, 1'b1, 1'b0, 5'bxx100, 1'b0, 1'b1, 8'bx} );
+//wildcard state WRI_ce( {1'b1, 2'bx1, 1'b1, 1'b1, 1'b0, 5'bxx100, 1'b0, 1'b1, 8'bx} );

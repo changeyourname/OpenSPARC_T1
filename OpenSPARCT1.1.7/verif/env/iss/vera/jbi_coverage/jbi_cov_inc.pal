@@ -1,0 +1,61 @@
+.##########################################################################
+.#
+.# File:	jbi_cov_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file
+.#
+.##########################################################################
+.
+. $cores	= 1;			# default setting
+. $sys		= "JBI";		# default system being simulated
+.# END_INIT
+.
+. if ( $sys =~ /CMP/ ) {		# simulating ciop env
+.	$SIM_TOP	= "cmp_top";
+.	$JBUS_COV_PATH  = "${SIM_TOP}.iop";	# Path to iop
+.	$DIAG_DONE	= "jbi_cmpcov_ifc.cmp_diag_done";
+.	$CMP_CLK	= "${SIM_TOP}.iop.sparc0.rclk";
+. } else {				# simulating jbi env
+.	$SIM_TOP	= "jbus_top";
+.	$JBUS_COV_PATH  = "${SIM_TOP}.iss_0";	# Path to iop
+.	$DIAG_DONE	= "jbi_jbuscov_ifc.jbus_diag_done";
+.	$CMP_CLK	= "${SIM_TOP}.cpu_clk";
+. }
+
+.	$RQ_NUM		= 4; # Number of Request Queue Instances
+.
+.	$JBI_WDQ_DEPTH  = 16;
+.	$JBI_WDQ_WIDTH  = 156;
+.	$JBI_WDQ_ADDR_WIDTH = 4;
+
+.	$JBI_RDQ_DEPTH       =  16;
+.	$JBI_RDQ_ADDR_WIDTH  =   4;
+.	$JBI_RDQ_WIDTH       = 156;
+.	$JBI_RDQ_DATA_WIDTH  = 128;
+.	$JBI_RDQ_ECC_WIDTH   =  28;
+
+.	$JBI_RHQ_DEPTH       =  16;
+.	$JBI_RHQ_ADDR_WIDTH  =   4;
+.	$JBI_RHQ_WIDTH       =  64;
+
+.	$JBI_PRQQ_DEPTH      =  16;
+.	$JBI_PRQQ_WIDTH      =  77;
+.	$JBI_PRQQ_ADDR_WIDTH =   4;
+
+.	$JBI_WRI_TAG_WIDTH   = 8;
+
+.	$JBI_SCTAG_TAG_JID_LO   =    0;
+.	$JBI_SCTAG_TAG_JID_HI   =    5;
+.	$JBI_SCTAG_TAG_INSTALL  =    6;
+.	$JBI_SCTAG_TAG_ERR      =    7;
+.	$JBI_SCTAG_TAG_SUBLINE  =    8;
+.	$JBI_SCTAG_TAG_RW       =    9;
+.	$JBI_SCTAG_TAG_DEST_LO  =   10;
+.	$JBI_SCTAG_TAG_DEST_HI  =   11;
+.	$JBI_SCTAG_TAG_WIDTH    =   12;
+
+.	$JBI_SCTAG_REQ_WRI_BIT =   2;
+.	$JBI_SCTAG_REQ_WR8_BIT =   1;
+.	$JBI_SCTAG_REQ_RDD_BIT =   0;

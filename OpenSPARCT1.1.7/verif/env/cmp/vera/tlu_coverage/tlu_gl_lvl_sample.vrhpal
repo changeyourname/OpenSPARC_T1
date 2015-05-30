@@ -1,0 +1,56 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_gl_lvl_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU GL update/saturation
+//
+//
+//***************************************************************************
+ 
+
+// coverage_def TLU_GL_LVL_COV (bit [22:0] tlu_gl_lvl_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_S_WR_GL_MAXST	(S_WR_GL_MAXST);
+  wildcard state s_H_WR_GL_MAXGL	(H_WR_GL_MAXGL);
+  wildcard state s_HPL_WR_GL_MAXGL	(HPL_WR_GL_MAXGL);
+  wildcard state s_H_TRAP_GL_MAXGL	(H_TRAP_GL_MAXGL);
+
+  wildcard state s_WR_GL_TRAP_DNRTRY	(WR_GL_TRAP_DNRTRY);
+  wildcard state s_DNRTRY_WR_GL_TRAP	(DNRTRY_WR_GL_TRAP);
+  wildcard state s_TRAP_DNRTRY_WR_GL	(TRAP_DNRTRY_WR_GL);
+
+  wildcard state s_WR_GL_TRAP	 	(WR_GL_TRAP	 );
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_TRAP_DNRTRY_GL	(TRAP_DNRTRY_GL	 );
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

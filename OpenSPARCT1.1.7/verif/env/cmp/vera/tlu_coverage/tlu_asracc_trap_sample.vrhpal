@@ -1,0 +1,68 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_asracc_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//*************************************************************************
+//
+// State machine coverage for all the access violations detection and trap
+//generation of TLU owned ASRs
+//
+//*************************************************************************
+
+
+// coverage_def TLU_ASRACC_TRAP_COV (bit [13:0] tlu_asracc_trap_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_U_RD_TICK_REG_NPT1	(U_RD_TICK_REG_NPT1);
+  wildcard state s_U_RD_STICK_REG_NPT1	(U_RD_STICK_REG_NPT1);
+  wildcard state s_U_RD_PIB_PIC_PRIV1	(U_RD_PIB_PIC_PRIV1);
+  wildcard state s_U_WR_PIB_PIC_PRIV1	(U_WR_PIB_PIC_PRIV1);
+  wildcard state s_S_WR_TICK_REG	(S_WR_TICK_REG);
+  wildcard state s_S_WR_STICK_REG	(S_WR_STICK_REG);
+  wildcard state s_U_RD_SET_SOFTINT	(U_RD_SET_SOFTINT);
+  wildcard state s_U_RD_CLEAR_SOFTINT	(U_RD_CLEAR_SOFTINT);
+  wildcard state s_S_RD_SET_SOFTINT	(S_RD_SET_SOFTINT);
+  wildcard state s_S_RD_CLEAR_SOFTINT	(S_RD_CLEAR_SOFTINT);
+  wildcard state s_H_RD_SET_SOFTINT	(H_RD_SET_SOFTINT);
+  wildcard state s_H_RD_CLEAR_SOFTINT	(H_RD_CLEAR_SOFTINT);
+  wildcard state s_HPL_RD_SET_SOFTINT	(HPL_RD_SET_SOFTINT);
+  wildcard state s_HPL_RD_CLEAR_SOFTINT	(HPL_RD_CLEAR_SOFTINT);
+  wildcard state s_U_WR_TICK_REG	(U_WR_TICK_REG);
+  wildcard state s_U_RD_PIB_PCR	(U_RD_PIB_PCR);
+  wildcard state s_U_WR_PIB_PCR	(U_WR_PIB_PCR);
+  wildcard state s_U_WR_SET_SOFTINT	(U_WR_SET_SOFTINT);
+  wildcard state s_U_WR_CLEAR_SOFTINT	(U_WR_CLEAR_SOFTINT);
+  wildcard state s_U_RD_SOFTINT_REG	(U_RD_SOFTINT_REG);
+  wildcard state s_U_WR_SOFTINT_REG	(U_WR_SOFTINT_REG);
+  wildcard state s_U_RD_TICK_CMPR	(U_RD_TICK_CMPR);
+  wildcard state s_U_WR_TICK_CMPR	(U_WR_TICK_CMPR);
+  wildcard state s_U_WR_STICK_REG	(U_WR_STICK_REG);
+  wildcard state s_U_RD_STICK_CMPR	(U_RD_STICK_CMPR);
+  wildcard state s_U_WR_STICK_CMPR	(U_WR_STICK_CMPR);
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

@@ -1,0 +1,63 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ld_inf2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load inf coverage object to check cross product
+//***********************************************************************
+
+  state s_LDIF2_ST00		(7'b0001000);
+  state s_LDIF2_ST01		(7'b0001001);
+  state s_LDIF2_ST02		(7'b0001010);
+  state s_LDIF2_ST03		(7'b0001011);
+
+  state s_LDIF2_ST04		(7'b0010000);
+  state s_LDIF2_ST05		(7'b0010001);
+  state s_LDIF2_ST06		(7'b0010010);
+  state s_LDIF2_ST07		(7'b0010011);
+
+  state s_LDIF2_ST08		(7'b0100000);
+  state s_LDIF2_ST09		(7'b0100001);
+  state s_LDIF2_ST10		(7'b0100010);
+  state s_LDIF2_ST11		(7'b0100011);
+
+  state s_LDIF2_ST12		(7'b1000000);
+  state s_LDIF2_ST13		(7'b1000001);
+  state s_LDIF2_ST14		(7'b1000010);
+  state s_LDIF2_ST15		(7'b1000011);
+
+  state s_LDIF2_ST16		(7'b0001100);
+  state s_LDIF2_ST17		(7'b0001101);
+  state s_LDIF2_ST18		(7'b0001110);
+  state s_LDIF2_ST19		(7'b0001111);
+
+  state s_LDIF2_ST20		(7'b0010100);
+  state s_LDIF2_ST21		(7'b0010101);
+  state s_LDIF2_ST22		(7'b0010110);
+  state s_LDIF2_ST23		(7'b0010111);
+
+  state s_LDIF2_ST24		(7'b0100100);
+  state s_LDIF2_ST25		(7'b0100101);
+  state s_LDIF2_ST26		(7'b0100110);
+  state s_LDIF2_ST27		(7'b0100111);
+
+  state s_LDIF2_ST28		(7'b1000100);
+  state s_LDIF2_ST29		(7'b1000101);
+  state s_LDIF2_ST30		(7'b1000110);
+  state s_LDIF2_ST31		(7'b1000111);

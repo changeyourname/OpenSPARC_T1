@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_incoming_int_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This coverage object detects incoming interrupts. It also 
+// detects when an DFQ rdptr advance was blocked because 
+// of the 3 blocking conditions and we also have some states
+// to detect wrong advance while the blocking conditions are on.
+//-----------------------------------------------------------------------
+// dfq_rptr_vld, dfq_int_type, dfq_rd_advance, - interrupt  at top of DFQ.
+// blocking conditions - ifu_lsu_ibuf_busy, int_clear_d1, dfq_byp_ff_en
+// INC_INT1        6'b110_011 Interrupt free to advance 
+// INC_INT2        6'b111_011 Interrupt advancing
+// INC_INT3        6'b110_111 blocked because of ibuf busy
+// INC_INT4        6'b110_001 blocked because of dfq byp en.
+// INC_INT5        6'b110_010 blocked because of int_clear_d1
+//
+// bad states advancing when it shouldn't...
+// INC_INT6        6'b111_000 - advancing when it shouldn't...
+// INC_INT7        6'b111_001
+// INC_INT8        6'b111_010
+// INC_INT9        6'b111_100
+// INC_INT10       6'b111_101
+// INC_INT11       6'b111_110
+// INC_INT12       6'b111_111
+//***********************************************************************
+// state declarations
+//===================
+  state s_INC_INT1       (INC_INT1); 
+  state s_INC_INT2       (INC_INT2);
+  state s_INC_INT3       (INC_INT3);
+  state s_INC_INT4       (INC_INT4);
+  state s_INC_INT5       (INC_INT5);
+  state s_INC_INT7   	 (INC_INT7);
+
+// bad states
+//-----------
+  bad_state s_INC_INT6   (INC_INT6);
+  bad_state s_INC_INT8   (INC_INT8);
+  bad_state s_INC_INT9   (INC_INT9);
+  bad_state s_INC_INT10  (INC_INT10);
+  bad_state s_INC_INT11  (INC_INT11);
+  bad_state s_INC_INT12  (INC_INT12);
+
+// Transitions
+//------------
+  trans t_INC_T1  	(INC_INT1 -> INC_INT2);
+  trans t_INC_T2  	(INC_INT3 -> INC_INT2);
+  trans t_INC_T3  	(INC_INT4 -> INC_INT2);
+  trans t_INC_T4  	(INC_INT5 -> INC_INT2);

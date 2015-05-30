@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_inflight_tlbmiss_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for inflight stores cancelled due to tlb miss
+
+wildcard state s_INFLIGHT_TLBMISS_0     ({8'b00000001, 16'bxxxxxxxxxxxxxx00, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_1     ({8'b00000010, 16'bxxxxxxxxxxxx00xx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_2     ({8'b00000100, 16'bxxxxxxxxxx00xxxx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_3     ({8'b00001000, 16'bxxxxxxxx00xxxxxx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_4     ({8'b00010000, 16'bxxxxxx00xxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_5     ({8'b00100000, 16'bxxxx00xxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_6     ({8'b01000000, 16'bxx00xxxxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_TLBMISS_7     ({8'b10000000, 16'b00xxxxxxxxxxxxxx, 1'b0});
+
+wildcard state s_INFLIGHT_CAS_TLBMISS_0 ({8'b00000001, 16'bxxxxxxxxxxxxxx01, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_1 ({8'b00000010, 16'bxxxxxxxxxxxx01xx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_2 ({8'b00000100, 16'bxxxxxxxxxx01xxxx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_3 ({8'b00001000, 16'bxxxxxxxx01xxxxxx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_4 ({8'b00010000, 16'bxxxxxx01xxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_5 ({8'b00100000, 16'bxxxx01xxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_6 ({8'b01000000, 16'bxx01xxxxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_CAS_TLBMISS_7 ({8'b10000000, 16'b01xxxxxxxxxxxxxx, 1'b0});
+
+wildcard state s_INFLIGHT_SWAP_TLBMISS_0({8'b00000001, 16'bxxxxxxxxxxxxxx11, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_1({8'b00000010, 16'bxxxxxxxxxxxx11xx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_2({8'b00000100, 16'bxxxxxxxxxx11xxxx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_3({8'b00001000, 16'bxxxxxxxx11xxxxxx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_4({8'b00010000, 16'bxxxxxx11xxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_5({8'b00100000, 16'bxxxx11xxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_6({8'b01000000, 16'bxx11xxxxxxxxxxxx, 1'b0});
+wildcard state s_INFLIGHT_SWAP_TLBMISS_7({8'b10000000, 16'b11xxxxxxxxxxxxxx, 1'b0});

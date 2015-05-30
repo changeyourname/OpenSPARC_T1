@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_pcx_sequence_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+// req_atom_grant[8:0] = {spc0_pcx_req[3:0], spc0_pcx_atom, pcx_spc0_grant[3:0]}
+
+// coverage_def CCX_PCX_SEQUENCE_COV(bit [8:0] req_atom_grant) {
+
+    // Transitions
+
+    // core0 to bank0 only
+
+    wildcard trans single_single_singlehold(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_SINGLE_REQ_G0);
+    wildcard trans single_single_single_single(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_SINGLE_REQ_G1 -> PCX_SINGLE_REQ);
+    wildcard trans single_single_single_double(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_SINGLE_REQ_G1 -> PCX_DOUBLE_REQ);
+
+    wildcard trans single_single_doublehold(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_DOUBLE_REQ_G0);
+    wildcard trans single_single_double_single(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_DOUBLE_REQ_G1 ->
+                                               PCX_NO_REQ_G1 -> PCX_SINGLE_REQ);
+    wildcard trans single_single_double_double(PCX_SINGLE_REQ -> PCX_SINGLE_REQ -> PCX_DOUBLE_REQ_G1 ->
+                                               PCX_NO_REQ_G1 -> PCX_DOUBLE_REQ);
+
+    wildcard trans single_doublehold(PCX_SINGLE_REQ -> PCX_DOUBLE_REQ -> PCX_NO_REQ_G0);
+    wildcard trans single_double_single(PCX_SINGLE_REQ -> PCX_DOUBLE_REQ -> PCX_NO_REQ_G1 -> PCX_SINGLE_REQ);
+    wildcard trans single_double_double(PCX_SINGLE_REQ -> PCX_DOUBLE_REQ -> PCX_NO_REQ_G1 -> PCX_DOUBLE_REQ);
+
+    wildcard trans double_singlehold(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_SINGLE_REQ_G0);
+    wildcard trans double_single_single(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_SINGLE_REQ_G1 -> PCX_SINGLE_REQ);
+    wildcard trans double_single_double(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_SINGLE_REQ_G1 -> PCX_DOUBLE_REQ);
+
+    wildcard trans double_doublehold(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_DOUBLE_REQ_G0);
+    wildcard trans double_double_single(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_DOUBLE_REQ_G1 ->
+                                        PCX_NO_REQ_G1 -> PCX_SINGLE_REQ);
+    wildcard trans double_double_double(PCX_DOUBLE_REQ -> PCX_NO_REQ -> PCX_DOUBLE_REQ_G1 ->
+                                        PCX_NO_REQ_G1 -> PCX_DOUBLE_REQ);
+// }

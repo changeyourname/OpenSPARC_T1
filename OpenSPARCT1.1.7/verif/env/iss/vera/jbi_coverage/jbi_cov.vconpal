@@ -1,0 +1,97 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "jbi_cov_inc.pal";
+
+////////////////////////////////////////////////////////////////////////////////
+// jbi coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+// global signals
+connect input jbi_cmpcov_ifc.cmp_clk		= $CMP_CLK iskew -1 
+connect input jbi_cmpcov_ifc.rst_l		= "${SIM_TOP}.j_rst_l" iskew -1 
+connect input jbi_cmpcov_ifc.cmp_diag_done	= "${SIM_TOP}.diag_done" iskew -1
+connect input jbi_jbuscov_ifc.clk		= "${SIM_TOP}.j_clk" iskew -1 
+connect input jbi_jbuscov_ifc.rst_l		= "${SIM_TOP}.j_rst_l" iskew -1 
+connect input jbi_jbuscov_ifc.jbus_diag_done	= "${SIM_TOP}.diag_done" iskew -1
+
+//*********************
+// jbi_min cmp domain
+//*********************
+// jbi_min request issue block port connections
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+connect input jbi_cmpcov_ifc.rq${rq}_issue_pop_sm        = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_issue.pop_sm[7:0]" iskew -1
+connect input jbi_cmpcov_ifc.min_rhq${rq}_drdy_ok        = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_issue.rhq_drdy_ok" iskew -1
+connect input jbi_cmpcov_ifc.min_rhq${rq}_drdy           = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_rhq_ctl.rhq_drdy" iskew -1
+connect input jbi_cmpcov_ifc.min_rhq${rq}_empty          = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_rhq_ctl.c_rhq_empty" iskew -1
+connect input jbi_cmpcov_ifc.min_rhq${rq}_rdata_tag_byps = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_rhq_ctl.rhq_rdata_tag_byps" iskew -1
+connect input jbi_cmpcov_ifc.min_rq${rq}_issue_stall_ib  = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_issue.stall_ib" iskew -1
+connect input jbi_cmpcov_ifc.min_rq${rq}_issue_stall_wib = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_issue.stall_wib" iskew -1
+connect input jbi_cmpcov_ifc.min_rhq${rq}_rdata_req      = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_issue.rhq_rdata_req[2:0]" iskew -1
+. }
+
+//*********************
+// jbi_mout cmp domain
+//*********************
+. for ($num = 0; $num < 4; $num++) {
+connect input jbi_cmpcov_ifc.mout_sct${num}_out_queues_state  = "${JBUS_COV_PATH}.jbi.u_mout.sct${num}_out_queues.state[5:0]" iskew -1
+connect input jbi_cmpcov_ifc.mout_sct${num}_rdq_state         = "${JBUS_COV_PATH}.jbi.u_mout.sct${num}_out_queues.sctrdq.state[1:0]" iskew -1
+. }
+
+//*********************
+// jbi_min jbus domain
+//*********************
+
+// rq
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+connect input jbi_jbuscov_ifc.min_rhq${rq}_full = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_rhq_ctl.rc_rhq_full" iskew -1
+connect input jbi_jbuscov_ifc.min_rdq${rq}_full = "${JBUS_COV_PATH}.jbi.u_min.u_rq${rq}.u_rdq_ctl.rc_rdq_full" iskew -1
+. }
+
+// wdq
+connect input jbi_jbuscov_ifc.min_parse_wdq_push   = "${JBUS_COV_PATH}.jbi.u_min.parse_wdq_push" iskew -1 
+connect input jbi_jbuscov_ifc.min_parse_hdr        = "${JBUS_COV_PATH}.jbi.u_min.parse_hdr" iskew -1 
+connect input jbi_jbuscov_ifc.min_next_wdq_level   = "${JBUS_COV_PATH}.jbi.u_min.u_wdq.u_wdq_ctl.next_wdq_level[$JBI_WDQ_ADDR_WIDTH:0]" iskew -1 
+connect input jbi_jbuscov_ifc.min_wdq_push_hdr_tag = "${JBUS_COV_PATH}.jbi.u_min.u_wdq.u_wdq_ctl.push_hdr_tag[$JBI_SCTAG_TAG_WIDTH-1:0]" iskew -1 
+
+// ncio
+connect input jbi_jbuscov_ifc.ncio_prqq_push          = "${JBUS_COV_PATH}.jbi.u_ncio.u_prqq_ctl.prqq_push" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_next_prqq_level    = "${JBUS_COV_PATH}.jbi.u_ncio.u_prqq_ctl.next_level[$JBI_PRQQ_ADDR_WIDTH:0]" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_ucbp_rd_req_vld    = "${JBUS_COV_PATH}.jbi.u_ncio.ucbp_rd_req_vld" iskew -1
+connect input jbi_jbuscov_ifc.ncio_prqq_entry_drdy    = "${JBUS_COV_PATH}.jbi.u_ncio.u_prqq_ctl.ec_entry_drdy" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_pio_req_rw         = "${JBUS_COV_PATH}.jbi.u_ncio.ncio_pio_req_rw" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_prqq_stall_rd      = "${JBUS_COV_PATH}.jbi.u_ncio.u_prqq_ctl.stall_rd" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_prtq_full          = "${JBUS_COV_PATH}.jbi.u_ncio.u_prtq_ctl.prtq_full" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_prtq_drdy_stall    = "${JBUS_COV_PATH}.jbi.u_ncio.u_prtq_ctl.ev_prtq_drdy_stall" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_mrqq_full          = "${JBUS_COV_PATH}.jbi.u_ncio.u_mrqq_ctl.mrqq_full" iskew -1 
+connect input jbi_jbuscov_ifc.ncio_mrqq_drdy_stall    = "${JBUS_COV_PATH}.jbi.u_ncio.u_mrqq_ctl.ev_mrqq_drdy_stall" iskew -1 
+connect input jbi_jbuscov_ifc.dbgq_hi_full            = "${JBUS_COV_PATH}.jbi.u_dbg.u_dbg_ctl.dbgq_hi_full" iskew -1 
+connect input jbi_jbuscov_ifc.dbgq_lo_full            = "${JBUS_COV_PATH}.jbi.u_dbg.u_dbg_ctl.dbgq_lo_full" iskew -1 
+
+//*********************
+// jbi_mout jbus domain
+//*********************
+connect input jbi_jbuscov_ifc.mout_pktout_ctlr_state = "${JBUS_COV_PATH}.jbi.u_mout.pktout_ctlr.state[2:0]" iskew -1 
+connect input jbi_jbuscov_ifc.mout_j_pack_out_gen_state = "${JBUS_COV_PATH}.jbi.u_mout.j_pack_out_gen.state[1:0]"  iskew -1
+
+. for ($num = 0; $num < 16; $num++) {
+. $znum = sprintf("%02d", $num);
+connect input jbi_jbuscov_ifc.mout_ncrd_${num}_timer_state  = "${JBUS_COV_PATH}.jbi.u_mout.mout_csr.ncrd_timeout.ncrd_${znum}.state[1:0]" iskew -1
+. }

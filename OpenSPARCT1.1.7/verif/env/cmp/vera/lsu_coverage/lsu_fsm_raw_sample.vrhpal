@@ -1,0 +1,46 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_fsm_raw_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//	State machine for Load in lsu_dctl.v
+//
+//***********************************************************************
+
+
+// coverage_def LSU_FSM_RAW_COV (bit lsu_load_raw)
+// {
+  // state declarations
+
+  state s_LDRAW_IDLE     		(LDRAW_IDLE);
+  state s_LDRAW_FULLRAW     		(LDRAW_FULLRAW);
+
+  // self transitions 
+  trans t_s_LDRAW_IDLE_to_s_LDRAW_IDLE 	(LDRAW_IDLE -> LDRAW_IDLE);
+  // trans t_s_LDRAW_FULLRAW_to_s_LDRAW_FULLRAW	(LDRAW_FULLRAW -> LDRAW_FULLRAW);
+
+  // Full Raw transitions 
+  trans t_s_LDRAW_IDLE_to_s_LDRAW_FULLRAW 	( LDRAW_IDLE -> LDRAW_FULLRAW );
+  trans t_s_LDRAW_FULLRAW_to_s_LDRAW_IDLE 	( LDRAW_FULLRAW -> LDRAW_IDLE );
+
+  // bad transitions 
+  bad_trans t_s_LDRAW_FULLRAW_to_s_LDRAW_FULLRAW	(LDRAW_FULLRAW -> LDRAW_FULLRAW);
+  bad_trans t_not_LDSTATE (not trans);
+// }

@@ -1,0 +1,26 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_mb_overflow_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// bit [12:0] = {mbf_insert_c2, arbdp_inst_c2[19:13], mb_count_c4[4:0]};
+
+//                                                  nc jbi
+wildcard trans     cas1_mb_entry15( {1'b1, CAS1_RQ, 2'b10, 5'bx} -> 13'bx -> {1'bx, 7'bx, 5'hf} );
+wildcard bad_trans cas1_mb_entry16( {1'b1, CAS1_RQ, 2'b10, 5'bx} -> 13'bx -> {1'bx, 7'bx, 5'h10} );

@@ -1,0 +1,92 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_fdiv_sticky_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+
+// coverage_def FPU_FDIV_STICKY_COV (bit [58:0] fpu_FDIV_STICKY_state)
+// {
+
+// state declarations
+
+  state s_FPU_FDIV_STICKY0  ( FPU_FDIV_STICKY0 );
+  state s_FPU_FDIV_STICKY1  ( FPU_FDIV_STICKY1 );
+  state s_FPU_FDIV_STICKY2  ( FPU_FDIV_STICKY2 );
+  state s_FPU_FDIV_STICKY3  ( FPU_FDIV_STICKY3 );
+  state s_FPU_FDIV_STICKY4  ( FPU_FDIV_STICKY4 );
+  state s_FPU_FDIV_STICKY5  ( FPU_FDIV_STICKY5 );
+  state s_FPU_FDIV_STICKY6  ( FPU_FDIV_STICKY6 );
+  state s_FPU_FDIV_STICKY7  ( FPU_FDIV_STICKY7 );
+  state s_FPU_FDIV_STICKY8  ( FPU_FDIV_STICKY8 );
+  state s_FPU_FDIV_STICKY9  ( FPU_FDIV_STICKY9 );
+  state s_FPU_FDIV_STICKY10 ( FPU_FDIV_STICKY10);
+  state s_FPU_FDIV_STICKY11 ( FPU_FDIV_STICKY11);
+  state s_FPU_FDIV_STICKY12 ( FPU_FDIV_STICKY12);
+  state s_FPU_FDIV_STICKY13 ( FPU_FDIV_STICKY13);
+  state s_FPU_FDIV_STICKY14 ( FPU_FDIV_STICKY14);
+  state s_FPU_FDIV_STICKY15 ( FPU_FDIV_STICKY15);
+  state s_FPU_FDIV_STICKY16 ( FPU_FDIV_STICKY16);
+  state s_FPU_FDIV_STICKY17 ( FPU_FDIV_STICKY17);
+  state s_FPU_FDIV_STICKY18 ( FPU_FDIV_STICKY18);
+  state s_FPU_FDIV_STICKY19 ( FPU_FDIV_STICKY19);
+  state s_FPU_FDIV_STICKY20 ( FPU_FDIV_STICKY20);
+  state s_FPU_FDIV_STICKY21 ( FPU_FDIV_STICKY21);
+  state s_FPU_FDIV_STICKY22 ( FPU_FDIV_STICKY22);
+  state s_FPU_FDIV_STICKY23 ( FPU_FDIV_STICKY23);
+  state s_FPU_FDIV_STICKY24 ( FPU_FDIV_STICKY24);
+  state s_FPU_FDIV_STICKY25 ( FPU_FDIV_STICKY25);
+  state s_FPU_FDIV_STICKY26 ( FPU_FDIV_STICKY26);
+  state s_FPU_FDIV_STICKY27 ( FPU_FDIV_STICKY27);
+  state s_FPU_FDIV_STICKY28 ( FPU_FDIV_STICKY28);
+  state s_FPU_FDIV_STICKY29 ( FPU_FDIV_STICKY29);
+  state s_FPU_FDIV_STICKY30 ( FPU_FDIV_STICKY30);
+  state s_FPU_FDIV_STICKY31 ( FPU_FDIV_STICKY31);
+  state s_FPU_FDIV_STICKY32 ( FPU_FDIV_STICKY32);
+  state s_FPU_FDIV_STICKY33 ( FPU_FDIV_STICKY33);
+  state s_FPU_FDIV_STICKY34 ( FPU_FDIV_STICKY34);
+  state s_FPU_FDIV_STICKY35 ( FPU_FDIV_STICKY35);
+  state s_FPU_FDIV_STICKY36 ( FPU_FDIV_STICKY36);
+  state s_FPU_FDIV_STICKY37 ( FPU_FDIV_STICKY37);
+  state s_FPU_FDIV_STICKY38 ( FPU_FDIV_STICKY38);
+  state s_FPU_FDIV_STICKY39 ( FPU_FDIV_STICKY39);
+  state s_FPU_FDIV_STICKY40 ( FPU_FDIV_STICKY40);
+  state s_FPU_FDIV_STICKY41 ( FPU_FDIV_STICKY41);
+  state s_FPU_FDIV_STICKY42 ( FPU_FDIV_STICKY42);
+  state s_FPU_FDIV_STICKY43 ( FPU_FDIV_STICKY43);
+  state s_FPU_FDIV_STICKY44 ( FPU_FDIV_STICKY44);
+  state s_FPU_FDIV_STICKY45 ( FPU_FDIV_STICKY45);
+  state s_FPU_FDIV_STICKY46 ( FPU_FDIV_STICKY46);
+  state s_FPU_FDIV_STICKY47 ( FPU_FDIV_STICKY47);
+  state s_FPU_FDIV_STICKY48 ( FPU_FDIV_STICKY48);
+  state s_FPU_FDIV_STICKY49 ( FPU_FDIV_STICKY49);
+  state s_FPU_FDIV_STICKY50 ( FPU_FDIV_STICKY50);
+  state s_FPU_FDIV_STICKY51 ( FPU_FDIV_STICKY51);
+  state s_FPU_FDIV_STICKY52 ( FPU_FDIV_STICKY52);
+  state s_FPU_FDIV_STICKY53 ( FPU_FDIV_STICKY53);
+  state s_FPU_FDIV_STICKY54 ( FPU_FDIV_STICKY54);
+  state s_FPU_FDIV_STICKY55 ( FPU_FDIV_STICKY55);
+  state s_FPU_FDIV_STICKY56 ( FPU_FDIV_STICKY56);
+
+// }

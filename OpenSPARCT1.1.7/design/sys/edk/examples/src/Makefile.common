@@ -1,0 +1,47 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: Makefile.common
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+
+ROOT = ..
+
+COMPDIR = ${SUN_STUDIO}
+SPRODIR = $(COMPDIR)
+QBINDIR = $(QTOOLS)/bin
+
+
+AS  = $(QBINDIR)/qas
+CC  = $(SPRODIR)/bin/cc
+CPP = /usr/ccs/lib/cpp
+LD  = /usr/ccs/bin/ld
+RM  = /bin/rm -f
+CP  = /bin/cp -f
+AR  = /usr/ccs/bin/ar
+
+
+ASFLAGS = -P -D_ASM -xarch=v9d -I$(ROOT)/include
+
+CFLAGS  = -xarch=v9 -I$(ROOT)/include -errwarn=%all -xO2
+
+INSTALL_DIR = $(ROOT)/../bin
+LIBC_PATH   = $(ROOT)/libc
+LIBOS_PATH  = $(ROOT)/libos
+
+
+.KEEP_STATE:

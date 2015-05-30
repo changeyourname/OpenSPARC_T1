@@ -1,0 +1,42 @@
+#!/bin/sh
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: micronddr2_patch
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+
+# Change address orientation
+
+sed '/Timing parameters based on Speed Grade/a\
+    parameter binfilename = "a";' ddr2_parameters.vh > ddr2_parameters.vh.stemp
+mv ddr2_parameters.vh.stemp ddr2_parameters.vh
+
+
+sed "s/endmodule/initial\ begin\ #1\ \$readmemh\(binfilename\,memory\)\;\ end\ \ endmodule/" ddr2.v > ddr2.v.stemp
+mv ddr2.v.stemp ddr2.v
+
+
+#  NOTE:  This only fixes x16, single RANK configurations!!!
+sed -e "s/ddr2 U1R0/ddr2 #(\"bin00.dat\") U1R0/" \
+    -e "s/ddr2 U2R0/ddr2 #(\"bin01.dat\") U2R0/" \
+    -e "s/ddr2 U4R0/ddr2 #(\"bin02.dat\") U4R0/" \
+    -e "s/ddr2 U5R0/ddr2 #(\"bin03.dat\") U5R0/" \
+    	ddr2_module.v > ddr2_module.v.stemp
+mv ddr2_module.v.stemp ddr2_module.v
+
+

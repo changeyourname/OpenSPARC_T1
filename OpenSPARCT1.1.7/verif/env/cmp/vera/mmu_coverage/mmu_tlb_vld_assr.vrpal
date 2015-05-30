@@ -1,0 +1,111 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_tlb_vld_assr.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        MMU_TLB_VLD_ASSR.vr
+//  Description:        Tasks for comparing TTE written with that looked up from TLB
+//                      
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+#ifndef MMU_TLB_VLD_ASSR__
+#define MMU_TLB_VLD_ASSR__
+
+#include <vera_defines.vrh>
+#include "mmu_ports_binds.vrh"
+#include "mmu.if.vrh"
+#include "mmu_cov_tasks.vrh"
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Class definitions
+////////////////////////////
+
+class MMU_TLB_VLD_ASSR
+{
+	string name;
+	mmu_cam_hit_assr_port tlb_cam_hit_assr_bind;
+
+        bit one_hot_violation;
+
+	task new (string name, mmu_cam_hit_assr_port tlb_cam_hit_assr_bind);
+        task find_one_hot_violation ();
+}
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Definitions of methods of class MMU_TLB_VLD_ASSR
+////////////////////////////
+
+task MMU_TLB_VLD_ASSR:: new(string name, mmu_cam_hit_assr_port tlb_cam_hit_assr_bind)
+{
+	this.name = name;
+        this.tlb_cam_hit_assr_bind = tlb_cam_hit_assr_bind;
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_TLB_VLD_ASSR:: find_one_hot_violation()
+{
+ 
+    integer i;
+    bit found_hit;
+
+fork{
+    while(1) {
+	@ ( posedge this.tlb_cam_hit_assr_bind.\$clk );
+	found_hit = 0;
+	for(i=0; i<= 63; i++){
+	    if(this.tlb_cam_hit_assr_bind.\$cam_hit[i] == 1'b1){
+	       if(found_hit == 1'b1){
+		   printf("%d: Vera ASSERTION ERROR: %s tlb cam hit is not one hot\n",
+		       get_time(LO), this.name);
+                   repeat(10) @ ( posedge this.tlb_cam_hit_assr_bind.\$clk );
+		   exit(0);
+	       }else{
+		   found_hit = 1'b1;
+	       }
+	    }
+	}
+
+    } // while(1)
+} join none // main fork
+
+}
+//-------------------------
+
+. foreach $c (@CORE_STR) {
+
+//      MMU_TLB_VLD_ASSR C${c}_itlb_one_hot_assr;
+//      MMU_TLB_VLD_ASSR C${c}_dtlb_one_hot_assr;
+//
+//      C${c}_itlb_one_hot_assr = new ("IMMU", C${c}_itlb_cam_hit_assr_bind);
+//      C${c}_dtlb_one_hot_assr = new ("DMMU", C${c}_dtlb_cam_hit_assr_bind);
+//
+//      C${c}_itlb_one_hot_assr.find_one_hot_violation();
+//      C${c}_dtlb_one_hot_assr.find_one_hot_violation();
+
+.}
+
+#endif

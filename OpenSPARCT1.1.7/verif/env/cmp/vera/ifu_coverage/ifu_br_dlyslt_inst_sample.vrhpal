@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_br_dlyslt_inst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_br_dlyslt_inst_cov.vr
+// Description:
+// This coverage object covers all instruction types in the delay slot with
+// and without annullment. It also covers all stores in the 8th slot falling
+// into the delay slot with and without annullment. Other stall or rollbacks
+// on the delay slot are covered in dlyslt_rb_cov.
+// 
+// State: 9'b: thr_vld_d,inst_d,annul_e,stb8
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_BR_DLYSLT_INST_COV (bit [8:0] cov_vector)
+// {
+.@inst = ("BPr","BPcc_Bicc","FBfcc_FBPfcc","Call","Mul", "Div","Rdpr","Flushw","Rdy","Rdccr","Rdasi","Rdtick","Rdpc","Rdfprs","Membar","Stbar","Rdasr","Wry","Wrccr","Wrasi","Wrfprs","Sir","Wrasr","Saved","Restored","Wrpr","Fpop1","Fpop2","Jmpl","Return","Tcc","Flush","Save","Restore","Done","Retry","Ld","Ldasi","Stasi","Ldstub","Swap","Ldfp","Stfp","Cas","Pref","Halt","St");
+
+. print "  //At max three threads can be scheduled before the dlyslt come in\n";
+. print "  //Theoretically this could be much more with an imiss\n";
+.foreach $inst (@inst) {
+.   $instlc = lc $inst;
+.   $instuc = uc $inst;
+.   $dlyslt = "DLYSLT_INST_"."$instuc";
+.   print "  wildcard trans t_br_$instlc\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> $dlyslt);\n";
+.   print "  wildcard trans t_br_$instlc\_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> $dlyslt -> ANNUL);\n";
+.}
+.   print "  //Different store types in the 8th slot with annullment\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_stint_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_ST -> ANNUL);\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_stasi_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_STASI -> ANNUL);\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_stfp_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_STFP -> ANNUL);\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_ldstub_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_LDSTUB -> ANNUL);\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_swap_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_SWAP -> ANNUL);\n";
+.   print "  wildcard trans t_br_$instlc\_stb8_cas_a\t\t(BR_INST -> NULL_STATE_BR\[.1:3.\] -> DLYSLT_INST_STB8_CAS -> ANNUL);\n";
+// }	

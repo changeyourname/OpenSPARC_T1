@@ -1,0 +1,203 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "jbi_cov_inc.pal";
+//***************************************************************************
+//
+// File:	jbi_coverage.vrpal
+// Description:
+// Top level JBI coverage class which instantiates the lower level
+// coverage objects and enables coverage when jbi_coverage switch
+// is on. This file is used to generate jbi_coverage.vr.
+//
+//***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "jbi_cov_defines.vrh"
+#include "jbi.if.vrh"
+#include "jbi_ports_binds.vrh"
+
+class jbi_coverage {
+
+  event sample_evnt;
+  
+
+  //************************************
+  // CMP CLK COVERAGE
+  //************************************
+  coverage_group jbi_cmp_coverage_group {
+    
+    const_sample_reference = 1;	// refs. to objects being sampled are const
+    sample_event = @ (posedge jbi_cmpcov_ifc.cmp_clk);
+    cov_weight = 0;		// unless diag_done is true, i.e. diag. passes
+
+    // MIN
+.   for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+
+    sample jbi_min_issue_pop_sm_sample_bind${rq}.\$issue_pop_sm {
+      #include "jbi_rqpopfsm_sample.vrh"
+    }
+    sample jbi_min_rhq_ndrdy_byps_sample_bind${rq}.\$jbi_min_rhq_ndrdy_byps {
+      #include "jbi_min_rhq_ndrdy_byps.vrh"
+    }
+    sample jbi_min_rq_stall_ib_sample_bind${rq}.\$jbi_min_rq_stall_ib {
+      #include "jbi_min_rq_stall_ib.vrh"
+    }
+    sample jbi_min_rq_stall_wib_sample_bind${rq}.\$jbi_min_rq_stall_wib {
+      #include "jbi_min_rq_stall_wib.vrh"
+    }
+    sample jbi_min_rq_nwib_sample_bind${rq}.\$jbi_min_rq_nwib {
+      #include "jbi_min_rq_nwib.vrh"
+    }
+
+.   }
+
+    // MOUT
+. for ($num = 0; $num < 4; $num++) {
+    sample jbi_mout_sct_out_queues_sample_bind${num}.\$jbi_mout_sct_out_queues {
+        #include "jbi_mout_sct_out_queues.vrh"
+    }
+    sample jbi_mout_sct_rdq_sample_bind${num}.\$jbi_mout_sct_rdq { 
+        #include "jbi_mout_sct_rdq.vrh"
+    }
+.}
+  } // coverage_group
+
+  //************************************
+  // JBUS CLK COVERAGE
+  //************************************
+  coverage_group jbi_jbus_coverage_group {
+    const_sample_reference = 1;	// refs. to objects being sampled are const
+    sample_event = @ (posedge jbi_jbuscov_ifc.clk);
+    cov_weight = 0;		// unless diag_done is true, i.e. diag. passes
+
+    // MIN
+    sample jbi_min_wdq_full_sample_bind.\$jbi_min_wdq_full {
+      #include "jbi_min_wdq_full.vrh"
+    }
+
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+    sample jbi_min_rhq_full_sample_bind${rq}.\$jbi_min_rhq_full {
+      #include "jbi_min_rhq_full.vrh"
+    }
+    sample jbi_min_rdq_full_sample_bind${rq}.\$jbi_min_rdq_full {
+      #include "jbi_min_rdq_full.vrh"
+    }
+. }
+
+
+  // NCIO
+  sample jbi_ncio_prqq_full_sample_bind.\$jbi_ncio_prqq_full {
+      #include "jbi_ncio_prqq_full.vrh"
+    }
+  sample jbi_ncio_max_pend_cnt_sample_bind.\$jbi_ncio_max_pend_cnt {
+      #include "jbi_ncio_max_pend_cnt.vrh"
+    }
+  sample jbi_ncio_prtq_full_sample_bind.\$jbi_ncio_prtq_full {
+      #include "jbi_ncio_prtq_full.vrh"
+    }
+  sample jbi_ncio_prtq_drdy_stall_sample_bind.\$jbi_ncio_prtq_drdy_stall {
+      #include "jbi_ncio_prtq_drdy_stall.vrh"
+    }
+  sample jbi_ncio_mrqq_full_sample_bind.\$jbi_ncio_mrqq_full {
+      #include "jbi_ncio_mrqq_full.vrh"
+    }
+  sample jbi_ncio_mrqq_drdy_stall_sample_bind.\$jbi_ncio_mrqq_drdy_stall {
+      #include "jbi_ncio_mrqq_drdy_stall.vrh"
+    }
+
+  // DBG
+  sample jbi_dbg_full_sample_bind.\$jbi_dbg_full {
+      #include "jbi_dbg_full.vrh"
+    }
+
+  // MOUT
+  sample jbi_mout_pktout_ctlr_sample_bind.\$jbi_mout_pktout_ctlr {
+      #include "jbi_mout_pktout_ctlr.vrh"
+    }
+
+  sample jbi_mout_j_pack_out_gen_sample_bind.\$jbi_mout_j_pack_out_gen {
+      #include "jbi_mout_j_pack_out_gen.vrh"
+    }
+
+. for ($num = 0; $num < 16; $num++) {
+    sample jbi_mout_ncrd_timer_sample_bind${num}.\$jbi_mout_ncrd_timer {
+        #include "jbi_mout_ncrd_timer.vrh"
+      }
+.}
+  } // coverage_group
+
+  task new();
+  task set_cov_cond_bits();
+}
+
+
+/////////////////////////////////////////////////////////////////
+// Class creation 
+/////////////////////////////////////////////////////////////////
+
+task jbi_coverage::new() {
+
+  bit coverage_on;
+
+  if (get_plus_arg (CHECK, "jbi_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+    set_cov_cond_bits ();
+    jbi_cmp_coverage_group = new();
+    jbi_jbus_coverage_group = new();
+
+    printf("\n\n        %d : Coverage turned on for JBI objects!\n\n", get_time(LO));
+
+    fork {
+      @ (posedge $DIAG_DONE);
+      jbi_cmp_coverage_group.set_cov_weight(1);
+      jbi_jbus_coverage_group.set_cov_weight(1);
+      coverage_save_database(1);
+
+      printf("\n\n        %d : Coverage for JBI objects generated!\n\n", get_time(LO));
+
+    } join none
+  }
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+// This task is a psuedo coverage object that combines a few conditions
+// so that the actual coverage objects' state space doesn't get too big
+//////////////////////////////////////////////////////////////////////////
+
+task jbi_coverage:: set_cov_cond_bits ()
+{
+  integer i;
+
+  fork {
+    while (1) {
+      @ (posedge jbi_cmpcov_ifc.cmp_clk);
+      trigger (sample_evnt);
+    }
+  }
+  join none
+}

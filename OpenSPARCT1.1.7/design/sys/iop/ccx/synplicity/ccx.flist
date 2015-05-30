@@ -1,0 +1,111 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: ccx.flist
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+design/sys/iop/ccx/rtl/ccx.v
+design/sys/iop/ccx/rtl/bw_clk_cl_ccx_cmp.v
+design/sys/iop/ccx/rtl/cpx.v
+design/sys/iop/ccx/rtl/ccx_global_int_buf.v
+design/sys/iop/ccx/rtl/ccx_arb.v
+design/sys/iop/ccx/rtl/ccx_arbc.v
+design/sys/iop/ccx/rtl/ccx_arbctl.v
+design/sys/iop/ccx/rtl/ccx_arbdp.v
+design/sys/iop/ccx/rtl/ccx_arb_atomq.v
+design/sys/iop/ccx/rtl/ccx_arb_srcq.v
+design/sys/iop/ccx/rtl/cpx_buf_io.v
+design/sys/iop/ccx/rtl/cpx_buf_pdl_even.v
+design/sys/iop/ccx/rtl/cpx_buf_pdr_even.v
+design/sys/iop/ccx/rtl/cpx_buf_pm_even.v
+design/sys/iop/ccx/rtl/cpx_buf_p0_even.v
+design/sys/iop/ccx/rtl/cpx_buf_p4_even.v
+design/sys/iop/ccx/rtl/cpx_buf_p0.v
+design/sys/iop/ccx/rtl/cpx_buf_p1.v
+design/sys/iop/ccx/rtl/cpx_buf_p3.v
+design/sys/iop/ccx/rtl/cpx_buf_p4.v
+design/sys/iop/ccx/rtl/cpx_buf_pm.v
+design/sys/iop/ccx/rtl/cpx_buf_pt.v
+design/sys/iop/ccx/rtl/cpx_fpbuf_p0.v
+design/sys/iop/ccx/rtl/cpx_fpbuf_p1.v
+design/sys/iop/ccx/rtl/cpx_databuf_ca.v
+design/sys/iop/ccx/rtl/cpx_databuf_ca2.v
+design/sys/iop/ccx/rtl/cpx_buf_top.v
+design/sys/iop/ccx/rtl/cpx_datacx2_ff.v
+design/sys/iop/ccx/rtl/cpx_dp0.v
+design/sys/iop/ccx/rtl/cpx_dp2.v
+design/sys/iop/ccx/rtl/cpx_dp4.v
+design/sys/iop/ccx/rtl/cpx_dp6.v
+design/sys/iop/ccx/rtl/cpx_dp_maca_l.v
+design/sys/iop/ccx/rtl/cpx_dp_maca_r.v
+design/sys/iop/ccx/rtl/cpx_dp_macb_l.v
+design/sys/iop/ccx/rtl/cpx_dp_macb_r.v
+design/sys/iop/ccx/rtl/cpx_dp_macc_l.v
+design/sys/iop/ccx/rtl/cpx_dp_macc_r.v
+design/sys/iop/ccx/rtl/cpx_dp_array.v
+design/sys/iop/ccx/rtl/cpx_dp_halfarray.v
+design/sys/iop/ccx/rtl/cpx_io_grant_ff.v
+design/sys/iop/ccx/rtl/io_cpx_reqdata_ff.v
+design/sys/iop/ccx/rtl/pcx.v
+design/sys/iop/ccx/rtl/pcx_buf_pdl_even.v
+design/sys/iop/ccx/rtl/pcx_buf_pdl_odd.v
+design/sys/iop/ccx/rtl/pcx_buf_pm_even.v
+design/sys/iop/ccx/rtl/pcx_buf_pm_odd.v
+design/sys/iop/ccx/rtl/pcx_buf_pdr_even.v
+design/sys/iop/ccx/rtl/pcx_buf_pdr_odd.v
+design/sys/iop/ccx/rtl/pcx_buf_p0_even.v
+design/sys/iop/ccx/rtl/pcx_buf_p0_odd.v
+design/sys/iop/ccx/rtl/pcx_buf_p4_even.v
+design/sys/iop/ccx/rtl/pcx_buf_p4_odd.v
+design/sys/iop/ccx/rtl/pcx_buf_p0.v
+design/sys/iop/ccx/rtl/pcx_buf_p1.v
+design/sys/iop/ccx/rtl/pcx_buf_p3.v
+design/sys/iop/ccx/rtl/pcx_buf_p4.v
+design/sys/iop/ccx/rtl/pcx_buf_pm.v
+design/sys/iop/ccx/rtl/pcx_buf_pt.v
+design/sys/iop/ccx/rtl/pcx_buf_pt1.v
+design/sys/iop/ccx/rtl/pcx_buf_top.v
+design/sys/iop/ccx/rtl/pcx_buf_scache.v
+design/sys/iop/ccx/rtl/pcx_buf_fpio.v
+design/sys/iop/ccx/rtl/pcx_buf_pdl.v
+design/sys/iop/ccx/rtl/pcx_buf_pdr.v
+design/sys/iop/ccx/rtl/pcx_databuf_pa.v
+design/sys/iop/ccx/rtl/pcx_data_px2.v
+design/sys/iop/ccx/rtl/pcx_dp0.v
+design/sys/iop/ccx/rtl/pcx_dp1.v
+design/sys/iop/ccx/rtl/pcx_dp2.v
+design/sys/iop/ccx/rtl/pcx_dp3.v
+design/sys/iop/ccx/rtl/pcx_dp4.v
+design/sys/iop/ccx/rtl/pcx_dp_array.v
+design/sys/iop/ccx/rtl/pcx_dp_array02.v
+design/sys/iop/ccx/rtl/pcx_dp_array134.v
+design/sys/iop/ccx/rtl/pcx_dp_maca_l.v
+design/sys/iop/ccx/rtl/pcx_dp_maca_r.v
+design/sys/iop/ccx/rtl/pcx_dp_macb_l.v
+design/sys/iop/ccx/rtl/pcx_dp_macb_r.v
+design/sys/iop/ccx/rtl/pcx_dp_macc_l.v
+design/sys/iop/ccx/rtl/pcx_dp_macc_r.v
+
+design/sys/iop/common/rtl/cluster_header_dup.v
+design/sys/iop/common/rtl/swrvr_clib.v
+design/sys/iop/common/rtl/swrvr_dlib.v
+design/sys/iop/common/rtl/test_stub_scan.v
+design/sys/iop/common/rtl/synchronizer_asr.v
+design/sys/iop/common/rtl/synchronizer_asr_dup.v
+design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_scanlasr_2x.v
+
+lib/u1/u1.behV

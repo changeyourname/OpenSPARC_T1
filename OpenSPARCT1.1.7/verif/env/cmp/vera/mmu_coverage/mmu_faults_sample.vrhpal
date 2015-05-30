@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_faults_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU faults and traps
+//
+//
+// ***************************************************************************
+
+
+
+// coverage_def MMU_FAULTS_COV (bit [14:0] mmu_faults_state)
+// {
+  // state declarations
+
+wildcard state s_IFU_TLU_IMMU_MISS_M	 	(IFU_TLU_IMMU_MISS_M);
+wildcard state s_LSU_TLU_DMMU_MISS_G	 	(LSU_TLU_DMMU_MISS_G);
+wildcard state s_LSU_TLU_DACCESS_EXCPTN_G	(LSU_TLU_DACCESS_EXCPTN_G);
+wildcard state s_TLU_LSU_INT_LD_ILL_VA_W2	(TLU_LSU_INT_LD_ILL_VA_W2);
+wildcard state s_IMMU_VA_OOR_BRNCHETC_M	 	(IMMU_VA_OOR_BRNCHETC_M);
+wildcard state s_EXU_TLU_VA_OOR_JL_RET_M	 	(EXU_TLU_VA_OOR_JL_RET_M);
+wildcard state s_EXU_TLU_VA_OOR_M	 	(EXU_TLU_VA_OOR_M);
+wildcard state s_VA_OOR_INST_ACC_EXCP_G	 	(VA_OOR_INST_ACC_EXCP_G);
+wildcard state s_DMMU_VA_OOR_G	 		(DMMU_VA_OOR_G);
+wildcard state s_VA_OOR_DATA_ACC_EXCP_G	 	(VA_OOR_DATA_ACC_EXCP_G);
+wildcard state s_LSU_TLU_WTCHPT_TRP_G	 	(LSU_TLU_WTCHPT_TRP_G);
+wildcard state s_LSU_TLU_MISALIGN_ADDR_LDST_ATM_M	 (LSU_TLU_MISALIGN_ADDR_LDST_ATM_M);
+wildcard state s_TLU_MMU_SYNC_DATA_EXCP_G	(TLU_MMU_SYNC_DATA_EXCP_G);
+wildcard state s_IFU_TLU_FLSH_INST_E	 	(IFU_TLU_FLSH_INST_E);
+wildcard state s_DMMU_SYNC_ILLGL_VA_M   (DMMU_SYNC_ILLGL_VA_M);
+wildcard state s_IMMU_SYNC_ILLGL_VA_M   (IMMU_SYNC_ILLGL_VA_M);
+wildcard state s_DMMU_ASYNC_ILLGL_VA_G  (DMMU_ASYNC_ILLGL_VA_G);
+wildcard state s_IMMU_ASYNC_ILLGL_VA_G  (IMMU_ASYNC_ILLGL_VA_G);
+wildcard state s_DEMAP_SCTXT    (DEMAP_SCTXT);
+wildcard state s_DEMAP_RESRV    (DEMAP_RESRV);
+
+wildcard state s_ANY_TRAP	 		(ANY_TRAP);
+
+
+  // transitions(combinations)
+
+wildcard trans t_TRAP_TO_TRAP	([ANY_TRAP] -> [ANY_TRAP]);
+wildcard trans t_TRAP_TO_TRAP_TO_TRAP	([ANY_TRAP] -> [ANY_TRAP] -> [ANY_TRAP]);
+
+  // bad states
+
+  // bad transitions
+
+// }

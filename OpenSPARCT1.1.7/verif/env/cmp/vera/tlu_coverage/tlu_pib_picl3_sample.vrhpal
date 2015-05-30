@@ -1,0 +1,150 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_pib_picl3_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for the Performace Intrumentation Counter Logic
+//***************************************************************************
+
+
+// coverage_def TLU_PIB_PICL0_COV (bit [11:0] tlu_bib_picl0_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_TH3_HT_PCR_NONE_STB_FULL	(HT_PCR_NONE_STB_FULL);
+  wildcard state s_TH3_HT_PCR_NONE_FPU_INST	(HT_PCR_NONE_FPU_INST);
+  wildcard state s_TH3_HT_PCR_NONE_ICA_MISS	(HT_PCR_NONE_ICA_MISS);
+  wildcard state s_TH3_HT_PCR_NONE_DCA_MISS	(HT_PCR_NONE_DCA_MISS);
+  wildcard state s_TH3_HT_PCR_NONE_L2_IMISS	(HT_PCR_NONE_L2_IMISS);
+  wildcard state s_TH3_HT_PCR_NONE_L2_DMISS	(HT_PCR_NONE_L2_DMISS);
+
+  wildcard state s_TH3_ST_PCR_NONE_STB_FULL	(ST_PCR_NONE_STB_FULL);
+  wildcard state s_TH3_ST_PCR_NONE_FPU_INST	(ST_PCR_NONE_FPU_INST);
+  wildcard state s_TH3_ST_PCR_NONE_ICA_MISS	(ST_PCR_NONE_ICA_MISS);
+  wildcard state s_TH3_ST_PCR_NONE_DCA_MISS	(ST_PCR_NONE_DCA_MISS);
+  wildcard state s_TH3_ST_PCR_NONE_IDLB_MIS	(ST_PCR_NONE_IDLB_MIS);
+  wildcard state s_TH3_ST_PCR_NONE_DTLB_MIS	(ST_PCR_NONE_DTLB_MIS);
+  wildcard state s_TH3_ST_PCR_NONE_L2_IMISS	(ST_PCR_NONE_L2_IMISS);
+  wildcard state s_TH3_ST_PCR_NONE_L2_DMISS	(ST_PCR_NONE_L2_DMISS);
+
+  wildcard state s_TH3_UT_PCR_NONE_STB_FULL	(UT_PCR_NONE_STB_FULL);
+  wildcard state s_TH3_UT_PCR_NONE_FPU_INST	(UT_PCR_NONE_FPU_INST);
+  wildcard state s_TH3_UT_PCR_NONE_ICA_MISS	(UT_PCR_NONE_ICA_MISS);
+  wildcard state s_TH3_UT_PCR_NONE_DCA_MISS	(UT_PCR_NONE_DCA_MISS);
+  wildcard state s_TH3_UT_PCR_NONE_IDLB_MIS	(UT_PCR_NONE_IDLB_MIS);
+  wildcard state s_TH3_UT_PCR_NONE_DTLB_MIS	(UT_PCR_NONE_DTLB_MIS);
+  wildcard state s_TH3_UT_PCR_NONE_L2_IMISS	(UT_PCR_NONE_L2_IMISS);
+  wildcard state s_TH3_UT_PCR_NONE_L2_DMISS	(UT_PCR_NONE_L2_DMISS);
+
+  wildcard state s_TH3_HT_PCR_STUT_STB_FULL	(HT_PCR_STUT_STB_FULL);
+  wildcard state s_TH3_HT_PCR_STUT_FPU_INST	(HT_PCR_STUT_FPU_INST);
+  wildcard state s_TH3_HT_PCR_STUT_ICA_MISS	(HT_PCR_STUT_ICA_MISS);
+  wildcard state s_TH3_HT_PCR_STUT_DCA_MISS	(HT_PCR_STUT_DCA_MISS);
+  wildcard state s_TH3_HT_PCR_STUT_L2_IMISS	(HT_PCR_STUT_L2_IMISS);
+  wildcard state s_TH3_HT_PCR_STUT_L2_DMISS	(HT_PCR_STUT_L2_DMISS);
+
+  wildcard state s_TH3_ST_PCR_STUT_STB_FULL	(ST_PCR_STUT_STB_FULL);
+  wildcard state s_TH3_ST_PCR_STUT_FPU_INST	(ST_PCR_STUT_FPU_INST);
+  wildcard state s_TH3_ST_PCR_STUT_ICA_MISS	(ST_PCR_STUT_ICA_MISS);
+  wildcard state s_TH3_ST_PCR_STUT_DCA_MISS	(ST_PCR_STUT_DCA_MISS);
+  wildcard state s_TH3_ST_PCR_STUT_IDLB_MIS	(ST_PCR_STUT_IDLB_MIS);
+  wildcard state s_TH3_ST_PCR_STUT_DTLB_MIS	(ST_PCR_STUT_DTLB_MIS);
+  wildcard state s_TH3_ST_PCR_STUT_L2_IMISS	(ST_PCR_STUT_L2_IMISS);
+  wildcard state s_TH3_ST_PCR_STUT_L2_DMISS	(ST_PCR_STUT_L2_DMISS);
+
+  wildcard state s_TH3_UT_PCR_STUT_STB_FULL	(UT_PCR_STUT_STB_FULL);
+  wildcard state s_TH3_UT_PCR_STUT_FPU_INST	(UT_PCR_STUT_FPU_INST);
+  wildcard state s_TH3_UT_PCR_STUT_ICA_MISS	(UT_PCR_STUT_ICA_MISS);
+  wildcard state s_TH3_UT_PCR_STUT_DCA_MISS	(UT_PCR_STUT_DCA_MISS);
+  wildcard state s_TH3_UT_PCR_STUT_IDLB_MIS	(UT_PCR_STUT_IDLB_MIS);
+  wildcard state s_TH3_UT_PCR_STUT_DTLB_MIS	(UT_PCR_STUT_DTLB_MIS);
+  wildcard state s_TH3_UT_PCR_STUT_L2_IMISS	(UT_PCR_STUT_L2_IMISS);
+  wildcard state s_TH3_UT_PCR_STUT_L2_DMISS	(UT_PCR_STUT_L2_DMISS);
+
+  wildcard state s_TH3_HT_PCR_ST_STB_FULL	(HT_PCR_ST_STB_FULL);
+  wildcard state s_TH3_HT_PCR_ST_FPU_INST	(HT_PCR_ST_FPU_INST);
+  wildcard state s_TH3_HT_PCR_ST_ICA_MISS	(HT_PCR_ST_ICA_MISS);
+  wildcard state s_TH3_HT_PCR_ST_DCA_MISS	(HT_PCR_ST_DCA_MISS);
+  wildcard state s_TH3_HT_PCR_ST_L2_IMISS	(HT_PCR_ST_L2_IMISS);
+  wildcard state s_TH3_HT_PCR_ST_L2_DMISS	(HT_PCR_ST_L2_DMISS);
+
+  wildcard state s_TH3_ST_PCR_ST_STB_FULL	(ST_PCR_ST_STB_FULL);
+  wildcard state s_TH3_ST_PCR_ST_FPU_INST	(ST_PCR_ST_FPU_INST);
+  wildcard state s_TH3_ST_PCR_ST_ICA_MISS	(ST_PCR_ST_ICA_MISS);
+  wildcard state s_TH3_ST_PCR_ST_DCA_MISS	(ST_PCR_ST_DCA_MISS);
+  wildcard state s_TH3_ST_PCR_ST_IDLB_MIS	(ST_PCR_ST_IDLB_MIS);
+  wildcard state s_TH3_ST_PCR_ST_DTLB_MIS	(ST_PCR_ST_DTLB_MIS);
+  wildcard state s_TH3_ST_PCR_ST_L2_IMISS	(ST_PCR_ST_L2_IMISS);
+  wildcard state s_TH3_ST_PCR_ST_L2_DMISS	(ST_PCR_ST_L2_DMISS);
+
+  wildcard state s_TH3_UT_PCR_ST_STB_FULL	(UT_PCR_ST_STB_FULL);
+  wildcard state s_TH3_UT_PCR_ST_FPU_INST	(UT_PCR_ST_FPU_INST);
+  wildcard state s_TH3_UT_PCR_ST_ICA_MISS	(UT_PCR_ST_ICA_MISS);
+  wildcard state s_TH3_UT_PCR_ST_DCA_MISS	(UT_PCR_ST_DCA_MISS);
+  wildcard state s_TH3_UT_PCR_ST_IDLB_MIS	(UT_PCR_ST_IDLB_MIS);
+  wildcard state s_TH3_UT_PCR_ST_DTLB_MIS	(UT_PCR_ST_DTLB_MIS);
+  wildcard state s_TH3_UT_PCR_ST_L2_IMISS	(UT_PCR_ST_L2_IMISS);
+  wildcard state s_TH3_UT_PCR_ST_L2_DMISS	(UT_PCR_ST_L2_DMISS);
+
+  wildcard state s_TH3_HT_PCR_UT_STB_FULL	(HT_PCR_UT_STB_FULL);
+  wildcard state s_TH3_HT_PCR_UT_FPU_INST	(HT_PCR_UT_FPU_INST);
+  wildcard state s_TH3_HT_PCR_UT_ICA_MISS	(HT_PCR_UT_ICA_MISS);
+  wildcard state s_TH3_HT_PCR_UT_DCA_MISS	(HT_PCR_UT_DCA_MISS);
+  wildcard state s_TH3_HT_PCR_UT_L2_IMISS	(HT_PCR_UT_L2_IMISS);
+  wildcard state s_TH3_HT_PCR_UT_L2_DMISS	(HT_PCR_UT_L2_DMISS);
+
+  wildcard state s_TH3_ST_PCR_UT_STB_FULL	(ST_PCR_UT_STB_FULL);
+  wildcard state s_TH3_ST_PCR_UT_FPU_INST	(ST_PCR_UT_FPU_INST);
+  wildcard state s_TH3_ST_PCR_UT_ICA_MISS	(ST_PCR_UT_ICA_MISS);
+  wildcard state s_TH3_ST_PCR_UT_DCA_MISS	(ST_PCR_UT_DCA_MISS);
+  wildcard state s_TH3_ST_PCR_UT_IDLB_MIS	(ST_PCR_UT_IDLB_MIS);
+  wildcard state s_TH3_ST_PCR_UT_DTLB_MIS	(ST_PCR_UT_DTLB_MIS);
+  wildcard state s_TH3_ST_PCR_UT_L2_IMISS	(ST_PCR_UT_L2_IMISS);
+  wildcard state s_TH3_ST_PCR_UT_L2_DMISS	(ST_PCR_UT_L2_DMISS);
+
+  wildcard state s_TH3_UT_PCR_UT_STB_FULL	(UT_PCR_UT_STB_FULL);
+  wildcard state s_TH3_UT_PCR_UT_FPU_INST	(UT_PCR_UT_FPU_INST);
+  wildcard state s_TH3_UT_PCR_UT_ICA_MISS	(UT_PCR_UT_ICA_MISS);
+  wildcard state s_TH3_UT_PCR_UT_DCA_MISS	(UT_PCR_UT_DCA_MISS);
+  wildcard state s_TH3_UT_PCR_UT_IDLB_MIS	(UT_PCR_UT_IDLB_MIS);	
+  wildcard state s_TH3_UT_PCR_UT_DTLB_MIS	(UT_PCR_UT_DTLB_MIS);	
+  wildcard state s_TH3_UT_PCR_UT_L2_IMISS	(UT_PCR_UT_L2_IMISS);	
+  wildcard state s_TH3_UT_PCR_UT_L2_DMISS	(UT_PCR_UT_L2_DMISS);	
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_TH3_HT_PCR_NONE_IDLB_MIS	(HT_PCR_NONE_IDLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_NONE_DTLB_MIS	(HT_PCR_NONE_DTLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_STUT_IDLB_MIS	(HT_PCR_STUT_IDLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_STUT_DTLB_MIS	(HT_PCR_STUT_DTLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_ST_IDLB_MIS	(HT_PCR_ST_IDLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_ST_DTLB_MIS	(HT_PCR_ST_DTLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_UT_IDLB_MIS	(HT_PCR_UT_IDLB_MIS);
+  wildcard bad_state s_TH3_HT_PCR_UT_DTLB_MIS	(HT_PCR_UT_DTLB_MIS);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

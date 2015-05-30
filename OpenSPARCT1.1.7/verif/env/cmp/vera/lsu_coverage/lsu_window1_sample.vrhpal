@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_window1_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Generic coverage window object with 1 additional condition
+//
+//***********************************************************************
+
+// capture/condition/counter
+
+// coverage_def LSU_WINDOW1_COV (bit [11:0] qfull_window)
+// {
+  // state declarations
+
+  state s_conwindow0	(11'b11000000000);
+  state s_conwindow1	(11'b11000000001);
+  state s_conwindow2	(11'b11000000010);
+  state s_conwindow3	(11'b11000000011);
+  state s_conwindow4	(11'b11000000100);
+
+  wildcard state s_conwindowd1	(11'b11xxxxxx1xx);
+  wildcard state s_conwindowd2	(11'b11xxxxx1xxx);
+  wildcard state s_conwindowd3	(11'b11xxxx1xxxx);
+  wildcard state s_conwindowd4	(11'b11xxx1xxxxx);
+  wildcard state s_conwindowd5	(11'b11xx1xxxxxx);
+  wildcard state s_conwindowd6	(11'b11x1xxxxxxx);
+  wildcard state s_conwindowd7	(11'b111xxxxxxxx);  
+
+// }
+
+

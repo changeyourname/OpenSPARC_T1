@@ -1,0 +1,52 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_succ_itlbmiss_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_succ_itlbmiss_cov.vr
+// Description:
+// This coverage object covers special conditions with the itlb
+// 1) itlb full
+// 2) b2b misses on the same thread
+// 3) b2b misses on different threads and different addresses
+// 4) b2b misses on different threads and same address
+//
+// State: 2'b: itlb_full,itlb_miss,same_thr_2,same_pc_2
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_SUCC_ITLBMISS_COV (bit [3:0] cov_vector)
+// {
+  wildcard trans s_itlb_b2b_miss_same_thr (4'b000x -> 4'b0110);
+  wildcard trans s_itlb_full_b2b_miss_same_thr (4'b100x -> 4'b1110);
+  
+  //B2B missses on diff threads and diff pc's
+  wildcard trans s_itlb_b2b_miss_diff_thr_diff_pc (4'b01xx -> 4'b0100 -> 4'b0100 -> 4'b0100) ;
+
+  //B2B missses with a full tlb on diff threads and diff pc's  
+  wildcard trans s_itlb_full_b2b_miss_diff_thr_diff_pc (4'b11xx -> 4'b1100 -> 4'b1100 -> 4'b1100); 
+
+  //B2B missses with on diff threads and same pc's  
+  wildcard trans s_itlb_b2b_miss_diff_thr_same_pc (4'b01xx -> 4'b0101 -> 4'b0101 -> 4'b0101);
+
+  //B2B missses with a full tlb on diff threads and diff pc's    
+  wildcard trans s_itlb_full_b2b_miss_diff_thr_same_pc (4'b11xx -> 4'b1101 -> 4'b1101 -> 4'b1101); 
+// }

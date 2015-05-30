@@ -1,0 +1,33 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_iack_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// as simple as it might seem this one can 
+// badly mess up ifu or lsu if not covered
+
+  state s_IDLE   (2'b00);
+  state s_IREQ   (2'b10);
+  state s_IACK   (2'b11);
+
+  bad_state s_not_STATE (not state);
+
+  trans t_req_ack  (2 -> 3);
+  trans t_req_ack1 (2 -> 2 -> 3);
+  trans t_req_ack2 (2 -> 2 -> 2 -> 3);
+  trans t_req_ack3 (2 -> 2 -> 2 -> 2 -> 3);

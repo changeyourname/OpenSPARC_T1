@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_rtl.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+#ifndef __SPU_RTL_H__
+#define __SPU_RTL_H__
+
+#define MA_RED_STATE_WIDTH 14
+#define MA_MUL_STATE_WIDTH 19
+#define MA_AEQB_STATE_WIDTH 23
+#define MA_EXP_STATE_WIDTH 6
+#define MA_LD_STATE_WIDTH 6
+#define MA_ST_STATE_WIDTH 5
+#define SHACTL_STATE_WIDTH 20
+#define DESCTL_STATE_WIDTH 10
+#define RC4CTL_STATE_WIDTH 16
+#define RC4LD_STATE_WIDTH 6
+#define RC4ST_STATE_WIDTH 6
+
+#define SPU_ASI_STREAM_CONTROL_REG_ADDR 8'h00
+#define SPU_ASI_STREAM_SRC_REG_ADDR 8'h08
+#define SPU_ASI_STREAM_DEST_REG_ADDR 8'h10
+#define SPU_ASI_STREAM_DATA_REG_ADDR 8'h18
+#define SPU_ASI_STREAM_IV1_REG_ADDR 8'h20
+#define SPU_ASI_STREAM_KEY1_REG_ADDR 8'h28
+#define SPU_ASI_STREAM_KEY2_REG_ADDR 8'h30
+#define SPU_ASI_STREAM_KEY3_REG_ADDR 8'h38
+#define SPU_ASI_STREAM_HASH_LO_REG_ADDR 8'h40
+#define SPU_ASI_STREAM_HASH_MID_REG_ADDR 8'h48
+#define SPU_ASI_STREAM_HASH_HI_REG_ADDR 8'h50
+#define SPU_ASI_STREAM_SYNC_REG_ADDR 8'h68
+#define SPU_ASI_MA_CONTROL_REG_ADDR 8'h80
+#define SPU_ASI_MA_MPA_REG_ADDR 8'h88
+#define SPU_ASI_MA_ADDR_REG_ADDR 8'h90
+#define SPU_ASI_MA_NP_REG_ADDR 8'h98
+#define SPU_ASI_MA_SYNC_REG_ADDR 8'ha0
+
+#endif

@@ -1,0 +1,193 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_tlb_addr_match.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        mmu_tlb_addr_match.vr
+//  Description:        Tasks for comparing TTE written with that looked up from TLB
+//
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+#ifndef MMU_TLB_ADDR_MATCH__
+#define MMU_TLB_ADDR_MATCH__
+
+#include <vera_defines.vrh>
+#include "mmu_ports_binds.vrh"
+#include "mmu.if.vrh"
+#include "mmu_cov_tasks.vrh"
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Class definitions
+////////////////////////////
+
+class MMU_TLB_ADDR_MATCH
+{
+	string name;
+	tlb_addr_match_port tlb_addr_match_bind;
+
+        bit addr_match;
+
+	task new (string name, tlb_addr_match_port tlb_addr_match_bind);
+        task find_addr_match (integer window_size);
+        task check_depth();
+}
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Definitions of methods of class MMU_TLB_ADDR_MATCH
+////////////////////////////
+
+task MMU_TLB_ADDR_MATCH:: new(string name, tlb_addr_match_port tlb_addr_match_bind)
+{
+	this.name = name;
+        this.tlb_addr_match_bind = tlb_addr_match_bind;
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_TLB_ADDR_MATCH:: find_addr_match(integer window_size)
+{
+
+   bit [58:0] tmp_tlb_wr_tte_tag[20];
+   integer delay[20];
+   integer pointer = 0;
+   bit [19:0] vld;
+   bit match;
+   integer i;
+
+   delay[1] = 100;
+   printf("%d: testing out integer array delay0 is %d\n", get_time(LO), delay[1]);
+ 
+ // this.addr_match[2] -> match (tlb_cam_data_vld) found 1 clk before tlb_wr_vld 
+ // this.addr_match[1] -> match (tlb_cam_data_vld) found at the same clk as tlb_wr_vld 
+ // this.addr_match[0] -> match (tlb_cam_data_vld) found 1 clk after tlb_wr_vld 
+
+fork{
+    while(1) {
+	    @ ( posedge this.tlb_addr_match_bind.\$clk );
+//                if(this.tlb_addr_match_bind.\$tlb_wr_vld.1 == 1'b1){
+//		    printf("%d: found tlb_wr_vld tlb_wr_tte_tag %h bypass %b \n",get_time(LO), this.tlb_addr_match_bind.\$tlb_wr_tte_tag, this.tlb_addr_match_bind.\$tlb_bypass);
+//		}
+	            if(this.tlb_addr_match_bind.\$tlb_wr_vld == 1'b1){
+                         tmp_tlb_wr_tte_tag[pointer] = this.tlb_addr_match_bind.\$tlb_wr_tte_tag;
+			 delay[pointer] = window_size;
+			 vld[pointer] = 1'b1;
+			 printf("%d: found tlb_wr_vld pointer %d tlb_wr_tte_tag %h\n",
+			     get_time(LO), pointer, tmp_tlb_wr_tte_tag[pointer]);
+			 pointer = pointer +1 ;
+			 if(pointer == 20){
+			    pointer = 0;
+			 }
+                    } // tlb_wr_vld == 1
+
+		if(this.tlb_addr_match_bind.\$tlb_cam_data_vld == 1'b1){
+		    if(this.tlb_addr_match_bind.\$tlb_bypass != 1'b1){
+			 printf("%d: there's a lookup ...\n", get_time(LO));
+			 printf("%d: tlb_cam_data %h\n", get_time(LO), this.tlb_addr_match_bind.\$tlb_cam_data);
+
+			 for(i=0;i<20;i=i+1){
+			     if( (vld[i] == 1'b1) && (delay[i] > 0)){
+			         match = compare_addr (this.tlb_addr_match_bind.\$tlb_cam_data , tmp_tlb_wr_tte_tag[i]);
+				 this.addr_match = this.addr_match | match;
+				 if(match == 1'b1){
+				     printf("%d: there's a VA match!! tlb_cam_data %h tmp_tlb_wr_tte_tag %h\n",
+					 get_time(LO), this.tlb_addr_match_bind.\$tlb_cam_data , tmp_tlb_wr_tte_tag[i]);
+				     printf("%d: i = %d delay = %d\n", get_time(LO), i, delay[i]);
+				 }else{
+				    printf("%d: there's no VA match!! tlb_cam_data %h tmp_tlb_wr_tte_tag %h\n",
+					 get_time(LO), this.tlb_addr_match_bind.\$tlb_cam_data , tmp_tlb_wr_tte_tag[i]);
+				 }
+			     }
+			 }
+		    }
+		}
+            // Count the delay
+	    for(i=0;i<20;i=i+1){
+		if(delay[i] > 0){
+		    delay[i] = delay[i] - 1;
+		}
+	    }
+    } // while(1)
+} join none // main fork
+
+}
+
+task MMU_TLB_ADDR_MATCH:: check_depth()
+{
+    fork{
+	while(1){
+	    @ ( posedge this.tlb_addr_match_bind.\$clk );
+//	    if(this.tlb_addr_match_bind.\$tlb_cam_data_vld == 1'b1){
+//		printf("%d: WAIT: we should see hurray next cycle!\n",get_time(LO));
+//	    }
+//	    if(this.tlb_addr_match_bind.\$tlb_cam_data_vld.1 == 1'b1){
+//		printf("%d: HURRAY: Depth works!\n",get_time(LO));
+//	    }
+//	    if(mmu_coverage_ifc.C0_lsu_tlu_dmmu_miss_g){
+//		printf("%d: found dmmu miss checking vld and ttype one cycle back and now\n", get_time(LO));
+//		printf("%d: exu_tlu_ttype_m %h exu_tlu_ttype_vld_m %b\n",
+//		    get_time(LO), mmu_coverage_ifc.C0_exu_tlu_ttype_m, mmu_coverage_ifc.C0_exu_tlu_ttype_vld_m);
+//		printf("%d: exu_tlu_ttype_m1 %h exu_tlu_ttype_vld_m1 %b\n",
+//		    get_time(LO), mmu_coverage_ifc.C0_exu_tlu_ttype_m.1, mmu_coverage_ifc.C0_exu_tlu_ttype_vld_m.1);
+//	    }
+//	    if(mmu_coverage_ifc.C0_ifu_tlu_immu_miss_m){
+//		printf("%d: found immu miss checking vld and ttype\n", get_time(LO));
+//		printf("%d: exu_tlu_ttype_m %h exu_tlu_ttype_vld_m %b\n",
+//		    get_time(LO), mmu_coverage_ifc.C0_exu_tlu_ttype_m, mmu_coverage_ifc.C0_exu_tlu_ttype_vld_m);
+//	    }
+//	    if(mmu_coverage_ifc.C0_exu_tlu_ttype_vld_m){
+//	       printf("%d: found exu_tlu_ttype_vld_m value of exu_tlu_ttype_m %h\n",
+//		    get_time(LO), mmu_coverage_ifc.C0_exu_tlu_ttype_m);
+//	    }
+
+            if(mmu_coverage_ifc.C0_itlb_bypass){
+//		printf("%d: Found a itlb_bypass pstate_priv0 %b hstate_priv0 %b \n", get_time(LO), mmu_coverage_ifc.C0_pstate_priv[0],
+//                            mmu_coverage_ifc.C0_hstate_priv[0]);
+	    }
+            if(mmu_coverage_ifc.C0_dtlb_bypass){
+//		printf("%d: Found a dtlb_bypass pstate_priv0 %b hstate_priv0 %b \n", get_time(LO), mmu_coverage_ifc.C0_pstate_priv[0],
+//                            mmu_coverage_ifc.C0_hstate_priv[0]);
+	    }
+	}
+    } join none
+}
+
+
+//-------------------------
+
+. foreach $c (@CORE_STR) {
+
+//      MMU_TLB_ADDR_MATCH C${c}_itlb_addr_match;
+//      MMU_TLB_ADDR_MATCH C${c}_dtlb_addr_match;
+//
+//      C${c}_itlb_addr_match = new ("IMMU", C${c}_itlb_addr_match_bind);
+//      C${c}_dtlb_addr_match = new ("DMMU", C${c}_dtlb_addr_match_bind);
+//
+//      C${c}_itlb_addr_match.find_addr_match();
+//      C${c}_dtlb_addr_match.find_addr_match();
+
+.}
+
+#endif

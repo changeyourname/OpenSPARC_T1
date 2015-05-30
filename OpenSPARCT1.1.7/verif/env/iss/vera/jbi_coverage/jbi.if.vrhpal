@@ -1,0 +1,104 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "jbi_cov_inc.pal";
+#ifndef __JBI_IF_VRH__
+#define __JBI_IF_VRH__
+
+#include <vera_defines.vrh>
+
+
+//************************
+// CMP COV INTERFACE
+//************************
+interface jbi_cmpcov_ifc
+{
+  // Common & Clock Signals
+  input cmp_clk			CLOCK;
+  input rst_l                   PSAMPLE;
+  input cmp_diag_done		PSAMPLE;
+
+  // MIN
+  // jbi_min request issue block signals
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+  input [7:0]   rq${rq}_issue_pop_sm		PSAMPLE;
+  input         min_rhq${rq}_drdy               PSAMPLE;
+  input         min_rhq${rq}_drdy_ok            PSAMPLE;
+  input         min_rhq${rq}_empty              PSAMPLE;
+  input         min_rhq${rq}_rdata_tag_byps     PSAMPLE;
+  input         min_rq${rq}_issue_stall_ib      PSAMPLE;
+  input         min_rq${rq}_issue_stall_wib     PSAMPLE;
+  input [2:0]   min_rhq${rq}_rdata_req          PSAMPLE;
+. }
+
+  // MOUT
+. for ($num = 0; $num < 4; $num++) {
+  input [5:0]	                   mout_sct${num}_out_queues_state PSAMPLE;
+  input [1:0]	                   mout_sct${num}_rdq_state        PSAMPLE;
+. }
+}
+
+//************************
+// JBUS COV INTERFACE
+//************************
+interface jbi_jbuscov_ifc
+{
+  // Common & Clock Signals
+  input clk			CLOCK;
+  input rst_l                   PSAMPLE;
+  input jbus_diag_done		PSAMPLE;
+
+  // MIN
+  input                            min_parse_wdq_push   PSAMPLE;
+  input                            min_parse_hdr        PSAMPLE;
+  input [$JBI_WDQ_ADDR_WIDTH:0]    min_next_wdq_level   PSAMPLE;
+  input [$JBI_SCTAG_TAG_WIDTH-1:0] min_wdq_push_hdr_tag PSAMPLE;
+
+. for ($rq = 0; $rq < $RQ_NUM; $rq++) {
+  input                            min_rhq${rq}_full    PSAMPLE;
+  input                            min_rdq${rq}_full    PSAMPLE;
+. }
+
+  // NCIO
+  input                            ncio_prqq_push       PSAMPLE;
+  input [$JBI_PRQQ_ADDR_WIDTH:0]   ncio_next_prqq_level PSAMPLE;
+  input                            ncio_ucbp_rd_req_vld PSAMPLE;
+  input                            ncio_prqq_entry_drdy PSAMPLE;
+  input                            ncio_prqq_stall_rd   PSAMPLE;
+  input                            ncio_pio_req_rw      PSAMPLE;
+  input                            ncio_prtq_full       PSAMPLE;
+  input                            ncio_prtq_drdy_stall PSAMPLE;
+  input                            ncio_mrqq_full       PSAMPLE;
+  input                            ncio_mrqq_drdy_stall PSAMPLE;
+
+  // DBG
+  input                            dbgq_hi_full         PSAMPLE;
+  input                            dbgq_lo_full         PSAMPLE;
+
+  // MOUT
+  input [3:0]  mout_pktout_ctlr_state  PSAMPLE;
+  input [2:0]  mout_j_pack_out_gen_state  PSAMPLE;
+. for ($num = 0; $num < 16; $num++) {
+  input [1:0]	                   mout_ncrd_${num}_timer_state PSAMPLE;
+. }
+}
+
+
+#endif

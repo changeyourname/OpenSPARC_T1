@@ -1,0 +1,549 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: bwsniper.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//
+// bwsniper - a transaction injector for PCX interface.
+// sniper uses different pick algorithms to pick an address from a history table
+// and address algorithms to modify the address before injecting it to the PCX.
+//
+// pick algorithms:
+// 	0 - pick the newest arrival
+//	1 - pick the second youngest arrival
+//	2 or above - random between the 4 recorded entries.
+//	...
+//	up to 4 entries stored today.
+//
+//	Note: we monitor pcx 0 interface only nowadays.
+//
+// address algorithms:
+// 	0 - live the address as is 
+//	1 - flip bit 24 - this will cause many evictions to L2 if L2 is in direct mapped mode.
+//	2 - flip bit 4  - go to the complement 16B line of the D cache
+//	3 - flip bits 5:4  - go to the complement 16B line of the I cache
+//	4 - 7:6  are always 0, so they will overload bank 0
+//	...
+// Run the diag with:
+// -sim_run_args=+SNIPER_ON -sim_run_args=+SNIPER_6  -sim_run_args=+SNIPER7_PICK_ALG=NUM1
+// -sim_run_args=+SNIPER7_ADDR_ALG=NUM2 -sim_run_args=+SNIPER6_PICK_ALG=NUM3 -sim_run_args=+SNIPER6_ADDR_ALG=NUM4
+// -sim_run_args=+SNIPER_INT_EN
+//
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "cpxpacket.vrh"
+#include "pcxpacket.vrh"
+#include "bwbfm.vrh"
+
+// Define the states of the sniper state machine.
+#define SNIPER_IDLE 	   0
+#define SNIPER_LD_PENDING  1
+#define SNIPER_CAS_PENDING 2
+
+#define SNIPER_CPX_INV_CID_LO 118
+#define SNIPER_CPX_INV_CID_HI 120
+
+#define ADDR_MSB 39
+
+/////////////////////////////////////////////////////////////////
+// class declaration
+/////////////////////////////////////////////////////////////////
+
+class BW_SNIPER {
+    string name;      // name - not used yet
+    string cmdfile;   // command file name. We may use it.
+    BW_BFM bw_bfm[8]; // the 8 front end bus functional models (bfm-s)
+    
+    PcxPacket pcx_packet[8];    // an 8X4  history table  of incoming PCX packets
+    PcxPacket pcx_packet_d1[8]; // actually only core 0 traffic is monitored...
+    PcxPacket pcx_packet_d2[8];
+    PcxPacket pcx_packet_d3[8];
+    
+    integer sniperseed, debug;
+    
+    integer sniper7_pick_alg, sniper7_addr_alg;
+    integer sniper6_pick_alg, sniper6_addr_alg;
+    integer sniper5_pick_alg, sniper5_addr_alg;
+    integer sniper4_pick_alg, sniper4_addr_alg;
+    integer sniper3_pick_alg, sniper3_addr_alg;
+    integer sniper2_pick_alg, sniper2_addr_alg;
+    
+    integer int_en, int_illegal;
+    
+    integer outgoing_loads_status[8 * 4]; // 8 cores 4 loads each - 1 per thread
+    integer outgoing_tokens[8];           // tokens for PCX request - up to 2 pending
+    
+
+    task new(cpx_port cpx_bind[8], pcx_port pcx_bind[8], BW_BFM bw_bfm[8], string name = "BW_SNIPER");
+    task get_pcx_pkt(pcx_port pcx_bind, bit [2:0] sparc_id);
+    task bw_sn_accept(var PcxPacket pcx_packet, bit [PCX_WIDTH-1:0] pcx);
+    task bw_sn_shoot(pcx_port pcx_bind, bit [2:0] sparc_id, integer pick_alg, integer addr_alg);
+    task bw_sn_status(cpx_port cpx_bind, bit [2:0] sparc_id);
+}
+
+/////////////////////////////////////////////////////////////////
+// constructor
+/////////////////////////////////////////////////////////////////
+
+task BW_SNIPER::new(cpx_port cpx_bind[8], pcx_port pcx_bind[8], BW_BFM bw_bfm[8], string name = "BW_SNIPER") {
+    
+    integer i = 0;
+    
+
+    if(get_plus_arg(CHECK, "SNIPER_ON") && !get_plus_arg(CHECK, "FORCE_SNIPER_OFF")) {
+        this.name = name; 
+        
+        for(i=0; i<8; i++) {
+            this.bw_bfm[i] = bw_bfm[i];
+            pcx_packet[i] = new();
+            pcx_packet_d1[i] = new();
+            pcx_packet_d2[i] = new();
+            pcx_packet_d3[i] = new();
+            
+            pcx_packet[i].valid = 0;
+            pcx_packet_d1[i].valid = 0;
+            pcx_packet_d2[i].valid = 0;
+            pcx_packet_d3[i].valid = 0;
+        }
+        
+        for(i=0; i<32; i++)
+            outgoing_loads_status[i] = SNIPER_IDLE;
+        
+        for(i=0; i<8; i++)
+            outgoing_tokens[i] = 2;
+        
+        sniper7_pick_alg = 0;
+        sniper7_addr_alg = 0;
+        sniper6_pick_alg = 0;
+        sniper6_addr_alg = 1;
+        sniper5_pick_alg = 0;
+        sniper5_addr_alg = 0;
+        sniper4_pick_alg = 0;
+        sniper4_addr_alg = 1;
+        sniper3_pick_alg = 0;
+        sniper3_addr_alg = 0;
+        sniper2_pick_alg = 0;
+        sniper2_addr_alg = 1;
+        
+        if(get_plus_arg(CHECK, "SNIPER7_PICK_ALG"))
+            sniper7_pick_alg  = get_plus_arg(NUM, "SNIPER7_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER7_ADDR_ALG"))
+            sniper7_addr_alg  = get_plus_arg (NUM, "SNIPER7_ADDR_ALG=");
+        
+        if(get_plus_arg(CHECK, "SNIPER6_PICK_ALG"))
+            sniper6_pick_alg  = get_plus_arg (NUM, "SNIPER6_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER6_ADDR_ALG"))
+            sniper6_addr_alg  = get_plus_arg (NUM, "SNIPER6_ADDR_ALG=");
+        
+        if(get_plus_arg(CHECK, "SNIPER5_PICK_ALG"))
+            sniper5_pick_alg  = get_plus_arg (NUM, "SNIPER5_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER5_ADDR_ALG"))
+            sniper5_addr_alg  = get_plus_arg (NUM, "SNIPER5_ADDR_ALG=");
+        
+        if(get_plus_arg(CHECK, "SNIPER4_PICK_ALG"))
+            sniper4_pick_alg  = get_plus_arg (NUM, "SNIPER4_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER4_ADDR_ALG"))
+            sniper4_addr_alg  = get_plus_arg (NUM, "SNIPER4_ADDR_ALG=");
+        
+        if(get_plus_arg(CHECK, "SNIPER3_PICK_ALG"))
+            sniper3_pick_alg  = get_plus_arg (NUM, "SNIPER3_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER3_ADDR_ALG"))
+            sniper3_addr_alg  = get_plus_arg (NUM, "SNIPER3_ADDR_ALG=");
+        
+        if(get_plus_arg(CHECK, "SNIPER2_PICK_ALG"))
+            sniper2_pick_alg  = get_plus_arg (NUM, "SNIPER2_PICK_ALG=");
+        if(get_plus_arg(CHECK, "SNIPER2_ADDR_ALG"))
+            sniper2_addr_alg  = get_plus_arg (NUM, "SNIPER2_ADDR_ALG=");
+        
+        sniperseed = 'hbabe;
+        if(get_plus_arg (CHECK, "tg_seed"))
+            sniperseed  = get_plus_arg (NUM, "tg_seed=");
+        
+        debug = (get_plus_arg (CHECK, "SNIPERDEBUG")) ? 1 : 0;
+        
+        int_en = (get_plus_arg(CHECK, "SNIPER_INT_EN")) ? 1 : 0;
+        
+        int_illegal = (get_plus_arg(CHECK, "SNIPER_INT_ILLEGAL")) ? 1 : 0;
+        
+        fork
+        {
+            random(sniperseed);
+            get_pcx_pkt(pcx_bind[0], 0);
+            get_pcx_pkt(pcx_bind[1], 1);
+            get_pcx_pkt(pcx_bind[2], 2);
+            get_pcx_pkt(pcx_bind[3], 3);
+            get_pcx_pkt(pcx_bind[4], 4);
+            get_pcx_pkt(pcx_bind[5], 5);
+            
+            bw_sn_shoot(pcx_bind[7],  7, sniper7_pick_alg, sniper7_addr_alg);
+            bw_sn_status(cpx_bind[7], 7);
+            
+            if(get_plus_arg(CHECK, "SNIPER_6"))
+                bw_sn_shoot(pcx_bind[6],  6, sniper6_pick_alg, sniper6_addr_alg);
+            if(get_plus_arg(CHECK, "SNIPER_6"))
+                bw_sn_status(cpx_bind[6], 6);
+            
+            if(get_plus_arg(CHECK, "SNIPER_5"))
+                bw_sn_shoot(pcx_bind[5],  5, sniper5_pick_alg, sniper5_addr_alg);
+            if(get_plus_arg(CHECK, "SNIPER_5"))
+                bw_sn_status(cpx_bind[5], 5);
+            
+            if(get_plus_arg(CHECK, "SNIPER_4"))
+                bw_sn_shoot(pcx_bind[4],  4, sniper4_pick_alg, sniper4_addr_alg);
+            if(get_plus_arg(CHECK, "SNIPER_4"))
+                bw_sn_status(cpx_bind[4], 4);
+            
+            if(get_plus_arg(CHECK, "SNIPER_3"))
+                bw_sn_shoot(pcx_bind[3],  3, sniper3_pick_alg, sniper3_addr_alg);
+            if(get_plus_arg(CHECK, "SNIPER_3"))
+                bw_sn_status(cpx_bind[3], 3);
+            
+            if(get_plus_arg(CHECK, "SNIPER_2"))
+                bw_sn_shoot(pcx_bind[2],  2, sniper2_pick_alg, sniper2_addr_alg);
+            if(get_plus_arg(CHECK, "SNIPER_2"))
+                bw_sn_status(cpx_bind[2], 2);
+        }
+        join none
+    } // if(get_plus_arg(CHECK, "SNIPER_ON") && !get_plus_arg(CHECK, "FORCE_SNIPER_OFF"))
+}
+
+/////////////////////////////////////////////////////////////////
+// receive a pcx packet
+/////////////////////////////////////////////////////////////////
+
+task BW_SNIPER::get_pcx_pkt(pcx_port pcx_bind, bit [2:0] sparc_id) {
+
+    if(debug)
+        printf("%d: C%0d sniper inside get_pcx_pkt\n", get_time(LO), sparc_id);
+
+    while(1) {
+        @(posedge cmp_top.cmp_gclk);
+
+        if(pcx_bind.$spc_pcx_req_pq) {
+            @(posedge cmp_top.cmp_gclk);
+            
+            if(pcx_bind.$spc_pcx_data_pa[PCX_RQ_HI:PCX_RQ_LO] != INT_RQ) {
+                bw_sn_accept(pcx_packet_d3[sparc_id], pcx_packet_d2[sparc_id].get_pkt());
+                
+                bw_sn_accept(pcx_packet_d2[sparc_id], pcx_packet_d1[sparc_id].get_pkt());
+                
+                bw_sn_accept(pcx_packet_d1[sparc_id], pcx_packet[sparc_id].get_pkt());
+                
+                bw_sn_accept(pcx_packet[sparc_id], pcx_bind.$spc_pcx_data_pa);
+
+                if(debug)
+                    printf("%d: C%0d sniper pcx history table update addr = %x\n",
+                           get_time(LO), sparc_id, pcx_packet[sparc_id].addr);
+            }
+            else {
+                if(debug)
+                    printf("%d: C%0d sniper pcx history table NOT updated, INT packet seen\n",
+                           get_time(LO), sparc_id);
+            }
+        }
+    }
+}
+
+/////////////////////////////////////////////////////////////////
+// accept
+/////////////////////////////////////////////////////////////////
+
+task BW_SNIPER::bw_sn_accept(var PcxPacket pcx_packet, bit [PCX_WIDTH-1:0] pcx) {
+
+    pcx_packet.valid      = pcx[PCX_VLD];
+    pcx_packet.rqtyp      = pcx[PCX_RQ_HI:PCX_RQ_LO];
+    pcx_packet.nc         = pcx[PCX_NC];
+    pcx_packet.cpu_id     = pcx[PCX_CP_HI:PCX_CP_LO];
+    pcx_packet.thread_id  = pcx[PCX_TH_HI:PCX_TH_LO];
+    pcx_packet.bf_id      = pcx[PCX_BF_HI:PCX_BF_LO];
+    pcx_packet.rep_l1_way = pcx[PCX_WY_HI:PCX_WY_LO];
+    pcx_packet.size       = pcx[PCX_SZ_HI:PCX_SZ_LO];
+    pcx_packet.addr       = pcx[PCX_AD_HI:PCX_AD_LO];
+    pcx_packet.data       = pcx[PCX_DA_HI:PCX_DA_LO];
+}
+
+/////////////////////////////////////////////////////////////////
+// shoot
+/////////////////////////////////////////////////////////////////
+
+task BW_SNIPER::bw_sn_shoot (pcx_port pcx_bind, bit [2:0] sparc_id, integer pick_alg, integer addr_alg) {
+    
+    PcxPacket pcx, pcx2;
+    
+    integer tr_type;
+    integer random_number; 
+    bit forbidden_address, addr_ok, valid;
+    
+    bit [1:0] rand_thr_id; 
+    bit [2:0] bf_id;
+    bit [ADDR_MSB:0] addr;
+    
+
+    pcx = new();
+    pcx2 = new();
+
+    if(debug)
+        printf("%d: C%0d sniper inside bw_sn_shoot\n", get_time(LO), sparc_id);
+    
+    while(1) {
+        @(posedge cmp_top.cmp_gclk);
+        
+        // Choose transaction type
+        random_number = random() % 100;
+
+        // INT
+        if(int_en && random_number < 10)
+            tr_type = 2;
+        // CAS
+        else if(int_en && random_number < 40 || !int_en && random_number < 80)
+            tr_type = 1;
+        // LOAD
+        else
+            tr_type = 0;
+
+        // Choose thread ID.
+        rand_thr_id = random() % 4;
+        
+        // Choose address and decide if it is valid
+        // newest arrival
+        if(pick_alg == 0) {
+            addr  = pcx_packet[0].addr;
+            valid = pcx_packet[0].valid;
+        }
+        // second newest arrival
+        else if(pick_alg == 1) {
+            addr  = pcx_packet_d1[0].addr;
+            valid = pcx_packet_d1[0].valid;
+        }
+        // random arrival
+        else {
+            random_number = random() % 4;
+
+            if(random_number == 3) {
+                addr  = pcx_packet_d3[0].addr;
+                valid = pcx_packet_d3[0].valid;
+            }
+            else if(random_number == 2) {
+                addr  = pcx_packet_d2[0].addr;
+                valid = pcx_packet_d2[0].valid;
+            }
+            else if(random_number == 1) {
+                addr  = pcx_packet_d1[0].addr;
+                valid = pcx_packet_d1[0].valid;
+            }
+            else {
+                addr  = pcx_packet[0].addr;
+                valid = pcx_packet[0].valid;
+            }
+        }
+
+        // flip bit 24 - possibly causing L2 evictions
+        if(addr_alg == 1)
+            addr = addr ^ 40'h00_0100_0000;
+        // flip bit 4 - possibly next line or something interesting
+        else if(addr_alg == 2)
+            addr = addr ^ 40'h00_0000_0010;
+        // flip bits 5 and 4.
+        else if(addr_alg == 3)
+            addr = addr ^ 40'h00_0000_0030;
+        // bits 7 and 6 are 0
+        else if(addr_alg == 4)
+            addr = addr & 40'hff_ffff_ff3f;        
+        
+        // if addr[39:36] == 4'ha or 4'hb -> diagnostic accesses;
+        // if addr[39:38] == 2'b11 -> NC address
+        // simplifying and fixing ciop 
+        //if(addr[39:38]== 2'b11 || addr[39:38] == 2'b10)
+        if(addr[39:38]== 2'b11 || addr[39:37] == 3'h5)
+            forbidden_address = 1'b1;
+        else
+            forbidden_address = 1'b0;
+        
+        addr_ok = valid && !forbidden_address;
+        
+        // decrease the sniper frequency
+        if(random() % 100 < 50)
+            addr_ok = 0;
+
+        
+        // Inject PCX packets
+        
+        // LOAD
+        if(addr_ok && outgoing_loads_status[sparc_id*4 + rand_thr_id] == SNIPER_IDLE &&
+           outgoing_tokens[sparc_id] != 0 && !bw_bfm[sparc_id].shoot && tr_type == 0) {
+            bw_bfm[sparc_id].pcx_packet.valid = 1;
+            bw_bfm[sparc_id].pcx_packet.rqtyp = LOAD_RQ;
+            bw_bfm[sparc_id].pcx_packet.nc = random();
+            bw_bfm[sparc_id].pcx_packet.cpu_id = sparc_id;
+            bw_bfm[sparc_id].pcx_packet.thread_id = rand_thr_id;
+            bw_bfm[sparc_id].pcx_packet.bf_id = (random()%2 == 0) ? 3'b000 : 3'b010;
+            bw_bfm[sparc_id].pcx_packet.rep_l1_way = random();
+            bw_bfm[sparc_id].pcx_packet.size = random();
+            bw_bfm[sparc_id].pcx_packet.addr = addr;
+            bw_bfm[sparc_id].pcx_packet.data = random();
+            
+            bw_bfm[sparc_id].shoot = 1;
+            bw_bfm[sparc_id].type = 0;
+            outgoing_tokens[sparc_id]--;
+            outgoing_loads_status[sparc_id*4 + rand_thr_id] = SNIPER_LD_PENDING;
+
+            if(debug) {
+                printf("%d: sniper C%0dT%0d shot: LD addr = %x\n",
+                       get_time(LO), sparc_id, rand_thr_id, bw_bfm[sparc_id].pcx_packet.addr);
+                printf("%d: sniper: C%0d outgoing tokens decrease = %0d\n",
+                       get_time(LO), sparc_id, outgoing_tokens[sparc_id]);
+            }
+        }
+
+        // CAS
+        if(addr_ok && outgoing_loads_status[sparc_id*4 + rand_thr_id] == SNIPER_IDLE &&
+           outgoing_tokens[sparc_id] == 2 && !bw_bfm[sparc_id].shoot && tr_type == 1) {
+            bw_bfm[sparc_id].pcx_packet.valid = 1;
+            bw_bfm[sparc_id].pcx_packet.rqtyp = CAS1_RQ;
+            bw_bfm[sparc_id].pcx_packet.nc = 1;
+            bw_bfm[sparc_id].pcx_packet.cpu_id = sparc_id;
+            bw_bfm[sparc_id].pcx_packet.thread_id = rand_thr_id;
+            bw_bfm[sparc_id].pcx_packet.bf_id = 3'b000;
+            bw_bfm[sparc_id].pcx_packet.rep_l1_way = random();
+            bw_bfm[sparc_id].pcx_packet.size = 3'b010;
+            bw_bfm[sparc_id].pcx_packet.addr = addr;
+            bw_bfm[sparc_id].pcx_packet.data = 64'h0;
+            
+            bw_bfm[sparc_id].pcx_packet2.valid = 1;
+            bw_bfm[sparc_id].pcx_packet2.rqtyp = CAS2_RQ;
+            bw_bfm[sparc_id].pcx_packet2.nc = 1;
+            bw_bfm[sparc_id].pcx_packet2.cpu_id = sparc_id;
+            bw_bfm[sparc_id].pcx_packet2.thread_id = rand_thr_id;
+            bw_bfm[sparc_id].pcx_packet2.bf_id = 3'b000;
+            bw_bfm[sparc_id].pcx_packet2.rep_l1_way = random();
+            bw_bfm[sparc_id].pcx_packet2.size = 3'b010;
+            bw_bfm[sparc_id].pcx_packet2.addr = addr;
+            bw_bfm[sparc_id].pcx_packet2.data = 64'h0;
+            
+            bw_bfm[sparc_id].shoot = 1;
+            bw_bfm[sparc_id].type = 1;
+            outgoing_tokens[sparc_id] -= 2;
+            outgoing_loads_status[sparc_id*4 + rand_thr_id] = SNIPER_CAS_PENDING;
+
+            if(debug) {
+                printf("%d: sniper: C%0dT%0d shot: CAS addr = %x\n",
+                       get_time(LO), sparc_id, rand_thr_id, bw_bfm[sparc_id].pcx_packet.addr);
+                printf("%d: sniper: C%0d outgoing tokens decrease = %d\n", get_time(LO), sparc_id, outgoing_tokens[sparc_id]);
+            }
+        }
+        // INT (only sparc_id 7 will issue an interrupt)
+        if(addr_ok && outgoing_loads_status[sparc_id*4 + rand_thr_id] == SNIPER_IDLE &&
+           outgoing_tokens[sparc_id] != 0 && !bw_bfm[sparc_id].shoot && tr_type == 2 && sparc_id == 7) {
+            bw_bfm[sparc_id].pcx_packet.valid = 1;
+            bw_bfm[sparc_id].pcx_packet.rqtyp = INT_RQ;
+            bw_bfm[sparc_id].pcx_packet.nc = 0;  // Important: NOT A FLUSH!!!
+            bw_bfm[sparc_id].pcx_packet.cpu_id = 0; // send to core 0 for now.
+            bw_bfm[sparc_id].pcx_packet.thread_id = rand_thr_id;
+            bw_bfm[sparc_id].pcx_packet.bf_id = 3'b000;
+            bw_bfm[sparc_id].pcx_packet.rep_l1_way = random();
+            bw_bfm[sparc_id].pcx_packet.size = random();
+            bw_bfm[sparc_id].pcx_packet.addr = addr;
+            // bit 16 and 17 == 00
+            if(int_illegal)
+                bw_bfm[sparc_id].pcx_packet.data = 64'hffff_ffff_fffc_ffff & random();
+            else
+                bw_bfm[sparc_id].pcx_packet.data = 64'h0000_0000_0000_033f & random();    
+            
+            bw_bfm [sparc_id].shoot = 1;
+            bw_bfm [sparc_id].type = 2;
+            outgoing_tokens[sparc_id]--;
+            outgoing_loads_status[sparc_id*4 + rand_thr_id] = SNIPER_IDLE;
+
+            if(debug) {
+                printf("%d: sniper C%0dT%0d shot: INT addr = %x data = %x\n",
+                       get_time(LO), sparc_id, rand_thr_id, bw_bfm[sparc_id].pcx_packet.addr,
+                       bw_bfm[sparc_id].pcx_packet.data);
+                printf("%d: sniper: C%0d outgoing tokens decrease = %0d\n",
+                       get_time(LO), sparc_id, outgoing_tokens[sparc_id]);
+            }
+        }
+
+        // increase outgoing_tokens upon grant
+        if(pcx_bind.$pcx_spc_grant_pa) {
+            outgoing_tokens[sparc_id]++;
+            
+            if(debug)
+                printf("%d:  sniper: C%0d outgoing tokens increase = %d\n",
+                       get_time(LO), sparc_id, outgoing_tokens[sparc_id]);
+        }
+    } // while(1)
+}
+
+/////////////////////////////////////////////////////////////////
+// status
+/////////////////////////////////////////////////////////////////
+
+task BW_SNIPER::bw_sn_status(cpx_port cpx_bind, bit [2:0] sparc_id) {
+
+    integer thr_id, rtntyp;
+    bit [CPX_WIDTH-1:0] bus;
+    CpxPacket cpx_packet;
+    bit [2:0] cpu_id_from_packet;
+    
+    
+    cpx_packet = new();
+
+    if(debug)
+        printf("%d: sniper %0d inside bw_sn_status\n", get_time(LO), sparc_id);
+    
+    while(1) {
+        @(posedge cmp_top.cmp_gclk);
+
+        if(cpx_bind.$cpx_spc_data_rdy_cx) {
+            cpx_packet.set_pkt(cpx_bind.$cpx_spc_data_cx);
+            thr_id = cpx_packet.thread_id;
+            rtntyp = cpx_packet.rtntyp;
+            
+            cpu_id_from_packet = cpx_bind.$cpx_spc_data_cx[SNIPER_CPX_INV_CID_HI:SNIPER_CPX_INV_CID_LO];
+            
+            if(rtntyp == LOAD_RET && outgoing_loads_status[sparc_id*4 + thr_id] == SNIPER_LD_PENDING) {
+                outgoing_loads_status[sparc_id*4 + thr_id] = SNIPER_IDLE;
+
+                if(debug)
+                    printf("%d: sniper: C%0dT%0d load return for a sniper pending load\n",
+                           get_time(LO), sparc_id, thr_id);
+            }
+            else if(rtntyp == ST_ACK && outgoing_loads_status[sparc_id*4 + thr_id] == SNIPER_CAS_PENDING &&
+                    cpu_id_from_packet == sparc_id) {
+                outgoing_loads_status[sparc_id*4 + thr_id] = SNIPER_IDLE;
+
+                if(debug) {
+                    printf("%d: sniper: C%0dT%0d st ack for a sniper pending cas\n",
+                           get_time(LO), sparc_id, thr_id);
+                    
+                    if(!cpx_bind.$cpx_spc_data_cx[129])
+                        printf("%d: sniper: C%0dT%0d ERROR atomic bit not set in CPX\n",
+                               get_time(LO), sparc_id, thr_id);
+                }
+            }
+            else {
+                if(debug)
+                    printf("%d: sniper: C%0d other stuff returning \n", get_time(LO), sparc_id);
+            }
+        } // if(cpx_bind.$cpx_spc_data_rdy_cx)
+    } // while(1)
+}

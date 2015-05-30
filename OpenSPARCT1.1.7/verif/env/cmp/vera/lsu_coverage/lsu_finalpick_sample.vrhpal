@@ -1,0 +1,60 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_finalpick_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+// coverage_def LSU_FINALPICK_COV (bit [7:0] final_pick)
+// {
+  // state declarations
+
+  state s_NIDLE			(8'b00000000);
+  // wildcard state s_IDLE	(8'b00000001);
+  wildcard state s_IMISS	(8'bxxx10001);
+  wildcard state s_LDMISS	(8'bxx1x0010);
+  wildcard state s_STMISS	(8'bx1xx0100);
+  wildcard state s_MISCMISS	(8'b1xxx1000);
+
+  wildcard trans t_allvalid 	( 8'b1111xxxx -> 8'b1111xxxx);
+
+  wildcard trans t_ilsb2bvalid 	( 8'bx111xxx1 -> 8'bx111xxx1);
+  wildcard trans t_ilmb2bvalid 	( 8'b1x11xxx1 -> 8'b1x11xxx1);
+  wildcard trans t_mlsb2bvalid 	( 8'b1110xx10 -> 8'b1110xx10);
+
+  wildcard trans t_ib2bvalid 	( 8'bxxx1xxx1 -> 8'bxxx1xxx1);
+  wildcard trans t_lb2bvalid 	( 8'bxx10xx10 -> 8'bxx10xx10);
+  wildcard trans t_sb2bvalid 	( 8'bx100x100 -> 8'bx100x100);
+  wildcard trans t_mb2bvalid 	( 8'b10001000 -> 8'b10001000);
+
+  wildcard trans t_ilb2bvalid 	( 8'b0011xxx1 -> 8'b0011xxx1);
+  wildcard trans t_isb2bvalid 	( 8'b0101xxx1 -> 8'b0101xxx1);
+  wildcard trans t_imb2bvalid 	( 8'b1001xxx1 -> 8'b1001xxx1);
+
+  wildcard trans t_lsb2bvalid 	( 8'b0110xx10 -> 8'b0110xx10);
+  wildcard trans t_lmb2bvalid 	( 8'b1010xx10 -> 8'b1010xx10);
+
+  wildcard trans t_msb2bvalid 	( 8'b11000100 -> 8'b11000100);
+
+// }
+
+

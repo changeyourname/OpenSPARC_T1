@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_tlb_dmp_wr.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_tlb_dmp_wr.vrpal
+// Description:
+// 
+// State: 'b: thr_vld_d,br_anull,dmp,wr,tlbmiss
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_TLB_DMP_WR_COV (bit [4:0] cov_vector)
+// {
+
+  wildcard trans t_br_dmp_dlyslt_target  (5'b11xxx -> 5'b00000[.0:3.] -> 5'b00100 -> 5'b00000[.0:5.] -> 5'bxxxx1);
+  wildcard trans t_br_dlyslt_dmp  (5'b11xxx -> 5'b00000[.0:3.] -> 5'b1x00x -> 5'b00000[.0:10.] -> 5'bxx1xx);
+  wildcard trans t_br_dmp_dlyslt_wr_target  (5'b11xxx -> 5'b00000[.0:3.] -> 5'b00100 -> 5'b00000[.0:3.] -> 5'b00010 -> 5'b0000[.0:3.] -> 5'b1x000);
+  wildcard trans t_br_dmp_dlyslt_0_wr (5'b11xxx -> 5'b00000[.0:3.] -> 5'b00100 -> 5'b00000[.6:15.] -> 5'b00010);
+  wildcard trans t_br_dmp_dlyslt_1_wr (5'b11xxx -> 5'b00000[.0:3.] -> 5'b00100 -> 5'b00000[.15:50.] -> 5'b00010);
+
+// }
+
+
+
+
+

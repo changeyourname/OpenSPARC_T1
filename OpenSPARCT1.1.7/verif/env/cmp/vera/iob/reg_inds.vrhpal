@@ -1,0 +1,312 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: reg_inds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        reg_inds.vrh
+//  Description:        Macros of iop registers.
+*/
+////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////
+// Macros
+////////////////////////////////////////////////////////////////////////
+#define L2_DIAG_DATA_IND 0
+#define L2_DIAG_TAG_IND 1
+#define L2_DIAG_VD_IND 2
+#define L2_DIAG_UA_IND 3
+#define L2_CONTROL_REG_IND 4
+#define L2_ERROR_EN_REG_IND 5
+#define L2_ERROR_STATUS_REG_IND 6
+#define L2_ERROR_ADDRESS_REG_IND 7
+#define L2_ERROR_INJECT_REG_IND 8
+#define L2_STM_REG_IND 9
+#define DRAM_CAS_ADDR_WIDTH_REG_IND 10
+#define DRAM_RAS_ADDR_WIDTH_REG_IND 11
+#define DRAM_CAS_LAT_REG_IND 12
+#define DRAM_SCRUB_FREQ_REG_IND 13
+#define DRAM_REFRESH_FREQ_REG_IND 14
+#define DRAM_OPEN_BANK_MAX_REG_IND 15
+#define DRAM_REFRESH_COUNTER_REG_IND 16
+#define DRAM_SCRUB_ENABLE_REG_IND 17
+#define DRAM_PROG_TIME_CNTR_REG_IND 18
+#define DRAM_TRRD_REG_IND 19
+#define DRAM_TRC_REG_IND 20
+#define DRAM_TRCD_REG_IND 21
+#define DRAM_TWTR_REG_IND 22
+#define DRAM_TRTW_REG_IND 23
+#define DRAM_TRTR_REG_IND 24
+#define DRAM_TWTW_REG_IND 25
+#define DRAM_TRP_REG_IND 26
+#define DRAM_TWR_REG_IND 27
+#define DRAM_TRFC_REG_IND 28
+#define DRAM_TMRD_REG_IND 29
+#define DRAM_TIWTR_REG_IND 30
+#define DRAM_PRECHARGE_WAIT_REG_IND 31
+#define DRAM_DIMM_STACK_REG_IND 32
+#define DRAM_EXT_MODE2_REG_IND 33
+#define DRAM_EXT_MODE1_REG_IND 34
+#define DRAM_EXT_MODE3_REG_IND 35
+#define DRAM_WAIT_CONTROL_REG_IND 36
+#define DRAM_RANK1_PRESENT_REG_IND 37
+#define DRAM_CHANNEL_DISABLED_REG_IND 38
+#define DRAM_SEL_LO_ADDR_BITS_REG_IND 39
+#define DRAM_DIMM_INIT_REG_IND 40
+#define DRAM_SW_DV_CONTROL_REG_IND 41
+#define DRAM_SW_DV_COUNT_REG_IND 42
+#define DRAM_HW_DMUX_CLK_INV_REG_IND 43
+#define DRAM_PAD_EN_CLK_INV_REG_IND 44
+#define DRAM_MODE_WRITE_STATUS_REG_IND 45
+#define DRAM_INIT_STATUS_REG_IND 46
+#define DRAM_DIMM_PRESENT_REG_IND 47
+#define DRAM_FAILOVER_STATUS_REG_IND 48
+#define DRAM_FAILOVER_MASK_REG_IND 49
+#define DRAM_DBG_TRG_EN_REG_IND 50
+#define DRAM_ERROR_STATUS_REG_IND 51
+#define DRAM_ERROR_ADDRESS_REG_IND 52
+#define DRAM_ERROR_INJECT_REG_IND 53
+#define DRAM_ERROR_COUNTER_REG_IND 54
+#define DRAM_ERROR_LOCATION_REG_IND 55
+#define DRAM_PERF_CTRL_REG_IND 56
+#define DRAM_PERF_COUNT_REG_IND 57
+#define ETHEQ_SH_STAT_IND 58
+#define ENET_IN_FBA_FIFO_SH_STAT_IND 59
+#define PAQ_SH_STAT_IND 60
+#define J_INT_DATA0_IND 61
+#define J_INT_DATA1_IND 62
+#define J_INT_ADATA0_IND 63
+#define J_INT_ADATA1_IND 64
+#define J_INT_BUSY_IND 65
+#define J_INT_ABUSY_IND 66
+#define INT_MAN_IND 67
+#define INT_CTL_IND 68
+#define INT_VEC_DIS_IND 69
+#define J_INT_VEC_IND 70
+#define SSYS_RESET_IND 71
+#define RSET_STAT_IND 72
+#define PROC_SER_NUM_IND 73
+#define TM_STAT_CTL_IND 74
+#define CORE_AVAIL_IND 75
+#define IOB_FUSE_IND 76
+#define L2_VIS_CONTROL_IND 77
+#define L2_VIS_MASK_A_IND 78
+#define L2_VIS_MASK_B_IND 79
+#define L2_VIS_COMPARE_A_IND 80
+#define L2_VIS_COMPARE_B_IND 81
+#define L2_TRIG_DELAY_IND 82
+#define IOB_VIS_SELECT_IND 83
+#define DB_ENET_CONTROL_IND 84
+#define DB_ENET_IDLEVAL_IND 85
+#define DB_JBUS_CONTROL_IND 86
+#define DB_JBUS_MASK_IND 87
+#define DB_JBUS_COMPARE_IND 88
+#define DB_JBUS_COUNT_IND 89
+#define IOB_SPARC_BIST_CONTROL_IND 90
+#define IOB_STM_CONTROL_REG_IND 91
+#define IOB_LSU_CONTROL_REG_IND 92
+#define IOB_PC_REG_IND 93
+#define RAND_GEN_IND 94
+#define RAND_TUNE_IND 95
+#define CLK_DIV_IND 96
+#define CLK_CTL_IND 97
+#define DBG_INIT_IND 98
+#define CLK_DLL_CNTL_IND 99
+#define CLK_SCRATCH_IND 100
+#define GMACC0_IND 101
+#define GMACC1_IND 102
+#define GMACC2_IND 103
+#define GPCSC_IND 104
+#define SA0_IND 105
+#define SA1_IND 106
+#define TPID_IND 107
+#define MAXFR_IND 108
+#define REVCD_IND 109
+#define ANCTL_IND 110
+#define ANSTT_IND 111
+#define ANNPG_ANADV_IND 112
+#define ANLPA_IND 113
+#define MCMD_IND 114
+#define MADR_IND 115
+#define MWTD_IND 116
+#define MRDD_IND 117
+#define MIND_IND 118
+#define TEST2_IND 119
+#define TR64_IND 120
+#define TR127_IND 121
+#define TR255_IND 122
+#define TR511_IND 123
+#define TR1K_IND 124
+#define TRMAX_IND 125
+#define TRMGV_IND 126
+#define RBYT_IND 127
+#define RPKT_IND 128
+#define RFCS_IND 129
+#define RMCA_IND 130
+#define RBCA_IND 131
+#define RXCF_IND 132
+#define RXPF_IND 133
+#define RXUO_IND 134
+#define RALN_IND 135
+#define RFLR_IND 136
+#define RCDE_IND 137
+#define RCSE_IND 138
+#define RUND_IND 139
+#define ROVR_IND 140
+#define RFRG_IND 141
+#define RJBR_IND 142
+#define TBYT_IND 143
+#define TPKT_IND 144
+#define TMCA_IND 145
+#define TBCA_IND 146
+#define TXPF_IND 147
+#define LMBN_IND 148
+#define TDRP_IND 149
+#define TFCS_IND 150
+#define TXCF_IND 151
+#define TOVR_IND 152
+#define CAR1_IND 153
+#define CAR2_IND 154
+#define CAM1_IND 155
+#define CAM2_IND 156
+#define PHY_IF_IND 157
+#define ETHER_INGRESS_MODE_IND 158
+#define ENET_MC_ADDR_FLTR_IND 159
+#define ENET_OUI_IND 160
+#define MAC_ADDR_RNG_IND 161
+#define MAC_ACT_IND 162
+#define MAC_LENLLC_CFIG_IND 163
+#define ETYPE_MATCH_IND 164
+#define IP_KEY_CFIG_IND 165
+#define HKR_IND 166
+#define CKSM_CFIG_IND 167
+#define H1POLY_IND 168
+#define H2POLY_IND 169
+#define UNCL_RR_IND 170
+#define AQ_BLK_IND 171
+#define PKT_FIFO_PART_IND 172
+#define MBFR_FULL_THRESH_IND 173
+#define PPU_DEBUG_IND 174
+#define FCRAM_HASH_TBL_IND 175
+#define NRAM_TIME_CFG_IND 176
+#define NRAM_MODE_REG_CFG_IND 177
+#define NRAM_REF_CFG_IND 178
+#define NRAM_DBG_CFG_IND 179
+#define NRAM_PERF_CFG_IND 180
+#define FBAFIFO_MGN_IND 181
+#define FBAFIFO_CFIG_A_IND 182
+#define FBAFIFO_CFIG_B_IND 183
+#define FBAFIFO_STAT_IND 184
+#define FBAFIFO_DEBUG_IND 185
+#define FRE_BUF_AD_RET_IND 186
+#define PAQCFIG_A_IND 187
+#define PAQCFIG_B_IND 188
+#define PAQSTAT_A_IND 189
+#define PAQSTAT_B_IND 190
+#define PAQCTL_IND 191
+#define PAQ_FBAQ_OVL_IND 192
+#define PAQ_DEBUG_A_IND 193
+#define PAQ_DEBUG_B_IND 194
+#define PAQ_DEBUG_C_IND 195
+#define PDM_RSVD_DEBUG_IND 196
+#define ETHE_ING_MAX_REQ_IND 197
+#define ENET_IN_REQ_CNT_IND 198
+#define ENET_IN_SAM_IND 199
+#define PAU_EN_IND 200
+#define EING_DROP_MBUF_IND 201
+#define MAC_ADDR_FAIL_DISC_IND 202
+#define EING_L3CKSUM_ERR_IND 203
+#define EING_L4CKSUM_ERR_IND 204
+#define EING_DROP_DBUF_IND 205
+#define EING_DROP_MEM_IND 206
+#define EING_DROP_PAQ_IND 207
+#define EING_TIMEOUT_IND 208
+#define ENET_EG_XFER_LEN_IND 209
+#define ETH_CLQ_CFIG_IND 210
+#define ETHEQ_IND 211
+#define ETHEQ_CMD_NUM_IND 212
+#define ETHEQ_STAT_IND 213
+#define ETHEQ_SDW_STAT_IND 214
+#define DRR_WT_IND 215
+#define ETHE_EGR_MAX_BSC_REQ_IND 216
+#define ENET_USE_1_IND 217
+#define ENET_USE_2_IND 218
+#define MCMD_BUF_DBG_IND 219
+#define FST_CMD_BUF_DBG_A_IND 220
+#define FST_CMD_BUF_DBG_B_IND 221
+#define ENET_EGR_TEST_CTL_IND 222
+#define EGDP_FIFO_FLSH_IND 223
+#define JBI_CONFIG_IND 224
+#define JBI_CONFIG2_IND 225
+#define JBI_DEBUG_ARB_IND 226
+#define JBI_DEBUG_IND 227
+#define JBI_PERF_CTL_IND 228
+#define JBI_PERF_COUNT_IND 229
+#define ETH_1G_SEQ_IND 230
+#define BSC_SCHE_TBL_IND 231
+#define BSC_SCHE_MAX_IND 232
+#define XSATN_THRES_IND 233
+#define BSC_USE_CNT_IND 234
+#define BSC_VIS_CONTROL_IND 235
+#define ENET_ERRINT_IND 236
+#define ENET_SERR_IND 237
+#define ENET_SERR_STAT_IND 238
+#define ENET_ERR_INJECT_REG_IND 239
+#define EING_ERRINT_IND 240
+#define EING_FERR_STAT_IND 241
+#define EING_FERR_OVF_IND 242
+#define EING_SERR_A_IND 243
+#define EING_SERR_STAT_A_IND 244
+#define EING_SERR_B_IND 245
+#define EING_SERR_STAT_B_IND 246
+#define EING_ERR_INJECT_A_IND 247
+#define EING_ERR_INJECT_B_IND 248
+#define EEDP_ERRINT_IND 249
+#define EEDP_ERR_STAT_IND 250
+#define EEDP_ERR_OVF_IND 251
+#define EEDP_SERR_IND 252
+#define EEDP_SERR_STAT_IND 253
+#define EEDP_ERR_INJECT_REG_IND 254
+#define JBI_ERR_CONFIG_IND 255
+#define JBI_ERROR_LOG_IND 256
+#define JBI_ERROR_OVF_IND 257
+#define JBI_LOG_ENB_IND 258
+#define JBI_SIG_ENB_IND 259
+#define JBI_LOG_ADDR_IND 260
+#define JBI_LOG_DATA0_IND 261
+#define JBI_LOG_DATA1_IND 262
+#define JBI_LOG_CTRL_IND 263
+#define JBI_LOG_PAR_IND 264
+#define JBI_LOG_NACK_IND 265
+#define JBI_LOG_ARB_IND 266
+#define JBI_L2_TIMEOUT_IND 267
+#define JBI_ARB_TIMEOUT_IND 268
+#define JBI_TRANS_TIMEOUT_IND 269
+#define JBI_INTR_TIMEOUT_IND 270
+#define JBI_MEMSIZE_IND 271
+#define JBI_ERR_INJECT_IND 272
+#define BSC_ERRINT_IND 273
+#define BSC_ERR_STAT_IND 274
+#define BSC_ERR_OVF_IND 275
+#define BSC_SERR_IND 276
+#define BSC_PAY_SERR_IND 277
+#define BSC_PAY_ERR_INJECT_REG_IND 278
+#define SSI_TIMEOUT_IND 279
+#define SSI_LOG_IND 280

@@ -1,0 +1,1847 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: iob_checker.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+///////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        iob_checker.vrpal
+//  Description:        Class definition and methods for the iob checker
+//                      (reference model) used for modelling the
+//                      iob functionality.
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#include "regfile.vrh"
+#include "pcx_cmd.vrh"
+#include "pcx_snoop.vrh"
+#include "cpx_cmd.vrh"
+#include "cpx_snoop.vrh"
+#include "ucb_req.vrh"
+#include "ucb_rsp.vrh"
+#include "ucb_snoop.vrh"
+#include "xbar_reg_stub.vrh"
+#include "reg_cmd.vrh"
+#include "reg_defs.vrh"
+#include "reg_inds.vrh"
+
+// need to set up framework for checker
+// need to monitor mailboxes:
+//      cpx
+//      pcx
+//      individual ucb mboxes
+//      have appropriate ingress mboxes generate
+//      expects for egress mboxes
+//      
+
+// have individual unit monitors?
+// each look at the mbox, if it is theirs, pop
+// and set own expect.
+// the good thing is that this is fairly straight
+// forward, and replicable.
+// have an object called unit_ck, instantiate for
+// each "unit" cpx->unit or unit->pcx pair.
+
+#define UNIT_IDX_HI 39
+#define UNIT_IDX_LO 32
+#define UNIT_IDX UNIT_IDX_HI:UNIT_IDX_LO
+#define THR_CPU UCB_THR_HI-UCB_THR_LO-1:UCB_THR_HI-UCB_THR_LO-3 // cpu bits in ucb thr
+#define THR_THR UCB_THR_HI-UCB_THR_LO-4:0                       // index of thread bits in ucb thr
+#define UCB_THR_BITS UCB_THR_HI-UCB_THR_LO-1:0
+#define MAX_THREADS {UCB_THR_HI-UCB_THR_LO{1'b1}} 
+#define STCK_CORE_OFFSET 117
+#define INTVECT 5:0
+#define BAD_ADDR 40'hDE_BEBE_AFFE
+#define DRAM_DATA DRAM_DATA_LO ^~ DRAM_DATA_HI
+
+#define PCX_LOAD 5'b00000
+#define PCX_IFIL 5'b10000
+#define PCX_STOR 5'b00001
+#define PCX_STRQ 5'b00111
+#define PCX_CAS1 5'b00010
+#define PCX_CAS2 5'b00011
+#define PCX_SWPL 5'b00110
+#define PCX_STLD 5'b00100
+#define PCX_STST 5'b00101
+#define PCX_INT  5'b01001
+#define PCX_FP0  5'b01010
+#define PCX_FP1  5'b01011
+#define PCX_FREQ 5'b01101
+#define PCX_FRSP 5'b01110
+#define CPX_LOAD 4'b0000
+#define CPX_IFL1 4'b0001
+#define CPX_IFL2 4'b0001
+#define CPX_STLD 4'b0010
+#define CPX_EVCT 4'b0011
+#define CPX_STCK 4'b0100
+#define CPX_SSTK 4'b0110
+#define CPX_INT  4'b0111
+#define CPX_FP   4'b1000
+#define CPX_FREQ 4'b1010
+#define CPX_FRSP 4'b1011
+#define CPX_UNCR 4'b1100
+#define NACK_ERR 3'b010
+#define LOAD_LIMIT 1
+#define IFIL_LIMIT 1
+#define STOR_LIMIT 1
+  
+//////////////////////////////////////////////////////////////////////////
+// IOB CHECKER
+//////////////////////////////////////////////////////////////////////////
+class IOB_CHECKER 
+{
+  string                           name;
+  integer                          timeout_sem;
+  integer                          timeout = 0;
+  
+  static integer                   fprintf_counter = 0;
+  
+  iob_port                         iob_bind;
+//  tap_ucb_port                     tap_ucb_bind;
+    
+  integer                          pcx_mbox;
+  integer                          cpx_mbox;
+  integer                          ucb_cnt[], ccx_cnt[]; // counts for outstanding read/wr/ifill
+                                                         // associate w/ {core,thread,rqtyp}
+  integer                          ucb_lmt[], ccx_lmt[]; // limits for outstanding read/wr/ifill
+                                                         // associate w/ {core,thread,rqtyp}
+
+  bit [UNIT_IDX_HI-UNIT_IDX_LO:0]  unit_hi[];
+  bit [UNIT_IDX_HI-UNIT_IDX_LO:0]  unit_lo[];
+  
+  CPX_SNOOP                        cpx_snoop;
+  PCX_SNOOP                        pcx_snoop;
+  UCB_SNOOP                        jbi_snoop;
+  UCB_SNOOP                        dram0_snoop;
+  UCB_SNOOP                        dram1_snoop;
+  UCB_SNOOP                        ucb_snoops[];         // associate on {unit id}
+  
+  XBAR_REG_STUB                    xbar_reg_stub;
+  
+  VeraList_CPX_CMD                 cpx_exp[];            // associate w/ {unit id (+ nacks)} 
+  VeraList_UCB_REQ                 uin_exp[];            // associate w/ {unit id}
+  VeraList_UCB_RSP                 uout_exp[];           // associate w/ {unit id, rd, wr, ifil}
+  VeraList_UCB_RSP                 eecu_int_exp[];
+  VeraList_UCB_RSP                 jbi_int_exp;
+  VeraList_CPX_CMD                 iob_int_exp;
+  VeraList_UCB_RSP                 ecc_int_exp;
+  
+  bit                              id_list[];            // list of defined unit ids
+  bit [63:0]                       dev_int_mask;
+  
+  REG_CMD                          reg_cmd;
+  bit                              check_iob_addr;
+  reg_arr_t                        reg_arr;
+
+  
+  // Main checker functions
+  task                                     new(string name = "IOB_CHECKER");
+  task                                     destroy();
+  task                                     start();  
+  task                                     check();  
+  task                                     check_int();  
+  task                                     snoop_tmp_trig();
+  task                                     snoop_vec_disp();
+//  task                                     snoop_tap_iob();
+  task                                     check_pcx();
+  task                                     check_cpx();
+  task                                     set_unit((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                                    (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_hi = IOB_MAN_CSR),
+                                                    (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_lo = IOB_MAN_CSR),
+                                                    (UCB_SNOOP unit_snoop = null));
+  task                                     check_unit((string name = "IOB<->EECU Checker"),
+                                                      (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                                      (bit discard = 1'b0));
+  task                                     check_iob_ucb((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                                         integer uin_mbox);
+  task                                     check_ucb_iob((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                                         integer uout_mbox);
+  task                                     incr_timeout_cnt();
+
+  // Helper tasks and functions
+  task                                     process_load_req(PCX_CMD new_pcx_cmd);
+  task                                     process_stor_req(PCX_CMD new_pcx_cmd);
+//  task                                     process_ifil_req(PCX_CMD new_pcx_cmd);
+//  task                                     process_frsp_ack(PCX_CMD new_pcx_cmd);  
+  task                                     print_expects((string info_msg = "Outstanding Interrupts"));
+  
+  function bit [UNIT_IDX_HI-UNIT_IDX_LO:0] map_unit(bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit);
+  function bit                             done();
+  
+}
+
+////////////////////////////////////////////////////////////////////////
+// Constructor
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::new(string       name = "IOB_CHECKER")
+{
+  string                          filename;
+  bit [UCB_THR_HI-UCB_THR_LO:0]   thr;
+  bit [UCB_ADDR_HI-UCB_ADDR_LO:0] tmp_add = BAD_ADDR;
+  integer                         i;
+  
+  this.name = name;
+  this.reg_arr = new();
+  this.check_iob_addr = 0;
+  this.reg_cmd = new();
+
+  this.pcx_snoop = new("PCX_SNOOP", 7'h0, pcx_iob_bind) ;
+  this.cpx_snoop = new("CPX_SNOOP", 7'h0, cpx_iob_bind);
+  this.pcx_mbox = this.pcx_snoop.iob_mbox;
+  this.cpx_mbox = this.cpx_snoop.iob_mbox;
+  this.xbar_reg_stub = new("XBAR_REG_STUB", this.pcx_snoop);
+  this.jbi_snoop = new("JBI_SNOOP", iob_jbi_bind, jbi_iob_bind);
+  this.dram0_snoop = new("DRAM0_SNOOP", iob_dram0_bind, dram0_iob_bind);
+  this.dram1_snoop = new("DRAM1_SNOOP", iob_dram1_bind, dram1_iob_bind);
+    
+//  this.tap_ucb_bind = tap_ucb_bind;
+  this.iob_bind = iob_bind;
+  
+  this.cpx_exp[NACK_ERR] = new();
+  this.dev_int_mask = 64'hffffffffffffffff;
+  this.timeout_sem = alloc(SEMAPHORE, 0, 1, 1);
+  this.timeout = 0;
+
+  // Initialize the outstanding ccx count for all pcx request types.
+  for (thr = 0; thr <= MAX_THREADS; thr++) 
+  {
+    this.ucb_cnt[{thr,PCX_LOAD}]   = 0;
+    this.ucb_lmt[{thr,PCX_LOAD}]   = LOAD_LIMIT;
+    this.ccx_cnt[{thr,PCX_LOAD}]   = 0;
+    this.ccx_lmt[{thr,PCX_LOAD}]   = LOAD_LIMIT;
+    this.ccx_cnt[{thr,PCX_IFIL}]   = 0;
+    this.ccx_lmt[{thr,PCX_IFIL}]   = IFIL_LIMIT;
+    this.ccx_cnt[{thr,PCX_STOR}]   = 0;
+    this.ccx_lmt[{thr,PCX_STOR}]   = STOR_LIMIT;
+  }
+
+  // Contrcut the request and ack expect queues for all clusters.
+  this.set_unit(tmp_add[UNIT_IDX], tmp_add[UNIT_IDX], tmp_add[UNIT_IDX], null);
+  this.set_unit(IOB_MAN_CSR, IOB_MAN_CSR, IOB_MAN_CSR, null);
+  this.set_unit(IOB_INT_CSR, IOB_INT_CSR, IOB_INT_CSR, null);
+//  this.set_unit(TAP_CSR, TAP_CSR, TAP_CSR, tap_snoop);
+  this.set_unit(JBUS1, JBUS2_HI, JBUS2_LO, jbi_snoop);
+//  this.set_unit(CLOCK_UNIT_CSR, CLOCK_UNIT_CSR, CLOCK_UNIT_CSR, ctu_snoop);
+  this.set_unit(DRAM_CSR, DRAM_DATA_HI, DRAM_DATA_LO, dram0_snoop);
+//  this.set_unit(DRAM_CSR, DRAM_DATA_HI, DRAM_DATA_LO, dram1_snoop);
+//  this.set_unit(SPI_CSR, SPI_CSR, SPI_CSR, spi_snoop);
+
+  // Construct interrupt expect queues for iob and ecc.
+  this.iob_int_exp = new();
+  this.ecc_int_exp = new();
+  this.jbi_int_exp = new();
+
+}
+
+////////////////////////////////////////////////////////////////////////
+// Contrcut the request and ack expects.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::set_unit((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                           (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_hi = IOB_MAN_CSR),
+                           (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_lo = IOB_MAN_CSR),
+                           (UCB_SNOOP unit_snoop = null)) 
+{
+  integer i;
+  
+  this.id_list[unit_id]              = 1'b1;
+  this.unit_hi[unit_id]              = unit_hi;
+  this.unit_lo[unit_id]              = unit_lo;
+  for (i = unit_lo; i <= unit_hi; i++)
+  {
+    this.id_list[i]                  = 1'b1;
+  }
+  this.uin_exp[unit_id]              = new(); // unit ucb request expects
+  this.uout_exp[{unit_id, 3'b100}]   = new(); // ucb read ack expects
+  this.uout_exp[{unit_id, 3'b010}]   = new(); // ucb write ack expects
+  this.uout_exp[{unit_id, 3'b001}]   = new(); // ucb ifill ack expects
+  this.cpx_exp[unit_id]              = new();
+  this.ucb_snoops[unit_id]           = unit_snoop;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Destructor.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::destroy()
+{
+}
+
+//////////////////////////////////////////////////////////////
+// Start snoop and checking.
+//////////////////////////////////////////////////////////////
+task IOB_CHECKER::start()
+{
+
+    if (get_plus_arg(CHECK, "iob_chkon"))
+    {
+        fork
+
+            // Snoop ucb packets between iob and tap.
+//            this.snoop_tap_iob();
+
+            // Check pcx and cpx packets between iob and ccx.
+            this.check_cpx();
+            this.check_pcx();
+
+            // Check ucb packets between iob and all clusters.
+            this.check();
+           
+            // Check interrupts from all clusters.
+            this.check_int();
+
+            // Start the temperature trigger snooper and vector
+            // dispatch interrupt snooper.
+            this.snoop_tmp_trig();
+            this.snoop_vec_disp();
+  
+            // Increment the timeout value till some other process resets it.
+            incr_timeout_cnt();
+    
+        join none
+        printf ("%0d : IOB checker started.\n", get_time(LO));
+    }
+
+}
+
+////////////////////////////////////////////////////////////////////////
+// Start the check process for different ucb interfaces.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check() 
+{
+  fork
+    
+    // Snoop and check all clusters' mboxes.
+    this.check_unit("IOB<->IOB Management Checker", IOB_MAN_CSR, 1'b1);
+    this.check_unit("IOB<->INT TABLE Checker", IOB_INT_CSR, 1'b1);
+//    this.check_unit("IOB<->TAP CSR Checker", TAP_CSR);
+    this.check_unit("IOB<->JBI CSR CSR Checker", JBUS1);
+//    this.check_unit("IOB<->CLOCK UNIT Checker", CLOCK_UNIT_CSR);
+    this.check_unit("IOB<->DRAM CSR Checker", DRAM_CSR);
+//    this.check_unit("IOB<->SPI CSR Checker", SPI_CSR);
+
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Check interrupts from all clusters.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_int()
+{
+  fork
+  
+  // Transfer interrupt from jbi snoop interrupt queue to jbi or ecc
+  // interrupt queue.
+  {
+    integer     i;
+    bit [63:0]  reg_val;
+    UCB_RSP     ucb_rsp;
+    UCB_RSP     new_rsp;
+    
+    while(1)
+    {
+      @(posedge iob_top_jbus.clk); 
+
+      if(this.jbi_snoop.intq_1.size() != 0)
+      {
+        ucb_rsp = new(0,0,0,0,0,0,0);
+        ucb_rsp = this.jbi_snoop.intq_1.front();
+        this.jbi_snoop.intq_1.pop_front();
+        
+        fork
+        {
+          
+          // Wait till the actual read happens in iob rtl such that
+          // additional interrupts that come in between the window when
+          // interrupt is issued from cluster and when the read actually
+          // happens will be discarded as well.
+//          while (this.iob_bind.\$int_srvcd_d1 == 1'b0 ||
+//                 this.iob_bind.\$intctrl_addr_dec[ucb_rsp.dev_id] == 1'b0)
+//          {
+//            @(posedge iob_top_jbus.clk); 
+//          }
+          
+          if (ucb_rsp.dev_id == 17)
+          {
+            this.ecc_int_exp.push_back(ucb_rsp);
+          }
+          else
+          {
+            this.jbi_int_exp.push_back(ucb_rsp);
+          }        
+        }
+        join none
+        
+      }
+    }
+  }
+  
+  // Emulate iob behavior of discarding interrupts when mask and pending
+  // bits are asserted.
+  {
+    PCX_CMD     pcx_cmd;
+    integer     dev_id; 
+    bit [39:0]  tmp_add;
+   
+    while(1)
+    {
+      mailbox_get(WAIT, this.pcx_snoop.intchk_mbox, pcx_cmd, CHECK);
+      tmp_add = {IOB_MAN_CSR, 32'h0}+{8'h00, IOB_CREG_INTCTL};
+      if (pcx_cmd.address[39:8] == tmp_add[39:8]) 
+      {
+        dev_id = (pcx_cmd.address[9:0] >> 3);
+
+        // Wait till the actual write happens in iob rtl such that
+        // additional interrupts that come in between the window when
+        // pcx command is issued from thread and when the write actually
+        // happens will be discarded as well.
+        while (this.iob_bind.\$creg_intctrl_wr == 1'b0 ||
+               this.iob_bind.\$intctrl_addr_dec[dev_id] == 1'b0)
+        {
+          @(posedge iob_top_jbus.clk); 
+        }
+        
+        // Pop the all interrupts in the interrupt queue except the pending
+        // interrupt when interrupt mask is cleared. Pop all the interrupts
+        // when the pending bit is cleared.
+        if(dev_id < 16)
+        {
+          printf("%d : %s : Reseting the  MASK bit to %1b for device %2d : size : %d\n",
+                 get_time(LO), this.name, pcx_cmd.data[2],
+                 dev_id,this.eecu_int_exp[dev_id].size());
+          if ((this.dev_int_mask[dev_id] == 1'b1) && (this.eecu_int_exp[dev_id].size() > 1) &&
+              (pcx_cmd.data[2] == 1'b0))
+          {
+            while(this.eecu_int_exp[dev_id].size() > 1)
+            {
+              this.eecu_int_exp[dev_id].pop_front();
+            }
+          }
+          if ((this.eecu_int_exp[dev_id].size() > 0) &&
+              (pcx_cmd.data[1] == 1'b1))
+          {
+            while(this.eecu_int_exp[dev_id].size() > 0)
+            {
+              this.eecu_int_exp[dev_id].pop_front();
+            }
+          }
+        }        
+      }
+    }
+  }
+
+  // Compare the interrupt generated by IO Bridge with
+  // expected interrupt from EECU and IOB.
+  {
+    integer                     i;
+    CPX_CMD                     cpx_cmd;
+    CPX_CMD                     cpx_cmd_exp;
+    UCB_RSP                     ucb_rsp;
+    bit [63:0]                  reg_val;
+    bit [IOB_INT_VEC_WIDTH-1:0] intvect; 
+    bit [UCB_INT_DEV_WIDTH-1:0] dev_id;
+    bit [2:0]                   coreid;   
+    bit [1:0]                   threadid;
+        
+    while (1)
+    {
+
+      // Get cpx command from interrupt snoop mbox.
+      mailbox_get(WAIT, cpx_snoop.snoop_mbox_2, cpx_cmd, CHECK);
+
+      // Check that the interrupted core id is correctly encoded in the data.
+      if (cpx_cmd.coreid != cpx_cmd.data[12:10])
+      {
+        printf("\n%0d : Simulation -> FAIL\n\n",
+               get_time(LO));
+        @(posedge iob_top_jbus.clk); 
+        error("\n%d : %s : ERROR - cpu id in command and data do not match.\n",
+               get_time(LO), this.name);
+      }
+
+      // If cpx returns interrupt request, check the cpx request accordingly.
+      if(cpx_cmd.data[17:16] == IOB_INT)
+      {
+        void = semaphore_get(WAIT, this.timeout_sem, 1);
+        this.timeout = 0;
+        semaphore_put(this.timeout_sem, 1);
+
+        // Go through the interrupt management table to get the expected
+        // thread id and core id of the received interrupt vector.
+        // Only devices 0 to 17 are supported right now. Exit if no int
+        // vector in the table is equal to the cpx command int vector.
+        for (i = 0; i <= 17; i++) 
+        {
+          reg_cmd.generate_iobman_address(i, IOB_CREG_INTMAN, 0);
+          this.xbar_reg_stub.get_reg_data(reg_cmd.address, reg_val);
+          intvect = reg_val[IOB_INT_VEC_HI:IOB_INT_VEC_LO];
+          threadid = reg_val[IOB_INT_CPU_LO+1:IOB_INT_CPU_LO];
+          coreid = reg_val[IOB_INT_CPU_HI:IOB_INT_CPU_LO+2];
+          if (cpx_cmd.intvect == intvect)
+          {
+            dev_id = i; 
+            break;
+          }
+        }
+        if (i <= 17)
+        {
+          printf("%0d : %s : Interrupt generated for device %h.\n",
+                 get_time(LO), this.name, dev_id);
+        }
+        else
+        {
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("%0d : %s : ERROR - No interrupt vector found in the interrupt management table - Exiting !!\n",
+                 get_time(LO), this.name);
+        }
+        
+        // Check eecu interrupts.
+        if (dev_id < 16)
+        {
+          if(this.eecu_int_exp[dev_id].size() != 0) 
+          {
+            this.eecu_int_exp[dev_id].pop_front();
+            cpx_cmd_exp = new();
+            cpx_cmd_exp.valid = 1'b1;
+            cpx_cmd_exp.rtntyp = INT_RET;
+            cpx_cmd_exp.coreid = coreid;
+            cpx_cmd_exp.intvect = intvect;
+            cpx_cmd_exp.threadid = threadid;
+   
+            if(cpx_cmd.compare(cpx_cmd_exp) == 1'b1)
+            {
+              printf("%0d : %s : Interrupt generated correctly for device %h.\n",
+                     get_time(LO), this.name, dev_id);
+              this.dev_int_mask[dev_id] = 1'b1;
+              cpx_cmd.print("IOB_CHECKER"); 
+            }
+            else
+            {
+              cpx_cmd.info_msg = "Interrupt Rec";
+              cpx_cmd.print ("IOB_CHECKER");
+              printf("\n");
+              cpx_cmd_exp.info_msg = "Interrupt Exp";
+              cpx_cmd_exp.print ();    
+              printf("\n%0d : Simulation -> FAIL\n\n",
+                     get_time(LO));
+              @(posedge iob_top_jbus.clk); 
+              error("\n%0d : %s : ERROR - Interrupt not generated correctly - Exiting !!\n",
+                     get_time(LO), this.name);
+            }
+          }
+          else
+          {
+              cpx_cmd.info_msg = "Interrupt Rec";
+              cpx_cmd.print ("IOB_CHECKER");
+              printf("\n");
+              printf("\n%0d : Simulation -> FAIL\n\n",
+                     get_time(LO));
+              @(posedge iob_top_jbus.clk); 
+              error("\n%0d : %s : ERROR - Interrupt not generated correctly - Exiting !!\n",
+                     get_time(LO), this.name);
+          }
+        }
+        
+        // Check iob interrupts.
+        else if (dev_id == 16)
+        {
+          if(this.iob_int_exp.size() != 0)
+          {
+            cpx_cmd_exp = this.iob_int_exp.front();
+            this.iob_int_exp.pop_front();
+            if(cpx_cmd.compare(cpx_cmd_exp) == 1'b1)
+            {
+              printf("%0d : %s : Interrupt generated correctly for device %h.\n",
+                     get_time(LO), this.name, dev_id);
+              cpx_cmd.print("IOB_CHECKER"); 
+            }
+            else
+            {
+              cpx_cmd.info_msg = "Interrupt Rec";
+              cpx_cmd.print ("IOB_CHECKER");
+              printf("\n");
+              cpx_cmd_exp.info_msg = "Interrupt Exp";
+              cpx_cmd_exp.print ();    
+              printf("\n%0d : Simulation -> FAIL\n\n",
+                     get_time(LO));
+              @(posedge iob_top_jbus.clk); 
+              error("\n%0d : %s : ERROR - Interrupt not generated correctly - Exiting !!\n",
+                    get_time(LO), this.name);
+            }
+          }
+        }
+
+        // Check ecc interrupts.
+        else if (dev_id == 17)
+        {
+          if(this.ecc_int_exp.size() != 0) 
+          {
+            this.ecc_int_exp.pop_front();
+            cpx_cmd_exp = new();
+            cpx_cmd_exp.valid = 1'b1;
+            cpx_cmd_exp.rtntyp = INT_RET;
+            cpx_cmd_exp.coreid = coreid;
+            cpx_cmd_exp.intvect = intvect;
+            cpx_cmd_exp.threadid = threadid;
+   
+            if(cpx_cmd.compare(cpx_cmd_exp) == 1'b1)
+            {
+              printf("%0d : %s : Interrupt generated correctly for device %h.\n",
+                     get_time(LO), this.name, dev_id);
+              this.dev_int_mask[dev_id] = 1'b1;
+              cpx_cmd.print("IOB_CHECKER"); 
+            }
+            else
+            {
+              cpx_cmd.info_msg = "Interrupt Rec";
+              cpx_cmd.print("IOB_CHECKER");
+              printf("\n");
+              cpx_cmd_exp.info_msg = "Interrupt Exp";
+              cpx_cmd_exp.print ();
+              printf("\n%0d : Simulation -> FAIL\n\n",
+                     get_time(LO));
+              @(posedge iob_top_jbus.clk); 
+              error("\n%0d : %s : ERROR - Interrupt not generated correctly - Exiting !!\n",
+                    get_time(LO), this.name);
+            }
+          }
+        }
+
+        // Report unexpected interrupts.
+        else
+        {
+          cpx_cmd.info_msg = "Interrupt Rec";
+          cpx_cmd.print("IOB_CHECKER");
+          printf("\n");
+          cpx_cmd_exp.info_msg = "Interrupt Exp";
+          cpx_cmd_exp.print ("IOB_CHECKER");
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("\n%0d : %s : ERROR - Unexpected Interrupt - Exiting !!\n", get_time(LO), this.name);
+        }
+        
+      }
+      
+      // If cpx returns idle or resume request, check the cpx request accordingly.
+      else if ((cpx_cmd.data[17:16] == IOB_IDLE) || (cpx_cmd.data[17:16] == IOB_RESUME))
+      {
+
+        printf("%0d : %s : Idle/Resume generated for device 16.\n",
+               get_time(LO), this.name);
+        
+        // Only iob can send idle, resume or rest requests.
+        if(this.iob_int_exp.size() != 0)
+        {
+          cpx_cmd_exp = this.iob_int_exp.front();
+          if (get_plus_arg(CHECK, "iob_debug"))
+          {
+            printf("Expect cpx_cmd:\n");
+            cpx_cmd_exp.print("IOB_CHECKER");
+            printf("Observed cpx_cmd:\n");
+            cpx_cmd.print("IOB_CHECKER");
+          }
+          printf("Idle/Resume int_exp.size = %d\n", this.iob_int_exp.size());
+          this.iob_int_exp.pop_front();
+          if(cpx_cmd.compare(cpx_cmd_exp) == 1'b1)
+          {
+            printf("%0d : %s : Idle/Resume generated correctly.\n",
+                   get_time(LO), this.name);
+            cpx_cmd.print("IOB_CHECKER"); 
+          }
+          else
+          {
+            printf("\n%0d : %s : Idle/Resume generated incorrectly.\n",
+                   get_time(LO), this.name);
+            cpx_cmd.info_msg = "Interrupt Rec";
+            cpx_cmd.print("IOB_CHECKER");
+            printf("\n");
+            cpx_cmd_exp.info_msg = "Interrupt Exp";
+            cpx_cmd_exp.print ("IOB_CHECKER");
+            printf("\n%0d : Simulation -> FAIL\n\n",
+                   get_time(LO));
+            @(posedge iob_top_jbus.clk);
+            error("\n%0d : %s : Idle/Resume generated incorrectly.\n",
+                  get_time(LO), this.name);
+          }
+        }
+        else
+        {
+          cpx_cmd.info_msg = "Interrupt Rec";
+          cpx_cmd.print("IOB_CHECKER");
+          printf("\n");
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk);
+          error("\n%0d : %s : Unexpected Idle/Resume.\n",
+                get_time(LO), this.name);
+        }
+      }
+
+      // If cpx returns reset request, check the cpx request accordingly.
+      else
+      {
+        printf("%0d : %s : Reset generated for device 16.\n",
+               get_time(LO), this.name);
+        
+        // Only iob can send idle, resume or rest requests.
+        if(this.iob_int_exp.size() != 0)
+        {
+          cpx_cmd_exp = this.iob_int_exp.front();
+          if (get_plus_arg(CHECK, "iob_debug"))
+          {
+            printf("Expect cpx_cmd:\n");
+            cpx_cmd_exp.print("IOB_CHECKER");
+            printf("Observed cpx_cmd:\n");
+            cpx_cmd.print("IOB_CHECKER");
+          }
+          this.iob_int_exp.pop_front();
+          if(cpx_cmd.compare(cpx_cmd_exp) == 1'b1)
+          {
+            printf("%0d : %s : Reset generated correctly for device 16.\n",
+                   get_time(LO), this.name);
+            cpx_cmd.print("IOB_CHECKER"); 
+          }
+          else
+          {
+            cpx_cmd.info_msg = "Interrupt Rec";
+            cpx_cmd.print("IOB_CHECKER");
+            printf("\n");
+            cpx_cmd_exp.info_msg = "Interrupt Exp";
+            cpx_cmd_exp.print ("IOB_CHECKER");
+            printf("\n%0d : Simulation -> FAIL\n\n",
+                   get_time(LO));
+            @(posedge iob_top_jbus.clk);
+            error("\n%0d : %s : Reset Interrupt generated incorrectly.\n",
+                  get_time(LO), this.name);
+          }
+        }
+        else
+        {
+          cpx_cmd.info_msg = "Interrupt Rec";
+          cpx_cmd.print("IOB_CHECKER");
+          printf("\n");
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk);
+          error("\n%0d : %s : Unexpected Reset.\n",
+                get_time(LO), this.name);
+        }
+      }
+      
+    }
+  }
+
+  join none
+
+}
+
+//////////////////////////////////////////////////////////////
+// Snoop tap_iob interface.
+//////////////////////////////////////////////////////////////
+//task IOB_CHECKER::snoop_tap_iob() 
+//{
+//    while(1)
+//    {
+//        @(posedge this.iob_bind.\$clk);
+
+//        // Reset timer value if tap accesses iob.
+//        if (this.tap_ucb_bind.\$ucb_iob_vld == 1)
+//        {
+//            void = semaphore_get(WAIT, this.timeout_sem, 1);
+//            this.timeout = 0;
+//            semaphore_put(this.timeout_sem, 1);    
+//        }
+//    }
+//}
+
+////////////////////////////////////////////////////////////////////////
+// Check pcx interface to generate expected cpx pacekts for check_cpx()
+// to check and to generate expected ucb packets for check_iob_ucb() to
+// check.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_pcx () 
+{
+  PCX_CMD       new_pcx_cmd;
+  CPX_CMD       exp_cpx_cmd;
+  bit           excepted_units[];
+  bit [3:0]     rtntyp_vals[];
+
+  integer       i;
+  integer       j;
+  bit           valid_addr;
+  bit[39:0]     reg_addr;
+    
+  rtntyp_vals [PCX_INT]  = CPX_INT;
+  rtntyp_vals [PCX_LOAD] = CPX_LOAD;
+  rtntyp_vals [PCX_STOR] = CPX_STCK;
+  rtntyp_vals [PCX_IFIL] = CPX_IFL1;
+
+  excepted_units[IOB_MAN_CSR]  = 1'b1;
+  excepted_units[IOB_INT_CSR]  = 1'b1;
+
+  // all else are x's except for cpx_frsp, which corresponds with previous
+  // pcx_freq  
+  while (1) 
+  {
+    mailbox_get(WAIT, this.pcx_mbox, new_pcx_cmd);
+    void = semaphore_get(WAIT, this.timeout_sem, 1);
+    this.timeout = 0;
+    semaphore_put(this.timeout_sem, 1);
+
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : Queue expect response for unit %h address %h data %h.\n", 
+             get_time(LO), this.name, new_pcx_cmd.address[UNIT_IDX],
+             new_pcx_cmd.address, new_pcx_cmd.data);
+    }
+
+    // If the address for the pcx request is for IOB_MAN_CSR or IOB_INT_CSR,
+    // process the pcx request accordingly.
+    if (assoc_index(CHECK, excepted_units, new_pcx_cmd.address[UNIT_IDX])) 
+    {
+      
+      if (get_plus_arg(CHECK, "iob_debug"))
+      {
+        printf("%0d : %s : Queue expect response for iob unit %h address %h data %h.\n", 
+               get_time(LO), this.name, new_pcx_cmd.address[UNIT_IDX],
+               new_pcx_cmd.address, new_pcx_cmd.data);
+      }
+
+      // Check for invalid iob address if check_iob_addr is asserted.
+      if (check_iob_addr == 1'b1)
+      {
+        valid_addr = 1'b0;
+        for (i = ETHEQ_SH_STAT_IND; i <= CORE_AVAIL_IND; i++)
+        {
+          for (j = 0; j < reg_arr.regs[i].cnt; j ++)
+          {
+            reg_addr = reg_arr.regs[i].addr + (j << 3);
+            if (new_pcx_cmd.address == reg_addr)
+            {
+              valid_addr = 1'b1;
+              break;
+            }
+          }
+          if (valid_addr == 1'b1)
+          {
+            break;
+          }
+        }
+        
+        // Process the pcx request and generate the expected cpx request from
+        // the pcx request. Queue ack expect on cpx_expect on good address.
+        // Queue nack expect on cpx_expect for load request on bad address
+        // (write request on bad addresses are ignored).
+        // Need to check data value to make sure that the correct core id
+        // is returned.
+        if (valid_addr == 1'b1)
+        {          
+//          printf("%0d : %s : Queue ACK expect.\n",get_time(LO), this.name);
+          exp_cpx_cmd = new(1'b1,
+                            rtntyp_vals[new_pcx_cmd.rqtyp],
+                            3'b000,
+                            1'b1,
+                            {1'b0, new_pcx_cmd.threadid, 5'b0},
+                            new_pcx_cmd.coreid,
+                            new_pcx_cmd.threadid,
+                            {8'h0, new_pcx_cmd.coreid, 117'b0},
+                            6'b0);
+          this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]++;
+          this.cpx_exp[new_pcx_cmd.address[UNIT_IDX]].push_back(exp_cpx_cmd);
+          if (get_plus_arg(CHECK, "iob_debug"))
+          {
+            printf("%0d : %s : check_pcx : coreid %b threadid %b rqtyp %5b cnt %d after increment.\n",
+                   get_time(LO),
+                   this.name,
+                   new_pcx_cmd.coreid,
+                   new_pcx_cmd.threadid,
+                   new_pcx_cmd.rqtyp,
+                   this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+            exp_cpx_cmd.print("IOB_CHECKER exp_cpx");
+          }
+        }
+        else
+        {
+//          printf("%0d : %s : Queue NACK expect.\n",get_time(LO), this.name);                
+          exp_cpx_cmd = new (1'b1,
+                             CPX_LOAD,
+                             NACK_ERR,
+                             1'b1,
+                             {1'b0, new_pcx_cmd.threadid, 5'b0},
+                             new_pcx_cmd.coreid,
+                             new_pcx_cmd.threadid,
+                             128'bx,
+                             6'bx);
+          this.cpx_exp[NACK_ERR].push_back(exp_cpx_cmd);
+        }
+      }
+
+      // Process the pcx request and generate the expected cpx request from
+      // the pcx request.
+      // Need to check data value to make sure that the correct core id
+      // is returned.
+      else
+      {
+//        printf("%0d : %s : Queue ACK expect.\n",get_time(LO), this.name);
+        exp_cpx_cmd = new(1'b1,
+                          rtntyp_vals[new_pcx_cmd.rqtyp],
+                          3'b000,
+                          1'b1,
+                          {1'b0, new_pcx_cmd.threadid, 5'b0},
+                          new_pcx_cmd.coreid,
+                          new_pcx_cmd.threadid,
+                          {8'h0, new_pcx_cmd.coreid, 117'b0},
+                          6'b0);
+        this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]++;
+        this.cpx_exp[new_pcx_cmd.address[UNIT_IDX]].push_back(exp_cpx_cmd);
+        if (get_plus_arg(CHECK, "iob_debug"))
+        {
+          printf("%0d : %s : check_pcx : coreid %b threadid %b rqtyp %5b cnt %d after increment.\n",
+                 get_time(LO),
+                 this.name,
+                 new_pcx_cmd.coreid,
+                 new_pcx_cmd.threadid,
+                 new_pcx_cmd.rqtyp,
+                 this.ccx_cnt[{new_pcx_cmd.coreid,new_pcx_cmd.threadid,new_pcx_cmd.rqtyp}]);
+          exp_cpx_cmd.print("IOB_CHECKER exp_cpx");
+        }
+      }
+    }
+    
+    // If the address for the pcx request is for other valid clusters,
+    // process the pcx request accordingly.
+    else if (assoc_index(CHECK, this.id_list, new_pcx_cmd.address[UNIT_IDX])) 
+    {
+      
+      if (get_plus_arg(CHECK, "iob_debug"))
+      {
+        printf("%0d : %s : Queue expect response for other unit %h address %h data %h.\n", 
+               get_time(LO), this.name, new_pcx_cmd.address[UNIT_IDX],
+               new_pcx_cmd.address, new_pcx_cmd.data);
+      }
+
+      // Process the pcx request with valid address.
+      case (new_pcx_cmd.rqtyp) 
+      {
+        PCX_LOAD: this.process_load_req(new_pcx_cmd);
+        PCX_STOR: this.process_stor_req(new_pcx_cmd);
+//        PCX_IFIL: this.process_ifil_req(new_pcx_cmd);
+//        PCX_FRSP: this.process_frsp_ack(new_pcx_cmd);
+        default:
+        {
+          new_pcx_cmd.print("IOB_CHECKER");
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("%0d : %s : ERROR: Received unexpected PCX req type: %b\n",
+                get_time(LO), this.name, new_pcx_cmd.rqtyp);
+        }
+      }
+      
+    }
+
+    // Expect normal ack for store request to bad addresses.
+    else if (new_pcx_cmd.rqtyp == PCX_STOR) 
+    { 
+      new_pcx_cmd.address = BAD_ADDR;
+      this.process_stor_req(new_pcx_cmd);
+    }
+    
+    // Queue nack expect on cpx_expect for load request from bad address.
+    else if (new_pcx_cmd.rqtyp == PCX_LOAD) 
+    {      
+//      printf("%0d : %s : Queue NACK expect",get_time(LO), this.name);
+      exp_cpx_cmd = new(1'b1,
+                        CPX_LOAD,
+                        NACK_ERR,
+                        1'b1,
+                        {1'b0, new_pcx_cmd.threadid, 5'b0},
+                        new_pcx_cmd.coreid,
+                        new_pcx_cmd.threadid,
+                        128'bx,
+                        6'bx);
+      this.cpx_exp[NACK_ERR].push_back(exp_cpx_cmd);      
+    }
+    
+    // Queue nack expect on cpx_expect for ifill request on bad address.
+    else if (new_pcx_cmd.rqtyp == PCX_IFIL)
+    {      
+//      printf("%0d : %s : Queue NACK expect",get_time(LO), this.name);
+      exp_cpx_cmd = new(1'b1,
+                        CPX_IFL1,
+                        NACK_ERR,
+                        1'b1,
+                        {1'b0, new_pcx_cmd.threadid, 5'b0},
+                        new_pcx_cmd.coreid,
+                        new_pcx_cmd.threadid,
+                        128'bx,
+                        6'bx);
+      this.cpx_exp[NACK_ERR].push_back(exp_cpx_cmd);      
+    }
+    
+    // Exit if unexpected request type or unexpected device id.
+    else 
+    {
+      new_pcx_cmd.print("IOB_CHECKER");
+      printf("%0d : %s : ERROR : -  Device is %h\n",
+             get_time(LO), this.name, new_pcx_cmd.address[UNIT_IDX]);
+      printf("\n%0d : Simulation -> FAIL\n\n",
+             get_time(LO));
+      @(posedge iob_top_jbus.clk); 
+      error("%0d : %s : ERROR : - Received request for undefined address %40h\n",
+            get_time(LO), this.name, new_pcx_cmd.address);
+    }
+    
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Check cpx interface to compare the observed cpx packets against the
+// expected cpx packets generated by check_pcx().
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_cpx() 
+{
+  CPX_CMD                    new_cpx_cmd, exp_cpx_cmd;
+  VeraListIterator_CPX_CMD   cpx_cmd_itr;
+  bit                        found, good;
+  integer                    index;
+  bit [4:0]                  rqtypes[];
+
+  rqtypes [CPX_LOAD] = PCX_LOAD;
+  rqtypes [CPX_STCK] = PCX_STOR;
+  rqtypes [CPX_IFL1] = PCX_IFIL;
+  rqtypes [CPX_INT]  = PCX_INT;
+  
+  while (1) 
+  {
+    mailbox_get (WAIT, this.cpx_mbox, new_cpx_cmd);
+    void = semaphore_get(WAIT, this.timeout_sem, 1);
+    this.timeout = 0;
+    semaphore_put(this.timeout_sem, 1);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d: %s : Got a CPX command\n", get_time(LO), this.name);
+      new_cpx_cmd.print("IOB_CHECKER obs_cpx");
+    }
+    found = 0; 
+    index = 0;
+    
+    // Check this unit's cpx_rd/wr expects - dequeue if it's this unit's TBD
+    // based on the cpx request. Check unit id list heads and comparing each
+    // head of list with received packet and cycle through the heads of each
+    // device expect queue to search.
+    // Do not compare data for CPX_LOAD but do compare data for other cpx commands
+    // which has cpu id encoded in the data.
+    good = assoc_index(FIRST, this.cpx_exp, index);
+    while (!found && good) 
+    {
+//      printf("found = %d, index = %h, empty = %d\n", found, index, this.cpx_exp[index].empty());
+      if (!this.cpx_exp[index].empty()) 
+      {
+         cpx_cmd_itr = this.cpx_exp[index].start();
+         while (cpx_cmd_itr.neq(this.cpx_exp[index].finish()))
+         {
+           exp_cpx_cmd = cpx_cmd_itr.data();
+           if (get_plus_arg(CHECK, "iob_debug"))
+           {
+             printf("Comparing expect\n");
+             exp_cpx_cmd.print("IOB_CHECKER");
+             printf("To received\n");
+             new_cpx_cmd.print("IOB_CHECKER");
+           }
+           if (new_cpx_cmd.rtntyp == CPX_LOAD) 
+           {
+             found = exp_cpx_cmd.comp_no_dat(new_cpx_cmd);
+           } 
+           else 
+           {
+             found = exp_cpx_cmd.comp(new_cpx_cmd);
+           }
+           if(found)
+           { 
+             break;
+           }
+           else
+           {
+             cpx_cmd_itr.next(); 
+           }
+         }
+      }
+      if (!found) 
+      {
+        good = assoc_index(NEXT, this.cpx_exp, index);
+      }
+    }
+//    printf("Found - %b core - %b thread - %b rtntyp - %b rqtyp - %b assoc_idx - %b value - %d\n",
+//           found,
+//           new_cpx_cmd.coreid, new_cpx_cmd.threadid,
+//           new_cpx_cmd.rtntyp, rqtypes[new_cpx_cmd.rtntyp],
+//           (assoc_index(CHECK, this.ccx_cnt,
+//                        {new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]})),
+//           this.ccx_cnt[{new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]}]);
+//    if (new_cpx_cmd.rtntyp == CPX_LOAD) 
+//    {
+//      printf("%0d : %s :LOAD_ACK coreid %b threadid %b val\n", 
+//      get_time(LO), this.name, new_cpx_cmd.coreid, new_cpx_cmd.threadid);
+//    }
+
+    // Found the expected cpx command.
+    if (found &&
+        (assoc_index(CHECK, this.ccx_cnt,{new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]})) &&
+        (this.ccx_cnt[{new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]}] > 0)) 
+    {
+//      printf("%0d : %s : Received expected CPX Response.\n", get_time(LO), this.name);
+//      new_cpx_cmd.print("IOB_CHECKER");
+      
+      // Dequeue expect.
+      void = this.cpx_exp[index].erase(cpx_cmd_itr);
+      
+      // Decrement ccx count.
+      this.ccx_cnt[{new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]}]--;      
+      if (get_plus_arg(CHECK, "iob_debug"))
+      {
+        printf("%0d : %s : check_cpx : coreid %b threadid %b rttyp %5b cnt %d after decrement.\n",
+               get_time(LO),
+               this.name,
+               new_cpx_cmd.coreid,
+               new_cpx_cmd.threadid,
+               new_cpx_cmd.rtntyp,
+               this.ccx_cnt[{new_cpx_cmd.coreid, new_cpx_cmd.threadid, rqtypes[new_cpx_cmd.rtntyp]}]);
+      }       
+    } 
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Start snoopers (when avaiable) for the specified cluster and snoop
+// the ucb iob interfaces.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_unit((string name = "IOB<->JBI Checker"),
+                             (bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                             (bit discard = 1'b0))
+{
+  if (!discard)
+  {
+    fork
+      this.check_iob_ucb(unit_id, this.ucb_snoops[unit_id].in_mbox);
+      this.check_ucb_iob(unit_id, this.ucb_snoops[unit_id].out_mbox);
+    join none
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Check iob ucb interface to compare ucb packets with the expected
+// ucb packets generated by check_pcx() and to generate expected ucb
+// packets for check_ucb() to check.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_iob_ucb ((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                 integer uin_mbox) 
+{
+  UCB_REQ                          new_ucb_req, exp_ucb_req;
+  UCB_RSP                          exp_ucb_rsp;
+  bit                              rd_ack = 1'b0;
+  bit                              rd_nak = 1'b0;
+  bit                              wr_ack = 1'b0;
+  bit                              ifill  = 1'b0;
+  bit [PCX_RQ_HI-PCX_RQ_LO:0]      pcx_rq_typs[];
+  integer                          test;
+  bit [UNIT_IDX_HI-UNIT_IDX_LO:0]  new_unit;
+
+  pcx_rq_typs[3'b100] = PCX_LOAD;
+  pcx_rq_typs[3'b010] = PCX_STOR;
+  pcx_rq_typs[3'b001] = PCX_IFIL;
+
+  while (1) 
+  {
+    
+    // Get the latest request.
+    test = mailbox_get(WAIT, uin_mbox, new_ucb_req, CHECK);
+    void = semaphore_get(WAIT, this.timeout_sem, 1);
+    this.timeout = 0;
+    semaphore_put(this.timeout_sem, 1);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : Received new UCB Request.\n", get_time(LO), this.name);
+      new_ucb_req.print();
+      printf("unit_id = %h, addr = %h, uin_mbox = %h, addr = %h, data = %h\n",
+             unit_id, new_ucb_req.addr[UNIT_IDX], uin_mbox, new_ucb_req.addr, new_ucb_req.data);
+    }
+    
+    // Check address, make sure addressed to this unit or its address space.
+    // Check only if the request if from CMP for now since the tap interface is
+    // not snooped.
+    if ((new_ucb_req.buf_id == UCB_BID_CMP) &&
+        ((new_ucb_req.addr[UNIT_IDX] == unit_id ||
+         (new_ucb_req.addr[UNIT_IDX] <= this.unit_hi[unit_id] &&
+          new_ucb_req.addr[UNIT_IDX] >= this.unit_lo[unit_id]))))
+    {
+      
+      // Check against expected value.
+      new_unit = map_unit(unit_id);
+      exp_ucb_req = this.uin_exp[new_unit].front();
+//      printf("%0d : %s : Expect size %d of unit %h address %h before pop in check_iob_ucb.\n",
+//             get_time(LO), this.name, this.uin_exp[new_unit].size(), unit_id, new_ucb_req.addr);
+//      printf("%0d : %s : Expect new UCB Request\n", get_time(LO), this.name);
+//      exp_ucb_req.print();
+      if (new_ucb_req.compare(exp_ucb_req)) 
+      {
+        
+//        printf("%0d : %s : Received expected UCB Request.\n", get_time(LO), this.name);
+//        new_ucb_req.print();
+        
+        // Pop expect if correct.
+        this.uin_exp[new_unit].pop_front();
+        
+        // Increment ucb_rd/wr/ifill count appropriately.
+        this.ucb_cnt[{new_ucb_req.thr_id, pcx_rq_typs[{new_ucb_req.rd,new_ucb_req.wr,new_ucb_req.ifill}]}]++;
+//        printf("%0d : %s : thrdid = %b rqtyp = %b cnt = %d\n",
+//                get_time(LO),
+//                this.name,
+//                new_ucb_req.thr_id,
+//                pcx_rq_typs[{new_ucb_req.rd,new_ucb_req.wr,new_ucb_req.ifill}],
+//                this.ucb_cnt[{new_ucb_req.thr_id, pcx_rq_typs[{new_ucb_req.rd,new_ucb_req.wr,new_ucb_req.ifill}]}]);
+        
+        if (new_ucb_req.rd ^ new_ucb_req.wr ^ new_ucb_req.ifill) 
+        {
+          if (new_ucb_req.rd) 
+          { 
+            rd_ack = 1'b1; 
+            rd_nak = 1'b1; 
+          }
+          else if (new_ucb_req.wr) 
+          { 
+            wr_ack = 1'b1; 
+          }
+          else if (new_ucb_req.ifill) 
+          { 
+            ifill = 1'b1; 
+          }
+        }
+        
+        // ERROR
+        else
+        { 
+//          new_ucb_req.print();
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("%0d : %s : MUTEX ERROR Read/Write/Ifil bits set:%b\n",
+                get_time(LO), this.name, {new_ucb_req.rd, new_ucb_req.wr, new_ucb_req.ifill});
+        }
+
+        // Generate uout expect.
+        if (new_ucb_req.rd) 
+        {
+          rd_ack = 1'b1; 
+          rd_nak = 1'b0; 
+          wr_ack = 1'b0; 
+          ifill = 1'b0;
+        } 
+        else if (new_ucb_req.wr) 
+        {
+          rd_ack = 1'b0; 
+          rd_nak = 1'b0; 
+          wr_ack = 1'b1; 
+          ifill = 1'b0;
+        } 
+        else if (new_ucb_req.ifill) 
+        {
+          rd_ack = 1'b0; 
+          rd_nak = 1'b0; 
+          wr_ack = 1'b0; 
+          ifill = 1'b1;
+        }
+//        printf("%0d : %s : Queueing up uout expect\n",get_time(LO), this.name);
+        exp_ucb_rsp = new(rd_ack,
+                          rd_nak,
+                          wr_ack,
+                          ifill, 
+                          new_ucb_req.thr_id,
+                          new_ucb_req.buf_id,
+                          64'bx);        
+        this.uout_exp[{unit_id, rd_ack, wr_ack, ifill}].push_back(exp_ucb_rsp);
+        
+      }
+      
+      // ERROR
+      else
+      { 
+        printf("%0d : %s : Request received:\n", get_time(LO), this.name);
+        new_ucb_req.print();
+        printf("%0d : %s : Expected request:\n", get_time(LO), this.name);
+        exp_ucb_req.print();
+        printf("\n%0d : Simulation -> FAIL\n\n",
+               get_time(LO));
+        @(posedge iob_top_jbus.clk); 
+        error("%0d : %s : ERROR - Received unexpected request\n", get_time(LO), this.name);
+      }
+    }
+
+    // ERROR
+//    else
+//    {
+//      printf("%0d : %s : ERROR - Unit %h received request to wrong unit: %h addr: %10h\n",
+//             get_time(LO), this.name, unit_id, new_ucb_req.addr[UNIT_IDX], new_ucb_req.addr);
+//      printf("%0d : %s : Simulation -> FAIL\n", get_time(LO));
+//      exit(1);
+//    }
+    
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Check ucb iob interface to compare expected ucb packets with the
+// expected ucb packets generated by check_iob_ucb.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::check_ucb_iob ((bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit_id = IOB_MAN_CSR),
+                                 integer uout_mbox) 
+{
+  UCB_RSP       new_ucb_rsp, exp_ucb_rsp;
+  CPX_CMD       exp_cpx_cmd;
+  bit [2:0]     err;
+  bit [3:0]     rtntyp_vals[];
+  bit [4:0]     rqtyp_vals[];
+  bit [127:0]   rtn_data;
+  integer       test;
+
+  rtntyp_vals [3'b000] = CPX_INT;
+  rtntyp_vals [3'b100] = CPX_LOAD;
+  rtntyp_vals [3'b010] = CPX_STCK;
+  rtntyp_vals [3'b001] = CPX_IFL1;
+
+  rqtyp_vals [3'b000]  = PCX_INT;
+  rqtyp_vals [3'b100]  = PCX_LOAD;
+  rqtyp_vals [3'b010]  = PCX_STOR;
+  rqtyp_vals [3'b001]  = PCX_IFIL;
+
+//  printf("%0d : %s : Polling for unit %b mbox out %d\n", get_time(LO), this.name, unit_id, uout_mbox);
+
+  while (1) 
+  {
+    
+    // Get the latest response.
+    test = mailbox_get(WAIT, uout_mbox, new_ucb_rsp, CHECK);
+    void = semaphore_get(WAIT, this.timeout_sem, 1);
+    this.timeout = 0;
+    semaphore_put(this.timeout_sem, 1);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : Received UCB Response from Unit %h \n", get_time(LO), this.name, unit_id);
+      new_ucb_rsp.print();
+    }
+    
+    // If the packet is not an interrupt. Need to work on handling interrupts.
+    // Check only if the response if for CMP for now since the tap interface is
+    // not snooped.
+    if ((new_ucb_rsp.buf_id == UCB_BID_CMP) &&
+        (new_ucb_rsp.rd_ack | new_ucb_rsp.rd_nak | new_ucb_rsp.wr_ack | new_ucb_rsp.ifill))
+    { 
+      err = (new_ucb_rsp.rd_nak) ? NACK_ERR : 3'b000;
+      if(new_ucb_rsp.rd_nak)
+      {
+        new_ucb_rsp.rd_ack = 1'b1;
+        new_ucb_rsp.rd_nak = 1'b0;
+      }
+      
+      // Check that only one valid response type is set.
+      if (new_ucb_rsp.rd_ack ^ new_ucb_rsp.rd_nak ^ new_ucb_rsp.wr_ack ^ new_ucb_rsp.ifill) 
+      {
+        
+        if (get_plus_arg(CHECK, "iob_debug"))
+        {
+          printf("%0d : %s : check val = %b thrdid = %b rqtyp = %b cnt = %d\n",
+                 get_time(LO),
+                 this.name,
+                 assoc_index(CHECK, this.ucb_cnt,
+                             {new_ucb_rsp.thr_id, rqtyp_vals[{new_ucb_rsp.rd_ack,new_ucb_rsp.wr_ack,new_ucb_rsp.ifill}]}),
+                 new_ucb_rsp.thr_id,
+                 rqtyp_vals[{new_ucb_rsp.rd_ack,new_ucb_rsp.wr_ack,new_ucb_rsp.ifill}],
+                 this.ucb_cnt[{new_ucb_rsp.thr_id, rqtyp_vals[{new_ucb_rsp.rd_ack,new_ucb_rsp.wr_ack,new_ucb_rsp.ifill}]}]);
+        }
+        
+        // Check outstanding unit count exist and decrement.
+        if (assoc_index(CHECK, this.ucb_cnt,
+                        {new_ucb_rsp.thr_id, rqtyp_vals[{new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}]}) &&
+           (this.ucb_cnt[{new_ucb_rsp.thr_id, rqtyp_vals[{new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}]}] > 0)) 
+        {
+          
+          // Decrementing count.
+          this.ucb_cnt[{new_ucb_rsp.thr_id, rqtyp_vals[{new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}]}]--;
+          
+          // Compare that the expect was set for the appropriate operation.
+          exp_ucb_rsp = this.uout_exp[{unit_id, new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}].front();
+          
+//          printf("comparing with expect\n");
+//          printf("received\n");
+//          new_ucb_rsp.print();
+//          printf("expected\n");
+//          exp_ucb_rsp.print();
+          
+          // Response is not expected - ERROR.
+          if (!new_ucb_rsp.compare(exp_ucb_rsp))
+          { 
+            printf("\n%0d : Simulation -> FAIL\n\n",
+                   get_time(LO));
+            @(posedge iob_top_jbus.clk); 
+            error("%0d :%s : ERROR - UCB Response was not what was expected\n", get_time(LO), this.name);
+          }
+
+          // Set cpx_expect, delete uout expect, decrement ucb rd cnt.
+          else 
+          { 
+//            printf("%0d : %s : Received Expected UCB Response.\n",get_time(LO), this.name);
+//            printf("%0d : %s : Pushing expect onto CPX unit %b exp list\n", 
+//                   get_time(LO), this.name, unit_id);            
+            this.uout_exp [{unit_id, new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}].pop_front();
+            rtn_data = (new_ucb_rsp.wr_ack) ?
+                         exp_ucb_rsp.thr_id[THR_CPU] << STCK_CORE_OFFSET :
+                         {new_ucb_rsp.data, new_ucb_rsp.data};
+            exp_cpx_cmd = new(1'b1,
+                              rtntyp_vals[{new_ucb_rsp.rd_ack, new_ucb_rsp.wr_ack, new_ucb_rsp.ifill}],
+                              err,
+                              1'b1,
+                              {1'b0, exp_ucb_rsp.thr_id[THR_THR], 5'b0},
+                              exp_ucb_rsp.thr_id[THR_CPU],
+                              exp_ucb_rsp.thr_id[THR_THR],
+                              rtn_data);
+            this.cpx_exp[unit_id].push_back(exp_cpx_cmd);
+          }
+        }
+        
+        // ERROR - too many acks 
+        else
+        { 
+          printf("%0d : %s : Received unexpected ack\n", get_time(LO), this.name);
+          // TBD - print new_ucb_rsp, exp_ucb_rsp 
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("%0d : %s : Received unexpected ack\n", get_time(LO), this.name);
+        }
+      }
+
+      // ERROR - mutex violation 
+      else
+      { 
+        // TBD - print new_ucb_rsp, exp_ucb_rsp 
+        printf("\n%0d : Simulation -> FAIL\n\n",
+               get_time(LO));
+        @(posedge iob_top_jbus.clk); 
+        error("%0d : %s : MUTEX ERROR - RD_ACK, RD_NAK, WR_ACK, IFILL bits set in UCB RESPONSE %b\n",
+              get_time(LO), this.name, {new_ucb_rsp.rd_ack, new_ucb_rsp.rd_nak,
+              new_ucb_rsp.wr_ack, new_ucb_rsp.ifill});
+      }
+      
+    } 
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Process load request.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::process_load_req (PCX_CMD new_pcx_cmd) 
+{
+  bit [3:0]                        rtntyp_vals[];
+  UCB_REQ                          exp_ucb_req;
+  bit [UNIT_IDX_HI-UNIT_IDX_LO:0]  new_unit;
+
+  rtntyp_vals [PCX_LOAD] = CPX_LOAD;
+  rtntyp_vals [PCX_IFIL] = CPX_IFL1;
+  rtntyp_vals [PCX_STOR] = CPX_STCK;
+
+  if (get_plus_arg(CHECK, "iob_debug"))
+  {
+    printf("%0d : %s : Received LOAD Request from XBAR\n", get_time(LO), this.name);
+    printf("%0d : %s : unit %h coreid %b threadid %b rqtyp %b cnt %d\n",
+           get_time(LO),
+           this.name,
+           new_pcx_cmd.address[UNIT_IDX],
+           new_pcx_cmd.coreid,
+           new_pcx_cmd.threadid,
+           new_pcx_cmd.rqtyp,
+           this.ccx_cnt[{new_pcx_cmd.coreid,new_pcx_cmd.threadid,new_pcx_cmd.rqtyp}]);
+    printf("%0d : %s : addr %h data %h\n",
+           get_time(LO),
+           this.name,
+           new_pcx_cmd.address,
+           new_pcx_cmd.data);
+  }
+
+  // Check if current count for thread, core, request type is within limits
+  if (this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}] <
+      this.ccx_lmt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]) 
+  {
+    
+    // Increment outstanding ccx count for thread, core, request type.
+    this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]++;
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : process_load_req: coreid %b threadid %b rqtyp %5b cnt %d after increment.\n",
+             get_time(LO),
+             this.name,
+             new_pcx_cmd.coreid,
+             new_pcx_cmd.threadid,
+             new_pcx_cmd.rqtyp,
+             this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+    }
+
+    // Generate ucb_in expect for unit.
+    exp_ucb_req = new(1'b1,
+                      1'b0,
+                      1'b0,
+                      {new_pcx_cmd.coreid, new_pcx_cmd.threadid},
+                      32'bx,
+                      new_pcx_cmd.address,
+                      new_pcx_cmd.data);
+    new_unit = map_unit(new_pcx_cmd.address[UNIT_IDX]);
+    this.uin_exp[new_unit].push_back(exp_ucb_req);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : unit %h map_unit %h addr %h before push back in process_load_req.\n",
+             get_time(LO), this.name,
+             new_pcx_cmd.address[UNIT_IDX], new_unit, new_pcx_cmd.address);
+      exp_ucb_req.print();
+      printf("%0d : %s : Expect size %d of unit %h addr %h after push back in process_load_req.\n",
+             get_time(LO), this.name, this.uin_exp[new_unit].size(),
+             new_pcx_cmd.address[UNIT_IDX], new_pcx_cmd.address);    
+    }
+  }
+
+  // Exit when number of outstanding requests exceeds the limit.
+  else
+  { 
+    printf("\n%0d : Simulation -> FAIL\n\n",
+           get_time(LO));
+    @(posedge iob_top_jbus.clk); 
+    error("%0d : %s : ERROR : Core %0d Thread %0d already has %0d outstanding reads\n",
+          get_time(LO),
+          this.name,
+          new_pcx_cmd.coreid,
+          new_pcx_cmd.threadid,
+          this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+  }
+  
+}
+
+////////////////////////////////////////////////////////////////////////
+// Process store request.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::process_stor_req(PCX_CMD new_pcx_cmd) 
+{
+  bit [3:0]                        rtntyp_vals[];
+  UCB_REQ                          exp_ucb_req;
+  CPX_CMD                          exp_cpx_cmd;
+  bit [127:0]                      rtn_data;
+  bit [UNIT_IDX_HI-UNIT_IDX_LO:0]  new_unit;
+
+  rtntyp_vals [PCX_LOAD] = CPX_LOAD;
+  rtntyp_vals [PCX_IFIL] = CPX_IFL1;
+  rtntyp_vals [PCX_STOR] = CPX_STCK;
+
+  if (get_plus_arg(CHECK, "iob_debug"))
+  {
+    printf("%0d : %s : Received STORE Request from XBAR\n", get_time(LO), this.name);
+    printf("%0d : %s : core %b thread %b rqtyp %b good %b val %d\n",
+           get_time(LO),
+           this.name,
+           new_pcx_cmd.coreid,
+           new_pcx_cmd.threadid,
+           new_pcx_cmd.rqtyp,
+           assoc_index(CHECK, this.ccx_cnt, {new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}),
+           this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+    printf("%0d : %s : addr %h data %h\n",
+           get_time(LO),
+           this.name,
+           new_pcx_cmd.address,
+           new_pcx_cmd.data);
+  }
+
+  // Check if current count for thread, core, request type is within limits
+  if (this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}] <
+      this.ccx_lmt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]) 
+  {
+    
+    // Increment outstanding ccx count for thread, core, request type.
+    this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]++;
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : process_stor_req : coreid %b threadid %b rqtyp %5b cnt %d after increment.\n",
+             get_time(LO),
+             this.name,
+             new_pcx_cmd.coreid,
+             new_pcx_cmd.threadid,
+             new_pcx_cmd.rqtyp,
+             this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+    }
+    
+    // Generate ucb_in expect for unit.
+    exp_ucb_req = new (1'b0,
+                       1'b1,
+                       1'b0,
+                       {new_pcx_cmd.coreid, new_pcx_cmd.threadid},
+                       32'bx,
+                       new_pcx_cmd.address,
+                       new_pcx_cmd.data);
+    new_unit = map_unit(new_pcx_cmd.address[UNIT_IDX]);
+    this.uin_exp[new_unit].push_back(exp_ucb_req);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : unit %h map_unit %h addr %h before push back in process_stor_req.\n",
+             get_time(LO), this.name,
+             new_pcx_cmd.address[UNIT_IDX], new_unit, new_pcx_cmd.address);
+      exp_ucb_req.print ();
+      printf("%0d : %s : Expect size %d of unit %h addr %h after push back in process_stor_req.\n",
+             get_time(LO), this.name, this.uin_exp[new_unit].size(),
+             new_pcx_cmd.address[UNIT_IDX], new_pcx_cmd.address);
+    }
+    
+    // Generate cpx write ack expect.
+    rtn_data = (new_pcx_cmd.rqtyp == PCX_STOR) ?
+                 new_pcx_cmd.coreid << STCK_CORE_OFFSET :
+                 128'h0;
+    exp_cpx_cmd = new(1'b1,
+                      rtntyp_vals[new_pcx_cmd.rqtyp],
+                      1'b0,
+                      1'b1,
+                      {new_pcx_cmd.threadid, 5'b0},
+                      new_pcx_cmd.coreid,
+                      new_pcx_cmd.threadid,
+                      rtn_data,
+                      rtn_data[INTVECT]);
+    this.cpx_exp[new_unit].push_back(exp_cpx_cmd);
+    if (get_plus_arg(CHECK, "iob_debug"))
+    {
+      printf("%0d : %s : Pushing expect onto unit %b exp list\n", 
+             get_time(LO), this.name, new_pcx_cmd.address[UNIT_IDX]);
+      exp_cpx_cmd.print("IOB_CHECKER");
+      printf("%0d : %s : Write Request for thread %0d\n", get_time(LO), this.name, 
+             {new_pcx_cmd.coreid, new_pcx_cmd.threadid});    
+    }
+  }
+  
+  // Exit when number of outstanding requests exceeds the limit.
+  else
+  { 
+    printf("\n%0d : Simulation -> FAIL\n\n",
+           get_time(LO));
+    @(posedge iob_top_jbus.clk); 
+    error("%0d : %s : ERROR : Core %0d Thread %0d already has %0d outstanding writes\n",
+          get_time(LO),
+          this.name,
+          new_pcx_cmd.coreid,
+          new_pcx_cmd.threadid,
+          this.ccx_cnt[{new_pcx_cmd.coreid, new_pcx_cmd.threadid, new_pcx_cmd.rqtyp}]);
+  }
+  
+}
+
+////////////////////////////////////////////////////////////////////////
+// Snoop tmp_trig signal and genarete expected interrupt.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::snoop_tmp_trig()
+{
+  CPX_CMD       cpx_cmd;
+  bit [63:0]    reg_val;
+  bit [31:0]    int_mask;
+  bit [5:0]     cpu;
+  
+  while(1)
+  {
+    @(posedge this.iob_bind.\$clk);
+
+    while((this.iob_bind.\$tmp_trig == 1'b0) && (this.iob_bind.\$rst_l))
+    {
+      @(posedge this.iob_bind.\$clk);
+    }
+
+    if(this.iob_bind.\$tmp_trig && this.iob_bind.\$rst_l)
+    {
+      reg_cmd.generate_iobman_address(0, IOB_CREG_TMSTATCTRL, 0);
+      this.xbar_reg_stub.get_reg_data (reg_cmd.address, reg_val);
+      int_mask = reg_val[31:0];
+      for( cpu = 0; cpu < 6'd32; cpu++)
+      {
+        if(int_mask[cpu] == 1'b0)
+        {
+          cpx_cmd = new();
+          cpx_cmd.valid = 1'b1;
+          cpx_cmd.rtntyp = INT_RET;
+          cpx_cmd.coreid = cpu[4:2];
+          cpx_cmd.threadid = cpu[1:0];
+          cpx_cmd.intvect = 6'h00;
+          cpx_cmd.data[17:16] = IOB_IDLE;
+          this.iob_int_exp.push_back(cpx_cmd);
+        }
+      }
+    }
+
+    while(this.iob_bind.\$tmp_trig && this.iob_bind.\$rst_l)
+    {
+      @(posedge this.iob_bind.\$clk);
+    }
+
+    if((this.iob_bind.\$tmp_trig == 1'b0) && (this.iob_bind.\$rst_l))
+    {
+      reg_cmd.generate_iobman_address(0,IOB_CREG_TMSTATCTRL,0);
+      this.xbar_reg_stub.get_reg_data (reg_cmd.address, reg_val);
+      int_mask = reg_val[31:0];
+      for( cpu = 0; cpu < 6'd32; cpu++)
+      {
+        if(int_mask[cpu] == 1'b0)
+        {
+          cpx_cmd = new();
+          cpx_cmd.valid = 1'b1;
+          cpx_cmd.rtntyp = INT_RET;
+          cpx_cmd.coreid = cpu[4:2];
+          cpx_cmd.threadid = cpu[1:0];
+          cpx_cmd.intvect = 6'h00;
+          cpx_cmd.data[17:16] = IOB_RESUME;
+          this.iob_int_exp.push_back(cpx_cmd);
+        }
+      }
+    } 
+  }
+} 
+
+////////////////////////////////////////////////////////////////////////
+// Snoop vec dispatch signals and genarete expected interrupt.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::snoop_vec_disp()
+{
+  CPX_CMD cpx_cmd;
+  
+  while (1)
+  {
+    @(posedge this.iob_bind.\$clk);
+    
+    while (!this.iob_bind.\$intvecdisp_int_vld & this.iob_bind.\$rst_l)
+    {
+      @(posedge this.iob_bind.\$clk);
+    }
+
+    if (this.iob_bind.\$intvecdisp_int_vld & this.iob_bind.\$rst_l)
+    {
+      cpx_cmd = new();
+      cpx_cmd.valid = 1'b1;
+      cpx_cmd.rtntyp = INT_RET;
+      cpx_cmd.nc = 1'b0;
+      cpx_cmd.coreid = this.iob_bind.\$intvecdisp_int_thr[4:2];
+      cpx_cmd.threadid = this.iob_bind.\$intvecdisp_int_thr[1:0];
+      cpx_cmd.intvect = this.iob_bind.\$intvecdisp_int_vec;
+      case (this.iob_bind.\$intvecdisp_int_type) 
+      {
+        UCB_INT_VEC:    cpx_cmd.data[17:16] = IOB_INT;
+        UCB_RESET_VEC:  cpx_cmd.data[17:16] = IOB_RESET;
+        UCB_IDLE_VEC:   cpx_cmd.data[17:16] = IOB_IDLE;
+        UCB_RESUME_VEC: cpx_cmd.data[17:16] = IOB_RESUME;
+        default:
+        {
+          printf("\n%0d : Simulation -> FAIL\n\n",
+                 get_time(LO));
+          @(posedge iob_top_jbus.clk); 
+          error("%0d : %s : ERROR: Received unexpected interrupt: %b\n",
+                get_time(LO), this.name, this.iob_bind.\$intvecdisp_int_type);
+        }
+      }
+      printf("Generated expect cpx_cmd:\n");
+      cpx_cmd.print("IOB_CHECKER");
+      this.iob_int_exp.push_back(cpx_cmd);
+    }
+    
+  }
+} 
+
+/////////////////////////////////////////////////////////////////
+// Map the unit id.
+/////////////////////////////////////////////////////////////////
+function bit [UNIT_IDX_HI-UNIT_IDX_LO:0] IOB_CHECKER::map_unit(bit [UNIT_IDX_HI-UNIT_IDX_LO:0] unit)
+{
+  if (unit <= JBUS2_HI &&
+      unit >= JBUS2_LO)
+    map_unit = JBUS1;
+  else if (unit <= DRAM_DATA_HI &&
+           unit >= DRAM_DATA_LO)
+    map_unit = DRAM_CSR;
+  else
+    map_unit = unit;
+}
+
+/////////////////////////////////////////////////////////////////
+// Return whether the checker is done
+/////////////////////////////////////////////////////////////////
+function bit IOB_CHECKER::done ()
+{
+  integer i;
+  bit     empty = 1'b1;
+
+  empty = empty & this.iob_int_exp.empty() & this.ecc_int_exp.empty(); 
+
+  done = empty;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Print out all expected interrupts.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::print_expects ((string info_msg = "Outstanding Interrupt"))
+{
+  integer                       i;
+  string                        msg;
+  CPX_CMD                       cpx_cmd;
+  CPX_CMD                       cpx_cmd_exp;
+  UCB_RSP                       ucb_rsp;
+  bit [63:0]                    reg_val;
+
+  if (this.iob_int_exp.size() != 0)
+  {
+    printf("%d : %s : Expected IOB Thermal Interrupts\n",
+           get_time(LO),
+           this.name);
+  }
+  while (this.iob_int_exp.size() != 0)
+  {
+    cpx_cmd_exp = this.iob_int_exp.front();
+    this.iob_int_exp.pop_front();
+    cpx_cmd_exp.info_msg = info_msg;
+    cpx_cmd_exp.print("IOB_CHECKER");
+    printf("\n");
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Increment the timeout value till some other process resets it.
+////////////////////////////////////////////////////////////////////////
+task IOB_CHECKER::incr_timeout_cnt ()
+{
+  
+   // This code increments a counter until it reaches a maximum value
+   // at which point we timeout.
+   while (1) 
+   {
+     repeat(100) @(posedge this.iob_bind.\$clk);
+     void = semaphore_get(WAIT, this.timeout_sem, 1);
+     this.timeout++;
+     semaphore_put(this.timeout_sem, 1);
+   }
+   
+}

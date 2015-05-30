@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_diff_thr_cmplt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_diff_thr_cmplt_cov.vr
+// Description:
+// This object covers three completions that set the three wait masks in the
+// switch logic. Not covering all combinations. Just choosing a fairly
+// representative subset.
+//
+// State: 12'b: thrrdy,stb_retry,ldst_cmplt
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_DIFF_THR_CMPLT_COV (bit [11:0] cov_vector)
+// {
+  state s_T0_thrrdy_T1_stb_retry_T2_ldst  (12'b/**/T0/**/T1/**/T2);
+  state s_T3_thrrdy_T2_stb_retry_T1_ldst  (12'b/**/T3/**/T2/**/T1);
+  state s_T2_thrrdy_T0_stb_retry_T3_ldst  (12'b/**/T2/**/T0/**/T3);
+  state s_T1_thrrdy_T3_stb_retry_T0_ldst  (12'b/**/T1/**/T3/**/T0);
+
+  wildcard trans t_T0_thrrdy_0_T1_stb_retry             (12'b/**/T0/**/xxxx/**/xxxx -> 12'b/**/xxxx/**/T1/**/xxxx);
+  wildcard trans t_T0_stb_retry_0_T1_thrrdy             (12'b/**/xxxx/**/T0/**/xxxx -> 12'b/**/T1/**/xxxx/**/xxxx);
+  wildcard trans t_T0_thrrdy_0_T3_ldst_cmplt            (12'b/**/T0/**/xxxx/**/xxxx -> 12'b/**/xxxx/**/xxxx/**/T3);
+  wildcard trans t_T0_ldst_cmplt_0_T3_thrrdy            (12'b/**/xxxx/**/xxxx/**/T0 -> 12'b/**/T3/**/xxxx/**/xxxx);
+  wildcard trans t_T2_stb_retry_0_T1_ldst_cmplt         (12'b/**/xxxx/**/T2/**/xxxx -> 12'b/**/xxxx/**/xxxx/**/T1);
+  wildcard trans t_T2_ldst_cmplt_0_T1_stb_retry         (12'b/**/xxxx/**/xxxx/**/T2 -> 12'b/**/xxxx/**/T1/**/xxxx);
+// }

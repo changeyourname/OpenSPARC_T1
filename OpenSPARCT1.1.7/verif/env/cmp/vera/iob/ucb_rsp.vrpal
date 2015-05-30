@@ -1,0 +1,162 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ucb_rsp.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        ucb_rsp.vrpal
+//  Description:        Class definition and methods for the iob checker
+//                      (reference model) used for modelling the
+//                      iob functionality
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "sys_rtl.h"
+
+#define UCB_THR_BITS UCB_THR_HI-UCB_THR_LO-1:0
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class UCB_RSP {
+  bit rd_ack;
+  bit rd_nak;
+  bit wr_ack;
+  bit ifill;
+  bit [UCB_THR_BITS] thr_id; // coreid, threadid
+  bit [UCB_BUF_HI-UCB_BUF_LO:0] buf_id;
+  bit [UCB_DATA_HI-UCB_DATA_LO:0] data;
+  bit interrupt;
+  bit [UCB_PKT_HI-UCB_PKT_LO:0] itype;
+  bit [UCB_THR_BITS] ithr_id;
+  bit [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0] istat;
+  bit [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0] dev_id ;
+  task new(bit rd_ack, bit rd_nak, bit wr_ack, bit ifill,
+           bit [UCB_THR_BITS] thr_id,
+           bit [UCB_BUF_HI-UCB_BUF_LO:0] buf_id,
+           bit [UCB_DATA_HI-UCB_DATA_LO:0] data,
+           (bit interrupt = 1'b0),
+           (bit [UCB_PKT_HI-UCB_PKT_LO:0] itype = 'h0),
+           (bit [UCB_THR_BITS] ithr_id = 'h0),
+           (bit [UCB_INT_STAT_HI-UCB_INT_STAT_LO:0] istat = 'h0),
+           (bit [UCB_INT_DEV_HI-UCB_INT_DEV_LO:0] dev_id = 'h0)) {
+    this.rd_ack         = rd_ack;
+    this.rd_nak         = rd_nak;
+    this.wr_ack         = wr_ack;
+    this.ifill          = ifill;
+    this.thr_id         = thr_id;
+    this.buf_id         = buf_id;
+    this.data           = data;
+    this.interrupt      = interrupt;
+    this.ithr_id        = ithr_id;
+    this.itype          = itype;
+    this.istat          = istat;
+    this.dev_id         = dev_id;
+  }
+  
+  ////////////////////////////////////////////////////////////////////////
+  // Compare response.
+  ////////////////////////////////////////////////////////////////////////
+  function bit compare(UCB_RSP new_rsp)
+  {
+    compare = (
+      (((this.rd_ack == new_rsp.rd_ack)&&(this.rd_nak == new_rsp.rd_nak)) ||
+       ((this.rd_ack == new_rsp.rd_nak)&&(this.rd_nak == new_rsp.rd_ack))) &&
+               (this.wr_ack == new_rsp.wr_ack) &&
+               (this.ifill == new_rsp.ifill) &&
+               (this.thr_id == new_rsp.thr_id) && // don't compare cpu id or int
+               (this.buf_id == new_rsp.buf_id));  // don't compare data
+  }
+  
+  ////////////////////////////////////////////////////////////////////////
+  // Compare response.
+  ////////////////////////////////////////////////////////////////////////
+  function bit compare_int(UCB_RSP new_rsp)
+  {
+    compare_int = (
+       (this.interrupt == new_rsp.interrupt) &&
+       //(this.ithr_id == new_rsp.ithr_id) &&
+       (this.itype == new_rsp.itype) && 
+       (this.dev_id == new_rsp.dev_id)); 
+  }
+  
+  ////////////////////////////////////////////////////////////////////////
+  // Print response.
+  ////////////////////////////////////////////////////////////////////////
+  task print ((string name = "MISC"))
+  {
+    static integer print_count = 0 ;
+
+    if ((print_count % 40) == 0)
+    {
+      print_header (name) ;
+    }
+
+    printf ("| UCB_RSP ") ;
+    printf ("| %10s ", name) ;
+    printf ("| %10d ", get_time(LO)) ;
+    printf ("| %b   ",  this.rd_ack) ;
+    printf ("| %b   ",  this.rd_nak) ;
+    printf ("| %b   ",  this.wr_ack) ;
+    printf ("| %b  ",  this.ifill) ;
+    printf ("| %x   ",  this.thr_id) ;
+    printf ("| %x   ",  this.buf_id) ;
+    printf ("| %x  ",  this.dev_id) ;
+    printf ("| %b   ",  this.interrupt) ;
+    printf ("| %b   ",  this.itype) ;
+    printf ("| %b   ",  this.istat) ;
+    printf ("| %x    ",  this.ithr_id) ;
+    printf ("| %x ",  this.data) ;
+    printf ("|\n") ;
+
+    print_count++ ;
+
+
+//    printf ("%0d : UCB_RSP: rack: %b rnak: %b wrak: %b ifill: %b thrd_id: %b buf_id %b dev_id %2H\n",
+//            get_time(LO), this.rd_ack, this.rd_nak, this.wr_ack,
+//            this.ifill, this.thr_id, this.buf_id, this.dev_id);
+//    printf ("%0d : UCB_RSP: data: %b\n",get_time(LO), this.data);
+//    printf ("%0d : UCB_RSP: int:  %b itype: %b istat: %b ithr_id: %b\n",
+//            get_time(LO),this.interrupt, this.itype, this.istat, this.ithr_id);
+  }
+
+  task print_header ((string name="MISC")) {
+    printf ("| UCB_RSP ") ;
+    printf ("| %10s ", name) ;
+    printf ("| Time       ") ;
+    printf ("| RAk ") ;
+    printf ("| RNk ") ;
+    printf ("| WNk ") ;
+    printf ("| If ") ;
+    printf ("| TId ") ;
+    printf ("| BId ") ;
+    printf ("| DId ") ;
+    printf ("| Int ") ;
+    printf ("| ITp ") ;
+    printf ("| ISt ") ;
+    printf ("| ITId ")  ;
+    printf ("| Data             ") ;
+    printf ("|\n") ;
+  }
+}
+
+MakeVeraList(UCB_RSP)  

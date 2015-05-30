@@ -1,0 +1,83 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l1.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "l1_inc.pal";
+#ifndef __L1_IF_VRH__
+#define __L1_IF_VRH__
+
+#include <vera_defines.vrh>
+#include "cmp_defines.vri"
+#include "sys_rtl.h"
+#include "iop_rtl.h"
+
+interface l1_top {
+  input                                 clk                             CLOCK;
+  input                                 spc_grst_l			PSAMPLE;
+  input                                 cmp_diag_done			PSAMPLE;
+    
+  // interface signals for l1 cache.
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+  input [3:0]                           spc${c}_ictag_dec_wrway_y       PSAMPLE;
+  input                                 spc${c}_ictag_wrreq_y           PSAMPLE;
+  input [6:0]                           spc${c}_ictag_index_y           PSAMPLE;
+  input [32:0]                          spc${c}_ictag_wrtag_w0_y        PSAMPLE;
+  input [32:0]                          spc${c}_ictag_wrtag_w1_y        PSAMPLE;
+  input [32:0]                          spc${c}_ictag_wrtag_w2_y        PSAMPLE;
+  input [32:0]                          spc${c}_ictag_wrtag_w3_y        PSAMPLE;
+
+  input [3:0]                           spc${c}_dctag_dec_wrway_y       PSAMPLE;
+  input                                 spc${c}_dctag_wrreq_y           PSAMPLE;
+  input [6:0]                           spc${c}_dctag_index_y           PSAMPLE;
+  input [32:0]                          spc${c}_dctag_wrtag_w0_y        PSAMPLE;
+  input [32:0]                          spc${c}_dctag_wrtag_w1_y        PSAMPLE;
+  input [32:0]                          spc${c}_dctag_wrtag_w2_y        PSAMPLE;
+  input [32:0]                          spc${c}_dctag_wrtag_w3_y        PSAMPLE;
+					    
+  input [6:0]                           spc${c}_icvld_wr_adr            PSAMPLE;
+  input                                 spc${c}_icvld_wr_en             PSAMPLE;
+  input [15:0]                          spc${c}_icvld_bit_wen           PSAMPLE;
+  input                                 spc${c}_icvld_din               PSAMPLE;
+ 
+  input [6:0]                           spc${c}_dcvld_wr_adr            PSAMPLE;
+  input                                 spc${c}_dcvld_wr_en             PSAMPLE;
+  input [15:0]                          spc${c}_dcvld_bit_wen           PSAMPLE;
+  input                                 spc${c}_dcvld_din               PSAMPLE;   
+
+  input [1:0] 				spc${c}_dfq_tid			PSAMPLE;   
+
+  input[17:0]				spc${c}_lsu_tlu_intpkt		PSAMPLE;
+  input      				spc${c}_lsu_tlu_cpx_vld		PSAMPLE;
+  input[3:0]   				spc${c}_lsu_tlu_cpx_req		PSAMPLE;
+
+. } # coreSignals
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+    
+}
+  
+#endif

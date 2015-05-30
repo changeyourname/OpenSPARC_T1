@@ -1,0 +1,973 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_inject.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// File:	err_inject.vr
+// Description:
+// 
+// The error injection tasks for icache,irf,dcache and frf
+// ***************************************************************************
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "cmp_top.if.vrh"
+
+ExternVeraList(string)
+  
+extern VeraList_string  str_list;
+
+#ifdef GATE_SIM
+#else
+
+extern hdl_task inj_irf_err_hdl (bit[71:0] err_mask_rs1,
+                                 bit[71:0] err_mask_rs2,
+                                 bit[71:0] err_mask_rs3,
+                                 bit err_inj_dbg);
+extern hdl_task inj_ic_err_hdl (bit[33:0] err_mask_ir,
+                                bit[33:0] err_mask_nir,
+                                bit[29:0] err_mask_tag,
+                                bit err_inj_dbg);
+extern hdl_task inj_dc_data_err_hdl (bit[71:0] err_mask_data,
+                                     bit err_inj_dbg);
+extern hdl_task inj_dc_tag_err_hdl (bit[29:0] err_mask_tag,
+                                    bit err_inj_dbg);
+extern hdl_task inj_frf_err_hdl (bit[77:0] err_mask_frf_rs1,
+                                 bit[77:0] err_mask_frf_rs2_rd,
+                                 bit fst,
+                                 bit err_inj_dbg);
+extern hdl_task inj_itlb_data_err_hdl (bit[42:0] err_mask_data,
+                                       bit err_inj_dbg);
+extern hdl_task inj_dtlb_data_err_hdl (bit[47:0] addr,
+                                       bit[42:0] err_mask_data,
+                                       bit err_inj_dbg);
+extern hdl_task inj_ic_tag_err_rand_hdl (integer loc, integer bit_num);
+extern hdl_task inj_ic_data_err_rand_hdl (integer loc, integer bit_num);        
+extern hdl_task inj_irf_err_rand_hdl (integer loc, integer bit_num);        
+extern hdl_task inj_frf_err_rand_hdl (integer loc, integer bit_num);        
+extern hdl_task inj_dc_tag_err_rand_hdl (integer loc, integer bit_num);        
+extern hdl_task inj_dc_data_err_rand_hdl (integer loc, integer bit_num);
+extern hdl_task inj_rand_err_dcd_wr_hdl (bit [7:0] bitnum, bit err_inj_dbg);
+extern hdl_task inj_rand_err_dct_wr_hdl (bit [4:0] bitnum, bit err_inj_dbg);
+extern hdl_task inj_rand_err_icd_wr_hdl (bit [5:0] bitnum, bit [3:0] err_word, bit err_inj_dbg);
+extern hdl_task inj_rand_err_ict_wr_hdl (bit [4:0] bitnum, bit err_inj_dbg);
+extern hdl_task inj_rand_err_irf_wr_hdl (bit [6:0] bitnum, bit [1:0] wr_stage, bit err_inj_dbg);
+extern hdl_task inj_rand_err_frf_wr_hdl (bit [5:0] bitnum, bit [1:0] reg_index, bit err_inj_dbg);
+
+extern bit [15:0] pc_d_cnt[];    //For the IRF errors
+extern bit [15:0] pc_d_cnt_frf[];    //For the FRF errors
+extern bit [15:0] pc_e_cnt[];    //For the FRF errors
+extern bit [15:0] pc_f_cnt[];    //For the IC errors
+extern bit [15:0] pc_m_cnt[];    //For the DC errors
+extern bit [15:0] pc_f_cnt_itlb[];    //For the ITLB errors
+extern bit [15:0] pc_m_cnt_dtlb[];    //For the DC errors
+extern bit [47:0] irferr_data[];
+extern bit [47:0] frferr_data[];
+extern bit [13:0] icderr_data[];
+extern bit [4:0]  icterr_data[];
+extern bit [6:0]  dcderr_data[];
+extern bit [4:0]  dcterr_data[];
+extern bit [5:0]  itlb_d_err_data[];
+extern bit [5:0]  dtlb_d_err_data[];
+
+extern bit err_inj_dbg;
+extern bit allow_cons_irf_err;
+
+////////////////////////////////////////////////////////////////////////
+// parse the error cmd from diag.ev
+////////////////////////////////////////////////////////////////////////
+
+task parse_err_cmd (VeraList_string  str_list)
+{
+  string str;
+  bit [47:0] pc;
+  bit [13:0] pc_cnt;
+  bit [47:0] err_data;
+  bit [6:0]  dc_bit1;
+  bit [1:0]  thrid,ic_err;
+  bit [6:0]  rs1_bit1,rs1_bit2; 
+  bit [6:0]  rs2_bit1,rs2_bit2;
+  bit [6:0]  rs3_bit1,rs3_bit2;  
+  bit [1:0]  rs1_err,rs2_err,rs3_err;
+  bit [5:0]  ic_bit1, ic_bit2, dtlb_bit1, itlb_bit1;
+
+  str = str_list.front ();str_list.pop_front();
+  thrid = str.atoi();
+  str = str_list.front ();str_list.pop_front();
+  pc = str.atohex();
+  str = str_list.front ();str_list.pop_front();
+  pc_cnt = str.atoi();
+  str = str_list.front ();str_list.pop_front();
+  case (str) {
+    "IRF": {
+      str = str_list.front ();str_list.pop_front();
+      rs1_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();
+      rs1_bit1 = str.atoi() % 72;
+      str = str_list.front ();str_list.pop_front();
+      rs1_bit2 = str.atoi() % 72;
+      str = str_list.front ();str_list.pop_front();
+      rs2_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();
+      rs2_bit1 = str.atoi() % 72;
+      str = str_list.front ();str_list.pop_front();
+      rs2_bit2 = str.atoi() % 72;
+      str = str_list.front ();str_list.pop_front();
+      rs3_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();
+      rs3_bit1 = str.atoi() % 72;
+      str = str_list.front ();str_list.pop_front();
+      rs3_bit2 = str.atoi() % 72;
+      
+      if (err_inj_dbg) {
+        printf ("Set error: IRF: thrid = %h, pc = %h, pc_cnt = %h, rs1_error_type = %h, rs1_bit1 = %h, rs1_bit2 = %h, rs2_error_type = %h, rs2_bit1 = %h, rs2_bit2 = %h, rs3_error_type = %h, rs3_bit1 = %h, rs3_bit2 = %h\n", thrid,pc,pc_cnt,rs1_err,rs1_bit1,rs1_bit2,rs2_err,rs2_bit1,rs2_bit2,rs3_err,rs3_bit1,rs3_bit2);
+      }
+      err_data = {rs1_err,rs1_bit1,rs1_bit2,rs2_err,rs2_bit1,rs2_bit2,rs3_err,rs3_bit1,rs3_bit2};
+      pc_d_cnt[{thrid,pc}] = 0;
+      irferr_data[{thrid,pc,pc_cnt}] = err_data;
+      //pc_cnt is just 14 bits wide to avoid keys in the hash that are more than 64 bits wide
+      //because that causes aliasing
+    }
+    "IC_DATA": {
+      str = str_list.front ();str_list.pop_front();
+      ic_err = ir_or_nir (str);
+      str = str_list.front ();str_list.pop_front();
+      ic_bit1 = str.atoi() % 34;
+      str = str_list.front ();str_list.pop_front();
+      ic_bit2 = str.atoi() % 34;
+      if (err_inj_dbg) {
+        printf ("Set error: IC_DATA: thrid = %h, pc = %h, pc_cnt = %h, error_type = %h, bit1 = %h, bit2 = %h\n", thrid,pc,pc_cnt,ic_err,ic_bit1,ic_bit2);
+      }
+      err_data = {ic_err,ic_bit1,ic_bit2};
+      pc_f_cnt[{thrid,pc}] = 0;
+      icderr_data[{thrid,pc,pc_cnt}] = err_data;
+    }
+    "IC_TAG" : {
+      str = str_list.front ();str_list.pop_front();
+      ic_bit1 = str.atoi() % 30;
+      if (err_inj_dbg) {
+        printf ("Set error: IC_TAG: thrid = %h, pc = %h, pc_cnt = %h, bit1 = %h\n", thrid,pc,pc_cnt,ic_bit1);
+      }
+      pc_f_cnt[{thrid,pc}] = 0;
+      icterr_data[{thrid,pc,pc_cnt}] = ic_bit1;
+    }
+    "FRF" : {
+      str = str_list.front ();str_list.pop_front();
+      rs1_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();      
+      rs1_bit1 = str.atoi() % 78;
+      str = str_list.front ();str_list.pop_front();
+      rs1_bit2 = str.atoi() % 78;
+      str = str_list.front ();str_list.pop_front();
+      rs2_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();
+      rs2_bit1 = str.atoi() % 78;
+      str = str_list.front ();str_list.pop_front();
+      rs2_bit2 = str.atoi() % 78;      
+      str = str_list.front ();str_list.pop_front();
+      rs3_err = ce_or_ue (str);
+      str = str_list.front ();str_list.pop_front();
+      rs3_bit1 = str.atoi() % 78;
+      str = str_list.front ();str_list.pop_front();
+      rs3_bit2 = str.atoi() % 78;      
+      if (err_inj_dbg) {
+        printf ("Set error: FRF: thrid = %h, pc = %h, pc_cnt = %h, rs1_error_type = %h, rs1_bit1 = %h, rs1_bit2 = %h, rs2_error_type = %h, rs2_bit1 = %h, rs2_bit2 = %h, rd_error_type = %h, rd_bit1 = %h, rd_bit2 = %h\n", thrid,pc,pc_cnt,rs1_err,rs1_bit1,rs1_bit2,rs2_err,rs2_bit1,rs2_bit2, rs3_err,rs3_bit1,rs3_bit2);
+      }
+      err_data = {rs1_err,rs1_bit1,rs1_bit2,rs2_err,rs2_bit1,rs2_bit2,rs3_err,rs3_bit1,rs3_bit2};
+      pc_e_cnt[{thrid,pc}] = 0;
+      pc_d_cnt_frf[{thrid,pc}] = 0;
+      frferr_data[{thrid,pc,pc_cnt}] = err_data;
+    }
+    "DC_DATA" : {
+      str = str_list.front ();str_list.pop_front();
+      dc_bit1 = str.atoi() % 72;
+      if (err_inj_dbg) {
+        printf ("Set error: DC_DATA: thrid = %h, pc = %h, pc_cnt = %h, bit1 = %h\n", thrid,pc,pc_cnt,dc_bit1);
+      }
+      pc_m_cnt[{thrid,pc}] = 0;
+      dcderr_data[{thrid,pc,pc_cnt}] = dc_bit1;      
+    }
+    "DC_TAG" : {
+      str = str_list.front ();str_list.pop_front();
+      dc_bit1 = str.atoi() % 30;
+      if (err_inj_dbg) {
+        printf ("Set error: DC_TAG: thrid = %h, pc = %h, pc_cnt = %h, bit1 = %h\n", thrid,pc,pc_cnt,dc_bit1);
+      }
+      pc_m_cnt[{thrid,pc}] = 0;
+      dcterr_data[{thrid,pc,pc_cnt}] = dc_bit1;      
+    }
+    "ITLB_DATA" : {
+      str = str_list.front ();str_list.pop_front();
+      itlb_bit1 = str.atoi() % 43;
+      if (err_inj_dbg) {
+        printf ("Set error: ITLB_DATA: thrid = %h, pc = %h, pc_cnt = %h, bit1 = %h\n", thrid,pc,pc_cnt,itlb_bit1);
+      }
+      pc_f_cnt_itlb[{thrid,pc}] = 0;
+      itlb_d_err_data[{thrid,pc,pc_cnt}] = itlb_bit1;      
+    }
+    "DTLB_DATA": {
+      str = str_list.front ();str_list.pop_front();
+      dtlb_bit1 = str.atoi() % 43;
+      if (err_inj_dbg) {
+        printf ("Set error: DTLB_DATA: thrid = %h, pc = %h, pc_cnt = %h, bit1 = %h\n", thrid,pc,pc_cnt,dtlb_bit1);
+      }
+      pc_m_cnt_dtlb[{thrid,pc}] = 0;
+      dtlb_d_err_data[{thrid,pc,pc_cnt}] = dtlb_bit1;      
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// fork of the tasks for specific error types
+////////////////////////////////////////////////////////////////////////
+
+task err_inject ()
+{
+  irf_err_inject ();
+  frf_err_inject ();
+  ic_err_inject ();
+  dc_err_inject ();
+  itlb_err_inject ();
+  dtlb_err_inject ();  
+}
+
+////////////////////////////////////////////////////////////////////////
+// Random error injection
+////////////////////////////////////////////////////////////////////////
+
+task rand_err_inject (integer err_cycles, integer err_seed)
+{
+  
+  integer array, bit_num, loc;
+  
+  //Be careful with the random number generator, any additional
+  //calls to random between the existing ones might cause the
+  //seeds to behave differently
+  fork
+  {
+    if (err_seed == -1) {
+      //generate a seed
+      err_seed = get_systime ();
+    }
+    void = random (err_seed); //initialize the random generator
+    printf ("\n                 %d: Info->Err injection seed %d.\n", get_time(LO), err_seed);
+    while (1) {
+      repeat (err_cycles) @ (posedge cmp_top.cmp_gclk); //for random errors it is ok to use cmp gclk
+      array = random() % 6; //There are 6 arrays supported at the moment
+      bit_num = random ();
+      loc = random ();
+      if (array == 0) { //IC tag
+        inj_ic_tag_err_rand_hdl (loc,bit_num);
+      } else if (array == 1) {
+        inj_ic_data_err_rand_hdl (loc,bit_num);        
+      } else if (array == 2) {
+        inj_irf_err_rand_hdl (loc,bit_num);        
+      } else if (array == 3) {
+        inj_frf_err_rand_hdl (loc,bit_num);        
+      } else if (array == 4) {
+        inj_dc_tag_err_rand_hdl (loc,bit_num);        
+      } else if (array == 5) {
+        inj_dc_data_err_rand_hdl (loc,bit_num);
+      }
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Random error injection
+////////////////////////////////////////////////////////////////////////
+
+task rand_err_inject_on_wr (bit[5:0] err_unit_mask, integer dc_freq,
+                            integer ic_freq, integer irf_freq,
+                            integer frf_freq, integer itlb_freq,
+                            integer dtlb_freq, bit dtlb_pa_err, bit itlb_pa_err, integer err_seed)
+{
+
+  bit [1:0] err_type;
+  bit [3:0] err_word;
+  bit irf_corr_write_w = 1'b0;
+  bit ecc_wr = 1'b0;  
+  integer bitnum;
+  bit [42:0] tlb_err_mask_data;
+  bit [47:0] addr;
+  
+  if (err_unit_mask != 6'b000000) {
+    if (err_seed == -1) {
+      err_seed = get_systime ();     //generate a seed
+    }
+    void = random (err_seed); //initialize the random generator
+    printf ("\n                 Info->Random error injection seed %d\n", err_seed);
+  }
+
+  if (err_unit_mask[0] == 1'b1) {//dc errors
+    printf ("\n                 Info->Enabling random error injection for dcache\n");
+    fork
+    {
+      while (1) {
+        @ (negedge cmp_top.cmp_gclk); 
+        delay (1);
+        if (cmp_top.dcd_wrreq_m == 1'b1 && cmp_top.dct_wrreq_m) {//Both should be asserted for any normal dfill
+          if (random () % dc_freq == 0) {
+            err_type = random () % 3 + 1;
+            if (err_type[0] == 1'b1) {
+              bitnum = random() % 144;
+              inj_rand_err_dcd_wr_hdl (bitnum, err_inj_dbg);
+            }
+            if (err_type[1] == 1'b1) {
+              bitnum = random () % 30;
+              inj_rand_err_dct_wr_hdl (bitnum, err_inj_dbg);
+            }
+          }
+        }
+      }
+    }
+    join none
+  }
+
+  if (err_unit_mask[1] == 1'b1) {//ic errors
+    printf ("\n                 Info->Enabling random error injection for icache\n");    
+    fork
+    {
+      while (1) {
+        @ (negedge cmp_top.cmp_gclk); 
+        delay (1);
+        if (cmp_top.icd_wrreq_f == 1'b1 && cmp_top.ict_wrreq_f) {//Both should be asserted for any normal ifill
+          if (random () % ic_freq == 0) {
+            err_type = random () % 3 + 1;
+            if (err_type[0] == 1'b1) {
+              bitnum = random() % 34;
+              err_word = random() % 15 + 1; //Inject error on 1,2,3 or 4 words
+              inj_rand_err_icd_wr_hdl (bitnum, err_word, err_inj_dbg);
+            }
+            if (err_type[1] == 1'b1) {
+              bitnum = random() % 30;              
+              inj_rand_err_ict_wr_hdl (bitnum, err_inj_dbg);
+            }
+          }
+        }
+      }
+    }
+    join none
+  }
+  
+  if (err_unit_mask[2] == 1'b1) {//irf
+    printf ("\n                 Info->Enabling random error injection for irf\n");
+    fork
+    {
+      while (1) {
+        @ (posedge cmp_top.cmp_gclk);
+        //use posedge because the writing really happens
+        //one cycle after the wen's are asserted. (w2)
+        //wen's here are really connected to the negedge signals in irf
+        delay (1);
+
+        if (cmp_top.irf_wen_w == 1'b1) {
+          if (allow_cons_irf_err) {
+            if (random () % irf_freq == 0) {
+              bitnum = random() % 72;              
+              inj_rand_err_irf_wr_hdl (bitnum, 2'b01, err_inj_dbg);
+            }
+          } else if (irf_corr_write_w == 1'b0) {
+            //consecutive errors are not allowed, so check if this write
+            //is not for an error correction
+            if (random () % irf_freq == 0) {
+              bitnum = random() % 72;              
+              inj_rand_err_irf_wr_hdl (bitnum, 2'b01, err_inj_dbg);
+            }            
+          }
+        }
+        if (cmp_top.irf_wen_w2 == 1'b1) {        
+          if (random () % irf_freq == 0) {
+            bitnum = random() % 72;              
+            inj_rand_err_irf_wr_hdl (bitnum, 2'b10, err_inj_dbg);
+          }
+        }
+        irf_corr_write_w = ecc_wr;
+        ecc_wr = cmp_top.ecl_byp_sel_ecc_m async;
+      }
+    }
+    join none
+  }
+
+  if (err_unit_mask[3] == 1'b1) {//frf
+    printf ("\n                 Info->Enabling random error injection for frf\n");    
+    fork
+    {
+      while (1) {
+        @ (negedge cmp_top.cmp_gclk);
+        delay (1);
+        if (cmp_top.frf_wen[1] == 1'b1 && cmp_top.frf_wen[0] == 1'b0) {
+          if (random () % frf_freq == 0) {
+            bitnum = random() % 39;              
+            inj_rand_err_frf_wr_hdl (bitnum, 2'b10, err_inj_dbg);
+          }
+        } else if (cmp_top.frf_wen[1] == 1'b0 && cmp_top.frf_wen[0] == 1'b1) {
+          if (random () % frf_freq == 0) {
+            bitnum = random() % 39;              
+            inj_rand_err_frf_wr_hdl (bitnum, 2'b01, err_inj_dbg);
+          }
+        } else if (cmp_top.frf_wen[1] == 1'b1 && cmp_top.frf_wen[0] == 1'b1) {
+          if (random () % frf_freq == 0) {
+            bitnum = random() % 39;
+            if (random() % 2 == 0) {
+              inj_rand_err_frf_wr_hdl (bitnum, 2'b10, err_inj_dbg);
+            } else {
+              inj_rand_err_frf_wr_hdl (bitnum, 2'b01, err_inj_dbg);
+            }
+          }
+        }
+      }
+    }
+    join none
+  }
+
+  if (err_unit_mask[4] == 1'b1) {//itlb error
+    printf ("\n                 Info->Enabling random error injection for itlb\n");    
+    fork
+    {
+      while (1) {
+        @ (posedge cmp_top.cmp_gclk);
+        delay (1);
+        tlb_err_mask_data = 43'h0;   
+        if (cmp_top.inst_vld_f == 1'b1 && cmp_top.cam_vld_f == 1'b1) {
+          if (random () % itlb_freq == 0) {
+            if (itlb_pa_err == 1'b1) {
+              bitnum = random() % 30 + 13;
+            } else {
+              bitnum = random() % 43;              
+            }            
+            tlb_err_mask_data[bitnum] = 1'b1;
+            inj_itlb_data_err_hdl (tlb_err_mask_data, err_inj_dbg);    
+          }
+        }
+      }
+    }
+    join none
+  }
+  
+  if (err_unit_mask[5] == 1'b1) {//dtlb error
+    printf ("\n                 Info->Enabling random error injection for dtlb\n");    
+    fork
+    {
+      while (1) {
+        @ (posedge cmp_top.cmp_gclk);
+        delay (1);
+        tlb_err_mask_data = 43'h0;   
+        if (cmp_top.ifu_tlu_inst_vld_m == 1'b1 && cmp_top.cam_vld_m == 1'b1) {
+          if (random () % dtlb_freq == 0) {
+            if (dtlb_pa_err == 1'b1) {
+              bitnum = random() % 30 + 13;
+            } else {
+              bitnum = random() % 43;              
+            }
+            tlb_err_mask_data[bitnum] = 1'b1;
+            inj_dtlb_data_err_hdl (addr, tlb_err_mask_data, err_inj_dbg);    
+          }
+        }
+        addr = cmp_top.exu_lsu_ldst_va_e async;
+      }
+    }
+    join none
+  }      
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the D-stage PC. Force errors on the irf
+// data when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task irf_err_inject ()
+{
+
+  bit [47:0] pc_d;
+  bit [3:0]  thr_d;
+  bit [1:0]  thrid;
+  bit [13:0] pc_cnt;
+  bit [47:0] err_data;
+  bit [71:0] err_mask_rs1;
+  bit [71:0] err_mask_rs2;
+  bit [71:0] err_mask_rs3;
+
+  fork
+    
+  while (1) {
+    
+    @ (negedge cmp_top.sparc_rclk async);
+
+    delay (1);
+    
+    pc_d = cmp_top.pc_d async;
+    thr_d = cmp_top.thr_d async;
+    thrid = thr_d[0] ? 'h0 : (thr_d[1] ? 'h1 : (thr_d[2] ? 'h2 : (thr_d[3] ? 'h3 : 'hx)));
+    err_mask_rs1 = 72'hffffffffffffffffff;
+    err_mask_rs2 = 72'hffffffffffffffffff;
+    err_mask_rs3 = 72'hffffffffffffffffff;
+
+    //x's on pc can occur in case of rst interrupts;when thread starts
+    if (cmp_top.fcl_dtu_inst_vld_d == 1'b1 && pc_d !== 48'hx && cmp_top.intr_vld_d == 1'b0) {
+      if (assoc_index(CHECK, pc_d_cnt, {thrid,pc_d})) {
+        pc_d_cnt[{thrid,pc_d}]++;
+        pc_cnt = pc_d_cnt[{thrid,pc_d}];
+
+        //Set the IRF error masks
+        if (assoc_index(CHECK, irferr_data, {thrid,pc_d,pc_cnt})) {
+          err_data = irferr_data [{thrid,pc_d,pc_cnt}];
+          err_mask_rs1 = set_irferr_mask(err_data [47:32]);
+          err_mask_rs2 = set_irferr_mask(err_data [31:16]);
+          err_mask_rs3 = set_irferr_mask(err_data [15:0]);
+        }
+      }
+    }
+
+    //Inject errors based on the masks
+    if ((cmp_top.rs1_ren_d == 1'b1) || (cmp_top.rs2_ren_d == 1'b1) || (cmp_top.rs3_ren_d == 1'b1)) {
+      if (err_mask_rs1 != 72'hffffffffffffffffff
+          || err_mask_rs2 != 72'hffffffffffffffffff
+          || err_mask_rs3 != 72'hffffffffffffffffff) {
+        printf ("%d: Info: D-stage PC %h: occ %d: injecting IRF error on thr %2h\n", get_time(LO), pc_d,pc_d_cnt[{thrid,pc_d}],thrid);
+        printf ("%d: Info: RS1 %1d %2d %2d: RS2 %1d %2d %2d: RS3 %1d %2d %2d\n", get_time(LO),err_data[47:46],err_data[45:39],err_data[38:32],err_data[31:30],err_data[29:23],err_data[22:16],err_data[15:14],err_data[13:7],err_data[6:0]);
+        printf ("%d: Info: Error Masks: %h %h %h\n", get_time(LO), err_mask_rs1,err_mask_rs2,err_mask_rs3);
+      }
+      inj_irf_err_hdl (err_mask_rs1,err_mask_rs2,err_mask_rs3,err_inj_dbg);
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the E-stage PC. Force errors on the frf
+// data when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task frf_err_inject ()
+{
+  bit cnt = 1'b0;
+  bit [47:0] pc_d;
+  bit [3:0]  thr_d;
+  bit [1:0]  thrid_d;
+  bit [13:0] pc_cnt;  
+  bit [47:0] pc_e;
+  bit [3:0]  thr_e;
+  bit [1:0]  thrid_e;
+  bit [47:0] err_data;
+  bit [77:0] err_mask_frf_rs1;
+  bit [77:0] err_mask_frf_rs2_rd;  
+
+  fork
+    
+  while (1) {
+    
+    @ (posedge cmp_top.sparc_rclk async);
+
+    delay (1);
+
+    pc_e = cmp_top.pc_e async;
+    thr_e = cmp_top.thr_e async;
+    thrid_e = thr_e[0] ? 'h0 : (thr_e[1] ? 'h1 : (thr_e[2] ? 'h2 : (thr_e[3] ? 'h3 : 'hx)));
+    pc_d = cmp_top.pc_d async;
+    thr_d = cmp_top.thr_d async;
+    thrid_d = thr_d[0] ? 'h0 : (thr_d[1] ? 'h1 : (thr_d[2] ? 'h2 : (thr_d[3] ? 'h3 : 'hx)));    
+    err_mask_frf_rs1 = 78'h0;
+    err_mask_frf_rs2_rd = 78'h0;
+
+    //x's on pc can occur in case of rst interrupts;when thread starts
+    if (cmp_top.inst_vld_e == 1'b1 && pc_e !== 48'hx &&
+       (cmp_top.fpop1_e || cmp_top.fpop2_e || cmp_top.visop_e)) {
+      if (assoc_index(CHECK, pc_e_cnt, {thrid_e,pc_e})) {
+        pc_e_cnt[{thrid_e,pc_e}]++;
+        pc_cnt = pc_e_cnt[{thrid_e,pc_e}];
+        //Set the frf error masks
+        if (assoc_index(CHECK, frferr_data, {thrid_e,pc_e,pc_cnt})) {
+          err_data = frferr_data [{thrid_e,pc_e,pc_cnt}];
+          err_mask_frf_rs1 = set_frferr_mask (err_data [47:32]);
+          err_mask_frf_rs2_rd = set_frferr_mask (err_data [31:16]); 
+        }
+      }
+    }
+
+    if (cmp_top.fcl_dtu_inst_vld_d == 1'b1 && pc_d !== 48'hx && cmp_top.ifu_ffu_fst_d == 1'b1) {
+      if (assoc_index(CHECK, pc_d_cnt_frf, {thrid_d,pc_d})) {
+        pc_d_cnt_frf[{thrid_d,pc_d}]++;
+        pc_cnt = pc_d_cnt_frf[{thrid_d,pc_d}];
+        if (assoc_index(CHECK, frferr_data, {thrid_d,pc_d,pc_cnt})) {
+          //If fp st then only rd will be read;three frf regs are never read simultaneously
+          err_data = frferr_data [{thrid_d,pc_d,pc_cnt}];
+          err_mask_frf_rs2_rd = set_frferr_mask (err_data [15:0]);
+        }
+      }
+    }
+      
+    if (cmp_top.ctl_frf_ren == 1'b1) {
+      if (cmp_top.ifu_ffu_fst_d == 1'b1) {
+        if (err_mask_frf_rs2_rd != 'h0) {
+          printf ("%d: Info: D-stage PC %h: occ %d: injecting FRF error on thr %2h\n", get_time(LO), pc_d,pc_d_cnt_frf[{thrid_d,pc_d}],thrid_d);            
+          printf ("%d: Info: Rd %1d %2d %2d\n", get_time(LO),err_data[15:14],err_data[13:7],err_data[6:0]);
+          printf ("%d: Info: Error Masks:%h\n", get_time(LO), err_mask_frf_rs2_rd);
+        }
+        inj_frf_err_hdl (err_mask_frf_rs1,err_mask_frf_rs2_rd,1'b1,err_inj_dbg);            
+      } else {
+        if (cmp_top.fpop1_e || cmp_top.fpop2_e || cmp_top.visop_e) {
+          if (err_mask_frf_rs1 != 'h0 || err_mask_frf_rs2_rd != 'h0) {
+            printf ("%d: Info: E-stage PC %h: occ %d: injecting FRF error on thr %2h\n", get_time(LO), pc_e,pc_e_cnt[{thrid_e,pc_e}],thrid_e);            
+            printf ("%d: Info: RS1 %1d %2d %2d: RS2 %1d %2d %2d: Rd %1d %2d %2d\n", get_time(LO),err_data[47:46],err_data[45:39],err_data[38:32],err_data[31:30],err_data[29:23],err_data[22:16],err_data[15:14],err_data[13:7],err_data[6:0]);
+            printf ("%d: Info: Error Masks: %h %h\n", get_time(LO), err_mask_frf_rs1,err_mask_frf_rs2_rd);
+          }
+          inj_frf_err_hdl (err_mask_frf_rs1,err_mask_frf_rs2_rd,1'b0,err_inj_dbg);
+        }
+      }
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the F-stage PC. Force errors on the icache
+// data/tag when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task ic_err_inject ()
+{
+  bit [47:0] pc_f;
+  bit [3:0] thr_f;
+  bit [1:0]  thrid;
+  bit [13:0] pc_cnt;
+  bit [13:0] err_data;
+  bit [33:0] err_mask_ir;
+  bit [33:0] err_mask_nir;
+  bit [29:0] err_mask_tag;
+
+  fork
+    
+  while (1) {
+    
+    @ (negedge cmp_top.sparc_rclk async);
+
+    delay (1);
+    
+    pc_f = cmp_top.pc_f async;
+    thr_f = cmp_top.thr_f async;
+    thrid = thr_f[0] ? 'h0 : (thr_f[1] ? 'h1 : (thr_f[2] ? 'h2 : (thr_f[3] ? 'h3 : 'hx)));
+    err_mask_ir = 34'h0;
+    err_mask_nir = 34'h0;
+    err_mask_tag = 30'h0;
+
+    //Set the error masks;x's on pc can occur at the start in case of rst interrupts
+    if (cmp_top.inst_vld_f == 1'b1 && pc_f !== 48'hx) {
+      if (assoc_index(CHECK, pc_f_cnt, {thrid,pc_f})) {
+        pc_f_cnt[{thrid,pc_f}]++;
+        pc_cnt = pc_f_cnt[{thrid,pc_f}];
+        if (assoc_index(CHECK, icderr_data, {thrid,pc_f,pc_cnt})) {
+          err_data = icderr_data [{thrid,pc_f,pc_cnt}];
+          set_icderr_mask(err_data,err_mask_ir,err_mask_nir);
+          printf ("%d: Info: F-stage PC %h: occ %d: injecting IC data error on thr %2h\n", get_time(LO), pc_f,pc_f_cnt[{thrid,pc_f}],thrid);
+          printf ("%d: Info: Error Masks: %h %h\n", get_time(LO), err_mask_ir,err_mask_nir);
+        }
+        if (assoc_index(CHECK, icterr_data, {thrid,pc_f,pc_cnt})) {
+          err_data = icterr_data [{thrid,pc_f,pc_cnt}];          
+          err_mask_tag[err_data] = 1'b1;
+          printf ("%d: Info: F-stage PC %h: occ %d: injecting IC tag error on thr %2h\n", get_time(LO), pc_f,pc_f_cnt[{thrid,pc_f}],thrid);
+          printf ("%d: Info: Error Masks: %h\n", get_time(LO), err_mask_tag);          
+        }
+      }
+    }
+
+    //Inject error, if mask set
+    if (cmp_top.icd_rdreq_f == 1'b1) {
+      if (pc_f[2] == 1'b1 && err_mask_nir != 34'h0) {
+        printf ("%d: Info: F-stage PC %h: Cancelling IC data error on thr %2h\n", get_time(LO), pc_f,thrid);
+        //if odd pc then zero-out the nir error mask, becuase the index will
+        //be the same for ir and nir and we don't want undectable double errors
+        err_mask_nir = 34'h0;
+      }
+      inj_ic_err_hdl (err_mask_ir, err_mask_nir, err_mask_tag, err_inj_dbg);    
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the M-stage PC. Force errors on the dcache
+// data/tag when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task dc_err_inject ()
+{
+  bit [47:0] pc_m;
+  bit [3:0]  thr_m;
+  bit [1:0]  thrid;
+  bit [13:0] pc_cnt;
+  bit [5:0]  bit_num;
+  bit [71:0] err_mask_data;
+  bit [29:0] err_mask_tag;
+
+  fork
+    
+  while (1) {
+    
+    @ (negedge cmp_top.sparc_rclk async);
+
+    delay (1);
+    
+    pc_m = cmp_top.pc_m async;
+    thr_m = cmp_top.thr_m async;
+    thrid = thr_m[0] ? 'h0 : (thr_m[1] ? 'h1 : (thr_m[2] ? 'h2 : (thr_m[3] ? 'h3 : 'hx)));
+    err_mask_data = 72'h0;
+    err_mask_tag = 30'h0;
+
+    //Set the error masks;pc can be x's when rst interrupt is taken
+    if (cmp_top.ifu_tlu_inst_vld_m == 1'b1 && pc_m !== 48'hx && cmp_top.ifu_tlu_ttype_vld_m == 1'b0) {
+      if (assoc_index(CHECK, pc_m_cnt, {thrid,pc_m})) {
+        pc_m_cnt[{thrid,pc_m}]++;
+        pc_cnt = pc_m_cnt[{thrid,pc_m}];
+        if (assoc_index(CHECK, dcderr_data, {thrid,pc_m,pc_cnt})) {      
+          bit_num = dcderr_data [{thrid,pc_m,pc_cnt}];
+          err_mask_data[bit_num] = 1'b1;
+          printf ("%d: Info: M-stage PC %h: occ %d: injecting DC data error on thr %2h\n", get_time(LO), pc_m,pc_m_cnt[{thrid,pc_m}],thrid);
+          printf ("%d: Info: Error Mask: %h\n", get_time(LO), err_mask_data);
+        }
+        if (assoc_index(CHECK, dcterr_data, {thrid,pc_m,pc_cnt})) {
+          bit_num = dcterr_data [{thrid,pc_m,pc_cnt}];          
+          err_mask_tag[bit_num] = 1'b1;
+          printf ("%d: Info: M-stage PC %h: occ %d: injecting DC tag error on thr %2h\n", get_time(LO), pc_m,pc_m_cnt[{thrid,pc_m}],thrid);
+          printf ("%d: Info: Error Mask: %h\n", get_time(LO), err_mask_tag);          
+        }
+      }
+    }
+
+    //inject data errors first; so that error free tags can be compared
+    //and both data and tag errors can be injected simultaneously
+    if (cmp_top.dcd_rdreq_m == 1'b1) {//dcd read enable
+      inj_dc_data_err_hdl (err_mask_data, err_inj_dbg);
+    }
+    
+    if (cmp_top.dct_rdreq_m == 1'b1) {//dct rd enable
+      inj_dc_tag_err_hdl (err_mask_tag, err_inj_dbg);        
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the F-stage PC. Force errors on the itlb
+// data when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task itlb_err_inject ()
+{
+  bit [47:0] pc_f;
+  bit [3:0]  thr_f;
+  bit [1:0]  thrid;
+  bit [13:0] pc_cnt;
+  bit [5:0]  err_data;
+  bit [42:0] err_mask_data;  
+
+  fork
+    
+  while (1) {
+    
+    @ (posedge cmp_top.sparc_rclk async);
+
+    delay (1);
+    
+    pc_f = cmp_top.pc_f async;
+    thr_f = cmp_top.thr_f async;
+    thrid = thr_f[0] ? 'h0 : (thr_f[1] ? 'h1 : (thr_f[2] ? 'h2 : (thr_f[3] ? 'h3 : 'hx)));
+    err_mask_data = 43'h0;    
+
+    //Set the error masks;x's on pc can occur at the start in case of rst interrupts
+    if (cmp_top.inst_vld_f == 1'b1 && pc_f !== 48'hx) {
+      if (assoc_index(CHECK, pc_f_cnt_itlb, {thrid,pc_f})) {
+        pc_f_cnt_itlb[{thrid,pc_f}]++;
+        pc_cnt = pc_f_cnt_itlb[{thrid,pc_f}];
+        if (assoc_index(CHECK, itlb_d_err_data, {thrid,pc_f,pc_cnt})) {
+          err_data = itlb_d_err_data [{thrid,pc_f,pc_cnt}];          
+          err_mask_data[err_data] = 1'b1;
+        }
+      }
+    }
+
+    //Inject error, if mask set
+    if (cmp_top.cam_vld_f == 1'b1 && err_mask_data != 43'h0) {
+      printf ("%d: Info: F-stage PC %h: occ %d: injecting ITLB data error on thr %2h\n", get_time(LO), pc_f,pc_f_cnt_itlb[{thrid,pc_f}],thrid);
+      printf ("%d: Info: Error Mask: %h\n", get_time(LO), err_mask_data);
+      inj_itlb_data_err_hdl (err_mask_data, err_inj_dbg);    
+    }
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// Generate mask and track the F-stage PC. Force errors on the dtlb
+// data when pc matches the occurrence cnt
+////////////////////////////////////////////////////////////////////////
+
+task dtlb_err_inject ()
+{
+  bit [47:0] pc_m;
+  bit [3:0]  thr_m;
+  bit [1:0]  thrid;
+  bit [13:0] pc_cnt;
+  bit [5:0]  err_data;
+  bit [42:0] err_mask_data;
+  bit [47:0] addr;
+
+  fork
+    
+  while (1) {
+    
+    @ (posedge cmp_top.sparc_rclk async);
+
+    delay (1);
+    
+    pc_m = cmp_top.pc_m async;
+    thr_m = cmp_top.thr_m async;
+    thrid = thr_m[0] ? 'h0 : (thr_m[1] ? 'h1 : (thr_m[2] ? 'h2 : (thr_m[3] ? 'h3 : 'hx)));
+    err_mask_data = 43'h0;    
+
+    //Set the error masks;x's on pc can occur at the start in case of rst interrupts
+    if (cmp_top.ifu_tlu_inst_vld_m == 1'b1 && pc_m !== 48'hx) {
+      if (assoc_index(CHECK, pc_m_cnt_dtlb, {thrid,pc_m})) {
+        pc_m_cnt_dtlb[{thrid,pc_m}]++;
+        pc_cnt = pc_m_cnt_dtlb[{thrid,pc_m}];
+        if (assoc_index(CHECK, dtlb_d_err_data, {thrid,pc_m,pc_cnt})) {
+          err_data = dtlb_d_err_data [{thrid,pc_m,pc_cnt}];          
+          err_mask_data[err_data] = 1'b1;
+        }
+      }
+    }
+
+    //Inject error, if mask set
+    if (cmp_top.cam_vld_m == 1'b1 && err_mask_data != 43'h0) {
+      printf ("%d: Info: M-stage PC %h: occ %d: injecting DTLB data error on thr %2h\n", get_time(LO), pc_m,pc_m_cnt_dtlb[{thrid,pc_m}],thrid);
+      printf ("%d: Info: Error Mask: %h\n", get_time(LO), err_mask_data);
+      inj_dtlb_data_err_hdl (addr, err_mask_data, err_inj_dbg);    
+    }
+    addr = cmp_top.exu_lsu_ldst_va_e async;
+  }
+  join none
+}
+
+////////////////////////////////////////////////////////////////////////
+// encode the CE, UE mnemonics
+////////////////////////////////////////////////////////////////////////
+
+function bit [1:0] ce_or_ue (string str)
+{
+  if (str == "CE" || str == "ce") {
+    ce_or_ue = 2'b01;
+  } else if (str == "UE" || str == "ue") {
+    ce_or_ue = 2'b10;
+  } else {
+    ce_or_ue = 2'b00;
+  }  
+}
+
+////////////////////////////////////////////////////////////////////////
+// Encode ir or nir error
+////////////////////////////////////////////////////////////////////////
+
+function bit [1:0] ir_or_nir (string str)
+{
+  if (str == "ir" || str == "IR") {
+    ir_or_nir = 2'b01;
+  } else if (str == "nir" || str == "NIR") {
+    ir_or_nir = 2'b10;
+  } else if (str == "ir_nir" || str == "IR_NIR") {
+    ir_or_nir = 2'b11;
+  } else {
+    ir_or_nir = 2'b00;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Set the error mask for irf. The IRF outputs are active low; so
+// defalut mask is all f's
+////////////////////////////////////////////////////////////////////////
+
+function bit [71:0] set_irferr_mask (bit[15:0] err_data)
+{
+  bit [6:0] bit1,bit2;
+  bit [1:0] err_type;
+  bit [71:0] err_mask = 72'hffffffffffffffffff;
+
+  err_type = err_data [15:14];
+  bit1 = err_data[13:7];
+  if (err_type == 'h1) {
+    err_mask[bit1] = 1'b0;
+  } else if (err_type == 'h2) {
+    bit2 = err_data[6:0];
+    err_mask[bit2] = 1'b0;
+    err_mask[bit1] = 1'b0;
+  }
+
+  set_irferr_mask = err_mask;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Set the error mask for frf.
+////////////////////////////////////////////////////////////////////////
+
+function bit [77:0] set_frferr_mask (bit[15:0] err_data)
+{
+  integer bit1,bit2,err_type;
+  bit [77:0] err_mask = 78'h0;
+
+  err_type = err_data [15:14];
+  bit1 = err_data[13:7];
+  if (err_type == 'h1) {
+    err_mask[bit1] = 1'b1;
+  } else if (err_type == 'h2) {
+    bit2 = err_data[6:0];
+    err_mask[bit2] = 1'b1;
+    err_mask[bit1] = 1'b1;
+  }
+
+  set_frferr_mask = err_mask;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Set the error masks for ic data and tag. Which of the four ways
+// the mask will apply will be figured out by the verilog task
+// by precomputing the way selection once cycle earlier
+////////////////////////////////////////////////////////////////////////
+
+task set_icderr_mask (bit[13:0] err_data, var bit[33:0] err_mask_ir,
+                      var bit[33:0] err_mask_nir)
+{
+  bit[1:0] err;
+  bit[5:0] bit1,bit2;
+
+  err = err_data[13:12];
+  bit1 = err_data[11:6];
+  bit2 = err_data[5:0];
+  
+  if (err == 2'b01) {
+    err_mask_ir[bit1] = 1'b1;
+  } else if (err == 2'b10) {
+    err_mask_nir[bit2] = 1'b1;    
+  } else if (err == 2'b11) {
+    err_mask_ir[bit1] = 1'b1;
+    err_mask_nir[bit2] = 1'b1;    
+  }
+}
+
+#endif // ifdef GATE_SIM
+

@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_cas_que_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_cas_que_sample.vrh
+// Description:
+// Coverage object for CAS que. Each bit of cas_valid indicates that 
+// bank i [i=0-7] CAS is pending or not.  All combinations may 
+// not be achievable
+//
+// ***************************************************************************
+
+
+// coverage_def dram_cas_que_sample (bit [7:0] cas_valid)
+// {
+
+  // Since each bit of cas valid is independent of other bit.
+  // Also any combination can be possible since each bit indicates that 
+  // bank i [i=0-7] CAS is pending or not. 
+  // state declarations
+     m_state s_cas_valid_all             (0:63);
+
+
+
+  // transitions(to same)
+
+  // transitions(to different)
+
+
+  // bad states
+  //bad_state s_not_WR_Q_STATE (not state);
+
+  // bad transitions 
+  //bad_trans t_not_WR_Q_TRANS (not trans);
+
+// }
+

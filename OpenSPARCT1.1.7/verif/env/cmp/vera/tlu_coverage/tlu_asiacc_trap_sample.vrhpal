@@ -1,0 +1,128 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_asiacc_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the access violations detection and trap
+//generation of TLU owned ASIs.
+//
+//***************************************************************************
+
+
+// coverage_def TLU_ASIACC_TRAP_COV (bit [61:0] tlu_asiacc_trap_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_U_LD_INTR_RECEIVE_REG	(U_LD_INTR_RECEIVE_REG);
+  wildcard state s_U_LD_INTR_VEC_DISPATCH	(U_LD_INTR_VEC_DISPATCH);
+  wildcard state s_U_LD_INTR_INCOMING_VEC	(U_LD_INTR_INCOMING_VEC);
+  wildcard state s_U_ST_INTR_RECEIVE_REG	(U_ST_INTR_RECEIVE_REG);
+  wildcard state s_U_ST_INTR_VEC_DISPATCH	(U_ST_INTR_VEC_DISPATCH);
+  wildcard state s_U_ST_INTR_INCOMING_VEC	(U_ST_INTR_INCOMING_VEC);
+  wildcard state s_U_ST_CPU_MONDO_HEAD	(U_ST_CPU_MONDO_HEAD);
+  wildcard state s_U_ST_DEV_MONDO_HEAD	(U_ST_DEV_MONDO_HEAD);
+  wildcard state s_U_ST_RES_ERR_HEAD	(U_ST_RES_ERR_HEAD);
+  wildcard state s_U_ST_NONRES_ERR_HEAD	(U_ST_NONRES_ERR_HEAD);
+  wildcard state s_U_ST_CPU_MONDO_TAIL	(U_ST_CPU_MONDO_TAIL);
+  wildcard state s_U_ST_DEV_MONDO_TAIL	(U_ST_DEV_MONDO_TAIL);
+  wildcard state s_U_ST_RES_ERR_TAIL	(U_ST_RES_ERR_TAIL);
+  wildcard state s_U_ST_NONRES_ERR_TAIL	(U_ST_NONRES_ERR_TAIL);
+  wildcard state s_U_LD_CPU_MONDO_HEAD	(U_LD_CPU_MONDO_HEAD);
+  wildcard state s_U_LD_DEV_MONDO_HEAD	(U_LD_DEV_MONDO_HEAD);
+  wildcard state s_U_LD_RES_ERR_HEAD	(U_LD_RES_ERR_HEAD);
+  wildcard state s_U_LD_NONRES_ERR_HEAD	(U_LD_NONRES_ERR_HEAD);
+  wildcard state s_U_LD_CPU_MONDO_TAIL	(U_LD_CPU_MONDO_TAIL);
+  wildcard state s_U_LD_DEV_MONDO_TAIL	(U_LD_DEV_MONDO_TAIL);
+  wildcard state s_U_LD_RES_ERR_TAIL	(U_LD_RES_ERR_TAIL);
+  wildcard state s_U_LD_NONRES_ERR_TAIL	(U_LD_NONRES_ERR_TAIL);
+  wildcard state s_U_ST_SCRATCH_PAD0	(U_ST_SCRATCH_PAD0);
+  wildcard state s_U_ST_SCRATCH_PAD1	(U_ST_SCRATCH_PAD1);
+  wildcard state s_U_ST_SCRATCH_PAD2	(U_ST_SCRATCH_PAD2);
+  wildcard state s_U_ST_SCRATCH_PAD3	(U_ST_SCRATCH_PAD3);
+  wildcard state s_U_ST_SCRATCH_PAD4	(U_ST_SCRATCH_PAD4);
+  wildcard state s_U_ST_SCRATCH_PAD5	(U_ST_SCRATCH_PAD5);
+  wildcard state s_U_ST_SCRATCH_PAD6	(U_ST_SCRATCH_PAD6);
+  wildcard state s_U_ST_SCRATCH_PAD7	(U_ST_SCRATCH_PAD7);
+  wildcard state s_U_LD_SCRATCH_PAD0	(U_LD_SCRATCH_PAD0);
+  wildcard state s_U_LD_SCRATCH_PAD1	(U_LD_SCRATCH_PAD1);
+  wildcard state s_U_LD_SCRATCH_PAD2	(U_LD_SCRATCH_PAD2);
+  wildcard state s_U_LD_SCRATCH_PAD3	(U_LD_SCRATCH_PAD3);
+  wildcard state s_U_LD_SCRATCH_PAD4	(U_LD_SCRATCH_PAD4);
+  wildcard state s_U_LD_SCRATCH_PAD5	(U_LD_SCRATCH_PAD5);
+  wildcard state s_U_LD_SCRATCH_PAD6	(U_LD_SCRATCH_PAD6);
+  wildcard state s_U_LD_SCRATCH_PAD7	(U_LD_SCRATCH_PAD7);
+  wildcard state s_U_ST_HSCRATCH_PAD0	(U_ST_HSCRATCH_PAD0);
+  wildcard state s_U_ST_HSCRATCH_PAD1	(U_ST_HSCRATCH_PAD1);
+  wildcard state s_U_ST_HSCRATCH_PAD2	(U_ST_HSCRATCH_PAD2);
+  wildcard state s_U_ST_HSCRATCH_PAD3	(U_ST_HSCRATCH_PAD3);
+  wildcard state s_U_ST_HSCRATCH_PAD4	(U_ST_HSCRATCH_PAD4);
+  wildcard state s_U_ST_HSCRATCH_PAD5	(U_ST_HSCRATCH_PAD5);
+  wildcard state s_U_ST_HSCRATCH_PAD6	(U_ST_HSCRATCH_PAD6);
+  wildcard state s_U_ST_HSCRATCH_PAD7	(U_ST_HSCRATCH_PAD7);
+  wildcard state s_U_LD_HSCRATCH_PAD0	(U_LD_HSCRATCH_PAD0);
+  wildcard state s_U_LD_HSCRATCH_PAD1	(U_LD_HSCRATCH_PAD1);
+  wildcard state s_U_LD_HSCRATCH_PAD2	(U_LD_HSCRATCH_PAD2);
+  wildcard state s_U_LD_HSCRATCH_PAD3	(U_LD_HSCRATCH_PAD3);
+  wildcard state s_U_LD_HSCRATCH_PAD4	(U_LD_HSCRATCH_PAD4);
+  wildcard state s_U_LD_HSCRATCH_PAD5	(U_LD_HSCRATCH_PAD5);
+  wildcard state s_U_LD_HSCRATCH_PAD6	(U_LD_HSCRATCH_PAD6);
+  wildcard state s_U_LD_HSCRATCH_PAD7	(U_LD_HSCRATCH_PAD7);
+  wildcard state s_S_ST_CPU_MONDO_TAIL	(S_ST_CPU_MONDO_TAIL);
+  wildcard state s_S_ST_DEV_MONDO_TAIL	(S_ST_DEV_MONDO_TAIL);
+  wildcard state s_S_ST_RES_ERR_TAIL	(S_ST_RES_ERR_TAIL);
+  wildcard state s_S_ST_NONRES_ERR_TAIL	(S_ST_NONRES_ERR_TAIL);
+  wildcard state s_S_ST_SCRATCH_PAD4	(S_ST_SCRATCH_PAD4);
+  wildcard state s_S_ST_SCRATCH_PAD5	(S_ST_SCRATCH_PAD5);
+  wildcard state s_S_LD_SCRATCH_PAD4	(S_LD_SCRATCH_PAD4);
+  wildcard state s_S_LD_SCRATCH_PAD5	(S_LD_SCRATCH_PAD5);
+  wildcard state s_S_ST_HSCRATCH_PAD0	(S_ST_HSCRATCH_PAD0);
+  wildcard state s_S_ST_HSCRATCH_PAD1	(S_ST_HSCRATCH_PAD1);
+  wildcard state s_S_ST_HSCRATCH_PAD2	(S_ST_HSCRATCH_PAD2);
+  wildcard state s_S_ST_HSCRATCH_PAD3	(S_ST_HSCRATCH_PAD3);
+  wildcard state s_S_ST_HSCRATCH_PAD4	(S_ST_HSCRATCH_PAD4);
+  wildcard state s_S_ST_HSCRATCH_PAD5	(S_ST_HSCRATCH_PAD5);
+  wildcard state s_S_ST_HSCRATCH_PAD6	(S_ST_HSCRATCH_PAD6);
+  wildcard state s_S_ST_HSCRATCH_PAD7	(S_ST_HSCRATCH_PAD7);
+  wildcard state s_S_LD_HSCRATCH_PAD0	(S_LD_HSCRATCH_PAD0);
+  wildcard state s_S_LD_HSCRATCH_PAD1	(S_LD_HSCRATCH_PAD1);
+  wildcard state s_S_LD_HSCRATCH_PAD2	(S_LD_HSCRATCH_PAD2);
+  wildcard state s_S_LD_HSCRATCH_PAD3	(S_LD_HSCRATCH_PAD3);
+  wildcard state s_S_LD_HSCRATCH_PAD4	(S_LD_HSCRATCH_PAD4);
+  wildcard state s_S_LD_HSCRATCH_PAD5	(S_LD_HSCRATCH_PAD5);
+  wildcard state s_S_LD_HSCRATCH_PAD6	(S_LD_HSCRATCH_PAD6);
+  wildcard state s_S_LD_HSCRATCH_PAD7	(S_LD_HSCRATCH_PAD7);
+  wildcard state s_S_LD_INTR_RECEIVE_REG	(S_LD_INTR_RECEIVE_REG);
+  wildcard state s_S_LD_INTR_VEC_DISPATCH	(S_LD_INTR_VEC_DISPATCH);
+  wildcard state s_S_LD_INTR_INCOMING_VEC	(S_LD_INTR_INCOMING_VEC);
+  wildcard state s_S_ST_INTR_RECEIVE_REG	(S_ST_INTR_RECEIVE_REG);
+  wildcard state s_S_ST_INTR_VEC_DISPATCH	(S_ST_INTR_VEC_DISPATCH);
+  wildcard state s_S_ST_INTR_INCOMING_VEC	(S_ST_INTR_INCOMING_VEC);
+  wildcard state s_H_LD_INTR_VEC_DISPATCH	(H_LD_INTR_VEC_DISPATCH);
+  wildcard state s_H_ST_INTR_INCOMING_VEC	(H_ST_INTR_INCOMING_VEC);
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

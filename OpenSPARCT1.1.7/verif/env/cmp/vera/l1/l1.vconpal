@@ -1,0 +1,83 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l1.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "l1_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// l1 signals
+////////////////////////////////////////////////////////////////////////////////
+
+connect input l1_top.clk           = "cmp_top.cmp_gclk"
+connect input l1_top.spc_grst_l    = "cmp_top.iop.sparc0.spc_grst_l" iskew -1
+connect input l1_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+    
+#ifndef GATE_SIM
+// interface signals for l1 cache.
+. sub connectInstance {
+.	my ($coreNum, $icTagInst, $dcTagInst, $icVldInst, $dcVldInst)   = @_;
+.	my $c                                                           = $coreNum;
+connect input l1_top.spc${c}_ictag_dec_wrway_y  = "${icTagInst}.dec_wrway_y" iskew -1
+connect input l1_top.spc${c}_ictag_wrreq_y      = "${icTagInst}.wrreq_y" iskew -1
+connect input l1_top.spc${c}_ictag_index_y      = "${icTagInst}.index_y" iskew -1
+connect input l1_top.spc${c}_ictag_wrtag_w0_y   = "${icTagInst}.wrtag_w0_y" iskew -1
+connect input l1_top.spc${c}_ictag_wrtag_w1_y   = "${icTagInst}.wrtag_w1_y" iskew -1
+connect input l1_top.spc${c}_ictag_wrtag_w2_y   = "${icTagInst}.wrtag_w2_y" iskew -1
+connect input l1_top.spc${c}_ictag_wrtag_w3_y   = "${icTagInst}.wrtag_w3_y" iskew -1
+  
+connect input l1_top.spc${c}_dctag_dec_wrway_y  = "${dcTagInst}.dec_wrway_y" iskew -1
+connect input l1_top.spc${c}_dctag_wrreq_y      = "${dcTagInst}.wrreq_y" iskew -1
+connect input l1_top.spc${c}_dctag_index_y      = "${dcTagInst}.index_y" iskew -1
+connect input l1_top.spc${c}_dctag_wrtag_w0_y   = "${dcTagInst}.wrtag_w0_y" iskew -1
+connect input l1_top.spc${c}_dctag_wrtag_w1_y   = "${dcTagInst}.wrtag_w1_y" iskew -1
+connect input l1_top.spc${c}_dctag_wrtag_w2_y   = "${dcTagInst}.wrtag_w2_y" iskew -1
+connect input l1_top.spc${c}_dctag_wrtag_w3_y   = "${dcTagInst}.wrtag_w3_y" iskew -1
+  
+connect input l1_top.spc${c}_icvld_wr_adr       = "${icVldInst}.wr_index_d1" iskew -1
+connect input l1_top.spc${c}_icvld_wr_en        = "${icVldInst}.wrreq_d1" iskew -1
+connect input l1_top.spc${c}_icvld_bit_wen      = "${icVldInst}.bit_wen_d1" iskew -1
+connect input l1_top.spc${c}_icvld_din          = "${icVldInst}.din_d1" iskew -1
+  
+connect input l1_top.spc${c}_dcvld_wr_adr       = "${dcVldInst}.wr_index_d1" iskew -1
+connect input l1_top.spc${c}_dcvld_wr_en        = "${dcVldInst}.wrreq_d1" iskew -1
+connect input l1_top.spc${c}_dcvld_bit_wen      = "${dcVldInst}.bit_wen_d1" iskew -1
+connect input l1_top.spc${c}_dcvld_din          = "${dcVldInst}.din_d1" iskew -1  
+
+connect input l1_top.spc${c}_dfq_tid	        = "cmp_top.iop.sparc${c}.lsu.dfq_tid" iskew -1  
+
+connect input l1_top.spc${c}_lsu_tlu_intpkt     = "cmp_top.iop.sparc${c}.lsu.lsu_tlu_intpkt"  iskew -1  
+connect input l1_top.spc${c}_lsu_tlu_cpx_vld    = "cmp_top.iop.sparc${c}.lsu.lsu_tlu_cpx_vld" iskew -1  
+connect input l1_top.spc${c}_lsu_tlu_cpx_req    = "cmp_top.iop.sparc${c}.lsu.lsu_tlu_cpx_req" iskew -1  
+
+. } ## connectInstance
+
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $icTagInst = $L1_ICTAG_PATHS[$core];
+. 	my $dcTagInst = $L1_DCTAG_PATHS[$core];
+. 	my $icVldInst = $L1_ICVLD_PATHS[$core];
+. 	my $dcVldInst = $L1_DCVLD_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance($core,  $icTagInst, $dcTagInst, $icVldInst, $dcVldInst);
+. }
+  
+#endif // ifdef GATE_SIM

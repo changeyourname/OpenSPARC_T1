@@ -1,0 +1,52 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_imiss_fill_xover_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_imiss_fill_xover_cov.vr
+// Description:
+// This coverage object covers icache miss-fill crossover cases with
+// rollbacks (that can cause a cancellation) and other stalls
+// 
+// State: 8'b: xover,swcd,stb8,rbd,rbw,ldmw,flhw,dcw2
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_IMISS_FILL_XOVER_COV (bit [7:0] cov_vector)
+// {
+  wildcard state s_xover         (8'b1xxxxxxx);
+  wildcard state s_xover_swcd    (8'b11xxxxxx);
+  wildcard state s_xover_stb8    (8'b1x1xxxxx);
+  wildcard state s_xover_rbd     (8'b1xx1xxxx);
+  wildcard state s_xover_rbw     (8'b1xxx1xxx);
+  wildcard state s_xover_ldmw    (8'b1xxxx1xx);
+  wildcard state s_xover_flhw    (8'b1xxxxx1x);
+  wildcard state s_xover_dcw2    (8'b1xxxxxx1);
+
+  wildcard trans t_xover_n_rbw   (8'b1xxx0xxx -> 8'b0xxx0xxx[.0:2.] -> 8'b0xxx1xxx);  
+  wildcard trans t_xover_n_flhw  (8'b1xxxxx0x -> 8'b0xxxxx0x[.0:2.] -> 8'b0xxxxx1x);
+  wildcard trans t_xover_n_dcw2  (8'b1xxxxxx0 -> 8'b0xxxxx0x[.0:3.] -> 8'b0xxxxxx1);      
+// }
+
+
+
+
+

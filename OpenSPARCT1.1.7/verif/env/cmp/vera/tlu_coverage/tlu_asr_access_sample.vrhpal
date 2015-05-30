@@ -1,0 +1,343 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_asr_access_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU ASR access
+//
+//
+//***************************************************************************
+
+
+// coverage_def TLU_ASR_ACCESS_COV (bit [12:0] tlu_asr_acc_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_U_ST_HPSTATE		(U_ST_HPSTATE);
+  wildcard state s_U_ST_HTSTATE		(U_ST_HTSTATE);
+  wildcard state s_U_ST_HINTP		(U_ST_HINTP);
+  wildcard state s_U_ST_HTBA		(U_ST_HTBA);
+  wildcard state s_U_ST_HSTICK_CMPR		(U_ST_HSTICK_CMPR);
+  wildcard state s_U_ST_TPC		(U_ST_TPC);
+  wildcard state s_U_ST_TNPC		(U_ST_TNPC);
+  wildcard state s_U_ST_TSTATE		(U_ST_TSTATE);
+  wildcard state s_U_ST_TT		(U_ST_TT);
+  wildcard state s_U_ST_TICK		(U_ST_TICK);
+  wildcard state s_U_ST_TBA		(U_ST_TBA);
+  wildcard state s_U_ST_PSTATE		(U_ST_PSTATE);
+  wildcard state s_U_ST_TL		(U_ST_TL);
+  wildcard state s_U_ST_PIL		(U_ST_PIL);
+  wildcard state s_U_ST_GL		(U_ST_GL);
+  wildcard state s_U_ST_TICK_REG		(U_ST_TICK_REG);
+  wildcard state s_U_ST_PIB_PCR		(U_ST_PIB_PCR);
+  wildcard state s_U_ST_PIB_PIC		(U_ST_PIB_PIC);
+  wildcard state s_U_ST_SET_SOFTINT		(U_ST_SET_SOFTINT);
+  wildcard state s_U_ST_CLEAR_SOFTINT		(U_ST_CLEAR_SOFTINT);
+  wildcard state s_U_ST_SOFTINT_REG		(U_ST_SOFTINT_REG);
+  wildcard state s_U_ST_TICK_CMPR_REG		(U_ST_TICK_CMPR_REG);
+  wildcard state s_U_ST_STICK_REG		(U_ST_STICK_REG);
+  wildcard state s_U_ST_STICK_CMPR_REG		(U_ST_STICK_CMPR_REG);
+  wildcard state s_U_LD_HPSTATE		(U_LD_HPSTATE);
+  wildcard state s_U_LD_HTSTATE		(U_LD_HTSTATE);
+  wildcard state s_U_LD_HINTP		(U_LD_HINTP);
+  wildcard state s_U_LD_HTBA		(U_LD_HTBA);
+  wildcard state s_U_LD_HSTICK_CMPR		(U_LD_HSTICK_CMPR);
+  wildcard state s_U_LD_TPC		(U_LD_TPC);
+  wildcard state s_U_LD_TNPC		(U_LD_TNPC);
+  wildcard state s_U_LD_TSTATE		(U_LD_TSTATE);
+  wildcard state s_U_LD_TT		(U_LD_TT);
+  wildcard state s_U_LD_TICK		(U_LD_TICK);
+  wildcard state s_U_LD_TBA		(U_LD_TBA);
+  wildcard state s_U_LD_PSTATE		(U_LD_PSTATE);
+  wildcard state s_U_LD_TL		(U_LD_TL);
+  wildcard state s_U_LD_PIL		(U_LD_PIL);
+  wildcard state s_U_LD_GL		(U_LD_GL);
+  wildcard state s_U_LD_TICK_REG		(U_LD_TICK_REG);
+  wildcard state s_U_LD_PIB_PCR		(U_LD_PIB_PCR);
+  wildcard state s_U_LD_PIB_PIC		(U_LD_PIB_PIC);
+  wildcard state s_U_LD_SET_SOFTINT		(U_LD_SET_SOFTINT);
+  wildcard state s_U_LD_CLEAR_SOFTINT		(U_LD_CLEAR_SOFTINT);
+  wildcard state s_U_LD_SOFTINT_REG		(U_LD_SOFTINT_REG);
+  wildcard state s_U_LD_TICK_CMPR_REG		(U_LD_TICK_CMPR_REG);
+  wildcard state s_U_LD_STICK_REG		(U_LD_STICK_REG);
+  wildcard state s_U_LD_STICK_CMPR_REG		(U_LD_STICK_CMPR_REG);
+  wildcard state s_S_ST_HPSTATE		(S_ST_HPSTATE);
+  wildcard state s_S_ST_HTSTATE		(S_ST_HTSTATE);
+  wildcard state s_S_ST_HINTP		(S_ST_HINTP);
+  wildcard state s_S_ST_HTBA		(S_ST_HTBA);
+  wildcard state s_S_ST_HSTICK_CMPR		(S_ST_HSTICK_CMPR);
+  wildcard state s_S_ST_TPC		(S_ST_TPC);
+  wildcard state s_S_ST_TNPC		(S_ST_TNPC);
+  wildcard state s_S_ST_TSTATE		(S_ST_TSTATE);
+  wildcard state s_S_ST_TT		(S_ST_TT);
+  wildcard state s_S_ST_TICK		(S_ST_TICK);
+  wildcard state s_S_ST_TBA		(S_ST_TBA);
+  wildcard state s_S_ST_PSTATE		(S_ST_PSTATE);
+  wildcard state s_S_ST_TL		(S_ST_TL);
+  wildcard state s_S_ST_PIL		(S_ST_PIL);
+  wildcard state s_S_ST_GL		(S_ST_GL);
+  wildcard state s_S_ST_TICK_REG		(S_ST_TICK_REG);
+  wildcard state s_S_ST_PIB_PCR		(S_ST_PIB_PCR);
+  wildcard state s_S_ST_PIB_PIC		(S_ST_PIB_PIC);
+  wildcard state s_S_ST_SET_SOFTINT		(S_ST_SET_SOFTINT);
+  wildcard state s_S_ST_CLEAR_SOFTINT		(S_ST_CLEAR_SOFTINT);
+  wildcard state s_S_ST_SOFTINT_REG		(S_ST_SOFTINT_REG);
+  wildcard state s_S_ST_TICK_CMPR_REG		(S_ST_TICK_CMPR_REG);
+  wildcard state s_S_ST_STICK_REG		(S_ST_STICK_REG);
+  wildcard state s_S_ST_STICK_CMPR_REG		(S_ST_STICK_CMPR_REG);
+  wildcard state s_S_LD_HPSTATE		(S_LD_HPSTATE);
+  wildcard state s_S_LD_HTSTATE		(S_LD_HTSTATE);
+  wildcard state s_S_LD_HINTP		(S_LD_HINTP);
+  wildcard state s_S_LD_HTBA		(S_LD_HTBA);
+  wildcard state s_S_LD_HSTICK_CMPR		(S_LD_HSTICK_CMPR);
+  wildcard state s_S_LD_TPC		(S_LD_TPC);
+  wildcard state s_S_LD_TNPC		(S_LD_TNPC);
+  wildcard state s_S_LD_TSTATE		(S_LD_TSTATE);
+  wildcard state s_S_LD_TT		(S_LD_TT);
+  wildcard state s_S_LD_TICK		(S_LD_TICK);
+  wildcard state s_S_LD_TBA		(S_LD_TBA);
+  wildcard state s_S_LD_PSTATE		(S_LD_PSTATE);
+  wildcard state s_S_LD_TL		(S_LD_TL);
+  wildcard state s_S_LD_PIL		(S_LD_PIL);
+  wildcard state s_S_LD_GL		(S_LD_GL);
+  wildcard state s_S_LD_TICK_REG		(S_LD_TICK_REG);
+  wildcard state s_S_LD_PIB_PCR		(S_LD_PIB_PCR);
+  wildcard state s_S_LD_PIB_PIC		(S_LD_PIB_PIC);
+  wildcard state s_S_LD_SET_SOFTINT		(S_LD_SET_SOFTINT);
+  wildcard state s_S_LD_CLEAR_SOFTINT		(S_LD_CLEAR_SOFTINT);
+  wildcard state s_S_LD_SOFTINT_REG		(S_LD_SOFTINT_REG);
+  wildcard state s_S_LD_TICK_CMPR_REG		(S_LD_TICK_CMPR_REG);
+  wildcard state s_S_LD_STICK_REG		(S_LD_STICK_REG);
+  wildcard state s_S_LD_STICK_CMPR_REG		(S_LD_STICK_CMPR_REG);
+  wildcard state s_H_ST_HPSTATE		(H_ST_HPSTATE);
+  wildcard state s_H_ST_HTSTATE		(H_ST_HTSTATE);
+  wildcard state s_H_ST_HINTP		(H_ST_HINTP);
+  wildcard state s_H_ST_HTBA		(H_ST_HTBA);
+  wildcard state s_H_ST_HSTICK_CMPR		(H_ST_HSTICK_CMPR);
+  wildcard state s_H_ST_TPC		(H_ST_TPC);
+  wildcard state s_H_ST_TNPC		(H_ST_TNPC);
+  wildcard state s_H_ST_TSTATE		(H_ST_TSTATE);
+  wildcard state s_H_ST_TT		(H_ST_TT);
+  wildcard state s_H_ST_TICK		(H_ST_TICK);
+  wildcard state s_H_ST_TBA		(H_ST_TBA);
+  wildcard state s_H_ST_PSTATE		(H_ST_PSTATE);
+  wildcard state s_H_ST_TL		(H_ST_TL);
+  wildcard state s_H_ST_PIL		(H_ST_PIL);
+  wildcard state s_H_ST_GL		(H_ST_GL);
+  wildcard state s_H_ST_TICK_REG		(H_ST_TICK_REG);
+  wildcard state s_H_ST_PIB_PCR		(H_ST_PIB_PCR);
+  wildcard state s_H_ST_PIB_PIC		(H_ST_PIB_PIC);
+  wildcard state s_H_ST_SET_SOFTINT		(H_ST_SET_SOFTINT);
+  wildcard state s_H_ST_CLEAR_SOFTINT		(H_ST_CLEAR_SOFTINT);
+  wildcard state s_H_ST_SOFTINT_REG		(H_ST_SOFTINT_REG);
+  wildcard state s_H_ST_TICK_CMPR_REG		(H_ST_TICK_CMPR_REG);
+  wildcard state s_H_ST_STICK_REG		(H_ST_STICK_REG);
+  wildcard state s_H_ST_STICK_CMPR_REG		(H_ST_STICK_CMPR_REG);
+  wildcard state s_H_LD_HPSTATE		(H_LD_HPSTATE);
+  wildcard state s_H_LD_HTSTATE		(H_LD_HTSTATE);
+  wildcard state s_H_LD_HINTP		(H_LD_HINTP);
+  wildcard state s_H_LD_HTBA		(H_LD_HTBA);
+  wildcard state s_H_LD_HSTICK_CMPR		(H_LD_HSTICK_CMPR);
+  wildcard state s_H_LD_TPC		(H_LD_TPC);
+  wildcard state s_H_LD_TNPC		(H_LD_TNPC);
+  wildcard state s_H_LD_TSTATE		(H_LD_TSTATE);
+  wildcard state s_H_LD_TT		(H_LD_TT);
+  wildcard state s_H_LD_TICK		(H_LD_TICK);
+  wildcard state s_H_LD_TBA		(H_LD_TBA);
+  wildcard state s_H_LD_PSTATE		(H_LD_PSTATE);
+  wildcard state s_H_LD_TL		(H_LD_TL);
+  wildcard state s_H_LD_PIL		(H_LD_PIL);
+  wildcard state s_H_LD_GL		(H_LD_GL);
+  wildcard state s_H_LD_TICK_REG		(H_LD_TICK_REG);
+  wildcard state s_H_LD_PIB_PCR		(H_LD_PIB_PCR);
+  wildcard state s_H_LD_PIB_PIC		(H_LD_PIB_PIC);
+  wildcard state s_H_LD_SET_SOFTINT		(H_LD_SET_SOFTINT);
+  wildcard state s_H_LD_CLEAR_SOFTINT		(H_LD_CLEAR_SOFTINT);
+  wildcard state s_H_LD_SOFTINT_REG		(H_LD_SOFTINT_REG);
+  wildcard state s_H_LD_TICK_CMPR_REG		(H_LD_TICK_CMPR_REG);
+  wildcard state s_H_LD_STICK_REG		(H_LD_STICK_REG);
+  wildcard state s_H_LD_STICK_CMPR_REG		(H_LD_STICK_CMPR_REG);
+  wildcard state s_HL_U_ST_HPSTATE		(HL_U_ST_HPSTATE);
+  wildcard state s_HL_U_ST_HTSTATE		(HL_U_ST_HTSTATE);
+  wildcard state s_HL_U_ST_HINTP		(HL_U_ST_HINTP);
+  wildcard state s_HL_U_ST_HTBA		(HL_U_ST_HTBA);
+  wildcard state s_HL_U_ST_HSTICK_CMPR		(HL_U_ST_HSTICK_CMPR);
+  wildcard state s_HL_U_ST_TPC		(HL_U_ST_TPC);
+  wildcard state s_HL_U_ST_TNPC		(HL_U_ST_TNPC);
+  wildcard state s_HL_U_ST_TSTATE		(HL_U_ST_TSTATE);
+  wildcard state s_HL_U_ST_TT		(HL_U_ST_TT);
+  wildcard state s_HL_U_ST_TICK		(HL_U_ST_TICK);
+  wildcard state s_HL_U_ST_TBA		(HL_U_ST_TBA);
+  wildcard state s_HL_U_ST_PSTATE		(HL_U_ST_PSTATE);
+  wildcard state s_HL_U_ST_TL		(HL_U_ST_TL);
+  wildcard state s_HL_U_ST_PIL		(HL_U_ST_PIL);
+  wildcard state s_HL_U_ST_GL		(HL_U_ST_GL);
+  wildcard state s_HL_U_ST_TICK_REG		(HL_U_ST_TICK_REG);
+  wildcard state s_HL_U_ST_PIB_PCR		(HL_U_ST_PIB_PCR);
+  wildcard state s_HL_U_ST_PIB_PIC		(HL_U_ST_PIB_PIC);
+  wildcard state s_HL_U_ST_SET_SOFTINT		(HL_U_ST_SET_SOFTINT);
+  wildcard state s_HL_U_ST_CLEAR_SOFTINT		(HL_U_ST_CLEAR_SOFTINT);
+  wildcard state s_HL_U_ST_SOFTINT_REG		(HL_U_ST_SOFTINT_REG);
+  wildcard state s_HL_U_ST_TICK_CMPR_REG		(HL_U_ST_TICK_CMPR_REG);
+  wildcard state s_HL_U_ST_STICK_REG		(HL_U_ST_STICK_REG);
+  wildcard state s_HL_U_ST_STICK_CMPR_REG		(HL_U_ST_STICK_CMPR_REG);
+  wildcard state s_HL_U_LD_HPSTATE		(HL_U_LD_HPSTATE);
+  wildcard state s_HL_U_LD_HTSTATE		(HL_U_LD_HTSTATE);
+  wildcard state s_HL_U_LD_HINTP		(HL_U_LD_HINTP);
+  wildcard state s_HL_U_LD_HTBA		(HL_U_LD_HTBA);
+  wildcard state s_HL_U_LD_HSTICK_CMPR		(HL_U_LD_HSTICK_CMPR);
+  wildcard state s_HL_U_LD_TPC		(HL_U_LD_TPC);
+  wildcard state s_HL_U_LD_TNPC		(HL_U_LD_TNPC);
+  wildcard state s_HL_U_LD_TSTATE		(HL_U_LD_TSTATE);
+  wildcard state s_HL_U_LD_TT		(HL_U_LD_TT);
+  wildcard state s_HL_U_LD_TICK		(HL_U_LD_TICK);
+  wildcard state s_HL_U_LD_TBA		(HL_U_LD_TBA);
+  wildcard state s_HL_U_LD_PSTATE		(HL_U_LD_PSTATE);
+  wildcard state s_HL_U_LD_TL		(HL_U_LD_TL);
+  wildcard state s_HL_U_LD_PIL		(HL_U_LD_PIL);
+  wildcard state s_HL_U_LD_GL		(HL_U_LD_GL);
+  wildcard state s_HL_U_LD_TICK_REG		(HL_U_LD_TICK_REG);
+  wildcard state s_HL_U_LD_PIB_PCR		(HL_U_LD_PIB_PCR);
+  wildcard state s_HL_U_LD_PIB_PIC		(HL_U_LD_PIB_PIC);
+  wildcard state s_HL_U_LD_SET_SOFTINT		(HL_U_LD_SET_SOFTINT);
+  wildcard state s_HL_U_LD_CLEAR_SOFTINT		(HL_U_LD_CLEAR_SOFTINT);
+  wildcard state s_HL_U_LD_SOFTINT_REG		(HL_U_LD_SOFTINT_REG);
+  wildcard state s_HL_U_LD_TICK_CMPR_REG		(HL_U_LD_TICK_CMPR_REG);
+  wildcard state s_HL_U_LD_STICK_REG		(HL_U_LD_STICK_REG);
+  wildcard state s_HL_U_LD_STICK_CMPR_REG		(HL_U_LD_STICK_CMPR_REG);
+  wildcard state s_HL_P_ST_HPSTATE		(HL_P_ST_HPSTATE);
+  wildcard state s_HL_P_ST_HTSTATE		(HL_P_ST_HTSTATE);
+  wildcard state s_HL_P_ST_HINTP		(HL_P_ST_HINTP);
+  wildcard state s_HL_P_ST_HTBA		(HL_P_ST_HTBA);
+  wildcard state s_HL_P_ST_HSTICK_CMPR		(HL_P_ST_HSTICK_CMPR);
+  wildcard state s_HL_P_ST_TPC		(HL_P_ST_TPC);
+  wildcard state s_HL_P_ST_TNPC		(HL_P_ST_TNPC);
+  wildcard state s_HL_P_ST_TSTATE		(HL_P_ST_TSTATE);
+  wildcard state s_HL_P_ST_TT		(HL_P_ST_TT);
+  wildcard state s_HL_P_ST_TICK		(HL_P_ST_TICK);
+  wildcard state s_HL_P_ST_TBA		(HL_P_ST_TBA);
+  wildcard state s_HL_P_ST_PSTATE		(HL_P_ST_PSTATE);
+  wildcard state s_HL_P_ST_TL		(HL_P_ST_TL);
+  wildcard state s_HL_P_ST_PIL		(HL_P_ST_PIL);
+  wildcard state s_HL_P_ST_GL		(HL_P_ST_GL);
+  wildcard state s_HL_P_ST_TICK_REG		(HL_P_ST_TICK_REG);
+  wildcard state s_HL_P_ST_PIB_PCR		(HL_P_ST_PIB_PCR);
+  wildcard state s_HL_P_ST_PIB_PIC		(HL_P_ST_PIB_PIC);
+  wildcard state s_HL_P_ST_SET_SOFTINT		(HL_P_ST_SET_SOFTINT);
+  wildcard state s_HL_P_ST_CLEAR_SOFTINT		(HL_P_ST_CLEAR_SOFTINT);
+  wildcard state s_HL_P_ST_SOFTINT_REG		(HL_P_ST_SOFTINT_REG);
+  wildcard state s_HL_P_ST_TICK_CMPR_REG		(HL_P_ST_TICK_CMPR_REG);
+  wildcard state s_HL_P_ST_STICK_REG		(HL_P_ST_STICK_REG);
+  wildcard state s_HL_P_ST_STICK_CMPR_REG		(HL_P_ST_STICK_CMPR_REG);
+  wildcard state s_HL_P_LD_HPSTATE		(HL_P_LD_HPSTATE);
+  wildcard state s_HL_P_LD_HTSTATE		(HL_P_LD_HTSTATE);
+  wildcard state s_HL_P_LD_HINTP		(HL_P_LD_HINTP);
+  wildcard state s_HL_P_LD_HTBA		(HL_P_LD_HTBA);
+  wildcard state s_HL_P_LD_HSTICK_CMPR		(HL_P_LD_HSTICK_CMPR);
+  wildcard state s_HL_P_LD_TPC		(HL_P_LD_TPC);
+  wildcard state s_HL_P_LD_TNPC		(HL_P_LD_TNPC);
+  wildcard state s_HL_P_LD_TSTATE		(HL_P_LD_TSTATE);
+  wildcard state s_HL_P_LD_TT		(HL_P_LD_TT);
+  wildcard state s_HL_P_LD_TICK		(HL_P_LD_TICK);
+  wildcard state s_HL_P_LD_TBA		(HL_P_LD_TBA);
+  wildcard state s_HL_P_LD_PSTATE		(HL_P_LD_PSTATE);
+  wildcard state s_HL_P_LD_TL		(HL_P_LD_TL);
+  wildcard state s_HL_P_LD_PIL		(HL_P_LD_PIL);
+  wildcard state s_HL_P_LD_GL		(HL_P_LD_GL);
+  wildcard state s_HL_P_LD_TICK_REG		(HL_P_LD_TICK_REG);
+  wildcard state s_HL_P_LD_PIB_PCR		(HL_P_LD_PIB_PCR);
+  wildcard state s_HL_P_LD_PIB_PIC		(HL_P_LD_PIB_PIC);
+  wildcard state s_HL_P_LD_SET_SOFTINT		(HL_P_LD_SET_SOFTINT);
+  wildcard state s_HL_P_LD_CLEAR_SOFTINT		(HL_P_LD_CLEAR_SOFTINT);
+  wildcard state s_HL_P_LD_SOFTINT_REG		(HL_P_LD_SOFTINT_REG);
+  wildcard state s_HL_P_LD_TICK_CMPR_REG		(HL_P_LD_TICK_CMPR_REG);
+  wildcard state s_HL_P_LD_STICK_REG		(HL_P_LD_STICK_REG);
+  wildcard state s_HL_P_LD_STICK_CMPR_REG		(HL_P_LD_STICK_CMPR_REG);
+
+ //////////////
+ // Transitions 
+
+ wildcard trans t_s_STORE_s_LOAD (
+	[U_ST_HPSTATE, U_ST_HTSTATE, U_ST_HINTP, U_ST_HTBA, 
+	 U_ST_HSTICK_CMPR, U_ST_TPC, U_ST_TNPC, U_ST_TSTATE, U_ST_TT, U_ST_TICK, 
+	 U_ST_TBA, U_ST_PSTATE, U_ST_TL, U_ST_PIL, U_ST_GL, U_ST_TICK_REG, 
+	 U_ST_PIB_PCR, U_ST_PIB_PIC, U_ST_SET_SOFTINT, U_ST_CLEAR_SOFTINT, 
+	 U_ST_SOFTINT_REG, U_ST_TICK_CMPR_REG, U_ST_STICK_REG, U_ST_STICK_CMPR_REG, 
+	 U_LD_HPSTATE, U_LD_HTSTATE, U_LD_HSTICK_CMPR, U_LD_TSTATE, U_LD_PSTATE, 
+	 U_LD_STICK_REG, U_LD_STICK_CMPR_REG, S_ST_HPSTATE, S_ST_HTSTATE, 
+	 S_ST_HINTP, S_ST_HTBA, S_ST_HSTICK_CMPR, S_ST_TPC, S_ST_TNPC,
+	 S_ST_TSTATE, S_ST_TT, S_ST_TICK, S_ST_TBA, S_ST_PSTATE, S_ST_TL, S_ST_PIL, 
+	 S_ST_GL, S_ST_TICK_REG, S_ST_PIB_PCR, S_ST_PIB_PIC, S_ST_SET_SOFTINT,
+	 S_ST_CLEAR_SOFTINT, S_ST_SOFTINT_REG, S_ST_TICK_CMPR_REG, S_ST_STICK_REG,
+	 S_ST_STICK_CMPR_REG, S_LD_HPSTATE, S_LD_HTSTATE, S_LD_HSTICK_CMPR,
+	 S_LD_TSTATE, S_LD_PSTATE, S_LD_STICK_REG, S_LD_STICK_CMPR_REG,
+	 H_ST_HPSTATE, H_ST_HTSTATE, H_ST_HINTP, H_ST_HTBA, 
+	 H_ST_HSTICK_CMPR, H_ST_TPC, H_ST_TNPC, H_ST_TSTATE, H_ST_TT, H_ST_TICK,
+	 H_ST_TBA, H_ST_PSTATE, H_ST_TL, H_ST_PIL, H_ST_GL, H_ST_TICK_REG,
+	 H_ST_PIB_PCR, H_ST_PIB_PIC, H_ST_SET_SOFTINT, H_ST_CLEAR_SOFTINT,
+	 H_ST_SOFTINT_REG, H_ST_TICK_CMPR_REG, H_ST_STICK_REG, H_ST_STICK_CMPR_REG,
+	 H_LD_HPSTATE, H_LD_HTSTATE, H_LD_HSTICK_CMPR, H_LD_TSTATE, H_LD_PSTATE,
+	 H_LD_STICK_REG, H_LD_STICK_CMPR_REG, HL_U_ST_HPSTATE, HL_U_ST_HTSTATE,
+	 HL_U_ST_HINTP, HL_U_ST_HTBA, HL_U_ST_HSTICK_CMPR, HL_U_ST_TPC,
+	 HL_U_ST_TNPC, HL_U_ST_TSTATE, HL_U_ST_TT, HL_U_ST_TICK, HL_U_ST_TBA,
+	 HL_U_ST_PSTATE, HL_U_ST_TL, HL_U_ST_PIL, HL_U_ST_GL, HL_U_ST_TICK_REG,
+	 HL_U_ST_PIB_PCR, HL_U_ST_PIB_PIC, HL_U_ST_SET_SOFTINT,
+	 HL_U_ST_CLEAR_SOFTINT, HL_U_ST_SOFTINT_REG, HL_U_ST_TICK_CMPR_REG,
+	 HL_U_ST_STICK_REG, HL_U_ST_STICK_CMPR_REG, HL_U_LD_HPSTATE,
+	 HL_U_LD_HTSTATE, HL_U_LD_HSTICK_CMPR, HL_U_LD_TSTATE, HL_U_LD_PSTATE,
+	 HL_U_LD_STICK_REG, HL_U_LD_STICK_CMPR_REG, HL_P_ST_HPSTATE,
+	 HL_P_ST_HTSTATE, HL_P_ST_HINTP, HL_P_ST_HTBA, 
+	 HL_P_ST_HSTICK_CMPR, HL_P_ST_TPC, HL_P_ST_TNPC, HL_P_ST_TSTATE,
+	 HL_P_ST_TT, HL_P_ST_TICK, HL_P_ST_TBA, HL_P_ST_PSTATE, HL_P_ST_TL,
+	 HL_P_ST_PIL, HL_P_ST_GL, HL_P_ST_TICK_REG, HL_P_ST_PIB_PCR, HL_P_ST_PIB_PIC,
+	 HL_P_ST_SET_SOFTINT, HL_P_ST_CLEAR_SOFTINT, HL_P_ST_SOFTINT_REG,
+	 HL_P_ST_TICK_CMPR_REG, HL_P_ST_STICK_REG, HL_P_ST_STICK_CMPR_REG,
+	 HL_P_LD_HPSTATE, HL_P_LD_HTSTATE, HL_P_LD_HSTICK_CMPR, HL_P_LD_TSTATE,
+	 HL_P_LD_PSTATE, HL_P_LD_STICK_REG, HL_P_LD_STICK_CMPR_REG]
+	->
+	[U_LD_HTBA, U_LD_TPC, U_LD_TNPC, U_LD_TT, U_LD_TICK, U_LD_TBA,
+	 U_LD_TL, U_LD_PIL, U_LD_GL, U_LD_TICK_REG, U_LD_PIB_PCR, U_LD_PIB_PIC,
+	 U_LD_SET_SOFTINT, U_LD_CLEAR_SOFTINT, U_LD_SOFTINT_REG, U_LD_TICK_CMPR_REG,
+	 S_LD_HINTP, S_LD_HTBA, S_LD_TPC, S_LD_TNPC, S_LD_TT, S_LD_TICK,
+	 S_LD_TBA, S_LD_TL, S_LD_PIL, S_LD_GL, S_LD_TICK_REG, S_LD_PIB_PCR,
+	 S_LD_PIB_PIC, S_LD_SET_SOFTINT, S_LD_CLEAR_SOFTINT, S_LD_SOFTINT_REG,
+	 S_LD_TICK_CMPR_REG, H_LD_HINTP, H_LD_HTBA, H_LD_TPC, H_LD_TNPC,
+	 H_LD_TT, H_LD_TICK, H_LD_TBA, H_LD_TL, H_LD_PIL, H_LD_GL, H_LD_TICK_REG,
+	 H_LD_PIB_PCR, H_LD_PIB_PIC, H_LD_SET_SOFTINT, H_LD_CLEAR_SOFTINT,
+	 H_LD_SOFTINT_REG, H_LD_TICK_CMPR_REG, HL_U_LD_HINTP, HL_U_LD_HTBA,
+	 HL_U_LD_TPC, HL_U_LD_TNPC, HL_U_LD_TT, HL_U_LD_TICK,
+	 HL_U_LD_TBA, HL_U_LD_TL, HL_U_LD_PIL, HL_U_LD_GL, HL_U_LD_TICK_REG,
+	 HL_U_LD_PIB_PCR, HL_U_LD_PIB_PIC, HL_U_LD_SET_SOFTINT,
+	 HL_U_LD_CLEAR_SOFTINT, HL_U_LD_SOFTINT_REG, HL_U_LD_TICK_CMPR_REG,
+	 HL_P_LD_HINTP, HL_P_LD_HTBA, HL_P_LD_TPC, HL_P_LD_TNPC,
+	 HL_P_LD_TT, HL_P_LD_TICK, HL_P_LD_TBA, HL_P_LD_TL, HL_P_LD_PIL, HL_P_LD_GL,
+	 HL_P_LD_TICK_REG, HL_P_LD_PIB_PCR, HL_P_LD_PIB_PIC, HL_P_LD_SET_SOFTINT,
+	 HL_P_LD_CLEAR_SOFTINT, HL_P_LD_SOFTINT_REG, HL_P_LD_TICK_CMPR_REG]
+        );
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

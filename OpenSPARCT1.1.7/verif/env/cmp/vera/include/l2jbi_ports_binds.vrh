@@ -1,0 +1,97 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2jbi_ports_binds.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC__L2JBI_PORTS_BINDS_VRH
+#define INC__L2JBI_PORTS_BINDS_VRH
+
+#include "l2jbi.if.vrh"
+
+port l2jbi_port {
+    arbctl_inst_vld_c3 ;
+    arbdp_inst_c3 ;
+    arbdp_addr_c3 ;
+    tagctl_rdma_wr_comp_c3 ;
+    oqctl_st_complete_c6 ;
+    req_out_c6 ;
+    ext_inval_data_c7 ;
+    sctag_cpx_req_cq ;
+    sctag_cpx_data_ca ;
+    scbuf_jbi_ctag_vld ;
+    scbuf_jbi_data ;
+}
+
+
+bind l2jbi_port l2jbi_bind_0 {
+    arbctl_inst_vld_c3           l2jbi.arbctl_inst_vld_c3_0;
+    arbdp_inst_c3                l2jbi.arbdp_inst_c3_0;
+    arbdp_addr_c3                l2jbi.arbdp_addr_c3_0;
+    tagctl_rdma_wr_comp_c3       l2jbi.tagctl_rdma_wr_comp_c3_0;
+    oqctl_st_complete_c6         l2jbi.oqctl_st_complete_c6_0;
+    req_out_c6                   l2jbi.req_out_c6_0;
+    ext_inval_data_c7            l2jbi.ext_inval_data_c7_0;
+    sctag_cpx_req_cq             l2jbi.sctag_cpx_req_cq_0;
+    sctag_cpx_data_ca            l2jbi.sctag_cpx_data_ca_0;
+    scbuf_jbi_ctag_vld           l2jbi.scbuf_jbi_ctag_vld_0;
+    scbuf_jbi_data               l2jbi.scbuf_jbi_data_0;
+}
+
+bind l2jbi_port l2jbi_bind_1 {
+    arbctl_inst_vld_c3           l2jbi.arbctl_inst_vld_c3_1;
+    arbdp_inst_c3                l2jbi.arbdp_inst_c3_1;
+    arbdp_addr_c3                l2jbi.arbdp_addr_c3_1;
+    tagctl_rdma_wr_comp_c3       l2jbi.tagctl_rdma_wr_comp_c3_1;
+    oqctl_st_complete_c6         l2jbi.oqctl_st_complete_c6_1;
+    req_out_c6                   l2jbi.req_out_c6_1;
+    ext_inval_data_c7            l2jbi.ext_inval_data_c7_1;
+    sctag_cpx_req_cq             l2jbi.sctag_cpx_req_cq_1;
+    sctag_cpx_data_ca            l2jbi.sctag_cpx_data_ca_1;
+    scbuf_jbi_ctag_vld           l2jbi.scbuf_jbi_ctag_vld_1;
+    scbuf_jbi_data               l2jbi.scbuf_jbi_data_1;
+}
+
+bind l2jbi_port l2jbi_bind_2 {
+    arbctl_inst_vld_c3           l2jbi.arbctl_inst_vld_c3_2;
+    arbdp_inst_c3                l2jbi.arbdp_inst_c3_2;
+    arbdp_addr_c3                l2jbi.arbdp_addr_c3_2;
+    tagctl_rdma_wr_comp_c3       l2jbi.tagctl_rdma_wr_comp_c3_2;
+    oqctl_st_complete_c6         l2jbi.oqctl_st_complete_c6_2;
+    req_out_c6                   l2jbi.req_out_c6_2;
+    ext_inval_data_c7            l2jbi.ext_inval_data_c7_2;
+    sctag_cpx_req_cq             l2jbi.sctag_cpx_req_cq_2;
+    sctag_cpx_data_ca            l2jbi.sctag_cpx_data_ca_2;
+    scbuf_jbi_ctag_vld           l2jbi.scbuf_jbi_ctag_vld_2;
+    scbuf_jbi_data               l2jbi.scbuf_jbi_data_2;
+}
+
+bind l2jbi_port l2jbi_bind_3 {
+    arbctl_inst_vld_c3           l2jbi.arbctl_inst_vld_c3_3;
+    arbdp_inst_c3                l2jbi.arbdp_inst_c3_3;
+    arbdp_addr_c3                l2jbi.arbdp_addr_c3_3;
+    tagctl_rdma_wr_comp_c3       l2jbi.tagctl_rdma_wr_comp_c3_3;
+    oqctl_st_complete_c6         l2jbi.oqctl_st_complete_c6_3;
+    req_out_c6                   l2jbi.req_out_c6_3;
+    ext_inval_data_c7            l2jbi.ext_inval_data_c7_3;
+    sctag_cpx_req_cq             l2jbi.sctag_cpx_req_cq_3;
+    sctag_cpx_data_ca            l2jbi.sctag_cpx_data_ca_3;
+    scbuf_jbi_ctag_vld           l2jbi.scbuf_jbi_ctag_vld_3;
+    scbuf_jbi_data               l2jbi.scbuf_jbi_data_3;
+}
+
+#endif

@@ -1,0 +1,143 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_bst_inf_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// block store interface 
+//***********************************************************************
+
+  bad_state	s_not_BSTIF_ST00	(12'b100_100_100000);
+  state		s_BSTIF_ST00		(12'b100_101_100000);
+  state		s_BSTIF_ST01		(12'b100_110_100000);
+  state		s_BSTIF_ST02		(12'b100_111_100000);
+
+  bad_state	s_not_BSTIF_ST01	(12'b100_100_010000);
+  state		s_BSTIF_ST03		(12'b100_101_010000);
+  state		s_BSTIF_ST04		(12'b100_110_010000);
+  state		s_BSTIF_ST05		(12'b100_111_010000);
+
+  bad_state	s_not_BSTIF_ST02	(12'b100_100_111000);
+  state		s_BSTIF_ST06		(12'b100_101_111000);
+  state		s_BSTIF_ST07		(12'b100_110_111000);
+  state		s_BSTIF_ST08		(12'b100_111_111000);
+
+  bad_state	s_not_BSTIF_ST03	(12'b100_100_110100);
+  state		s_BSTIF_ST09		(12'b100_101_110100);
+  state		s_BSTIF_ST10		(12'b100_110_110100);
+  state		s_BSTIF_ST11		(12'b100_111_110100);
+
+  bad_state	s_not_BSTIF_ST04	(12'b100_100_110010);
+  state		s_BSTIF_ST12		(12'b100_101_110010);
+  state		s_BSTIF_ST13		(12'b100_110_110010);
+  state		s_BSTIF_ST14		(12'b100_111_110010);
+
+  bad_state	s_not_BSTIF_ST05	(12'b100_100_000001);
+  state		s_BSTIF_ST15		(12'b100_101_000001);
+  state		s_BSTIF_ST16		(12'b100_110_000001);
+  state		s_BSTIF_ST17		(12'b100_111_000001);
+
+  state		s_BSTIF_ST18		(12'b101_100_100000);
+  bad_state	s_not_BSTIF_ST06	(12'b101_101_100000);
+  state		s_BSTIF_ST19		(12'b101_110_100000);
+  state		s_BSTIF_ST20		(12'b101_111_100000);
+
+  state		s_BSTIF_ST21		(12'b101_100_010000);
+  bad_state	s_not_BSTIF_ST07	(12'b101_101_010000);
+  state		s_BSTIF_ST22		(12'b101_110_010000);
+  state		s_BSTIF_ST23		(12'b101_111_010000);
+
+  state		s_BSTIF_ST24		(12'b101_100_111000);
+  bad_state	s_not_BSTIF_ST08	(12'b101_101_111000);
+  state		s_BSTIF_ST25		(12'b101_110_111000);
+  state		s_BSTIF_ST26		(12'b101_111_111000);
+
+  state		s_BSTIF_ST27		(12'b101_100_110100);
+  bad_state	s_not_BSTIF_ST09	(12'b101_101_110100);
+  state		s_BSTIF_ST28		(12'b101_110_110100);
+  state		s_BSTIF_ST29		(12'b101_111_110100);
+
+  state		s_BSTIF_ST30		(12'b101_100_110010);
+  bad_state	s_not_BSTIF_ST10	(12'b101_101_110010);
+  state		s_BSTIF_ST31		(12'b101_110_110010);
+  state		s_BSTIF_ST32		(12'b101_111_110010);
+
+  state		s_BSTIF_ST33		(12'b101_100_000001);
+  bad_state	s_not_BSTIF_ST11	(12'b101_101_000001);
+  state		s_BSTIF_ST34		(12'b101_110_000001);
+  state		s_BSTIF_ST35		(12'b101_111_000001);
+
+  state		s_BSTIF_ST36		(12'b110_100_100000);
+  state		s_BSTIF_ST37		(12'b110_101_100000);
+  bad_state	s_not_BSTIF_ST12	(12'b110_110_100000);
+  state		s_BSTIF_ST38		(12'b110_111_100000);
+
+  state		s_BSTIF_ST39		(12'b110_100_010000);
+  state		s_BSTIF_ST40		(12'b110_101_010000);
+  bad_state	s_not_BSTIF_ST13	(12'b110_110_010000);
+  state		s_BSTIF_ST41		(12'b110_111_010000);
+
+  state		s_BSTIF_ST42		(12'b110_100_111000);
+  state		s_BSTIF_ST43		(12'b110_101_111000);
+  bad_state	s_not_BSTIF_ST14	(12'b110_110_111000);
+  state		s_BSTIF_ST44		(12'b110_111_111000);
+
+  state		s_BSTIF_ST45		(12'b110_100_110100);
+  state		s_BSTIF_ST46		(12'b110_101_110100);
+  bad_state	s_not_BSTIF_ST15	(12'b110_110_110100);
+  state		s_BSTIF_ST47		(12'b110_111_110100);
+
+  state		s_BSTIF_ST48		(12'b110_100_110010);
+  state		s_BSTIF_ST49		(12'b110_101_110010);
+  bad_state	s_not_BSTIF_ST16	(12'b110_110_110010);
+  state		s_BSTIF_ST50		(12'b110_111_110010);
+
+  state		s_BSTIF_ST51		(12'b110_100_000001);
+  state		s_BSTIF_ST52		(12'b110_101_000001);
+  bad_state	s_not_BSTIF_ST17	(12'b110_110_000001);
+  state		s_BSTIF_ST53		(12'b110_111_000001);
+
+  state		s_BSTIF_ST54		(12'b111_100_100000);
+  state		s_BSTIF_ST55		(12'b111_101_100000);
+  state		s_BSTIF_ST56		(12'b111_110_100000);
+  bad_state	s_not_BSTIF_ST18	(12'b111_111_100000);
+
+  state		s_BSTIF_ST57		(12'b111_100_010000);
+  state		s_BSTIF_ST58		(12'b111_101_010000);
+  state		s_BSTIF_ST59		(12'b111_110_010000);
+  bad_state	s_not_BSTIF_ST19	(12'b111_111_010000);
+
+  state		s_BSTIF_ST60		(12'b111_100_111000);
+  state		s_BSTIF_ST61		(12'b111_101_111000);
+  state		s_BSTIF_ST62		(12'b111_110_111000);
+  bad_state	s_not_BSTIF_ST20	(12'b111_111_111000);
+
+  state		s_BSTIF_ST63		(12'b111_100_110100);
+  state		s_BSTIF_ST64		(12'b111_101_110100);
+  state		s_BSTIF_ST65		(12'b111_110_110100);
+  bad_state	s_not_BSTIF_ST21	(12'b111_111_110100);
+
+  state		s_BSTIF_ST66		(12'b111_100_110010);
+  state		s_BSTIF_ST67		(12'b111_101_110010);
+  state		s_BSTIF_ST68		(12'b111_110_110010);
+  bad_state	s_not_BSTIF_ST22	(12'b111_111_110010);
+
+  state		s_BSTIF_ST69		(12'b111_100_000001);
+  state		s_BSTIF_ST70		(12'b111_101_000001);
+  state		s_BSTIF_ST71		(12'b111_110_000001);
+  bad_state	s_not_BSTIF_ST23	(12'b111_111_000001);

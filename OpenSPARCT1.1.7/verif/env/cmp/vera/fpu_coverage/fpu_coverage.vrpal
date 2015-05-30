@@ -1,0 +1,146 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "fpu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	fpu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level FPU coverage class.
+ *	Contains the new() task which instantiates all the FPU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ * $Id: fpu_coverage.vrpal,v 1.1 2002/12/02 08:19:21 vmadan.Eng Exp $
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "fpu.if.vrh"
+#include "fpu_ports_binds.vrh"
+#include "fpu_defines.vrh"
+
+class fpu_coverage {
+
+    coverage_group fpu_coverage_group {
+
+	// const_sample_reference improves perf, in the case in which
+	// we do not reassign to our object handles.
+	const_sample_reference	= 1;
+	sample_event		= @(posedge fpu_cov_top.cmp_clk);
+	// Default contribution for this group unless diag_done is true
+	cov_weight		= 0;
+
+	sample fpu_valid_bits_cov_sample_bind0.\$fpu_valid_state {
+#inc "fpu_valid_bits_sample.vrhpal";
+	}
+	sample fpu_add_ashift_cov_sample_bind1.\$fpu_add_ashift_state {
+#inc "fpu_add_ashift_sample.vrhpal";
+	}
+	sample fpu_add_nshift_cov_sample_bind2.\$fpu_add_nshift_state {
+#inc "fpu_add_nshift_sample.vrhpal";
+	}
+	sample fpu_add_stickya_cov_sample_bind3.\$fpu_add_stickya_state {
+#inc "fpu_add_stickya_sample.vrhpal";
+	}
+	sample fpu_add_stickyb_cov_sample_bind4.\$fpu_add_stickyb_state {
+#inc "fpu_add_stickyb_sample.vrhpal";
+	}
+//	sample fpu_add_stickyc_cov_sample_bind5.\$fpu_ADD_STICKYC_state {
+//#inc "fpu_add_stickyc_sample.vrhpal";
+//	}
+	sample fpu_input_queue_cov_sample_bind6.\$fpu_input_queue_state {
+#inc "fpu_input_queue_sample.vrhpal";
+	}	
+        sample fpu_fdiv_input_queue_cov_sample_bind16.\$fpu_fdiv_input_queue_state {
+#inc "fpu_fdiv_input_queue_sample.vrhpal";
+	}
+	sample fpu_mul_lsticky_cov_sample_bind7.\$fpu_mul_lsticky_state {
+#inc "fpu_mul_lsticky_sample.vrhpal";
+	}
+	sample fpu_mul_rsticky_cov_sample_bind8.\$fpu_mul_rsticky_state {
+#inc "fpu_mul_rsticky_sample.vrhpal";
+	}
+	sample fpu_fadd_ieee_flags_cov_sample_bind9.\$fpu_valid_state {
+#inc "fpu_fadd_ieee_flags_sample.vrhpal";
+	}
+	sample fpu_fmul_ieee_flags_cov_sample_bind10.\$fpu_valid_state {
+#inc "fpu_fmul_ieee_flags_sample.vrhpal";
+	}
+	sample fpu_fdiv_ieee_flags_cov_sample_bind11.\$fpu_valid_state {
+#inc "fpu_fdiv_ieee_flags_sample.vrhpal";
+	}
+	sample fpu_fdiv_sticky_cov_sample_bind12.\$fpu_fdiv_sticky_state {
+#inc "fpu_fdiv_sticky_sample.vrhpal";
+	}
+	sample fpu_fdiv_norm_cov_sample_bind13.\$fpu_valid_state {
+#inc "fpu_fdiv_norm_sample.vrhpal";
+	}
+	sample fpu_add_inc_exp_cov_sample_bind14.\$fpu_valid_state {
+#inc "fpu_add_inc_exp_sample.vrhpal";
+	}
+	sample fpu_mul_inc_exp_cov_sample_bind15.\$fpu_valid_state {
+#inc "fpu_mul_inc_exp_sample.vrhpal";
+	}
+
+    } // coverage_group
+
+ task                  new();
+}
+
+
+task fpu_coverage::new() {
+
+    bit coverage_on;
+
+    // check coverage option
+    if ( get_plus_arg( CHECK, "fpu_coverage" ) ||
+	 get_plus_arg( CHECK, "coverage_on" )
+	) {
+
+	coverage_on	= 1;
+
+	// check if coverage to be disabled for everyone
+	if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+	    coverage_on	= 0;
+	}
+
+    } else {
+	coverage_on	= 0;
+    }
+ 
+    if(coverage_on){
+
+	fpu_coverage_group	= new();
+
+	printf("%d : Coverage turned on for FPU objects\n", get_time(LO));
+
+	fork {
+	    @(posedge fpu_cov_top.cmp_diag_done);
+	    fpu_coverage_group.set_cov_weight(1);	// since default was 0
+	    coverage_save_database(1);
+	    printf("%d : Coverage for FPU generated\n", get_time(LO));
+	} join none
+
+    } // if(coverage_on)
+
+} // task fpu_coverage::new()
+

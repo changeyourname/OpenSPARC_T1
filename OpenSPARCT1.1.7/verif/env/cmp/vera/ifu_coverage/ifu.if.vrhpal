@@ -1,0 +1,174 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ifu_cov_inc.pal";
+#ifndef __IFU_IF_VRH__
+#define __IFU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface ifu_coverage_ifc
+{
+  // Common & Clock Signals
+  input clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+  input [3:0] C${c}_thr_f 		PSAMPLE depth 2; 
+  input	[3:0] C${c}_thr_d		PSAMPLE;
+  input	[3:0] C${c}_thr_e		PSAMPLE;
+  input	[3:0] C${c}_thr_m		PSAMPLE;
+  input	[3:0] C${c}_thr_w		PSAMPLE;
+  input	[3:0] C${c}_thr_w1		PSAMPLE;
+  input C${c}_inst_vld_f 		PSAMPLE;
+  input	C${c}_inst_vld_s		PSAMPLE;
+  input	C${c}_inst_vld_d		PSAMPLE;
+  input	C${c}_inst_vld_e		PSAMPLE;
+  input	C${c}_inst_vld_m		PSAMPLE;
+  input	C${c}_inst_vld_w		PSAMPLE;
+
+  input C${c}_fcl_ifq_icmiss_s1 	PSAMPLE;
+  input C${c}_fcl_dtu_swc_s		PSAMPLE;
+//  input C${c}_insterr_s1		PSAMPLE;
+  input C${c}_erd_erc_nirpe_s1 		PSAMPLE;
+  input C${c}_erd_erc_fetpe_s1  	PSAMPLE;
+  input C${c}_fcl_erb_ievld_s1 		PSAMPLE;
+  input C${c}_ictagerr_s1		PSAMPLE;
+  input C${c}_swc_d			PSAMPLE;
+  input C${c}_intr_vld_d		PSAMPLE;
+  input [3:0] C${c}_intr_vld_s		PSAMPLE;
+  input C${c}_async_intr_vld_s		PSAMPLE;
+  input C${c}_switch_store_d		PSAMPLE;
+  input C${c}_retract_store_d		PSAMPLE;
+  input C${c}_retract_iferr_d		PSAMPLE;
+//  input C${c}_retract_iferr_d1	PSAMPLE;
+//  input C${c}_thr_match_de		PSAMPLE;
+  input C${c}_dec_swl_mul_inst_d	PSAMPLE;
+  input C${c}_swl_dec_mulbusy_e		PSAMPLE;
+  input C${c}_dec_swl_div_inst_d	PSAMPLE;
+  input C${c}_swl_dec_divbusy_e		PSAMPLE;
+  input C${c}_dec_swl_allfp_d		PSAMPLE;
+  input C${c}_swl_dec_fpbusy_e		PSAMPLE;
+  input C${c}_swl_dec_fp_enable_d	PSAMPLE;
+  input C${c}_swc_e 			PSAMPLE;
+  input C${c}_ifu_tlu_ttype_vld_m	PSAMPLE;
+  input C${c}_trap_m 			PSAMPLE;
+  input [8:0] C${c}_ifu_tlu_ttype_m	PSAMPLE;
+  input C${c}_irf_ce_m 			PSAMPLE;
+  input C${c}_irf_ce_w 			PSAMPLE;
+  input C${c}_tlu_ifu_flush_pipe_w	PSAMPLE;
+  input C${c}_dtu_fcl_rollback_g	PSAMPLE;
+  input C${c}_mark4rb_w			PSAMPLE;
+  input C${c}_ifu_tlu_flush_w 		PSAMPLE;
+  input C${c}_fcl_dtu_nuke_thr_w	PSAMPLE;
+  input C${c}_fcl_dtu_resum_thr_w 	PSAMPLE;
+  input C${c}_ffu_ifu_fst_ce_w		PSAMPLE;
+  input C${c}_lsu_ifu_dc_parity_error_w2	PSAMPLE;
+  input [31:0] C${c}_dtu_inst_d 		PSAMPLE;
+  input [3:0] C${c}_stbcnt_d 		PSAMPLE;
+  input C${c}_asi_internal_d 		PSAMPLE;
+  input C${c}_all_dst_ge1 		PSAMPLE;
+  input C${c}_all_dst_ge2		PSAMPLE;
+  input C${c}_all_dst_ge3		PSAMPLE;
+  input C${c}_all_dst_eq4		PSAMPLE;
+  input C${c}_dec_swl_st_inst_d		PSAMPLE;
+  input [4:0] C${c}_thr0_state	        PSAMPLE;
+  input [4:0] C${c}_thr1_state	        PSAMPLE;
+  input [4:0] C${c}_thr2_state	        PSAMPLE;
+  input [4:0] C${c}_thr3_state	        PSAMPLE;
+  input C${c}_ffu_ifu_stallreq 		PSAMPLE;
+  input C${c}_lsu_ifu_stallreq 		PSAMPLE;
+  input C${c}_ifq_fcl_stallreq 		PSAMPLE;
+  input C${c}_dtu_inst_anull_e 		PSAMPLE;
+  input C${c}_itlb_starv_alert 		PSAMPLE;
+  input [3:0] C${c}_fcl_ifq_canthr 	PSAMPLE;
+  input [3:0] C${c}_stb_retry 		PSAMPLE;
+  input [3:0] C${c}_retr_thr_wakeup 	PSAMPLE;
+  input [3:0] C${c}_lsu_ifu_ldst_cmplt	PSAMPLE;
+  input [3:0] C${c}_ifq_dtu_thrrdy 	PSAMPLE;
+  input [3:0] C${c}_ifq_dtu_pred_rdy	PSAMPLE;
+
+  input C${c}_pc_oor_f 			PSAMPLE;
+  input C${c}_inst_acc_exc_s1 		PSAMPLE;
+  input C${c}_privop_d 			PSAMPLE;
+  input C${c}_hprivop_d 		PSAMPLE;
+  input C${c}_ill_inst_d 		PSAMPLE;
+  input C${c}_fpdis_trap_d 		PSAMPLE;
+
+  input [3:0] C${c}_tlu_ifu_hwint_i3 	PSAMPLE;
+  input [3:0] C${c}_tlu_ifu_sftint_vld 	PSAMPLE;
+  input [3:0] C${c}_tlu_ifu_rerr_vld 	PSAMPLE;
+  input [3:0] C${c}_tlu_ifu_hintp_vld 	PSAMPLE;
+  input C${c}_spu_ifu_ttype_vld_w2 	PSAMPLE;
+  input [1:0] C${c}_spu_ifu_ttype_tid_w2 PSAMPLE;
+  input [3:0] C${c}_tlu_ifu_rstthr_i2	PSAMPLE;
+  input C${c}_tlu_ifu_rstint_i2 	PSAMPLE;
+  input C${c}_tlu_ifu_resumint_i2 	PSAMPLE;
+  input C${c}_tlu_ifu_nukeint_i2 	PSAMPLE;
+  
+  input [3:0] C${c}_mil0_state 		PSAMPLE;
+  input [3:0] C${c}_mil1_state 		PSAMPLE;
+  input [3:0] C${c}_mil2_state 		PSAMPLE;
+  input [3:0] C${c}_mil3_state 		PSAMPLE;
+  input C${c}_block_fetch_s1 		PSAMPLE;
+  input C${c}_itlb_feterr_s1 		PSAMPLE;
+
+  input [48:0] C${c}_pc_s 		PSAMPLE depth 2;
+  input [63:0] C${c}_tlb_entry_vld 	PSAMPLE;
+  input C${c}_tlb_cam_miss_s1 		PSAMPLE;
+  input [144:0] C${c}_ifqop_i2 		PSAMPLE;
+  input C${c}_ifc_inv_ifqadv_i2 	PSAMPLE;
+  input C${c}_evpkt_i2 			PSAMPLE;
+  input C${c}_invall_i2 		PSAMPLE;
+  input C${c}_ldinv_i2 			PSAMPLE;
+  input [6:0] C${c}_ldinv_addr_i2 	PSAMPLE;
+  input [511:0] C${c}_idcv_ary 		PSAMPLE;
+  input C${c}_icache_rd		 	PSAMPLE;
+  input C${c}_icache_wr 		PSAMPLE;
+  input [6:0] C${c}_icache_idx 		PSAMPLE;
+  input [3:0] C${c}_icache_wrway	PSAMPLE;
+  input C${c}_dirmap_icache 		PSAMPLE;
+  input [51:0] C${c}_ifu_lsu_pcxpkt_e 	PSAMPLE;
+  input C${c}_lsu_ifu_pcxpkt_ack_d 	PSAMPLE;
+  input C${c}_itlb_fcl_imiss_s_l 	PSAMPLE;
+  input C${c}_rdreq_s1 			PSAMPLE;
+  input C${c}_stall_s1 			PSAMPLE;
+  input [7:0] C${c}_ccr_d 		PSAMPLE;
+  input [63:0] C${c}_demap_hit 		PSAMPLE;
+  input C${c}_tlu_itlb_dmp_vld_g	PSAMPLE;
+  input C${c}_tlu_itlb_wr_vld_g		PSAMPLE;
+  input C${c}_ifu_tlu_tlb_done		PSAMPLE;
+.}
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+}
+
+#endif
+
+
+

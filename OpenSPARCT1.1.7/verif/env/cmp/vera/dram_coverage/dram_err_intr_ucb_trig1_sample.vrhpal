@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_err_intr_ucb_trig1_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_err_intr_ucb_trig.vrh
+// Description:
+// Coverage object for error interrupts ( sampled on JBUS clock)
+//
+// ***************************************************************************
+
+
+// coverage_def dram_err_intr_ucb_trig (bit [1:0] err_intr_ucb_trig)
+// {
+
+  // state declarations
+       state s_err_intr_ucb_trig0  (1'b0);
+       state s_err_intr_ucb_trig1  (1'b1);
+
+       trans t_err_intr_ucb_0_0_trig  (1'b0 -> 1'b0);
+       trans t_err_intr_ucb_0_1_trig  (1'b0 -> 1'b1);
+       trans t_err_intr_ucb_1_0_trig  (1'b1 -> 1'b0);
+       trans t_err_intr_ucb_1_1_trig  (1'b1 -> 1'b1);
+
+
+  // bad states
+  //bad_state s_not_rd_q_full_n_req_state (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_q_full_n_req_trans (not trans);
+
+//}
+

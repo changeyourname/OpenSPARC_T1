@@ -1,0 +1,175 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ucb_snoop.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        ucb_snoop.vr
+//  Description:        Class definition and methods for ucb snooper
+//                      used for snooping the single cycle ucb interfaces
+//                      for IOB checker
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#include "ucb_req.vrh"
+#include "ucb_rsp.vrh"
+
+#define UCB_THR_BITS UCB_THR_HI-UCB_THR_LO-1:0
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class UCB_SNOOP
+{
+  string           name;
+  iob_ucb_port     in_port;
+  ucb_iob_port     out_port;
+  integer          in_mbox, out_mbox;
+  integer          in_mbox_1, out_mbox_1;
+  VeraList_UCB_RSP intq_1;
+  VeraList_UCB_RSP intq_2;
+  
+  task          new(string       name,
+                    iob_ucb_port in_port,
+                    ucb_iob_port out_port);
+  task          snoop();
+  task          snoop_in();
+  task          snoop_out();
+}
+
+////////////////////////////////////////////////////////////////////////
+// Contructor.
+////////////////////////////////////////////////////////////////////////
+task UCB_SNOOP::new(string       name,
+                    iob_ucb_port in_port,
+                    ucb_iob_port out_port)
+{
+  this.name     = name;
+  this.in_port  = in_port;
+  this.out_port = out_port;
+  this.in_mbox  = alloc (MAILBOX, 0, 1);
+  this.out_mbox = alloc (MAILBOX, 0, 1);
+  this.in_mbox_1  = alloc (MAILBOX, 0, 1);
+  this.out_mbox_1 = alloc (MAILBOX, 0, 1);
+  this.intq_1 = new() ;
+  this.intq_2 = new() ;
+}
+
+////////////////////////////////////////////////////////////////////////
+// Snoop ucb input.
+////////////////////////////////////////////////////////////////////////
+task UCB_SNOOP::snoop_in()
+{
+  UCB_REQ       new_req;
+  while (1) {
+    @(posedge this.in_port.\$clk);
+    if (this.in_port.\$ucb_req_ok && this.in_port.\$rst_l) {
+
+      // Snoop ucb request from CMP and TAP.
+      if (((this.in_port.\$ucb_buf_id == UCB_BID_CMP) ||
+           (this.in_port.\$ucb_buf_id == UCB_BID_TAP)) &&
+          ((this.in_port.\$ucb_wr && !this.in_port.\$ucb_rd) ||
+           (!this.in_port.\$ucb_wr && this.in_port.\$ucb_rd))) { // read req
+        new_req = new(this.in_port.\$ucb_rd,
+                      this.in_port.\$ucb_wr,
+                      this.in_port.\$ucb_ifill,
+                      this.in_port.\$ucb_thr_id,
+                      this.in_port.\$ucb_buf_id,
+                      this.in_port.\$ucb_addr,
+                      this.in_port.\$ucb_data);
+        if (new_req == null) {
+          error("New request is NULL!!! DYING\n");
+        }
+//        printf("%0d : Got new request snoop in snooper = %s mail box = %d.\n", get_time(LO), this.name, this.in_mbox);
+        if (get_plus_arg(CHECK, "iob_debug"))
+        {
+          new_req.print(this.name);
+        }
+        mailbox_put(this.in_mbox, new_req);
+        mailbox_put(this.in_mbox_1, new_req);
+      }
+//       else if (this.in_port.\$ucb_wr && this.in_port.\$ucb_rd) { // error
+//         printf ("%0d : %s ERROR : MUTEX VIOLATION : {ucb_wr, ucb_rd} == %b\n",
+//                 get_time(LO), this.name, {this.in_port.\$ucb_rd,
+//                   this.in_port.\$ucb_wr});
+//         printf ("%0d : DIAG FAILED\n", get_time(LO));
+//         exit(1);
+//       }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Snoop ucb output.
+////////////////////////////////////////////////////////////////////////
+task UCB_SNOOP::snoop_out()
+{
+  UCB_RSP       new_rsp;
+  while (1) {
+    @(posedge this.out_port.\$clk);
+    if (!this.out_port.\$busy && this.out_port.\$rst_l) {
+      
+      // Snoop ucb ack for CMP and TAP.
+      if (((this.out_port.\$buf_id == UCB_BID_CMP) ||
+           (this.out_port.\$buf_id == UCB_BID_TAP)) &
+          (this.out_port.\$rd_ack || this.out_port.\$rd_nak ||
+           this.out_port.\$wr_ack || this.out_port.\$ifill ||
+           this.out_port.\$int)) {
+        new_rsp = new(this.out_port.\$rd_ack,
+                    this.out_port.\$rd_nak,
+                    this.out_port.\$wr_ack,
+                    this.out_port.\$ifill,
+                    this.out_port.\$thr_id,
+                    this.out_port.\$buf_id,
+                    this.out_port.\$data,
+                    this.out_port.\$int,
+                    this.out_port.\$itype,
+                    this.out_port.\$ithr_id,
+                    this.out_port.\$istat,
+                    this.out_port.\$dev_id);
+//        printf("%0d : Got new request snoop out snooper = %s mail box = %d.\n", get_time(LO), this.name, this.out_mbox);
+        new_rsp.print (this.name) ;
+        mailbox_put(this.out_mbox, new_rsp);
+        mailbox_put(this.out_mbox_1, new_rsp);
+        if(this.out_port.\$int == 1'b1) {
+          this.intq_1.push_back(new_rsp);
+          this.intq_2.push_back(new_rsp);
+        } 
+      }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+// Start snoop.
+////////////////////////////////////////////////////////////////////////
+task UCB_SNOOP::snoop()
+{
+  fork
+    this.snoop_in();
+    this.snoop_out();
+  join none
+}
+
+

@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rd_wr_hit_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_rd_wr_hit_sample.vrh
+// Description:
+// Coverage object for hit between the read and write address
+// read is picked but a write to the same address is sitting 
+// in the que.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rd_wr_hit_sample (bit  rd_wr_hit)
+// {
+
+  // state declarations
+       state s_rd_wr_hit0  (1'b0);
+       state s_rd_wr_hit1  (1'b1);
+
+//}
+

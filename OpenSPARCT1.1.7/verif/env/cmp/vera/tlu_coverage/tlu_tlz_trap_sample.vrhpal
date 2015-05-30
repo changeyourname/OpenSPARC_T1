@@ -1,0 +1,114 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_tlz_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for tlz traps on done/retry, wrpr instructions
+//
+//
+//***************************************************************************
+
+
+// coverage_def TLU_TLZ_TRAP_COV (bit [21:0] tlu_tlz_trap_st)
+// {
+
+  /////////
+  // States
+  // Note: single thread cases
+  wildcard state s_N_TLZ_SUPER_DNRTRY	(N_TLZ_SUPER_DNRTRY);
+  wildcard state s_N_TLZ_HYPER_DNRTRY	(N_TLZ_HYPER_DNRTRY);
+  wildcard state s_N_TLZ_SUPER_WRPR	(N_TLZ_SUPER_WRPR);
+  wildcard state s_N_TLZ_HYPER_WRPR	(N_TLZ_HYPER_WRPR);
+  wildcard state s_TLZ0_SUPER_DNRTRY0	(TLZ0_SUPER_DNRTRY0);
+  wildcard state s_TLZ0_HYPER_DNRTRY0	(TLZ0_HYPER_DNRTRY0);
+  wildcard state s_TLZ0_SUPER_WRPR0	(TLZ0_SUPER_WRPR0);
+  wildcard state s_TLZ0_HYPER_WRPR0	(TLZ0_HYPER_WRPR0);
+  wildcard state s_TLZ1_SUPER_DNRTRY1	(TLZ1_SUPER_DNRTRY1);
+  wildcard state s_TLZ1_HYPER_DNRTRY1	(TLZ1_HYPER_DNRTRY1);
+  wildcard state s_TLZ1_SUPER_WRPR1	(TLZ1_SUPER_WRPR1);
+  wildcard state s_TLZ1_HYPER_WRPR1	(TLZ1_HYPER_WRPR1);
+  wildcard state s_TLZ2_SUPER_DNRTRY2	(TLZ2_SUPER_DNRTRY2);
+  wildcard state s_TLZ2_HYPER_DNRTRY2	(TLZ2_HYPER_DNRTRY2);
+  wildcard state s_TLZ2_SUPER_WRPR2	(TLZ2_SUPER_WRPR2);
+  wildcard state s_TLZ2_HYPER_WRPR2	(TLZ2_HYPER_WRPR2);
+  wildcard state s_TLZ3_SUPER_DNRTRY3	(TLZ3_SUPER_DNRTRY3);
+  wildcard state s_TLZ3_HYPER_DNRTRY3	(TLZ3_HYPER_DNRTRY3);
+  wildcard state s_TLZ3_SUPER_WRPR3	(TLZ3_SUPER_WRPR3);
+  wildcard state s_TLZ3_HYPER_WRPR3	(TLZ3_HYPER_WRPR3);
+  // Note: multi thread cases
+  wildcard state s_TLZ2_SUPER_DNRTRY01	(TLZ2_SUPER_DNRTRY01);
+  wildcard state s_TLZ2_HYPER_DNRTRY01	(TLZ2_HYPER_DNRTRY01);
+  wildcard state s_TLZ2_SUPER_WRPR01	(TLZ2_SUPER_WRPR01);
+  wildcard state s_TLZ2_HYPER_WRPR01	(TLZ2_HYPER_WRPR01);
+  wildcard state s_TLZ3_SUPER_DNRTRY01	(TLZ3_SUPER_DNRTRY01);
+  wildcard state s_TLZ3_HYPER_DNRTRY01	(TLZ3_HYPER_DNRTRY01);
+  wildcard state s_TLZ3_SUPER_WRPR01	(TLZ3_SUPER_WRPR01);
+  wildcard state s_TLZ3_HYPER_WRPR01	(TLZ3_HYPER_WRPR01);
+  wildcard state s_TLZ1_SUPER_DNRTRY02	(TLZ1_SUPER_DNRTRY02);
+  wildcard state s_TLZ1_HYPER_DNRTRY02	(TLZ1_HYPER_DNRTRY02);
+  wildcard state s_TLZ1_SUPER_WRPR02	(TLZ1_SUPER_WRPR02);
+  wildcard state s_TLZ1_HYPER_WRPR02	(TLZ1_HYPER_WRPR02);
+  wildcard state s_TLZ3_SUPER_DNRTRY02	(TLZ3_SUPER_DNRTRY02);
+  wildcard state s_TLZ3_HYPER_DNRTRY02	(TLZ3_HYPER_DNRTRY02);
+  wildcard state s_TLZ3_SUPER_WRPR02	(TLZ3_SUPER_WRPR02);
+  wildcard state s_TLZ3_HYPER_WRPR02	(TLZ3_HYPER_WRPR02);
+  wildcard state s_TLZ1_SUPER_DNRTRY03	(TLZ1_SUPER_DNRTRY03);
+  wildcard state s_TLZ1_HYPER_DNRTRY03	(TLZ1_HYPER_DNRTRY03);
+  wildcard state s_TLZ1_SUPER_WRPR03	(TLZ1_SUPER_WRPR03);
+  wildcard state s_TLZ1_HYPER_WRPR03	(TLZ1_HYPER_WRPR03);
+  wildcard state s_TLZ2_SUPER_DNRTRY03	(TLZ2_SUPER_DNRTRY03);
+  wildcard state s_TLZ2_HYPER_DNRTRY03	(TLZ2_HYPER_DNRTRY03);
+  wildcard state s_TLZ2_SUPER_WRPR03	(TLZ2_SUPER_WRPR03);
+  wildcard state s_TLZ2_HYPER_WRPR03	(TLZ2_HYPER_WRPR03);
+  wildcard state s_TLZ0_SUPER_DNRTRY12	(TLZ0_SUPER_DNRTRY12);
+  wildcard state s_TLZ0_HYPER_DNRTRY12	(TLZ0_HYPER_DNRTRY12);
+  wildcard state s_TLZ0_SUPER_WRPR12	(TLZ0_SUPER_WRPR12);
+  wildcard state s_TLZ0_HYPER_WRPR12	(TLZ0_HYPER_WRPR12);
+  wildcard state s_TLZ3_SUPER_DNRTRY12	(TLZ3_SUPER_DNRTRY12);
+  wildcard state s_TLZ3_HYPER_DNRTRY12	(TLZ3_HYPER_DNRTRY12);
+  wildcard state s_TLZ3_SUPER_WRPR12	(TLZ3_SUPER_WRPR12);
+  wildcard state s_TLZ3_HYPER_WRPR12	(TLZ3_HYPER_WRPR12);
+  wildcard state s_TLZ0_SUPER_DNRTRY13	(TLZ0_SUPER_DNRTRY13);
+  wildcard state s_TLZ0_HYPER_DNRTRY13	(TLZ0_HYPER_DNRTRY13);
+  wildcard state s_TLZ0_SUPER_WRPR13	(TLZ0_SUPER_WRPR13);
+  wildcard state s_TLZ0_HYPER_WRPR13	(TLZ0_HYPER_WRPR13);
+  wildcard state s_TLZ2_SUPER_DNRTRY13	(TLZ2_SUPER_DNRTRY13);
+  wildcard state s_TLZ2_HYPER_DNRTRY13	(TLZ2_HYPER_DNRTRY13);
+  wildcard state s_TLZ2_SUPER_WRPR13	(TLZ2_SUPER_WRPR13);
+  wildcard state s_TLZ2_HYPER_WRPR13	(TLZ2_HYPER_WRPR13);
+  wildcard state s_TLZ0_SUPER_DNRTRY23	(TLZ0_SUPER_DNRTRY23);
+  wildcard state s_TLZ0_HYPER_DNRTRY23	(TLZ0_HYPER_DNRTRY23);
+  wildcard state s_TLZ0_SUPER_WRPR23	(TLZ0_SUPER_WRPR23);
+  wildcard state s_TLZ0_HYPER_WRPR23    (TLZ0_HYPER_WRPR23);	
+  wildcard state s_TLZ1_SUPER_DNRTRY23	(TLZ1_SUPER_DNRTRY23);	
+  wildcard state s_TLZ1_HYPER_DNRTRY23	(TLZ1_HYPER_DNRTRY23);	
+  wildcard state s_TLZ1_SUPER_WRPR23	(TLZ1_SUPER_WRPR23);	
+  wildcard state s_TLZ1_HYPER_WRPR23	(TLZ1_HYPER_WRPR23);	
+                   
+  //////////////   
+  // Transitions   
+                   
+  /////////////    
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

@@ -1,0 +1,108 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_xbar.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Mon Feb 24 12:31:26 PST 2003
+// this is to get the cross bar data buffering
+// capacity covered
+//
+
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+
+
+class Xbr {
+  local bit [5:0] pcx_cnt;
+  local bit [5:0] cpx_cnt;
+  local mt_cov_port my_pt;
+
+  // we make it simple as for today!
+  // local PCX_BUFFER cov_pcx;
+  // local CPX_BUFFER cov_cpx;
+  bit [5:0] pcx_sample;
+  bit [5:0] cpx_sample;
+ 
+  event smpl_event; 
+  
+  task new (mt_cov_port pt) {
+    integer i;
+    my_pt = pt;
+    pcx_cnt = 0;
+    cpx_cnt = 0;
+    // cov_pcx = newcov(pcx_cnt, @(posedge my_pt.\$cmp_clk));
+    // cov_cpx = newcov(cpx_cnt, @(posedge my_pt.\$cmp_clk));
+    CoverOn();
+  }
+
+  local task Going();
+  local task CoverOn();
+  
+}
+
+task Xbr::Going()
+{
+  integer cnt = 0;
+
+. for my $i (0..7) {
+    cnt += |(my_pt.\$spc${i}_pcx_req);
+.}
+  
+  cnt -=  my_pt.\$pcx_fpio_rdy ;
+. for my $i (0..3) {
+    cnt -= |(my_pt.\$pcx_sc${i}_rdy);
+. } 
+
+  pcx_cnt += cnt;
+
+  cnt = | (my_pt.\$cpx_fp_req);
+  cnt += | (my_pt.\$cpx_io_req);
+  
+.for my $i (0..3) {
+    cnt += | (my_pt.\$cpx_sc${i}_req);
+.}
+
+.for my $i (0..7) {
+    cnt -= |(my_pt.\$cpx_rdy_spc${i});
+.}
+
+  cpx_cnt += cnt;
+  
+}
+
+task Xbr::CoverOn()
+{
+  integer done = 0;
+  string rpt;
+  fork {
+    while (!done) {
+      @ (posedge my_pt.\$cmp_clk);
+      Going();
+      pcx_sample = pcx_cnt;
+      cpx_sample = cpx_cnt;
+
+      trigger(ONE_SHOT, smpl_event);
+    }
+  } {
+    string rpt;
+    @ (posedge my_pt.\$cmp_diag_done);
+    done = 1;
+  } join none
+
+}

@@ -1,0 +1,168 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cpx_snoop.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        cpx_snoop.vrpal
+//  Description:        Snoops acknoledgements going from IOB to XBAR
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#include "cpx_cmd.vrh"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class CPX_SNOOP
+{
+  bit [6:0]     nodeid;
+  cpx_iob_port  cpx_iob_bind;
+  string        name;
+  integer       load_snoop_mbox [32] ;
+  integer       store_snoop_mbox [32] ;
+  integer       ifill_snoop_mbox [32] ;
+  integer       intr_snoop_mbox [32] ;
+  integer       snoop_mbox ;
+  integer       snoop_mbox_2 ;
+  integer       iob_mbox ;
+
+  bit [7:0]     io_cpx_req_cq_d ;
+
+  task          new((string name = "CPX_SNOOP"), bit [6:0] nodeid, cpx_iob_port cpx_iob_bind);
+  task          snoop();
+}
+
+////////////////////////////////////////////////////////////////////////
+// constructor
+////////////////////////////////////////////////////////////////////////
+task CPX_SNOOP::new((string name = "CPX_SNOOP"), bit [6:0] nodeid, cpx_iob_port cpx_iob_bind)
+{ 
+  integer i ;
+
+  this.name = name;
+  this.nodeid = nodeid;
+  this.cpx_iob_bind = cpx_iob_bind;
+  this.io_cpx_req_cq_d = 8'b0 ;
+  for (i = 0 ; i < 32 ; i++)
+  {
+    this.load_snoop_mbox[i] = alloc(MAILBOX, 0, 1) ;
+    this.store_snoop_mbox[i] = alloc(MAILBOX, 0, 1) ;
+    this.intr_snoop_mbox[i] = alloc(MAILBOX, 0, 1) ;
+    this.ifill_snoop_mbox[i] = alloc(MAILBOX, 0, 1) ;
+  }
+
+  this.snoop_mbox_2 = alloc(MAILBOX, 0, 1) ;
+  this.snoop_mbox = alloc(MAILBOX, 0, 1) ;
+  this.iob_mbox = alloc(MAILBOX, 0, 1) ;
+
+}
+
+////////////////////////////////////////////////////////////////////////
+// snoop
+////////////////////////////////////////////////////////////////////////
+task CPX_SNOOP::snoop ()
+{
+  fork
+  {
+    CPX_CMD cpx_cmd ;
+    CPX_CMD iob_cmd ;
+    bit [5:0] intvect;
+    bit [144:0] data ;
+
+    while(1)
+    {
+      @(posedge this.cpx_iob_bind.\$clk);
+      io_cpx_req_cq_d = this.cpx_iob_bind.\$io_cpx_req_cq ;
+   
+      if((|(io_cpx_req_cq_d[7:0])) && this.cpx_iob_bind.\$rst_l )
+      {
+        fork 
+        {
+          cpx_cmd = new ();
+          // printf("%d : %s : %2H \n", get_time(LO), this.name,this.io_cpx_req_cq_d);
+          case(1)
+          {
+            io_cpx_req_cq_d[0] : cpx_cmd.coreid      = 3'b000 ;
+            io_cpx_req_cq_d[1] : cpx_cmd.coreid      = 3'b001 ;
+            io_cpx_req_cq_d[2] : cpx_cmd.coreid      = 3'b010 ;
+            io_cpx_req_cq_d[3] : cpx_cmd.coreid      = 3'b011 ;
+            io_cpx_req_cq_d[4] : cpx_cmd.coreid      = 3'b100 ;
+            io_cpx_req_cq_d[5] : cpx_cmd.coreid      = 3'b101 ;
+            io_cpx_req_cq_d[6] : cpx_cmd.coreid      = 3'b110 ;
+            io_cpx_req_cq_d[7] : cpx_cmd.coreid      = 3'b111 ;
+            default    : printf("Invalid Core Id \n");
+          } 
+
+          @(posedge this.cpx_iob_bind.\$clk); 
+          data[144:0] = this.cpx_iob_bind.\$io_cpx_data_ca;
+          cpx_cmd.valid = data[144] ;
+          cpx_cmd.rtntyp = data[143:140] ;
+          cpx_cmd.err = data[138:137];
+          cpx_cmd.nc = data[136];
+          cpx_cmd.shared = data[135:129];
+          // coreid is set previous cycle
+          if(data[143:140] == 4'b0111)
+          {
+            cpx_cmd.threadid    = data[9:8];
+          }
+          else
+          {
+            cpx_cmd.threadid    = data[135:134];
+          }
+          cpx_cmd.data = data [127:0] ;
+          cpx_cmd.intvect = data[5:0] ;
+            
+          iob_cmd = new cpx_cmd;
+          mailbox_put(this.iob_mbox, iob_cmd);
+          
+          if (data[143:140] == 4'b0111)
+          {
+            mailbox_put(this.snoop_mbox_2, cpx_cmd) ;
+            mailbox_put(this.intr_snoop_mbox [{cpx_cmd.coreid, cpx_cmd.threadid}], cpx_cmd) ;
+          }
+          else if (data [143:140] == 4'b0100)
+          {
+            mailbox_put(this.store_snoop_mbox [{cpx_cmd.coreid, cpx_cmd.threadid}], cpx_cmd) ;
+          }
+          else if (data [143:140] == 4'b0000)
+          {
+            mailbox_put(this.load_snoop_mbox [{cpx_cmd.coreid, cpx_cmd.threadid}], cpx_cmd) ;
+          }
+          else if (data [143:140] == 4'b0001)
+          {
+            mailbox_put(this.ifill_snoop_mbox [{cpx_cmd.coreid, cpx_cmd.threadid}], cpx_cmd) ;
+          }
+
+          if (get_plus_arg(CHECK, "iob_debug"))
+          {
+            cpx_cmd.print (name) ;
+          }
+        }
+        join none
+      }
+    }
+  }
+  join none
+}

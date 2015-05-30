@@ -1,0 +1,73 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ld_rawhit_st_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_ld_rawhit_st_state = {ld_st_partialraw_hit, ld_st_fullraw_hit,
+//                           st_ld_partialraw_hit, st_ld_fullraw_hit,
+//                           ldN_inst_vld_w4, ldN_inst_vld_w2,
+//                           io_ld_w4, io_ld_w2,
+//                           stb_cam_mhit_w4, stb_cam_mhit_w2,
+//                           stN_pcx_rq_sel_d1,
+//                           pcx_req_squash};
+
+
+// stb_ld_partial_raw and stb_ld_full_raw are always 0 for when a load hits an rmo store
+
+
+//                                          rawhit   ldvld  iold   mhit   stpcx squash
+wildcard state ld_st_praw_1hit_stgrant   ( {4'b1xxx, 2'b1x, 2'b0x, 2'b0x, 1'b1, 1'b0} );
+wildcard state ldio_st_praw_1hit_stgrant ( {4'b1xxx, 2'b1x, 2'b1x, 2'b0x, 1'b1, 1'b0} );
+wildcard state ld_st_praw_mhit_stgrant   ( {4'b1xxx, 2'b1x, 2'b0x, 2'b1x, 1'b1, 1'b0} );
+wildcard state ldio_st_praw_mhit_stgrant ( {4'b1xxx, 2'b1x, 2'b1x, 2'b1x, 1'b1, 1'b0} );
+wildcard state ld_st_praw_1hit_stsquash  ( {4'b1xxx, 2'b1x, 2'b0x, 2'b0x, 1'b1, 1'b1} );
+wildcard state ldio_st_praw_1hit_stsquash( {4'b1xxx, 2'b1x, 2'b1x, 2'b0x, 1'b1, 1'b1} );
+wildcard state ld_st_praw_mhit_stsquash  ( {4'b1xxx, 2'b1x, 2'b0x, 2'b1x, 1'b1, 1'b1} );
+wildcard state ldio_st_praw_mhit_stsquash( {4'b1xxx, 2'b1x, 2'b1x, 2'b1x, 1'b1, 1'b1} );
+
+//                                          rawhit   ldvld  iold   mhit   stpcx squash
+wildcard state ld_st_fraw_1hit_stgrant   ( {4'bx1xx, 2'b1x, 2'b0x, 2'b0x, 1'b1, 1'b0} );
+wildcard state ldio_st_fraw_1hit_stgrant ( {4'bx1xx, 2'b1x, 2'b1x, 2'b0x, 1'b1, 1'b0} );
+wildcard state ld_st_fraw_mhit_stgrant   ( {4'bx1xx, 2'b1x, 2'b0x, 2'b1x, 1'b1, 1'b0} );
+wildcard state ldio_st_fraw_mhit_stgrant ( {4'bx1xx, 2'b1x, 2'b1x, 2'b1x, 1'b1, 1'b0} );
+wildcard state ld_st_fraw_1hit_stsquash  ( {4'bx1xx, 2'b1x, 2'b0x, 2'b0x, 1'b1, 1'b1} );
+wildcard state ldio_st_fraw_1hit_stsquash( {4'bx1xx, 2'b1x, 2'b1x, 2'b0x, 1'b1, 1'b1} );
+wildcard state ld_st_fraw_mhit_stsquash  ( {4'bx1xx, 2'b1x, 2'b0x, 2'b1x, 1'b1, 1'b1} );
+wildcard state ldio_st_fraw_mhit_stsquash( {4'bx1xx, 2'b1x, 2'b1x, 2'b1x, 1'b1, 1'b1} );
+
+
+//                                          rawhit   ldvld  iold   mhit   stpcx squash
+wildcard state st_ld_praw_1hit_stgrant   ( {4'bxx1x, 2'bx1, 2'bx0, 2'bx0, 1'b1, 1'b0} );
+wildcard state st_ldio_praw_1hit_stgrant ( {4'bxx1x, 2'bx1, 2'bx1, 2'bx0, 1'b1, 1'b0} );
+wildcard state st_ld_praw_mhit_stgrant   ( {4'bxx1x, 2'bx1, 2'bx0, 2'bx1, 1'b1, 1'b0} );
+wildcard state st_ldio_praw_mhit_stgrant ( {4'bxx1x, 2'bx1, 2'bx1, 2'bx1, 1'b1, 1'b0} );
+wildcard state st_ld_praw_1hit_stsquash  ( {4'bxx1x, 2'bx1, 2'bx0, 2'bx0, 1'b1, 1'b1} );
+wildcard state st_ldio_praw_1hit_stsquash( {4'bxx1x, 2'bx1, 2'bx1, 2'bx0, 1'b1, 1'b1} );
+wildcard state st_ld_praw_mhit_stsquash  ( {4'bxx1x, 2'bx1, 2'bx0, 2'bx1, 1'b1, 1'b1} );
+wildcard state st_ldio_praw_mhit_stsquash( {4'bxx1x, 2'bx1, 2'bx1, 2'bx1, 1'b1, 1'b1} );
+
+//                                          rawhit   ldvld  iold   mhit   stpcx squash
+wildcard state st_ld_fraw_1hit_stgrant   ( {4'bxxx1, 2'bx1, 2'bx0, 2'bx0, 1'b1, 1'b0} );
+wildcard state st_ldio_fraw_1hit_stgrant ( {4'bxxx1, 2'bx1, 2'bx1, 2'bx0, 1'b1, 1'b0} );
+wildcard state st_ld_fraw_mhit_stgrant   ( {4'bxxx1, 2'bx1, 2'bx0, 2'bx1, 1'b1, 1'b0} );
+wildcard state st_ldio_fraw_mhit_stgrant ( {4'bxxx1, 2'bx1, 2'bx1, 2'bx1, 1'b1, 1'b0} );
+wildcard state st_ld_fraw_1hit_stsquash  ( {4'bxxx1, 2'bx1, 2'bx0, 2'bx0, 1'b1, 1'b1} );
+wildcard state st_ldio_fraw_1hit_stsquash( {4'bxxx1, 2'bx1, 2'bx1, 2'bx0, 1'b1, 1'b1} );
+wildcard state st_ld_fraw_mhit_stsquash  ( {4'bxxx1, 2'bx1, 2'bx0, 2'bx1, 1'b1, 1'b1} );
+wildcard state st_ldio_fraw_mhit_stsquash( {4'bxxx1, 2'bx1, 2'bx1, 2'bx1, 1'b1, 1'b1} );

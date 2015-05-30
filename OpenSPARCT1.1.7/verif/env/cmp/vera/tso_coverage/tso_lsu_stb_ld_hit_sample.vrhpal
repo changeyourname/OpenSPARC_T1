@@ -1,0 +1,100 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_stb_ld_hit_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is probably the biggest coverage object. It monitors variations
+// of load hits in the store buffer.
+// The coverage object monitors the following signals
+// ld_type[4:0] - being 1 hot of:
+// 	- ld_dbl_fp   
+// 	- ld_other_fp 
+// 	- ld_dbl_int  
+// 	- ld_quad_int 
+// 	- ld_other_int
+//
+// hit_type[2:0] being one hot (or zero) of:
+// 	- ld_bypassok_hit 
+// 	- ld_partial_hit  
+// 	- ld_multiple_hit 
+//
+// cache_hit 
+//
+// hit_top  - indicating a hit in the top of the store buffer
+// st_ack_w - indication a CPX store ack coming
+//
+// The object permutates those. The last 3 states detect a CPX st_ack
+// coming in the same cycle as a load at the top of the store buffer
+//***********************************************************************
+state s_STB_LDOI00		(STB_LDOI00);
+state s_STB_LDQI00		(STB_LDQI00);
+state s_STB_LDDI00		(STB_LDDI00);
+state s_STB_LDOF00		(STB_LDOF00);
+state s_STB_LDDF00		(STB_LDDF00);
+
+state s_STB_LDOI01		(STB_LDOI01);
+state s_STB_LDQI01		(STB_LDQI01);
+state s_STB_LDDI01		(STB_LDDI01);
+state s_STB_LDOF01		(STB_LDOF01);
+state s_STB_LDDF01		(STB_LDDF01);
+state s_STB_LDOI02		(STB_LDOI02);
+state s_STB_LDQI02		(STB_LDQI02);
+state s_STB_LDDI02		(STB_LDDI02);
+state s_STB_LDOF02		(STB_LDOF02);
+state s_STB_LDDF02		(STB_LDDF02);
+state s_STB_LDOI03		(STB_LDOI03);
+state s_STB_LDQI03		(STB_LDQI03);
+state s_STB_LDDI03		(STB_LDDI03);
+state s_STB_LDOF03		(STB_LDOF03);
+state s_STB_LDDF03		(STB_LDDF03);
+state s_STB_LDOI04		(STB_LDOI04);
+state s_STB_LDQI04		(STB_LDQI04);
+state s_STB_LDDI04		(STB_LDDI04);
+state s_STB_LDOF04		(STB_LDOF04);
+state s_STB_LDDF04		(STB_LDDF04);
+state s_STB_LDOI05		(STB_LDOI05);
+state s_STB_LDQI05		(STB_LDQI05);
+state s_STB_LDDI05		(STB_LDDI05);
+state s_STB_LDOF05		(STB_LDOF05);
+state s_STB_LDDF05		(STB_LDDF05);
+state s_STB_LDOI06		(STB_LDOI06);
+state s_STB_LDQI06		(STB_LDQI06);
+state s_STB_LDDI06		(STB_LDDI06);
+state s_STB_LDOF06		(STB_LDOF06);
+state s_STB_LDDF06		(STB_LDDF06);
+
+wildcard state s_STB_LDOI07	(STB_LDOI07);
+wildcard state s_STB_LDQI07	(STB_LDQI07);
+wildcard state s_STB_LDDI07	(STB_LDDI07);
+wildcard state s_STB_LDOF07	(STB_LDOF07);
+wildcard state s_STB_LDDF07	(STB_LDDF07);
+wildcard state s_STB_LDOI08	(STB_LDOI08);
+wildcard state s_STB_LDQI08	(STB_LDQI08);
+wildcard state s_STB_LDDI08	(STB_LDDI08);
+wildcard state s_STB_LDOF08	(STB_LDOF08);
+wildcard state s_STB_LDDF08	(STB_LDDF08);
+wildcard state s_STB_LDOI09	(STB_LDOI09);
+wildcard state s_STB_LDQI09	(STB_LDQI09);
+wildcard state s_STB_LDDI09	(STB_LDDI09);
+wildcard state s_STB_LDOF09	(STB_LDOF09);
+wildcard state s_STB_LDDF09	(STB_LDDF09);
+
+wildcard state s_STB_LDANDCPX1	(STB_LDANDCPX1);
+wildcard state s_STB_LDANDCPX2	(STB_LDANDCPX2);
+wildcard state s_STB_LDANDCPX3	(STB_LDANDCPX3);

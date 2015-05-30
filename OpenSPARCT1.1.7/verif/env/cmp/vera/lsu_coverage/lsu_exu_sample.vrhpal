@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_exu_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+  state s_EXU0   (EXCPN0);
+  state s_EXU1   (EXCPN1);
+  state s_EXU2   (EXCPN2);
+  state s_EXU3   (EXCPN3);
+  state s_EXU4   (EXCPN4);
+  state s_EXU5   (EXCPN5);
+  state s_EXU6   (EXCPN6);
+  state s_EXU7   (EXCPN7);
+  state s_EXU8   (EXCPN8);
+  state s_EXU9   (EXCPN9);
+  state s_EXU10  (EXCPN10);
+  state s_EXU11  (EXCPN11);
+  state s_EXU12  (EXCPN12);
+//state s_EXU13  (EXCPN13);
+//state s_EXU14  (EXCPN14);
+//state s_EXU15  (EXCPN15);
+//state s_EXU16  (EXCPN16);
+//state s_EXU17  (EXCPN17);
+
+// Note 17 has multiple events collapsed
+// we might have un-roll it once we elimate
+// some redundant stuff or identify some
+
+
+  bad_state s_not_STATE (not state);
+
+  m_trans t_b2b_exu (1:12 -> 1:12);
+
+

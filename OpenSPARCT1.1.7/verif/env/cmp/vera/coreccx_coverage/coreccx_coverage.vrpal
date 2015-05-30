@@ -1,0 +1,87 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "coreccx_cov_inc.pal";
+
+#include <vera_defines.vrh>
+#include "coreccx_cov_defines.vrh"
+#include "coreccx_cov_ports_binds.vrh"
+#include "coreccx_misc_cov.vrh"
+
+
+class coreccx_coverage {
+
+    coverage_group coreccx_coverage_group {
+
+        const_sample_reference = 1; // reference to variable sampled is constant
+        sample_event = @(posedge coreccx_cov.clk);
+        cov_weight = 0; // 0 until diag passes
+
+
+        // CCX coverage object definitions
+        sample coreccx_pcx_retry_req_sample.\$coreccx_pcx_retry_req_state {
+#inc "coreccx_pcx_retry_req_sample.vrhpal";
+        }
+        sample coreccx_cpx_consecutive_sample.\$coreccx_cpx_consecutive_state {
+#inc "coreccx_cpx_consecutive_sample.vrhpal";
+        }
+
+        // L2 coverage object definitions
+.for ($b=0; $b<$BANKS; $b++) {
+
+        sample coreccx_pcx_fields_sample_${b}.\$coreccx_pcx_fields_state {
+#inc "coreccx_pcx_fields_sample.vrhpal";
+        }
+        sample coreccx_cpx_fields_sample_${b}.\$coreccx_cpx_fields_state {
+#inc "coreccx_cpx_fields_sample.vrhpal";
+        }
+        sample coreccx_inv_vector_sample_${b}.\$coreccx_inv_vector_state {
+#inc "coreccx_inv_vector_sample.vrhpal";
+        }
+        sample coreccx_l2addr_sample_${b}.\$coreccx_l2addr_state {
+#inc "coreccx_l2addr_sample.vrhpal";
+        }
+        
+.} # for $b
+
+    } // coverage_group
+
+
+    task new();
+}
+
+
+task coreccx_coverage::new() {
+    
+    integer i;
+
+    coreccx_coverage_group = new();
+    coreccx_misc_cov();
+    
+    fork
+    {
+        // wait for diag to pass
+        @(posedge coreccx_cov.diag_done);
+        coreccx_coverage_group.set_cov_weight(1);
+        coverage_save_database(1);
+        printf("%d : Coverage for Core-CCX interface generated!\n", get_time(LO));
+    }
+    join none
+}

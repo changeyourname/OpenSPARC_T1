@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_ttype_cov.vr
+// Description:
+// This coverage object covers all trap and some interrupt types that might
+// have been taken
+// 
+// State: 10'b:trpm,ttype
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_TTYPE_COV (bit [9:0] cov_vector)
+// {
+  state s_inst_acc_exc    (INST_ACC_EXC);
+  state s_inst_acc_err    (INST_ACC_ERR);
+  state s_corr_ecc_err    (CORR_ECC_ERR);    
+  state s_data_acc_err    (DATA_ERR);    
+//  state s_asyn_data_err   (ASYN_DATA_ERR);  
+//  state s_inst_acc_mmu_ms (INST_ACC_MMU_MS); 
+  state s_fast_mmu_ms     (FAST_MMU_MS);
+  state s_priv_opc        (PRIV_OPC);   
+  state s_ill_inst        (ILL_INST);        
+  state s_sir             (SIR);      
+  state s_fp_disabled     (FP_DISABLED);
+  state s_real_trans_ms   (REAL_TRANS_MS);
+  state s_spu_maint       (SPU_MAINT); 
+  state s_hstick_cmp      (HSTICK_CMP);      
+  state s_resumable_err   (RESUMABLE_ERR); 
+  state s_inst_brk_pt     (INST_BRK_PT);
+// }

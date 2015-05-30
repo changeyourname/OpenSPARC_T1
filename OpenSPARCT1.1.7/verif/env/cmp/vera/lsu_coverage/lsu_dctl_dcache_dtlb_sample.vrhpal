@@ -1,0 +1,43 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_dcache_dtlb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// crossproduct of dcache enable/disable and dtlb enable/disable
+//***********************************************************************
+
+  state s_DCACHE_DTLB_ST00	(6'b1100_00);
+  state s_DCACHE_DTLB_ST01	(6'b1100_01);
+  state s_DCACHE_DTLB_ST02	(6'b1100_10);
+  state s_DCACHE_DTLB_ST03	(6'b1100_11);
+
+  state s_DCACHE_DTLB_ST04	(6'b1101_00);
+  state s_DCACHE_DTLB_ST05	(6'b1101_01);
+  state s_DCACHE_DTLB_ST06	(6'b1101_10);
+  state s_DCACHE_DTLB_ST07	(6'b1101_11);
+
+  state s_DCACHE_DTLB_ST08	(6'b1110_00);
+  state s_DCACHE_DTLB_ST09	(6'b1110_01);
+  state s_DCACHE_DTLB_ST10	(6'b1110_10);
+  state s_DCACHE_DTLB_ST11	(6'b1110_11);
+
+  state s_DCACHE_DTLB_ST12	(6'b1111_00);
+  state s_DCACHE_DTLB_ST13	(6'b1111_01);
+  state s_DCACHE_DTLB_ST14	(6'b1111_10);
+  state s_DCACHE_DTLB_ST15	(6'b1111_11);

@@ -1,0 +1,92 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_add_stickyc_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+
+// coverage_def FPU_ADD_STICKYC_COV (bit [56:0] fpu_ADD_STICKYC_state)
+// {
+
+// state declarations
+
+  state s_FPU_ADD_STICKYC0  ( FPU_ADD_STICKYC0 );
+  state s_FPU_ADD_STICKYC1  ( FPU_ADD_STICKYC1 );
+  state s_FPU_ADD_STICKYC2  ( FPU_ADD_STICKYC2 );
+  state s_FPU_ADD_STICKYC3  ( FPU_ADD_STICKYC3 );
+  state s_FPU_ADD_STICKYC4  ( FPU_ADD_STICKYC4 );
+  state s_FPU_ADD_STICKYC5  ( FPU_ADD_STICKYC5 );
+  state s_FPU_ADD_STICKYC6  ( FPU_ADD_STICKYC6 );
+  state s_FPU_ADD_STICKYC7  ( FPU_ADD_STICKYC7 );
+  state s_FPU_ADD_STICKYC8  ( FPU_ADD_STICKYC8 );
+  state s_FPU_ADD_STICKYC9  ( FPU_ADD_STICKYC9 );
+  state s_FPU_ADD_STICKYC10 ( FPU_ADD_STICKYC10);
+  state s_FPU_ADD_STICKYC11 ( FPU_ADD_STICKYC11);
+  state s_FPU_ADD_STICKYC12 ( FPU_ADD_STICKYC12);
+  state s_FPU_ADD_STICKYC13 ( FPU_ADD_STICKYC13);
+  state s_FPU_ADD_STICKYC14 ( FPU_ADD_STICKYC14);
+  state s_FPU_ADD_STICKYC15 ( FPU_ADD_STICKYC15);
+  state s_FPU_ADD_STICKYC16 ( FPU_ADD_STICKYC16);
+  state s_FPU_ADD_STICKYC17 ( FPU_ADD_STICKYC17);
+  state s_FPU_ADD_STICKYC18 ( FPU_ADD_STICKYC18);
+  state s_FPU_ADD_STICKYC19 ( FPU_ADD_STICKYC19);
+  state s_FPU_ADD_STICKYC20 ( FPU_ADD_STICKYC20);
+  state s_FPU_ADD_STICKYC21 ( FPU_ADD_STICKYC21);
+  state s_FPU_ADD_STICKYC22 ( FPU_ADD_STICKYC22);
+  state s_FPU_ADD_STICKYC23 ( FPU_ADD_STICKYC23);
+  state s_FPU_ADD_STICKYC24 ( FPU_ADD_STICKYC24);
+  state s_FPU_ADD_STICKYC25 ( FPU_ADD_STICKYC25);
+  state s_FPU_ADD_STICKYC26 ( FPU_ADD_STICKYC26);
+  state s_FPU_ADD_STICKYC27 ( FPU_ADD_STICKYC27);
+  state s_FPU_ADD_STICKYC28 ( FPU_ADD_STICKYC28);
+  state s_FPU_ADD_STICKYC29 ( FPU_ADD_STICKYC29);
+  state s_FPU_ADD_STICKYC30 ( FPU_ADD_STICKYC30);
+  state s_FPU_ADD_STICKYC31 ( FPU_ADD_STICKYC31);
+  state s_FPU_ADD_STICKYC32 ( FPU_ADD_STICKYC32);
+  state s_FPU_ADD_STICKYC33 ( FPU_ADD_STICKYC33);
+  state s_FPU_ADD_STICKYC34 ( FPU_ADD_STICKYC34);
+  state s_FPU_ADD_STICKYC35 ( FPU_ADD_STICKYC35);
+  state s_FPU_ADD_STICKYC36 ( FPU_ADD_STICKYC36);
+  state s_FPU_ADD_STICKYC37 ( FPU_ADD_STICKYC37);
+  state s_FPU_ADD_STICKYC38 ( FPU_ADD_STICKYC38);
+  state s_FPU_ADD_STICKYC39 ( FPU_ADD_STICKYC39);
+  state s_FPU_ADD_STICKYC40 ( FPU_ADD_STICKYC40);
+  state s_FPU_ADD_STICKYC41 ( FPU_ADD_STICKYC41);
+  state s_FPU_ADD_STICKYC42 ( FPU_ADD_STICKYC42);
+  state s_FPU_ADD_STICKYC43 ( FPU_ADD_STICKYC43);
+  state s_FPU_ADD_STICKYC44 ( FPU_ADD_STICKYC44);
+  state s_FPU_ADD_STICKYC45 ( FPU_ADD_STICKYC45);
+  state s_FPU_ADD_STICKYC46 ( FPU_ADD_STICKYC46);
+  state s_FPU_ADD_STICKYC47 ( FPU_ADD_STICKYC47);
+  state s_FPU_ADD_STICKYC48 ( FPU_ADD_STICKYC48);
+  state s_FPU_ADD_STICKYC49 ( FPU_ADD_STICKYC49);
+  state s_FPU_ADD_STICKYC50 ( FPU_ADD_STICKYC50);
+  state s_FPU_ADD_STICKYC51 ( FPU_ADD_STICKYC51);
+  state s_FPU_ADD_STICKYC52 ( FPU_ADD_STICKYC52);
+  state s_FPU_ADD_STICKYC53 ( FPU_ADD_STICKYC53);
+  state s_FPU_ADD_STICKYC54 ( FPU_ADD_STICKYC54);
+  state s_FPU_ADD_STICKYC55 ( FPU_ADD_STICKYC55);
+  state s_FPU_ADD_STICKYC56 ( FPU_ADD_STICKYC56);
+
+// }

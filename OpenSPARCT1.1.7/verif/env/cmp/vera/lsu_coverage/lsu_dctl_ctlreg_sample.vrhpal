@@ -1,0 +1,39 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_ctlreg_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// setting of lsu_ctl_reg thru various events
+//***********************************************************************
+
+  wildcard state	s_CTLREG_ST01	( 12'b1xxx_xxxx_xxxx );
+  wildcard state	s_CTLREG_ST02	( 12'bxxxx_1xxx_xxxx );
+  wildcard state	s_CTLREG_ST03	( 12'bxxxx_xxxx_1xxx );
+
+  wildcard state	s_CTLREG_ST04	( 12'bx1xx_xxxx_xxxx );
+  wildcard state	s_CTLREG_ST05	( 12'bxxxx_x1xx_xxxx );
+  wildcard state	s_CTLREG_ST06	( 12'bxxxx_xxxx_x1xx );
+
+  wildcard state	s_CTLREG_ST07	( 12'bxx1x_xxxx_xxxx );
+  wildcard state	s_CTLREG_ST08	( 12'bxxxx_xx1x_xxxx );
+  wildcard state	s_CTLREG_ST09	( 12'bxxxx_xxxx_xx1x );
+
+  wildcard state	s_CTLREG_ST10	( 12'bxxx1_xxxx_xxxx );
+  wildcard state	s_CTLREG_ST11	( 12'bxxxx_xxx1_xxxx );
+  wildcard state	s_CTLREG_ST12	( 12'bxxxx_xxxx_xxx1 );

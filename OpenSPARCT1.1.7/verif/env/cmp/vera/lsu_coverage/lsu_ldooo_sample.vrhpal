@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldooo_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+// capture/counter
+
+// coverage_def LSU_LDOOO_COV (bit [11:0] ld_ooo)
+// {
+  // state declarations
+
+  state s_ld_oood30	(12'b000000000001);
+  state s_ld_oood31	(12'b000000000010);
+  state s_ld_oood32	(12'b000000000100);
+  
+  state s_ld_oood20	(12'b000000001000);
+  state s_ld_oood21	(12'b000000010000);
+  state s_ld_oood23	(12'b000000100000);
+       				 
+  state s_ld_oood10	(12'b000001000000);
+  state s_ld_oood12	(12'b000010000000);
+  state s_ld_oood13	(12'b000100000000);
+       				 
+  state s_ld_oood01	(12'b001000000000);
+  state s_ld_oood02	(12'b010000000000);
+  state s_ld_oood03	(12'b100000000000);
+  
+// }
+
+

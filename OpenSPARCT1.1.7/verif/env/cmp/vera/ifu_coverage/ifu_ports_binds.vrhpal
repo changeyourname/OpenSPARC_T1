@@ -1,0 +1,378 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ifu_cov_inc.pal";
+#ifndef __IFU_PORTS_VRH__
+#define __IFU_PORTS_VRH__
+
+#include <vera_defines.vrh>
+
+////////////////////////////////////////////////////////////////
+// The clock port
+////////////////////////////////////////////////////////////////
+
+port ifu_clk_port {
+  clk;
+  cmp_diag_done;
+}
+
+////////////////////////////////////////////////////////////////
+// This port includes the thrid's and signals that tell if a 
+// thread has a valid instruction in a certain pipe stage
+////////////////////////////////////////////////////////////////
+
+port ifu_thrid_port {
+  thr_f;
+  thr_d;
+  thr_e;
+  thr_m;
+  thr_w;
+  thr_w1;
+  inst_vld_f;
+  inst_vld_s;
+  inst_vld_d;
+  inst_vld_e;
+  inst_vld_m;
+  inst_vld_w;
+}
+
+////////////////////////////////////////////////////////////////
+// The switch logic signals that cause switch-outs
+////////////////////////////////////////////////////////////////
+
+port ifu_swl_port {
+  fcl_ifq_icmiss_s1;
+  fcl_dtu_swc_s;
+  erd_erc_nirpe_s1;
+  erd_erc_fetpe_s1;
+  fcl_erb_ievld_s1;
+  ictagerr_s1;
+  swc_d;
+  intr_vld_d;
+  intr_vld_s;
+  async_intr_vld_s;
+  switch_store_d;
+  retract_store_d;
+  retract_iferr_d;
+//  retract_iferr_d1;
+//  thr_match_de;
+  dec_swl_mul_inst_d;
+  swl_dec_mulbusy_e;
+  dec_swl_div_inst_d;
+  swl_dec_divbusy_e;
+  dec_swl_allfp_d;
+  swl_dec_fpbusy_e;
+  swl_dec_fp_enable_d;
+  swc_e;
+  ifu_tlu_ttype_vld_m;
+  trap_m;
+  ifu_tlu_ttype_m;
+  irf_ce_m;
+  irf_ce_w;
+  tlu_ifu_flush_pipe_w;
+  dtu_fcl_rollback_g;
+  mark4rb_w;
+  ifu_tlu_flush_w;
+  fcl_dtu_nuke_thr_w;
+  fcl_dtu_resum_thr_w;
+  ffu_ifu_fst_ce_w;
+  lsu_ifu_dc_parity_error_w2;
+  dtu_inst_d;
+  thr0_state;
+  thr1_state;
+  thr2_state;
+  thr3_state;
+  ffu_ifu_stallreq;
+  lsu_ifu_stallreq;
+  ifq_fcl_stallreq;
+  dtu_inst_anull_e;
+  itlb_starv_alert;
+  pc_oor_f;
+  inst_acc_exc_s1;
+  privop_d;
+  hprivop_d;
+  ill_inst_d;
+  fpdis_trap_d;
+  fcl_ifq_canthr;
+  stb_retry;
+  retr_thr_wakeup;
+  lsu_ifu_ldst_cmplt;
+  ifq_dtu_thrrdy;
+  ifq_dtu_pred_rdy;
+  itlb_fcl_imiss_s_l;
+  rdreq_s1;
+  stall_s1;
+  ccr_d;
+}
+
+port ifu_stb_port {
+  stbcnt_d;
+  asi_internal_d;
+  all_dst_ge1;
+  all_dst_ge2;
+  all_dst_ge3;
+  all_dst_eq4;
+  dec_swl_st_inst_d;
+}
+
+port ifu_intr_port {
+  tlu_ifu_hwint_i3;
+  tlu_ifu_sftint_vld;
+  tlu_ifu_rerr_vld;
+  tlu_ifu_hintp_vld;
+  spu_ifu_ttype_vld_w2;
+  spu_ifu_ttype_tid_w2;
+  tlu_ifu_rstthr_i2;
+  tlu_ifu_rstint_i2;
+  tlu_ifu_resumint_i2;
+  tlu_ifu_nukeint_i2; 
+}
+
+port ifu_mil_port {
+  mil0_state;
+  mil1_state;
+  mil2_state;
+  mil3_state;
+  block_fetch_s1;
+  ifqop_i2;
+  ifc_inv_ifqadv_i2;
+  evpkt_i2;
+  invall_i2;
+  ldinv_i2;
+  ldinv_addr_i2;
+  idcv_ary;
+  icache_rd;
+  icache_wr;
+  icache_idx;
+  dirmap_icache;
+  icache_wrway;
+  ifu_lsu_pcxpkt_e;
+  lsu_ifu_pcxpkt_ack_d;
+}
+
+port ifu_itlb_port {
+  pc_s;
+  tlb_entry_vld;
+  tlb_cam_miss_s1;
+  itlb_feterr_s1;
+  demap_hit;
+  tlu_itlb_dmp_vld_g;
+  tlu_itlb_wr_vld_g;
+  ifu_tlu_tlb_done;
+}
+
+port ifu_starv_stall_port {
+  strv_stall_state;	
+}
+
+port ifu_thrfsm_port {
+  thr0_state;
+  thr1_state;
+  thr2_state;
+  thr3_state;
+}
+
+port ifu_milfsm_port {
+  mil0_state;
+  mil1_state;
+  mil2_state;
+  mil3_state;
+}
+
+. sub coreBindings {
+.	my($core_num) = @_;
+.	my $c	      = $core_num;
+
+bind ifu_clk_port C${c}_ifu_clk_bind {
+  clk          	   ifu_coverage_ifc.clk;
+  cmp_diag_done    ifu_coverage_ifc.cmp_diag_done;
+}
+
+bind ifu_thrid_port C${c}_ifu_thrid_bind {
+  thr_f 	ifu_coverage_ifc.C${c}_thr_f;
+  thr_d   	ifu_coverage_ifc.C${c}_thr_d;
+  thr_e   	ifu_coverage_ifc.C${c}_thr_e;
+  thr_m   	ifu_coverage_ifc.C${c}_thr_m;
+  thr_w   	ifu_coverage_ifc.C${c}_thr_w;
+  thr_w1  	ifu_coverage_ifc.C${c}_thr_w1;
+  inst_vld_f	ifu_coverage_ifc.C${c}_inst_vld_f;
+  inst_vld_s	ifu_coverage_ifc.C${c}_inst_vld_s;
+  inst_vld_d    ifu_coverage_ifc.C${c}_inst_vld_d;
+  inst_vld_e    ifu_coverage_ifc.C${c}_inst_vld_e;
+  inst_vld_m    ifu_coverage_ifc.C${c}_inst_vld_m;
+  inst_vld_w    ifu_coverage_ifc.C${c}_inst_vld_w;
+}
+
+bind ifu_swl_port C${c}_ifu_swl_bind {
+  fcl_ifq_icmiss_s1 	ifu_coverage_ifc.C${c}_fcl_ifq_icmiss_s1;
+  fcl_dtu_swc_s		ifu_coverage_ifc.C${c}_fcl_dtu_swc_s;
+  erd_erc_nirpe_s1 	ifu_coverage_ifc.C${c}_erd_erc_nirpe_s1;
+  erd_erc_fetpe_s1 	ifu_coverage_ifc.C${c}_erd_erc_fetpe_s1;
+  fcl_erb_ievld_s1	ifu_coverage_ifc.C${c}_fcl_erb_ievld_s1;
+  ictagerr_s1		ifu_coverage_ifc.C${c}_ictagerr_s1;
+  swc_d			ifu_coverage_ifc.C${c}_swc_d;
+  intr_vld_d		ifu_coverage_ifc.C${c}_intr_vld_d;
+  intr_vld_s 		ifu_coverage_ifc.C${c}_intr_vld_s;
+  async_intr_vld_s	ifu_coverage_ifc.C${c}_async_intr_vld_s;
+  switch_store_d	ifu_coverage_ifc.C${c}_switch_store_d;
+  retract_store_d	ifu_coverage_ifc.C${c}_retract_store_d;
+  retract_iferr_d	ifu_coverage_ifc.C${c}_retract_iferr_d;
+//
+//  thr_match_de 		ifu_coverage_ifc.C${c}_thr_match_de;
+  dec_swl_mul_inst_d	ifu_coverage_ifc.C${c}_dec_swl_mul_inst_d;
+  swc_e 		ifu_coverage_ifc.C${c}_swc_e;
+  swl_dec_mulbusy_e	ifu_coverage_ifc.C${c}_swl_dec_mulbusy_e;
+  dec_swl_div_inst_d	ifu_coverage_ifc.C${c}_dec_swl_div_inst_d;
+  swl_dec_divbusy_e	ifu_coverage_ifc.C${c}_swl_dec_divbusy_e;
+  dec_swl_allfp_d	ifu_coverage_ifc.C${c}_dec_swl_allfp_d;
+  swl_dec_fpbusy_e	ifu_coverage_ifc.C${c}_swl_dec_fpbusy_e;
+  swl_dec_fp_enable_d	ifu_coverage_ifc.C${c}_swl_dec_fp_enable_d;
+  ifu_tlu_ttype_vld_m	ifu_coverage_ifc.C${c}_ifu_tlu_ttype_vld_m;
+  trap_m 		ifu_coverage_ifc.C${c}_trap_m;
+  ifu_tlu_ttype_m	ifu_coverage_ifc.C${c}_ifu_tlu_ttype_m;
+  irf_ce_m 		ifu_coverage_ifc.C${c}_irf_ce_m;
+  irf_ce_w 		ifu_coverage_ifc.C${c}_irf_ce_w;
+  tlu_ifu_flush_pipe_w	ifu_coverage_ifc.C${c}_tlu_ifu_flush_pipe_w;
+  dtu_fcl_rollback_g	ifu_coverage_ifc.C${c}_dtu_fcl_rollback_g;
+  mark4rb_w		ifu_coverage_ifc.C${c}_mark4rb_w;
+  ifu_tlu_flush_w	ifu_coverage_ifc.C${c}_ifu_tlu_flush_w;
+  fcl_dtu_nuke_thr_w	ifu_coverage_ifc.C${c}_fcl_dtu_nuke_thr_w;
+  fcl_dtu_resum_thr_w   ifu_coverage_ifc.C${c}_fcl_dtu_resum_thr_w;
+  ffu_ifu_fst_ce_w	ifu_coverage_ifc.C${c}_ffu_ifu_fst_ce_w;
+  lsu_ifu_dc_parity_error_w2 ifu_coverage_ifc.C${c}_lsu_ifu_dc_parity_error_w2;
+  dtu_inst_d 		ifu_coverage_ifc.C${c}_dtu_inst_d;
+  thr0_state 		ifu_coverage_ifc.C${c}_thr0_state;
+  thr1_state 		ifu_coverage_ifc.C${c}_thr1_state;
+  thr2_state 		ifu_coverage_ifc.C${c}_thr2_state;
+  thr3_state 		ifu_coverage_ifc.C${c}_thr3_state;
+  ffu_ifu_stallreq 	ifu_coverage_ifc.C${c}_ffu_ifu_stallreq;
+  lsu_ifu_stallreq	ifu_coverage_ifc.C${c}_lsu_ifu_stallreq;
+  ifq_fcl_stallreq	ifu_coverage_ifc.C${c}_ifq_fcl_stallreq;
+  dtu_inst_anull_e 	ifu_coverage_ifc.C${c}_dtu_inst_anull_e;
+  itlb_starv_alert      ifu_coverage_ifc.C${c}_itlb_starv_alert;
+  pc_oor_f 		ifu_coverage_ifc.C${c}_pc_oor_f;
+  inst_acc_exc_s1 	ifu_coverage_ifc.C${c}_inst_acc_exc_s1;
+  privop_d 		ifu_coverage_ifc.C${c}_privop_d;
+  hprivop_d 		ifu_coverage_ifc.C${c}_hprivop_d;
+  ill_inst_d 		ifu_coverage_ifc.C${c}_ill_inst_d;
+  fpdis_trap_d 		ifu_coverage_ifc.C${c}_fpdis_trap_d;
+  fcl_ifq_canthr 	ifu_coverage_ifc.C${c}_fcl_ifq_canthr;    
+  stb_retry 		ifu_coverage_ifc.C${c}_stb_retry;
+  retr_thr_wakeup	ifu_coverage_ifc.C${c}_retr_thr_wakeup;
+  lsu_ifu_ldst_cmplt	ifu_coverage_ifc.C${c}_lsu_ifu_ldst_cmplt;
+  ifq_dtu_thrrdy 	ifu_coverage_ifc.C${c}_ifq_dtu_thrrdy;
+  ifq_dtu_pred_rdy 	ifu_coverage_ifc.C${c}_ifq_dtu_pred_rdy;
+  itlb_fcl_imiss_s_l	ifu_coverage_ifc.C${c}_itlb_fcl_imiss_s_l;
+  rdreq_s1 		ifu_coverage_ifc.C${c}_rdreq_s1;
+  stall_s1 		ifu_coverage_ifc.C${c}_stall_s1;
+  ccr_d 		ifu_coverage_ifc.C${c}_ccr_d;
+}
+
+bind ifu_stb_port C${c}_ifu_stb_bind {
+  stbcnt_d 		ifu_coverage_ifc.C${c}_stbcnt_d;
+  asi_internal_d	ifu_coverage_ifc.C${c}_asi_internal_d;
+  all_dst_ge1		ifu_coverage_ifc.C${c}_all_dst_ge1;
+  all_dst_ge2		ifu_coverage_ifc.C${c}_all_dst_ge2;
+  all_dst_ge3		ifu_coverage_ifc.C${c}_all_dst_ge3;
+  all_dst_eq4		ifu_coverage_ifc.C${c}_all_dst_eq4;
+  dec_swl_st_inst_d	ifu_coverage_ifc.C${c}_dec_swl_st_inst_d;
+}
+
+bind ifu_intr_port C${c}_ifu_intr_bind {
+  tlu_ifu_hwint_i3 	ifu_coverage_ifc.C${c}_tlu_ifu_hwint_i3;
+  tlu_ifu_sftint_vld 	ifu_coverage_ifc.C${c}_tlu_ifu_sftint_vld;
+  tlu_ifu_rerr_vld 	ifu_coverage_ifc.C${c}_tlu_ifu_rerr_vld;
+  tlu_ifu_hintp_vld 	ifu_coverage_ifc.C${c}_tlu_ifu_hintp_vld;
+  spu_ifu_ttype_vld_w2 	ifu_coverage_ifc.C${c}_spu_ifu_ttype_vld_w2;
+  spu_ifu_ttype_tid_w2 	ifu_coverage_ifc.C${c}_spu_ifu_ttype_tid_w2;
+  tlu_ifu_rstthr_i2 	ifu_coverage_ifc.C${c}_tlu_ifu_rstthr_i2;
+  tlu_ifu_rstint_i2 	ifu_coverage_ifc.C${c}_tlu_ifu_rstint_i2;
+  tlu_ifu_resumint_i2 	ifu_coverage_ifc.C${c}_tlu_ifu_resumint_i2;
+  tlu_ifu_nukeint_i2 	ifu_coverage_ifc.C${c}_tlu_ifu_nukeint_i2;
+}
+
+bind ifu_mil_port C${c}_ifu_mil_bind {
+  mil0_state	 	ifu_coverage_ifc.C${c}_mil0_state;
+  mil1_state	 	ifu_coverage_ifc.C${c}_mil1_state;
+  mil2_state	 	ifu_coverage_ifc.C${c}_mil2_state;
+  mil3_state	 	ifu_coverage_ifc.C${c}_mil3_state;
+  block_fetch_s1 	ifu_coverage_ifc.C${c}_block_fetch_s1;
+  ifqop_i2 		ifu_coverage_ifc.C${c}_ifqop_i2;
+  ifc_inv_ifqadv_i2 	ifu_coverage_ifc.C${c}_ifc_inv_ifqadv_i2;
+  evpkt_i2 		ifu_coverage_ifc.C${c}_evpkt_i2;
+  invall_i2 		ifu_coverage_ifc.C${c}_invall_i2;
+  ldinv_i2        	ifu_coverage_ifc.C${c}_ldinv_i2;
+  ldinv_addr_i2 	ifu_coverage_ifc.C${c}_ldinv_addr_i2;
+  idcv_ary 		ifu_coverage_ifc.C${c}_idcv_ary;
+  ifu_lsu_pcxpkt_e 	ifu_coverage_ifc.C${c}_ifu_lsu_pcxpkt_e;
+  lsu_ifu_pcxpkt_ack_d 	ifu_coverage_ifc.C${c}_lsu_ifu_pcxpkt_ack_d;
+  icache_rd  		ifu_coverage_ifc.C${c}_icache_rd;		 
+  icache_wr 		ifu_coverage_ifc.C${c}_icache_wr;
+  icache_idx		ifu_coverage_ifc.C${c}_icache_idx;
+  dirmap_icache 	ifu_coverage_ifc.C${c}_dirmap_icache;
+  icache_wrway 		ifu_coverage_ifc.C${c}_icache_wrway;
+}
+
+bind ifu_itlb_port C${c}_ifu_itlb_bind {
+  pc_s 			ifu_coverage_ifc.C${c}_pc_s;
+  tlb_entry_vld 	ifu_coverage_ifc.C${c}_tlb_entry_vld;
+  tlb_cam_miss_s1 	ifu_coverage_ifc.C${c}_tlb_cam_miss_s1;
+  itlb_feterr_s1 	ifu_coverage_ifc.C${c}_itlb_feterr_s1;
+  demap_hit		ifu_coverage_ifc.C${c}_demap_hit;
+  tlu_itlb_dmp_vld_g	ifu_coverage_ifc.C${c}_tlu_itlb_dmp_vld_g;
+  tlu_itlb_wr_vld_g	ifu_coverage_ifc.C${c}_tlu_itlb_wr_vld_g;
+  ifu_tlu_tlb_done	ifu_coverage_ifc.C${c}_ifu_tlu_tlb_done;
+}
+
+bind ifu_starv_stall_port ifu_starv_stall_sample_c${c} {
+  strv_stall_state	{
+			 ifu_coverage_ifc.C${c}_ffu_ifu_stallreq,
+  		         ifu_coverage_ifc.C${c}_lsu_ifu_stallreq,
+			 ifu_coverage_ifc.C${c}_ifq_fcl_stallreq,
+			 ifu_coverage_ifc.C${c}_itlb_starv_alert
+			};
+}
+
+bind ifu_thrfsm_port ifu_thrfsm_sample_c${c} {
+  thr0_state 		ifu_coverage_ifc.C${c}_thr0_state;
+  thr1_state 		ifu_coverage_ifc.C${c}_thr1_state;
+  thr2_state 		ifu_coverage_ifc.C${c}_thr2_state;
+  thr3_state 		ifu_coverage_ifc.C${c}_thr3_state;
+}
+
+bind ifu_milfsm_port ifu_milfsm_sample_c${c} {
+  mil0_state	 	ifu_coverage_ifc.C${c}_mil0_state;
+  mil1_state	 	ifu_coverage_ifc.C${c}_mil1_state;
+  mil2_state	 	ifu_coverage_ifc.C${c}_mil2_state;
+  mil3_state	 	ifu_coverage_ifc.C${c}_mil3_state;
+}
+.
+. } # coreBindings
+.
+
+// ***********************************************************
+// Declare bindings for each core
+// ***********************************************************
+
+. foreach $core (@CORE_STR) {
+.	&coreBindings( $core );
+. }
+
+#endif

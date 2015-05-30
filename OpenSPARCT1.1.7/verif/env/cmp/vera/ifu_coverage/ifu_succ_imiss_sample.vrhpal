@@ -1,0 +1,455 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_succ_imiss_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_succ_imiss_cov.vr
+// Description:
+// This coverage object covers special conditions with the icache
+// All with and without cancellations
+// 1) b2b misses on the same thread
+// 2) b2b misses on different threads and different addresses
+// 3) b2b misses on different threads and same address
+// 3) b2b ic errors on different threads and same address
+//
+// State: 12'b: imiss,icerr,thrid(4),canthr(4),same_thr,same_pc
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_SUCC_IMISS_COV (bit [11:0] cov_vector)
+// {
+  bad_state s_imiss_no_running_thr (12'b1_x_0000_xxxx_x_x);
+
+  //Two successive imsses on a thread
+  wildcard trans t_succ_imiss_T0 (12'b1_0_0001_xxx0_0_0 -> 12'b1_0_0001_xxx0_1_0);
+  wildcard trans t_succ_imiss_T1 (12'b1_0_0010_xx0x_0_0 -> 12'b1_0_0010_xx0x_1_0);
+  wildcard trans t_succ_imiss_T2 (12'b1_0_0100_x0xx_0_0 -> 12'b1_0_0100_x0xx_1_0);
+  wildcard trans t_succ_imiss_T3 (12'b1_0_1000_0xxx_0_0 -> 12'b1_0_1000_0xxx_1_0);
+
+  //Succesive imisses, T0 is parent and cancellations happen 1,2,3,4,5 cycles later
+  wildcard trans t_T0_parent_1_cancel  (12'b100001xxx0xx -> 
+					12'b10xxx0000001 -> 
+					12'b10xxx0000101 -> 
+					12'b10xxx0000001);
+
+  wildcard trans t_T0_parent_2_cancel  (12'b100001xxx0xx -> 
+					12'b10xxx0000001 ->
+					12'b10xxx0000001 -> 
+					12'b10xxx0000101);
+
+  wildcard trans t_T0_parent_3_cancel  (12'b100001xxx0xx -> 
+					12'b10xxx0000001 -> 
+					12'b10xxx0000001 -> 
+					12'b10xxx0000001 -> 
+					12'bxxxxxxxxx1xx);
+
+  //Close or successive Misses to the same pc different thread : no cancellation: T0 is parent
+  wildcard trans t_T0_parent_no_cancel (12'b1_0_0001_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1);
+
+  //Close Or Successive Misses to the same pc, T0 is parent and is cancelled in the next cycle
+  wildcard trans t_T0_parent_0_cancel  (12'b1_0_0001_0000_x_x -> 
+					12'b1_0_xxx0_0001_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1,
+
+					//or
+
+					12'b1_0_0001_0000_x_x -> 
+					12'b0_0_xxxx_0001_x_x -
+					12'b1_0_xxx0_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0000_0_1);
+
+  //Close Or Successive Misses to the same pc, T3 is parent and is cancelled 2 cycles later
+  wildcard trans t_T3_parent_1_cancel  (12'b1_0_1000_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b0_0_0xxx_1000_x_x ->
+					12'b1_0_0xxx_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_0xxx_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_0xxx_0000_0_1,
+					
+					//or
+
+					12'b1_0_1000_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_0xxx_1000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_0xxx_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_0xxx_0000_0_1,
+
+					//or
+
+					12'b1_0_1000_0000_x_x -> 
+					12'b1_0_0xxx_0000_0_1 ->
+					12'b0_0_0xxx_1000_x_x ->
+					12'b1_0_0xxx_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_0xxx_0000_0_1,
+
+					//or
+
+					12'b1_0_1000_0000_x_x -> 
+					12'b1_0_0xxx_0000_0_1 ->
+					12'b1_0_0xxx_1000_0_1 ->
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_0xxx_0000_0_1
+					);
+
+  //Close Or Successive Misses to the same pc, T1 is parent and is cancelled 3 cycles later
+  wildcard trans t_T1_parent_2_cancel  (12'b1_0_0010_0000_x_x -> 
+					12'b1_0_xx0x_0000_0_1 -> 
+					12'b1_0_xx0x_0000_0_1 -> 
+					12'b0_0_xxxx_0010_x_x ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b1_0_xx0x_0010_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_xx0x_0010_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x ->
+					12'b0_0_xxxx_0010_x_x ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b1_0_xx0x_0010_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0010_x_x ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b0_0_xxxx_0000_x_x ->
+					12'b1_0_xx0x_0010_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1,
+
+					//or
+
+					12'b1_0_0010_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x ->
+					12'b0_0_xxxx_0000_x_x ->
+					12'b0_0_xxxx_0010_0_1 ->
+					12'b1_0_xx0x_0000_0_1 ->
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1
+					);
+
+  //Close Or Successive Misses to the same pc, T2 is parent and is cancelled 2,3,4 cycles later
+  wildcard trans t_T2_parent_3_cancel  (12'b1_0_0100_0000_x_x -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x0xx_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x0xx_0100_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x0xx_0000_0_1);
+
+  //Successive imisses, T0 is the first child and cancellations come 1,2,3,4,5 cycles later
+  wildcard trans t_T0_chld1_1_cancel  (12'b10xxx0xxxxxx -> 
+				       12'b10xxx1000001 -> 
+				       12'b10xxx0000001 -> 
+				       12'b10xxx0000101);
+
+  wildcard trans t_T0_chld1_2_cancel  (12'b10xxx0xxxxxx -> 
+					12'b10xxx1000001 -> 
+					12'b10xxx0000001 -> 
+					12'b10xxx0000001 -> 
+					12'bxxxxxxxxx1xx);
+
+  wildcard trans t_T0_chld1_3_cancel  (12'b10xxx0xxxxxx -> 
+					12'b10xxx1000001 -> 
+					12'b10xxx0000001 -> 
+					12'b10xxx0000001 -> 
+					12'bxxxxxxxxx0xx -> 
+					12'bxxxxxxxxx1xx);
+
+  //Close Or Successive Misses to the same pc, T0 is the first child and is cancelled in the next cycle
+  //State: 12'b: imiss,icerr,thrid(4),canthr(4),same_thr,same_pc  
+  wildcard trans t_T0_chld1_0_cancel  (12'b1_0_xxx0_0000_x_x ->
+               			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxx1_0000_0_1 -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxx0_0001_0_1 -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxx0_0000_0_1);
+
+  //Close Or Successive Misses to the same pc, T1 is the first child and is cancelled 2 cycles later
+  wildcard trans t_T1_chld1_1_cancel  (12'b1_0_xx0x_0000_x_x -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xx1x_0000_0_1 -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xx0x_0010_0_1 -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xx0x_0000_0_1);
+
+  //Close Or Successive Misses to the same pc, T2 is the first child and is cancelled 3 cycles later
+  wildcard trans t_T2_chld1_2_cancel  (12'b1_0_x0xx_0000_x_x -> 
+				       12'b0_0_xxxx_0000_x_x[.0:1.] ->	
+    				       12'b1_0_x1xx_0000_0_1 -> 
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_x0xx_0000_0_1 -> 
+				       12'b1_0_x0xx_0100_0_1);
+
+  //Close Or Successive Misses to the same pc, T3 is the first child and is cancelled 4 cycles later
+  wildcard trans t_T3_chld1_3_cancel  (12'b1_0_0xxx_0000_x_x -> 
+             			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_1xxx_0000_0_1 ->
+              			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_0xxx_0000_0_1 -> 
+             			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_0xxx_1000_0_1);
+  
+  //Close Or Successive Misses to the same pc, T0 is the second child and is cancelled in the next cycle
+  //State: 12'b: imiss,icerr,thrid(4),canthr(4),same_thr,same_pc    
+  wildcard trans t_T0_chld2_0_cancel   (12'b1_0_xxx0_0000_x_x -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       	12'b1_0_xxx0_0000_0_1 -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx1_0000_0_1 -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xxx0_0001_0_1);
+
+  //Close Or Successive Misses to the same pc, T1 is the second child and is cancelled 1 cycle later
+  wildcard trans t_T1_chld2_1_cancel   (12'b1_0_xx0x_0000_x_x -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx0x_0000_0_1 -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_xx1x_0000_0_1 -> 
+             			        12'b0_0_xxxx_0000_x_x[.0:2.] ->
+					12'b1_0_xx0x_0010_0_1);
+
+  //Close Or Successive Misses to the same pc, T2 is the second child and is cancelled 2 cycles later
+  wildcard trans t_T2_chld2_2_cancel   (12'b1_0_x0xx_0000_x_x ->
+ 					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x0xx_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x1xx_0000_0_1 -> 
+					12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					12'b1_0_x0xx_0000_0_1 -> 
+					12'bx_x_xxxx_0000_x_x -> 
+					12'bx_x_xxxx_0100_x_x);
+
+  //Close Or Successive Misses to the same pc, T3 is the first child and is cancelled in the next cycle
+  wildcard trans t_T3_chld2_3_cancel  (12'b1_0_xxxx_0000_x_x -> 
+				       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxxx_0000_0_1 -> 
+ 				       12'b0_0_xxxx_0000_x_x[.0:1.] ->	
+				       12'b1_0_1xxx_0000_0_1 -> 
+				       12'b1_0_xxxx_0000_0_1 -> 
+				       12'bx_x_xxxx_0000_x_x -> 
+				       12'bx_x_xxxx_0000_x_x -> 
+				       12'bx_x_xxxx_1000_x_x);
+
+  //Close Or Successive Misses to the same pc, T3 is the leaf and is cancelled in the next cycle
+  //State: 12'b: imiss,icerr,thrid(4),canthr(4),same_thr,same_pc    
+  wildcard trans t_T3_leaf_0_cancel  (12'b1_0_0xxx_0000_x_x -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_0xxx_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_0xxx_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->	
+				      12'b1_0_1xxx_0000_0_1 -> 
+				      12'bx_x_xxxx_1000_x_x);
+
+  wildcard trans t_T2_leaf_1_cancel  (12'b1_0_x0xx_0000_x_x -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_x0xx_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_x0xx_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_x1xx_0000_0_1 -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0100_x_x);
+
+  wildcard trans t_T1_leaf_2_cancel  (12'b1_0_xx0x_0000_x_x -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_xx0x_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_xx0x_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_xx1x_0000_0_1 -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0010_x_x);
+
+  wildcard trans t_T0_leaf_3_cancel  (12'b1_0_xxx0_0000_x_x -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+   				      12'b1_0_xxx0_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_xxx0_0000_0_1 -> 
+				      12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				      12'b1_0_xxx1_0000_0_1 -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0000_x_x -> 
+				      12'bx_x_xxxx_0001_x_x);
+
+  //Multiple cancellations;choosing some random combos that seem fairly representative
+  //State: 12'b: imiss,icerr,thrid(4),canthr(4),same_thr,same_pc    
+  wildcard trans t_T0_parent_T1_chld1_both_cancel (12'b1_0_0001_0000_x_x -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx10_0000_0_1 -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx00_0011_0_1 -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx00_0000_0_1);
+ 
+  wildcard trans t_T0_parent_T1_chld2_both_cancel (12'b1_0_0001_0000_x_x -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx00_0000_0_1 -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx10_0001_0_1 -> 
+						   12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						   12'b1_0_xx00_0010_0_1);
+ 
+  wildcard trans t_T1_chld1_T2_chld2_both_cancel (12'b1_0_x00x_0000_x_x -> 
+  						  12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						  12'b1_0_x01x_0000_0_1 -> 
+  						  12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						  12'b1_0_x10x_0010_0_1 -> 
+  						  12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						  12'b1_0_xx00_0100_0_1);
+ 
+  wildcard trans t_T1_chld1_T2_chld2_both_cancel_simul (12'b1_0_x00x_0000_x_x ->
+   	  						12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						        12'b1_0_x01x_0000_0_1 ->
+   	  						12'b0_0_xxxx_0000_x_x[.0:1.] ->
+							12'b1_0_x10x_0000_0_1 ->
+   	  						12'b0_0_xxxx_0000_x_x[.0:1.] ->
+							12'b1_0_xx00_0110_0_1); 
+							 
+  wildcard trans t_T3_chld1_T2_leaf_both_cancel (12'b1_0_00xx_0000_x_x ->
+ 	  					 12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						 12'b1_0_10xx_0000_0_1 ->
+ 	  					 12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						 12'b1_0_00xx_0000_0_1 ->
+ 	  					 12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						 12'b1_0_01xx_1000_0_1 ->
+ 	  					 12'b0_0_xxxx_0000_x_x[.0:1.] ->
+						 12'bx_x_xxxx_x1xx_x_x);
+
+							
+  wildcard trans t_all_cancel (12'b1_0_1000_0000_x_x ->
+			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+			       12'b1_0_0100_1000_0_1 ->
+			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+                  	       12'b1_0_0010_0100_0_1 ->
+			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+			       12'b1_0_0001_0010_0_1 ->
+			       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+			       12'bx_x_xxxx_0001_x_x);
+
+							
+  //B2B misses on different pc's; 4 b2b imisses
+  wildcard trans t_succ_imiss_diff_pc (12'b1_0_xxxx_0000_x_x ->
+				       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxxx_0000_0_0 ->
+				       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxxx_0000_0_0 ->
+				       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				       12'b1_0_xxxx_0000_0_0);
+
+							  
+  //B2B errors same/diff pc on different threads
+  wildcard trans t_succ_icerr_2_thr_diff_pc (12'b0_1_0001_0000_x_x ->
+					     12'b0_1_1000_0000_0_0);
+
+  wildcard trans t_succ_icerr_3_thr_diff_pc (12'b0_1_0001_0000_x_x ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_1000_0000_0_0 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_0100_0000_0_0);
+
+  wildcard trans t_succ_icerr_4_thr_diff_pc (12'b0_1_0001_0000_x_x ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+   					     12'b0_1_1000_0000_0_0 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_0100_0000_0_0 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_0010_0000_0_0);
+
+							
+  wildcard trans t_succ_icerr_2_thr_same_pc (12'b0_1_0001_0000_x_x ->
+	   				     12'b0_1_1000_0000_0_1);
+
+  wildcard trans t_succ_icerr_3_thr_same_pc (12'b0_1_0001_0000_x_x ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_1000_0000_0_1 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+				             12'b0_1_0100_0000_0_1);
+
+  wildcard trans t_succ_icerr_4_thr_same_pc (12'b0_1_0001_0000_x_x ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_1000_0000_0_1 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_0100_0000_0_1 ->
+					       12'b0_0_xxxx_0000_x_x[.0:1.] ->
+					     12'b0_1_0010_0000_0_1); 
+							   
+  
+// }

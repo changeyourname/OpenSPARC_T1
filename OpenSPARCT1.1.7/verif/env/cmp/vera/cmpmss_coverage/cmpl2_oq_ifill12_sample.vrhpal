@@ -1,0 +1,32 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_oq_ifill12_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// bit [2:0] l2_oq_ifill12_state = {oqctl.imiss1_to_xbarq_c6, oqctl.sel_old_req}
+
+// IFILL1 not from OQ, IFILL2 from OQ
+// (In order for this to happen, IFILL1 (imiss1_to_xbarq_c6) must be the speculative (3rd)
+//  request to the CPX queue and there must be no grant in that cycle. sel_old_req (C7) is 0
+//  in that cycle and becomes 1 in the next.
+//  The IFILL1 packet is staged on a flop while the request is held, and
+//  the IFILL2 packet is queued on the OQ.)
+
+wildcard trans ifill1notOQ_ifill2OQ( {1'b1, 1'b0} -> {1'bx, 1'b1} );

@@ -1,0 +1,3 @@
+design/sys/iop/include/xst_defines.h
+design/sys/iop/srams/rtl/bw_r_icd.v
+design/sys/iop/common/rtl/swrvr_clib.v

@@ -1,0 +1,993 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "lsu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	lsu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level LSU coverage class.
+ *	Contains the new() task which instantiates all the LSU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ * $Id: lsu_coverage.vrpal,v 1.106 2004/05/12 22:48:13 sogupta Exp $
+ *
+ ***************************************************************************/
+#include <vera_defines.vrh>
+#include "iop_rtl.h"
+#include "lsu.if.vrh"
+#include "lsu_ports_binds.vrh"
+#include "lsu_defines.vrh"
+#include "lsu_cmplt_ext.vrh"
+
+class lsuext_coverage {
+
+  coverage_group lsuext_coverage_group
+  {
+    const_sample_reference      = 1;
+    sample_event                = @(posedge lsu_cov_top.lsu_gclk);
+    cov_weight          	= 0;
+
+.   foreach $c ( @CORE_STR ) {
+        sample lsu_ldstcmplt_sample_C${c}.\$lsu_ldstcmplt_state {
+#inc "lsu_ldstcmplt_sample.vrhpal"
+      }
+	sample lsu_ldstcmplt_ext_sample_C${c}.\$lsu_ldstcmplt_ext_state {
+#inc "lsu_ldstcmplt_ext_sample.vrhpal"
+      }
+.} # $c
+  }
+  task	new();
+}
+
+class lsu_coverage {
+
+.   foreach $c ( @CORE_STR ) {
+    CmpltCovPrep C${c}_cmplt_extend_obj;
+
+// this is unnecessary, we could use the obj only(!) however the statistics summary requires this.
+. for my $t (0..3) {
+        bit [3:0] lsu_cmplt_extended_sample_C${c}_T${t};
+. }
+        bit lsu_cmplt_extended_double_same_sample_C${c};
+        bit lsu_cmplt_extended_tripple_same_sample_C${c};
+        bit lsu_cmplt_extended_back2back_sample_C${c};
+        bit lsu_cmplt_extended_double_back2back_sample_C${c};
+.} # $c
+
+
+.   foreach $c ( @CORE_STR ) {
+  load_qctl_port	C${c}_load_qctl_port_instance;
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  bit	lsu_full_raw_sample_C${c}T${t}	= 1'b0;
+.	} # for $t
+. } # foreach $c
+	
+  coverage_group lsu_coverage_group
+  {
+    const_sample_reference      = 1;
+    sample_event                = @(posedge lsu_cov_top.lsu_gclk);
+    cov_weight          	= 0;
+
+.   foreach $c ( @CORE_STR ) {
+	sample lsu_bld_sample_C${c}.\$lsu_bld_state {
+#inc "lsu_bld_sample.vrhpal"
+      }
+//	sample lsu_ldpick_sample_C${c}.\$lsu_ldpick_state {
+//#inc "lsu_ldpick_sample.vrhpal"
+//      }
+	sample lsu_exp_sample_C${c}.\$lsu_exp_state {
+#inc "lsu_excp_sample.vrhpal"
+      }
+	sample lsu_exu_sample_C${c}.\$lsu_exu_state {
+#inc "lsu_exu_sample.vrhpal"
+      }
+	sample lsu_iack_sample_C${c}.\$lsu_iack_state {
+#inc "lsu_iack_sample.vrhpal"
+      }
+	sample lsu_fack_sample_C${c}.\$lsu_fack_state {
+#inc "lsu_fpop_sample.vrhpal"
+      }
+	sample lsu_fwd_sample_C${c}.\$lsu_fwd_state {
+#inc "lsu_fwd_sample.vrhpal"
+      }
+	sample lsu_inack_sample_C${c}.\$lsu_inack_state {
+#inc "lsu_intack_sample.vrhpal"
+      }
+	sample lsu_ldooo_sample_C${c}.\$ld_ooo {
+#inc "lsu_ldooo_sample.vrhpal"
+      }
+	sample lsu_stooo_sample_C${c}.\$ld_ooo {
+#inc "lsu_ldooo_sample.vrhpal"
+      }
+//	sample lsu_stpick_sample_C${c}.\$lsu_stpick_state {
+//#inc "lsu_stpick_sample.vrhpal"
+//      }
+//	sample lsu_miscpick_sample_C${c}.\$lsu_mpick_state {
+//#inc "lsu_miscpick_sample.vrhpal"
+//      }
+//	sample lsu_allpick_sample_C${c}.\$lsu_apick_state {
+//#inc "lsu_allpick_sample.vrhpal"
+//      }
+//	sample lsu_finalpick_sample_C${c}.\$lsu_fpick_state {
+//#inc "lsu_finalpick_sample.vrhpal"
+//      }
+	sample lsu_qfull_sample_C${c}.\$lsu_qfull_state {
+#inc "lsu_qfull_sample.vrhpal"
+      }
+	sample lsu_way_sample_C${c}.\$lsu_way_state {
+#inc "lsu_way_sample.vrhpal"
+      }
+	sample lsu_dfqfull_win_sample_C${c}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_vld2inv_win_sample_C${c}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_inv2vld_win_sample_C${c}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_vld2lkup_win_sample_C${c}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_invld2lkup_win_sample_C${c}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_invld2lkuperr_win_sample_C${c}.\$lsu_rawwin1_state {
+#inc "lsu_window1_sample.vrhpal"
+      }
+
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+	sample lsu_ldraw_sample_C${c}T${t}.\$lsu_ldraw_state {
+#inc "lsu_ldbypass_sample.vrhpal"
+      }
+	sample lsu_rawwin_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_raw_st_ack_window_sample.vrhpal"
+      }
+	sample lsu_stbfull_win_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_lmqfull_win_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_stbced_win_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_mbar_win_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_flsh_win_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+//    sample lsu_atm_intr_sample_C${c}T${t}.\$lsu_rawwin_state {
+//      #inc "lsu_qfull_window_sample.vrhpal"
+//    }
+//    sample lsu_atm_b4intr_sample_C${c}T${t}.\$lsu_rawwin_state {
+//      #inc "lsu_qfull_window_sample.vrhpal"
+//    }
+	sample lsu_atm_ldmiss_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_atm_imiss_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_atm_inv_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_bld_helper_sample_C${c}T${t}.\$lsu_rawwin_state {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+	sample lsu_ldeqi_sample_C${c}T${t}.\$lsu_ldeqi_state {
+#inc "lsu_ldeqi_sample.vrhpal"
+      }
+	sample lsu_load_qctl_sample_C${c}.\$T${t}_load_qctl_state {
+#inc "lsu_load_sample.vrhpal"
+      }
+      sample lsu_full_raw_sample_C${c}T${t} {
+#inc "lsu_fsm_raw_sample.vrhpal"
+      }
+.		for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+.			$b = $t * 8 + $e;
+	sample lsu_stb_sample_C${c}.\$T${t}_lsu_stb_state_${e} {
+#inc "lsu_stb_sample.vrhpal"
+      }
+.}
+
+
+
+.} # $t
+
+.   for ( $t = 1; $t < 8; $t++ ) {
+	sample lsu_dfqfull_win_sample_C${c}1.\$lsu_rawwin_state_${t} {
+#inc "lsu_qfull_window_sample.vrhpal"
+      }
+.}
+
+
+// load interface
+	sample lsu_ld_inf1_sample_C${c}.\$lsu_ld_inf1_state {
+#inc "lsu_ld_inf_sample.vrhpal"
+	}
+
+	sample lsu_ld_inf2_sample_C${c}.\$lsu_ld_inf2_state {
+#inc "lsu_ld_inf2_sample.vrhpal"
+	}
+
+
+// store interface
+	sample lsu_st_inf_sample_C${c}.\$lsu_st_inf_state {
+#inc "lsu_st_inf_sample.vrhpal"
+	}
+
+
+// store buffer valid reset
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+.	for ( $e = 0; $e < 8; $e++ ) {	## per stb entry
+	sample lsu_stb_vld_rst_sample_C${c}T${t}.\$lsu_stb_vld_rst_state_e${e} {
+#inc "lsu_stb_vld_rst_sample.vrhpal"
+	}
+.} # for $e
+.} # for $t
+
+
+// b2b store flush
+	sample lsu_b2b_st_flush_sample_C${c}.\$lsu_b2b_st_flush_state {
+#inc "lsu_b2b_st_flush_sample.vrhpal"
+	}
+
+
+// flush/signaling interface
+	sample lsu_flush_inf_sample_C${c}.\$lsu_flush_inf_state {
+#inc "lsu_flush_inf_sample.vrhpal"
+        }
+
+	sample lsu_flush_inf2_sample_C${c}.\$lsu_flush_inf2_state {
+#inc "lsu_flush_inf2_sample.vrhpal"
+        }
+
+	sample lsu_flush_inf3_sample_C${c}.\$lsu_flush_inf3_state {
+#inc "lsu_flush_inf3_sample.vrhpal"
+        }
+
+
+// block store interface
+	sample lsu_bst_inf_sample_C${c}.\$lsu_bst_inf_state {
+#inc "lsu_bst_inf_sample.vrhpal"
+	}
+
+
+// exu_lsu_ldst_va_e
+	sample lsu_ldst_va_inf_sample_C${c}.\$lsu_ldst_va_inf_state {
+#inc "lsu_ldst_va_inf_sample.vrhpal"
+	}
+
+
+// lsu_ifu_ldst_miss_w fanin
+//	sample lsu_ifu_ldst_miss_sample_C${c}.\$lsu_ifu_ldst_miss_state {
+// #inc "lsu_ifu_ldst_miss_sample.vrhpal"
+//	}
+
+
+// lsu_exu_ldst_miss_w2 fanin
+//	sample lsu_ldst_miss_sample_C${c}.\$lsu_ldst_miss_state {
+//#inc "lsu_ldst_miss_sample.vrhpal"
+//	}
+
+
+// lsu_ifu_dc_parity_error_w2 fanin
+//	sample lsu_dc_parity_error_sample_C${c}.\$lsu_dc_parity_error_state {
+// #inc "lsu_dc_parity_error_sample.vrhpal"
+//	}
+
+
+// *********************************************************************
+// begin dctl objects 
+// *********************************************************************
+
+// tlb cam
+sample lsu_dctl_tlbcam_sample_C${c}.\$lsu_dctl_tlbcam_state {
+#inc  "lsu_dctl_tlbcam_sample.vrhpal"
+}
+
+// tlb r->p translation
+sample lsu_dctl_tlbr2p_sample_C${c}.\$lsu_dctl_tlbr2p_state {
+#inc  "lsu_dctl_tlbr2p_sample.vrhpal"
+}
+
+// address masking enabled
+sample lsu_dctl_addrmask_sample_C${c}.\$lsu_dctl_addrmask_state {
+#inc  "lsu_dctl_addrmask_sample.vrhpal"
+}
+
+// tlb access
+sample lsu_dctl_tlbaccess_sample_C${c}.\$lsu_dctl_tlbaccess_state {
+#inc  "lsu_dctl_tlbaccess_sample.vrhpal"
+}
+
+// update of asi register by done/retry instruction
+sample lsu_dctl_asiupdate_sample_C${c}.\$lsu_dctl_asiupdate_state {
+#inc  "lsu_dctl_asiupdate_sample.vrhpal"
+}
+
+// coverage of illegal-va detection
+sample lsu_dctl_illva_sample_C${c}.\$lsu_dctl_illva_state {
+#inc  "lsu_dctl_illva_sample.vrhpal"
+}
+
+// setting of lsu_ctl_reg thru various events
+sample lsu_dctl_ctlreg_sample_C${c}.\$lsu_dctl_ctlreg_state {
+#inc  "lsu_dctl_ctlreg_sample.vrhpal"
+}
+
+// disabling the dcache
+sample lsu_dctl_dcache_sample_C${c}.\$lsu_dctl_dcache_state {
+#inc  "lsu_dctl_dcache_sample.vrhpal"
+}
+
+// crossproduct of dcache enable/disable and dtlb enable/disable
+sample lsu_dctl_dcache_dtlb_sample_C${c}.\$lsu_dctl_dcache_dtlb_state {
+#inc  "lsu_dctl_dcache_dtlb_sample.vrhpal"
+}
+
+// ignore cache hit when cache disabled
+sample lsu_dctl_ignorehit_sample_C${c}.\$lsu_dctl_ignorehit_state {
+#inc  "lsu_dctl_ignorehit_sample.vrhpal"
+}
+
+// detect tte-data parity errors
+sample lsu_dctl_tteparity_sample_C${c}.\$lsu_dctl_tteparity_state {
+#inc  "lsu_dctl_tteparity_sample.vrhpal"
+}
+
+// elaborate cases for writes to dcache
+sample lsu_dctl_dcachewr_sample_C${c}.\$lsu_dctl_dcachewr_state {
+#inc  "lsu_dctl_dcachewr_sample.vrhpal"
+}
+
+// selective writes to dcache on stores
+sample lsu_dctl_dcache_st_sample_C${c}.\$lsu_dctl_dcache_st_state {
+#inc  "lsu_dctl_dcache_st_sample.vrhpal"
+}
+
+// elaborate writes to dva
+sample lsu_dctl_dvawr_sample_C${c}.\$lsu_dctl_dvawr_state {
+#inc  "lsu_dctl_dvawr_sample.vrhpal"
+}
+
+// completing a stxa wr to thread
+sample lsu_dctl_stxawr_cmplt_sample_C${c}.\$lsu_dctl_stxawr_cmplt_state {
+#inc  "lsu_dctl_stxawr_cmplt_sample.vrhpal"
+}
+
+// tlb asi queue - initiating action
+sample lsu_dctl_asiqueue_init_sample_C${c}.\$lsu_dctl_asiqueue_init_state {
+#inc  "lsu_dctl_asiqueue_init_sample.vrhpal"
+}
+
+// tlb asi queue - sequencing events 
+sample lsu_dctl_asiqueue_seq_sample_C${c}.\$lsu_dctl_asiqueue_seq_state {
+#inc  "lsu_dctl_asiqueue_seq_sample.vrhpal"
+}
+
+// bus sharing between tlu and mmu
+sample lsu_dctl_tlb_st_datasel_sample_C${c}.\$lsu_dctl_tlb_st_datasel_state {
+#inc  "lsu_dctl_tlb_st_datasel_sample.vrhpal"
+}
+
+// diagnostic write conflicts with pipeline ld/st, dfq op
+sample lsu_dctl_diagwr_sample_C${c}.\$lsu_dctl_diagwr_state {
+#inc  "lsu_dctl_diagwr_sample.vrhpal"
+}
+
+// membar/flush reset
+sample lsu_dctl_mbarrst_sample_C${c}.\$lsu_dctl_mbarrst_state {
+#inc  "lsu_dctl_mbarrst_sample.vrhpal"
+}
+
+// rmo store ack count
+sample lsu_dctl_rmo_stackcnt_sample_C${c}.\$lsu_dctl_rmo_stackcnt_state {
+#inc  "lsu_dctl_rmo_stackcnt_sample.vrhpal"
+}
+
+// dcache data parity error
+sample lsu_dctl_dcache_perror_sample_C${c}.\$lsu_dctl_dcache_perror_state {
+#inc  "lsu_dctl_dcache_perror_sample.vrhpal"
+}
+
+// bypass queues - b2b enabling
+sample lsu_dctl_bypassq_b2ben_sample_C${c}.\$lsu_dctl_bypassq_b2ben_state {
+#inc  "lsu_dctl_bypassq_b2ben_sample.vrhpal"
+}
+
+// bypass queues - test for simultaneous vld entries
+sample lsu_dctl_bypassq_vld_sample_C${c}.\$lsu_dctl_bypassq_vld_state {
+#inc  "lsu_dctl_bypassq_vld_sample.vrhpal"
+}
+
+// bypass queues - test for b2b reset
+sample lsu_dctl_bypassq_b2brst_sample_C${c}.\$lsu_dctl_bypassq_b2brst_state {
+#inc  "lsu_dctl_bypassq_b2brst_sample.vrhpal"
+}
+
+// bypass queues - squashing bypass/cmplt to irf/ifu
+sample lsu_dctl_bypassq_squash_sample_C${c}.\$lsu_dctl_bypassq_squash_state {
+#inc  "lsu_dctl_bypassq_squash_sample.vrhpal"
+}
+
+// bypass queues - detect ldbyp_vld and ldbyp_vld_en
+sample lsu_dctl_bypassq_vld_en_sample_C${c}.\$lsu_dctl_bypassq_vld_en_state {
+#inc  "lsu_dctl_bypassq_vld_en_sample.vrhpal"
+}
+
+// deferred trap
+sample lsu_dctl_deftrap_sample_C${c}.\$lsu_dctl_deftrap_state {
+#inc  "lsu_dctl_deftrap_sample.vrhpal"
+}
+
+// completing stxa with fixed delay
+sample lsu_dctl_stxacmplt_sample_C${c}.\$lsu_dctl_stxacmplt_state {
+#inc  "lsu_dctl_stxacmplt_sample.vrhpal"
+}
+
+// direct map mode
+sample lsu_dctl_directmap_sample_C${c}.\$lsu_dctl_directmap_state {
+#inc  "lsu_dctl_directmap_sample.vrhpal"
+}
+
+// writes to cache
+sample lsu_dctl_dcachemask_sample_C${c}.\$lsu_dctl_dcachemask_state {
+#inc  "lsu_dctl_dcachemask_sample.vrhpal"
+}
+
+// prefetch counter
+sample lsu_dctl_prefcntr_sample_C${c}.\$lsu_dctl_prefcntr_state {
+#inc  "lsu_dctl_prefcntr_sample.vrhpal"
+}
+
+// tlb asiqueue
+sample lsu_dctl_asiqueue_sample_C${c}.\$lsu_dctl_asiqueue_state {
+#inc  "lsu_dctl_asiqueue_sample.vrhpal"
+}
+
+// *********************************************************************
+// end of dctl objects
+// *********************************************************************
+
+
+// *********************************************************************
+// begin qctl objects 
+// *********************************************************************
+
+// CPX packet types
+sample lsu_cpx_packets_sample_C${c}.\$lsu_cpx_packets_state {
+#inc "lsu_cpx_packets_sample.vrhpal"
+}
+
+// More CPX packet types
+// (Store acks, Blkstore acks, Atomic store acks, and Evictions packets)
+sample lsu_cpx_ack_evict_sample_C${c}.\$lsu_cpx_ack_evict_state {
+#inc "lsu_cpx_ack_evict_sample.vrhpal"
+}
+
+// CPX/DFQ packet being sent to IFU when ifu_lsu_ibuf_busy
+sample lsu_ifu_cpxpkt_ifubusy_sample_C${c}.\$lsu_ifu_cpxpkt_ifubusy_state {
+#inc "lsu_ifu_cpxpkt_ifubusy_sample.vrhpal"
+}
+
+// Packets being read out of the DFQ
+sample lsu_dfqout_cpxpkt_sample_C${c}.\$lsu_dfqout_cpxpkt_state {
+#inc "lsu_dfqout_cpxpkt_sample.vrhpal"
+}
+
+// Packets bypassing the DFQ
+sample lsu_dfqbyp_cpxpkt_sample_C${c}.\$lsu_dfqbyp_cpxpkt_state {
+#inc "lsu_dfqbyp_cpxpkt_sample.vrhpal"
+}
+
+// Different packets at head of DFQ and in bypass path at the same time
+sample lsu_dfq_out_byp_cpxpkts_sample_C${c}.\$lsu_dfq_out_byp_cpxpkts_state {
+#inc "lsu_dfq_out_byp_cpxpkts_sample.vrhpal"
+}
+
+// Packets at head of DFQ when different stall conditions occur
+sample lsu_dfq_stalls_sample_C${c}.\$lsu_dfq_stalls_state {
+#inc "lsu_dfq_stalls_sample.vrhpal"
+}
+
+// Packets at head of DFQ when DFQ has 2 or more entries and different stall conditions occur
+sample lsu_dfq_stalls_2ormore_entries_sample_C${c}.\$lsu_dfq_stalls_2ormore_entries_state {
+#inc "lsu_dfq_stalls_2ormore_entries_sample.vrhpal"
+}
+
+// invalidation packet followed by flush at head of DFQ
+sample lsu_dfq_inv_flush_sample_C${c}.\$lsu_dfq_inv_flush_state {
+#inc "lsu_dfq_inv_flush_sample.vrhpal"
+}
+
+// Expression coverage of a line in dfq_rd_advance equation
+sample lsu_dfq_int_rdadv_sample_C${c}.\$lsu_dfq_int_rdadv_state {
+#inc "lsu_dfq_int_rdadv_sample.vrhpal"
+}
+
+// Double pumping instructions (ldd, fpld) stalled by memref_e
+sample lsu_qctl_lddfpld_sample_C${c}.\$lsu_qctl_lddfpld_state {
+#inc "lsu_qctl_lddfpld_sample.vrhpal"
+}
+
+// Number of stream acks completing in the same cycle
+sample lsu_strmack_cmplt_sample_C${c}.\$lsu_strmack_cmplt_state {
+#inc "lsu_strmack_cmplt_sample.vrhpal"
+}
+
+// qctl1 requests to L2
+sample lsu_qctl_l2cache_rq_sample_C${c}.\$lsu_qctl_l2cache_rq_state {
+#inc "lsu_qctl_l2cache_rq_sample.vrhpal"
+}
+
+// Dcache valid bit array reads and writes to the same cacheline
+sample lsu_dva_rdwr_sameaddr_sample_C${c}.\$lsu_dva_rdwr_sameaddr_state {
+#inc "lsu_dva_rdwr_sameaddr_sample.vrhpal"
+}
+
+// Various traps occurring singly or doubly
+sample lsu_traps_sample_C${c}.\$lsu_traps_state {
+#inc "lsu_traps_sample.vrhpal"
+}
+
+// Secondary hits
+sample lsu_sechit_sample_C${c}.\$lsu_sechit_state {
+#inc "lsu_sechit_sample.vrhpal"
+}
+
+// ld before and after store, with RAW hit on stb entry of store
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+sample lsu_ld_rawhit_st_sample_C${c}T${t}.\$lsu_ld_rawhit_st_state {
+#inc "lsu_ld_rawhit_st_sample.vrhpal"
+}
+.}
+
+// Picker: used in conjunction with monitor to check that pick status is reset
+// based on sources across ld, st, and misc pickers.
+sample lsu_pick_status_sample_C${c}.\$lsu_pick_status_state {
+#inc "lsu_pick_status_sample.vrhpal"
+}
+
+// Picker: request states and transitions between request states of each source
+sample lsu_picker1_sample_C${c}.\$lsu_picker1_state {
+#inc "lsu_picker1_sample.vrhpal"
+}
+
+// Picker: total number of requests in each state across all sources
+sample lsu_picker2_sample_C${c}.\$lsu_picker2_state {
+#inc "lsu_picker2_sample.vrhpal"
+}
+
+// Load fill followed by load instruction in consecutive cycles,
+// both with the same address
+sample lsu_fill_ld_b2b_sameaddr_sample_C${c}.\$lsu_fill_ld_b2b_sameaddr_state {
+#inc "lsu_fill_ld_b2b_sameaddr_sample.vrhpal"
+}
+
+sample lsu_spu_stxa_ack_sample_C${c}.\$lsu_spu_stxa_ack_state {
+#inc "lsu_spu_stxa_ack_sample.vrhpal"
+}
+
+// *********************************************************************
+// end qctl objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin stb_ctl objects 
+// *********************************************************************
+// store buffer inflight tlb miss
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+sample lsu_stb_ctl_inflight_tlbmiss_sample_C${c}T${t}.\$lsu_stb_ctl_inflight_tlbmiss_state {
+#inc "lsu_stb_ctl_inflight_tlbmiss_sample.vrhpal"
+}
+.} # for $t
+
+// store buffer inflight issue
+.for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+sample lsu_stb_ctl_inflight_issue_sample_C${c}T${t}.\$lsu_stb_ctl_inflight_issue_state {
+#inc "lsu_stb_ctl_inflight_issue_sample.vrhpal"
+}
+.} # for $t
+
+// store buffer issue oldest store with no wraparound signals
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_issue_oldest_nowrap_sample_C${c}T${t}.\$lsu_stb_ctl_issue_oldest_nowrap_state {
+#inc "lsu_stb_ctl_issue_oldest_nowrap_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer issue oldest store with wraparound signals
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_issue_oldest_wrap_sample_C${c}T${t}.\$lsu_stb_ctl_issue_oldest_wrap_state {
+#inc "lsu_stb_ctl_issue_oldest_wrap_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer older store transition through all states signals
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_trans_all_states_sample_C${c}T${t}.\$lsu_stb_ctl_trans_all_states_state {
+#inc "lsu_stb_ctl_trans_all_states_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer rmo st issue stalled because of rmo counter saturated
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_rmo_st_sat_sample_C${c}T${t}.\$lsu_stb_ctl_rmo_st_sat_state {
+#inc "lsu_stb_ctl_rmo_st_sat_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer inflight store killed
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_st_kill_sample_C${c}T${t}.\$lsu_stb_ctl_st_kill_state {
+#inc "lsu_stb_ctl_st_kill_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer store squashed
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_st_squash_sample_C${c}T${t}.\$lsu_stb_ctl_st_squash_state {
+#inc "lsu_stb_ctl_st_squash_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer dequeue rmo store
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_rmo_dq_sample_C${c}T${t}.\$lsu_stb_ctl_rmo_dq_state {
+#inc "lsu_stb_ctl_rmo_dq_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer load hits dequeuing store
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_st_dq_ld_hit_sample_C${c}T${t}.\$lsu_stb_ctl_st_dq_ld_hit_state {
+#inc "lsu_stb_ctl_st_dq_ld_hit_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer rmo pending until previous regular store is dequeued.
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_pend_rmo_sample_C${c}T${t}.\$lsu_stb_ctl_pend_rmo_state {
+#inc "lsu_stb_ctl_pend_rmo_sample.vrhpal"
+        }
+.} # for $t
+
+// store buffer speculative issued squashed
+.   for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+        sample lsu_stb_ctl_spec_squash_sample_C${c}T${t}.\$lsu_stb_ctl_spec_squash_state {
+#inc "lsu_stb_ctl_spec_squash_sample.vrhpal"
+        }
+.} # for $t
+
+// store write cancelled because preceeding store from same
+// thread is flushed
+        sample lsu_stb_rwctl_st_wr_cancel_sample_C${c}.\$lsu_stb_rwctl_st_wr_cancel_state {
+#inc "lsu_stb_rwctl_st_wr_cancel_sample.vrhpal"
+        }
+
+// binding for store buffer read from pcx cancelled because of stb hit by load
+        sample lsu_stb_rwctl_pcx_stb_rd_cancel_sample_C${c}.\$lsu_stb_rwctl_pcx_stb_rd_cancel_state {
+#inc "lsu_stb_rwctl_pcx_stb_rd_cancel_sample.vrhpal"
+        }
+
+// binding for store buffer byte_mask
+        sample lsu_stb_rwctl_byte_mask_sample_C${c}.\$lsu_stb_rwctl_byte_mask_state {
+#inc "lsu_stb_rwctl_byte_mask_sample.vrhpal"
+        }
+
+// binding for quad/binit ld hits stb
+        sample lsu_stb_rwctl_quad_ld_hit_stb_sample_C${c}.\$lsu_stb_rwctl_quad_ld_hit_stb_state {
+#inc "lsu_stb_rwctl_quad_ld_hit_stb_sample.vrhpal"
+        }
+
+// binding for blk ld hits stb
+        sample lsu_stb_rwctl_blk_ld_hit_stb_sample_C${c}.\$lsu_stb_rwctl_blk_ld_hit_stb_state {
+#inc "lsu_stb_rwctl_blk_ld_hit_stb_sample.vrhpal"
+        }
+
+// binding for atomics hit stb
+        sample lsu_stb_rwctl_atomics_hit_stb_sample_C${c}.\$lsu_stb_rwctl_atomics_hit_stb_state {
+#inc "lsu_stb_rwctl_atomics_hit_stb_sample.vrhpal"
+        }
+
+// binding for store buffer partial raw detection
+        sample lsu_stb_rwctl_praw_detect_sample_C${c}.\$lsu_stb_rwctl_praw_detect_state {
+#inc "lsu_stb_rwctl_praw_detect_sample.vrhpal"
+        }
+
+// *********************************************************************
+// end stb_ctl objects 
+// *********************************************************************
+
+// *********************************************************************
+// begin errors objects 
+// *********************************************************************
+// binding for tlb tte data parity error on translation
+        sample lsu_error_tte_data_perr_sample_C${c}.\$lsu_error_tte_data_perr_state {
+#inc "lsu_error_tte_data_perr_sample.vrhpal"
+        }
+
+// binding for tlb tte data parity error on asi rd
+        sample lsu_error_tte_data_perr_asi_sample_C${c}.\$lsu_error_tte_data_perr_asi_state {
+#inc "lsu_error_tte_data_perr_asi_sample.vrhpal"
+        }
+
+// binding for tlb tte tag parity error on asi rd
+        sample lsu_error_tte_tag_perr_asi_sample_C${c}.\$lsu_error_tte_tag_perr_asi_state {
+#inc "lsu_error_tte_tag_perr_asi_sample.vrhpal"
+        }
+
+// binding for dcache tag parity error
+        sample lsu_error_dcache_tag_perr_sample_C${c}.\$lsu_error_dcache_tag_perr_state {
+#inc "lsu_error_dcache_tag_perr_sample.vrhpal"
+        }
+
+// binding for dcache data parity error
+        sample lsu_error_dcache_data_perr_sample_C${c}.\$lsu_error_dcache_data_perr_state {
+#inc "lsu_error_dcache_data_perr_sample.vrhpal"
+        }
+
+// binding for error matrix
+        sample lsu_error_matrix_sample_C${c}.\$lsu_error_matrix_state {
+#inc "lsu_error_matrix_sample.vrhpal"
+        }
+
+// binding for async trap type
+        sample lsu_error_async_ttype_sample_C${c}.\$lsu_error_async_ttype_state {
+#inc "lsu_error_async_ttype_sample.vrhpal"
+        }
+
+// binding for b2b async trap
+        sample lsu_error_b2b_async_trap_sample_C${c}.\$lsu_error_b2b_async_trap_state {
+#inc "lsu_error_b2b_async_trap_sample.vrhpal"
+        }
+
+// binding for deferred trap
+        sample lsu_error_defr_trap_sample_C${c}.\$lsu_error_defr_trap_state {
+#inc "lsu_error_defr_trap_sample.vrhpal"
+        }
+
+// binding for deferred trap vs async trap
+        sample lsu_error_defr_vs_async_trap_sample_C${c}.\$lsu_error_defr_vs_async_trap_state {
+#inc "lsu_error_defr_vs_async_trap_sample.vrhpal"
+        }
+
+// binding for ld bypass with error conditions
+        sample lsu_error_ldbypass_sample_C${c}.\$lsu_error_ldbypass_state {
+#inc "lsu_error_ldbypass_sample.vrhpal"
+        }
+
+// binding for l2 correctable/uncorrectable errors
+        sample lsu_error_l2_error_sample_C${c}.\$lsu_error_l2_error_state {
+#inc "lsu_error_l2_error_sample.vrhpal"
+        }
+
+// binding for ifu l2 error
+        sample lsu_error_ifu_l2_error_sample_C${c}.\$lsu_error_ifu_l2_error_state {
+#inc "lsu_error_ifu_l2_error_sample.vrhpal"
+        }
+
+// binding for ifu io error
+        sample lsu_error_ifu_io_error_sample_C${c}.\$lsu_error_ifu_io_error_state {
+#inc "lsu_error_ifu_io_error_sample.vrhpal"
+        }
+
+
+// *********************************************************************
+// end errors objects
+// *********************************************************************
+
+. for my $t (0..3) {
+        sample lsu_cmplt_extended_sample_C${c}_T${t} {
+#inc "lsu_ldst_cmplt_ext_sample.vrhpal"
+        }
+. }
+        sample lsu_cmplt_extended_double_same_sample_C${c} {
+          state hit  (1'b1);
+        }
+        sample lsu_cmplt_extended_tripple_same_sample_C${c} {
+          state hit  (1'b1);
+        }
+        sample lsu_cmplt_extended_back2back_sample_C${c} {
+          state hit  (1'b1);
+        }
+        sample lsu_cmplt_extended_double_back2back_sample_C${c} {
+          state hit  (1'b1);
+        }
+// *********************************************************************
+// end cmplt objects
+// *********************************************************************
+
+
+
+.} # $c
+
+  } // coverage_group
+
+  task	new();
+  task	fsm_run();
+. foreach $c ( @CORE_STR ) {
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+  task C${c}T${t}_fsm_raw();
+.	} # for $t
+. } # foreach $c
+
+
+} // class
+
+task lsuext_coverage::new() {
+  bit coverage_ext_on;
+  if ( get_plus_arg( CHECK, "lsuext_coverage" ) ||
+      get_plus_arg( CHECK, "coverage_on" )
+      ) {
+    coverage_ext_on     = 1;
+    if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+      coverage_ext_on = 0;
+    }
+  } else {
+    coverage_ext_on     = 0;
+  }
+
+  if ( coverage_ext_on ) {
+    lsuext_coverage_group      = new();
+    fork {
+      @(posedge lsu_cov_top.cmp_diag_done);
+      lsuext_coverage_group.set_cov_weight(1); // since default is 0
+      coverage_save_database(1);
+      printf("%d : Coverage for LSU Extended done\n", get_time(LO));
+    } join none
+  }
+}
+
+task lsu_coverage::new() {
+
+  bit coverage_on;
+
+  if ( get_plus_arg( CHECK, "lsu_coverage" ) ||
+      get_plus_arg( CHECK, "coverage_on" )
+      ) {
+    coverage_on     = 1;
+    if ( get_plus_arg( CHECK, "coverage_off" ) ) {
+      coverage_on = 0;
+    }
+  } else {
+    coverage_on     = 0;
+  }
+
+  if ( coverage_on ) {
+. foreach $c ( @CORE_STR ) {
+    C${c}_load_qctl_port_instance = lsu_load_qctl_sample_C${c};
+. } # foreach $c
+    lsu_coverage_group      = new();
+    fork
+    {
+	this.fsm_run();
+    } join none
+
+    fork {
+      @(posedge lsu_cov_top.cmp_diag_done);
+
+      // End of test checks
+.     foreach $c ( @CORE_STR ) {
+.     for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+      if (lsu_cov_top2.C${c}_pref_ackcnt${t}            != 0) { printf("Info[LSU]: C${c}_pref_ackcnt${t} != 0 \n"); }
+      if (lsu_cov_top2.C${c}_ackcnt${t}                 != 0) { printf("Info[LSU]: C${c}_ackcnt${t} != 0 \n"); }
+      if (lsu_cov_top2.C${c}T${t}_stb_ctl_stb_state_vld != 0) { printf("Info[LSU]: C${c}T${t}_stb_ctl_stb_state_vld != 0 \n"); }
+.     }
+.     }
+
+      lsu_coverage_group.set_cov_weight(1); // since default is 0
+      coverage_save_database(1);
+      printf("%d : Coverage for LSU done\n", get_time(LO));
+    } join none
+
+.       foreach $c ( @CORE_STR ) {
+     {
+        integer done = 0;
+        cmplt_extended_port C${c}_cmplt_extended_bind = lsu_cmplt_extended_bind_C${c};
+        C${c}_cmplt_extend_obj = new (
+                             C${c}_cmplt_extended_bind
+                            );
+        fork {
+          while (!done) {
+              @(posedge lsu_cov_top.lsu_gclk);
+              // again this is unnecessary, we could use the obj only(!) however the statistics summary requires this.
+. for my $t (0..3) {
+              lsu_cmplt_extended_sample_C${c}_T${t} = C${c}_cmplt_extend_obj.T${t}_cmplt_sample;
+. }
+              lsu_cmplt_extended_double_same_sample_C${c} = C${c}_cmplt_extend_obj.double_same_sample;
+              lsu_cmplt_extended_tripple_same_sample_C${c} = C${c}_cmplt_extend_obj.tripple_same_sample;
+              lsu_cmplt_extended_back2back_sample_C${c} = C${c}_cmplt_extend_obj.back2back_sample;
+              lsu_cmplt_extended_double_back2back_sample_C${c} = C${c}_cmplt_extend_obj.double_back2back_sample;
+          }
+        } {
+           @ (posedge lsu_cov_top.cmp_diag_done);
+             done = 1;
+        } join none
+
+     }
+.       } # foreach $c
+
+
+
+  } // if
+
+} // new()
+
+task lsu_coverage::fsm_run()
+{
+    printf( "%d: starting fsm_run()\n", get_time(LO) );
+    fork
+    {
+.
+. foreach $c ( @CORE_STR ) {
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+	C${c}T${t}_fsm_raw();
+.	} # for $t
+. } # foreach $c
+    } join none
+
+} // task fsm_run
+
+
+. foreach $c ( @CORE_STR ) {
+.	for ( $t = 0; $t < $THREADS_PER_CORE; $t++ ) {
+task lsu_coverage::C${c}T${t}_fsm_raw()
+{
+    bit [3:0]	lsu_load_state;
+    bit [3:0]	cur_state, next_state;
+
+    printf( "%d: starting C${c}T${t}_fsm_raw()\n", get_time(LO) );
+
+    cur_state	= 4'h0;
+    next_state	= 4'h0;
+
+    while ( 1 ) {
+
+	@( posedge lsu_cov_top.lsu_gclk );
+	lsu_load_state = C${c}_load_qctl_port_instance.\$T${t}_load_qctl_state;
+	lsu_full_raw_sample_C${c}T${t}	= 1'b0;
+	cur_state = next_state;
+	case ( cur_state ) {
+
+	    4'b0000: if ( lsu_load_state == 4'b0001 ) {
+			    next_state	= 4'b0001;
+			}
+	    4'b0001: if ( lsu_load_state == 4'b0000 ) {
+			    next_state	= 4'b0000;
+			    lsu_full_raw_sample_C${c}T${t}	= 1'b1;
+			    printf( "%d: LSU fsm0: lsu_full_raw_sample_C${c}T${t} set\n",
+				    get_time(LO) );
+			} else {
+			    next_state	= 4'b0000;
+			}
+	    default: next_state = 4'b0000;
+	} // case
+
+    } // while
+} // task C${c}T${t}_fsm_raw
+.	} # for $t
+. } # foreach $c

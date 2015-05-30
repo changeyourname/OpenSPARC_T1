@@ -1,0 +1,73 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_suspend_resume_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU: halt, nuke/idle, resume and dirrefent 
+// types of (hw/sw/rst/vec) interrupts @halted/@idle states.
+//
+//***************************************************************************
+ 
+
+// coverage_def TLU_SUSPEND_RESUME_COV (bit [14:0] tlu_suspend_resume_st)
+// {
+
+  /////////
+  // States
+
+  //////////////
+  // Transitions
+  wildcard trans t_s_HALT_INST0_s_RESUM_INT0	(HALT_INST0 -> NOP_INST0[.1:512.] -> RESUM_INT0);
+  wildcard trans t_s_HALT_INST1_s_RESUM_INT1	(HALT_INST1 -> NOP_INST1[.1:512.] -> RESUM_INT1);
+  wildcard trans t_s_HALT_INST2_s_RESUM_INT2	(HALT_INST2 -> NOP_INST2[.1:512.] -> RESUM_INT2);
+  wildcard trans t_s_HALT_INST3_s_RESUM_INT3	(HALT_INST3 -> NOP_INST3[.1:512.] -> RESUM_INT3);
+
+  wildcard trans t_s_HALT_INST0_s_HW_INT0	(HALT_INST0 -> NOP_INST0[.1:512.] -> HW_INT0);
+  wildcard trans t_s_HALT_INST1_s_HW_INT1	(HALT_INST1 -> NOP_INST1[.1:512.] -> HW_INT1);
+  wildcard trans t_s_HALT_INST2_s_HW_INT2	(HALT_INST2 -> NOP_INST2[.1:512.] -> HW_INT2);
+  wildcard trans t_s_HALT_INST3_s_HW_INT3	(HALT_INST3 -> NOP_INST3[.1:512.] -> HW_INT3);
+
+  wildcard trans t_s_HALT_INST0_s_RST_INT0	(HALT_INST0 -> NOP_INST0[.1:512.] -> RST_INT0);
+  wildcard trans t_s_HALT_INST1_s_RST_INT1	(HALT_INST1 -> NOP_INST1[.1:512.] -> RST_INT1);
+  wildcard trans t_s_HALT_INST2_s_RST_INT2	(HALT_INST2 -> NOP_INST2[.1:512.] -> RST_INT2);
+  wildcard trans t_s_HALT_INST3_s_RST_INT3	(HALT_INST3 -> NOP_INST3[.1:512.] -> RST_INT3);
+
+  wildcard trans t_s_NUKE_INT0_s_RESUM_INT0	(NUKE_INT0 -> NOP_INST0[.1:512.] -> RESUM_INT0);
+  wildcard trans t_s_NUKE_INT1_s_RESUM_INT1	(NUKE_INT1 -> NOP_INST1[.1:512.] -> RESUM_INT1);
+  wildcard trans t_s_NUKE_INT2_s_RESUM_INT2	(NUKE_INT2 -> NOP_INST2[.1:512.] -> RESUM_INT2);
+  wildcard trans t_s_NUKE_INT3_s_RESUM_INT3	(NUKE_INT3 -> NOP_INST3[.1:512.] -> RESUM_INT3);
+
+  wildcard trans t_s_NUKE_INT0_s_HW_INT0_s_RESUM_INT0 (NUKE_INT0 -> NOP_INST0[.1:512.] -> HW_INT0[.1:512.] -> RESUM_INT0);
+  wildcard trans t_s_NUKE_INT1_s_HW_INT1_s_RESUM_INT1 (NUKE_INT1 -> NOP_INST1[.1:512.] -> HW_INT1[.1:512.] -> RESUM_INT1);
+  wildcard trans t_s_NUKE_INT2_s_HW_INT2_s_RESUM_INT2 (NUKE_INT2 -> NOP_INST2[.1:512.] -> HW_INT2[.1:512.] -> RESUM_INT2);
+  wildcard trans t_s_NUKE_INT3_s_HW_INT3_s_RESUM_INT3 (NUKE_INT3 -> NOP_INST3[.1:512.] -> HW_INT3[.1:512.] -> RESUM_INT3);
+
+  wildcard trans t_s_NUKE_INT0_s_RST_INT0	(NUKE_INT0 -> NOP_INST0[.1:512.] -> RST_INT0);
+  wildcard trans t_s_NUKE_INT1_s_RST_INT1	(NUKE_INT1 -> NOP_INST1[.1:512.] -> RST_INT1);
+  wildcard trans t_s_NUKE_INT2_s_RST_INT2	(NUKE_INT2 -> NOP_INST2[.1:512.] -> RST_INT2);
+  wildcard trans t_s_NUKE_INT3_s_RST_INT3	(NUKE_INT3 -> NOP_INST3[.1:512.] -> RST_INT3);
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

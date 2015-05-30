@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_rwctl_blk_ld_hit_stb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// binding for blk ld hits stb
+
+wildcard state s_BLK_LD_HIT_STB_M (19'b11_1_xxxxxxxx_xxxxxxxx);
+state s_BLK_LD_HIT_STB_F0 (19'b11_0_00000001_00000000);
+state s_BLK_LD_HIT_STB_F1 (19'b11_0_00000010_00000000);
+state s_BLK_LD_HIT_STB_F2 (19'b11_0_00000100_00000000);
+state s_BLK_LD_HIT_STB_F3 (19'b11_0_00001000_00000000);
+state s_BLK_LD_HIT_STB_F4 (19'b11_0_00010000_00000000);
+state s_BLK_LD_HIT_STB_F5 (19'b11_0_00100000_00000000);
+state s_BLK_LD_HIT_STB_F6 (19'b11_0_01000000_00000000);
+state s_BLK_LD_HIT_STB_F7 (19'b11_0_10000000_00000000);
+state s_BLK_LD_HIT_STB_P0 (19'b11_0_00000000_00000001);
+state s_BLK_LD_HIT_STB_P1 (19'b11_0_00000000_00000010);
+state s_BLK_LD_HIT_STB_P2 (19'b11_0_00000000_00000100);
+state s_BLK_LD_HIT_STB_P3 (19'b11_0_00000000_00001000);
+state s_BLK_LD_HIT_STB_P4 (19'b11_0_00000000_00010000);
+state s_BLK_LD_HIT_STB_P5 (19'b11_0_00000000_00100000);
+state s_BLK_LD_HIT_STB_P6 (19'b11_0_00000000_01000000);
+state s_BLK_LD_HIT_STB_P7 (19'b11_0_00000000_10000000);
+

@@ -1,0 +1,540 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tlu_cov_inc.pal";
+#ifndef __TLU_PORTS_VRH__
+#define __TLU_PORTS_VRH__
+
+#include <vera_defines.vrh>
+
+port tlu_tid_port {
+  tid_d;
+  tid_e;
+  tid_m;
+  tid_g;
+  tid_w1;
+  ifu_inst_vld_m;
+  inst_vld_m;
+  inst_vld_g;
+  inst_vld_w2;
+  tick_tid;
+}
+
+port tlu_state_port {
+  pstate_priv;
+  pstate_ie;
+  hpstate_ibe;
+  hpstate_enb;
+  hpstate_red;
+  hpstate_priv;
+  hpstate_tlz;
+  true_pstate0;
+  true_pstate1;
+  true_pstate2;
+  true_pstate3;
+  true_hpstate0;
+  true_hpstate1;
+  true_hpstate2;
+  true_hpstate3;
+}
+
+port tlu_asi_port
+{
+  alt_space_e;
+  ld_inst_e;
+  st_inst_e;
+  asi_state_e;
+  ldst_va_e;
+  st_rs3_data_g;
+  int_asi_state;
+}
+
+port tlu_asr_port
+{
+  sraddr_d;
+  rsr_inst_d;
+  wsr_inst_d;
+  wsr_inst_m;
+  wsr_inst_g;
+  wsr_inst_w2;
+  wsr_data_m;
+  wsr_data_g;
+  tl_rw_g;
+  gl_rw_g;
+  set_sftint_m;
+  set_sftint_g;
+  sftint_rw_m;
+  sftint_rw_g;
+  softint0;
+  softint1;
+  softint2;
+  softint3;
+  hintp;
+  gl_lvl0;
+  gl_lvl1;
+  gl_lvl2;
+  gl_lvl3;
+  trap_lvl0;
+  trap_lvl1;
+  trap_lvl2;
+  trap_lvl3;
+  gl_lvl0_new;
+  gl_lvl1_new;
+  gl_lvl2_new;
+  gl_lvl3_new;
+  trap_lvl0_new;
+  trap_lvl1_new;
+  trap_lvl2_new;
+  trap_lvl3_new;
+  tickcmp0;
+  tickcmp1;
+  tickcmp2;
+  tickcmp3;
+  stickcmp0;
+  stickcmp1;
+  stickcmp2;
+  stickcmp3;
+  htick_intdis0;
+  htick_intdis1;
+  htick_intdis2;
+  htick_intdis3;
+  pil0;
+  pil1;
+  pil2;
+  pil3;
+  tick_npt0;
+  tick_npt1;
+  tick_npt2;
+  tick_npt3;
+  tl0_gt_0;
+  tl1_gt_0;
+  tl2_gt_0;
+  tl3_gt_0;
+  tl_at_maxstl;
+  tl0_at_maxtlless1;
+  tl1_at_maxtlless1;
+  tl2_at_maxtlless1;
+  tl3_at_maxtlless1;
+  tl0_at_maxtl;
+  tl1_at_maxtl;
+  tl2_at_maxtl;
+  tl3_at_maxtl;
+}
+
+port tlu_pib_port
+{
+  pcr0;
+  pcr1;
+  pcr2;
+  pcr3;
+  curr_priv_st;
+  curr_priv_ut;
+  pcr_st;
+  pcr_ut;
+  inst_vld;
+  picl_stb_full;
+  picl_fpu_inst;
+  picl_ica_miss;
+  picl_dca_miss;
+  picl_itlb_mis;
+  picl_dtlb_mis;
+  picl_l2_imiss;
+  picl_l2_dmiss;
+}
+
+port tlu_trap_port
+{
+  done_inst_m;
+  retry_inst_m;
+  ifu_ttype_m;
+  ifu_ttype_vld_m;
+  priv_violtn_m;
+  exu_ttype_m;
+  exu_ttype_vld_m;
+  exu_misalign_addr_jmpl_rtn_m;
+  exu_ue_trap_m;
+  exu_va_oor_jl_ret_m;
+  exu_va_oor_m;
+  lsu_ttype_m2;
+  lsu_ttype_vld_m2;
+  ifu_ttype_vld_g;
+  iside_ttype_vld_g;
+  exu_ttype_vld_g;
+  spu_rsrv_illgl_m;
+  lsu_async_ttype_vld_w2;
+  lsu_async_ttype_w2;
+  lsu_async_tid_w2;
+  fp_ill_inst_m;
+  fp_trap_ieee754;
+  fp_trap_other;
+  fp_trap_ue;
+  spill_trap;
+  spill_other;
+  cwp_cmplt;
+  cwp_cmplt_tid;
+  trap_taken_g;
+  trap_taken_w2;
+  priv_traps_w2;
+  dnrtry_g;
+  dnrtry_w2;
+  restore_pc_sel_w1;
+  cwp_fastcmplt_g;
+  cwp_fastcmplt_m;
+  hwint_m;
+  swint_m;
+  rstint_m;
+  sir_inst_m;
+  hyper_wdr_trap_w2;
+  internal_wdr_g;
+  sir_rst_g;
+  reset_sel_g;
+  reset_id_g;
+  tick_priv_act_g;
+  pib_priv_act_g;
+  htrap_ill_inst_g;
+  local_dside_trap_g;
+  sync_trap_m;
+  sync_trap_g;
+  trappc_vld_w1;
+  trap_pc_w1;
+  trap_pc_w2;
+  trap_tid_g;
+  trap_tid_w1;
+  fp_trap_tid;
+  spill_trap_tid;
+  tlz_trap_m;
+
+  lsu_misalign_ldst_atm_m;
+  lsu_squash_va_oor_m;
+  lsu_priv_action_g;
+  lsu_daccess_excptn_g;
+  lsu_daccess_prot_g;
+  lsu_wtchpt_trp_g;
+  lsu_defr_trp_taken_g;
+  lsu_early_flush2_w;
+  lsu_early_flush_w;
+
+  ifu_tlu_flush_fd_w;
+  ifu_tlu_flush_m;
+}
+
+port tlu_evt_port
+{
+  tick_match;
+  stick_match;
+  htick_match;
+  tlz_thread;
+  set_hintp_g;
+  tickcmp_int;
+  stickcmp_int;
+  pib_wrap_m;
+  pich_wrap;
+  picl_wrap;
+  cpu_mondo_cmp;
+  dev_mondo_cmp;
+  resum_err_cmp;
+  sftint_vld;
+  hintp_vld;
+  hwint_i3;
+  nukeint_i2;
+  resumint_i2;
+  rstint_i2;
+  rstthr_i2;
+}
+
+port tlu_intdp_port
+{
+  t0_inrr;
+  t1_inrr;
+  t2_inrr;
+  t3_inrr;
+  inc_ind_ld_int;
+  ind_inc_thrid;
+  int_id;
+}
+////////////////////////
+// bindings
+///////////////////////
+
+. sub coreBindings {
+.	my($core_num) = @_;
+.	my $c	      = $core_num;
+
+bind tlu_tid_port C${c}_tlu_tid_bind {
+  tid_d		tlu_cov_top.C${c}_tid_d;
+  tid_e		tlu_cov_top.C${c}_tid_e;
+  tid_m		tlu_cov_top.C${c}_tid_m;
+  tid_g		tlu_cov_top.C${c}_tid_g;
+  tid_w1	tlu_cov_top.C${c}_tid_w1;
+  ifu_inst_vld_m	tlu_cov_top.C${c}_ifu_inst_vld_m;
+  inst_vld_m	tlu_cov_top.C${c}_inst_vld_m;
+  inst_vld_g	tlu_cov_top.C${c}_inst_vld_g;
+  inst_vld_w2	tlu_cov_top.C${c}_inst_vld_w2;
+  tick_tid	tlu_cov_top.C${c}_tick_tid;
+}
+
+bind tlu_state_port C${c}_tlu_state_bind {
+  pstate_priv	tlu_cov_top.C${c}_pstate_priv;
+  pstate_ie 	tlu_cov_top.C${c}_pstate_ie;
+  hpstate_ibe 	tlu_cov_top.C${c}_hpstate_ibe;
+  hpstate_enb 	tlu_cov_top.C${c}_hpstate_enb;
+  hpstate_red 	tlu_cov_top.C${c}_hpstate_red;
+  hpstate_priv	tlu_cov_top.C${c}_hpstate_priv;
+  hpstate_tlz 	tlu_cov_top.C${c}_hpstate_tlz;
+  true_pstate0	tlu_cov_top.C${c}_true_pstate0;
+  true_pstate1	tlu_cov_top.C${c}_true_pstate1;
+  true_pstate2	tlu_cov_top.C${c}_true_pstate2;
+  true_pstate3	tlu_cov_top.C${c}_true_pstate3;
+  true_hpstate0	tlu_cov_top.C${c}_true_hpstate0;
+  true_hpstate1	tlu_cov_top.C${c}_true_hpstate1;
+  true_hpstate2	tlu_cov_top.C${c}_true_hpstate2;
+  true_hpstate3	tlu_cov_top.C${c}_true_hpstate3;
+}
+
+bind tlu_asi_port C${c}_tlu_asi_bind
+{
+  alt_space_e	tlu_cov_top.C${c}_alt_space_e;
+  ld_inst_e	tlu_cov_top.C${c}_ld_inst_e;
+  st_inst_e	tlu_cov_top.C${c}_st_inst_e;
+  asi_state_e	tlu_cov_top.C${c}_asi_state_e;
+  ldst_va_e	tlu_cov_top.C${c}_ldst_va_e;
+  st_rs3_data_g	tlu_cov_top.C${c}_st_rs3_data_g;
+  int_asi_state tlu_cov_top.C${c}_int_asi_state;
+}
+
+bind tlu_asr_port C${c}_tlu_asr_bind
+{
+  sraddr_d	tlu_cov_top.C${c}_sraddr_d;
+  rsr_inst_d	tlu_cov_top.C${c}_rsr_inst_d;
+  wsr_inst_d	tlu_cov_top.C${c}_wsr_inst_d;
+  wsr_inst_m	tlu_cov_top.C${c}_wsr_inst_m;
+  wsr_inst_g	tlu_cov_top.C${c}_wsr_inst_g;
+  wsr_inst_w2	tlu_cov_top.C${c}_wsr_inst_w2;
+  wsr_data_m	tlu_cov_top.C${c}_wsr_data_m;
+  wsr_data_g	tlu_cov_top.C${c}_wsr_data_g;
+  tl_rw_g	tlu_cov_top.C${c}_tl_rw_g;
+  gl_rw_g	tlu_cov_top.C${c}_gl_rw_g;
+  set_sftint_m	tlu_cov_top.C${c}_set_sftint_m;
+  set_sftint_g	tlu_cov_top.C${c}_set_sftint_g;
+  sftint_rw_m	tlu_cov_top.C${c}_sftint_rw_m;
+  sftint_rw_g	tlu_cov_top.C${c}_sftint_rw_g;
+  softint0	tlu_cov_top.C${c}_softint0;
+  softint1	tlu_cov_top.C${c}_softint1;
+  softint2	tlu_cov_top.C${c}_softint2;
+  softint3	tlu_cov_top.C${c}_softint3;
+  hintp		tlu_cov_top.C${c}_hintp;
+  gl_lvl0	tlu_cov_top.C${c}_gl_lvl0;
+  gl_lvl1	tlu_cov_top.C${c}_gl_lvl1;
+  gl_lvl2	tlu_cov_top.C${c}_gl_lvl2;
+  gl_lvl3	tlu_cov_top.C${c}_gl_lvl3;
+  trap_lvl0	tlu_cov_top.C${c}_trap_lvl0;
+  trap_lvl1	tlu_cov_top.C${c}_trap_lvl1;
+  trap_lvl2	tlu_cov_top.C${c}_trap_lvl2;
+  trap_lvl3	tlu_cov_top.C${c}_trap_lvl3;
+  gl_lvl0_new	tlu_cov_top.C${c}_gl_lvl0_new;
+  gl_lvl1_new	tlu_cov_top.C${c}_gl_lvl1_new;
+  gl_lvl2_new	tlu_cov_top.C${c}_gl_lvl2_new;
+  gl_lvl3_new	tlu_cov_top.C${c}_gl_lvl3_new;
+  trap_lvl0_new	tlu_cov_top.C${c}_trap_lvl0_new;
+  trap_lvl1_new	tlu_cov_top.C${c}_trap_lvl1_new;
+  trap_lvl2_new	tlu_cov_top.C${c}_trap_lvl2_new;
+  trap_lvl3_new	tlu_cov_top.C${c}_trap_lvl3_new;
+  tickcmp0	tlu_cov_top.C${c}_tickcmp0;
+  tickcmp1	tlu_cov_top.C${c}_tickcmp1;
+  tickcmp2	tlu_cov_top.C${c}_tickcmp2;
+  tickcmp3	tlu_cov_top.C${c}_tickcmp3;
+  stickcmp0	tlu_cov_top.C${c}_stickcmp0;
+  stickcmp1	tlu_cov_top.C${c}_stickcmp1;
+  stickcmp2	tlu_cov_top.C${c}_stickcmp2;
+  stickcmp3	tlu_cov_top.C${c}_stickcmp3;
+  htick_intdis0	tlu_cov_top.C${c}_htick_intdis0;
+  htick_intdis1	tlu_cov_top.C${c}_htick_intdis1;
+  htick_intdis2	tlu_cov_top.C${c}_htick_intdis2;
+  htick_intdis3	tlu_cov_top.C${c}_htick_intdis3;
+  pil0		tlu_cov_top.C${c}_pil0;
+  pil1		tlu_cov_top.C${c}_pil1;
+  pil2		tlu_cov_top.C${c}_pil2;
+  pil3		tlu_cov_top.C${c}_pil3;
+  tick_npt0	tlu_cov_top.C${c}_tick_npt0;
+  tick_npt1	tlu_cov_top.C${c}_tick_npt1;
+  tick_npt2	tlu_cov_top.C${c}_tick_npt2;
+  tick_npt3	tlu_cov_top.C${c}_tick_npt3;
+
+  tl0_gt_0		tlu_cov_top.C${c}_tl0_gt_0;
+  tl1_gt_0		tlu_cov_top.C${c}_tl1_gt_0;
+  tl2_gt_0		tlu_cov_top.C${c}_tl2_gt_0;
+  tl3_gt_0		tlu_cov_top.C${c}_tl3_gt_0;
+  tl_at_maxstl		tlu_cov_top.C${c}_tl_at_maxstl;
+  tl0_at_maxtlless1	tlu_cov_top.C${c}_tl0_at_maxtlless1;
+  tl1_at_maxtlless1	tlu_cov_top.C${c}_tl1_at_maxtlless1;
+  tl2_at_maxtlless1	tlu_cov_top.C${c}_tl2_at_maxtlless1;
+  tl3_at_maxtlless1	tlu_cov_top.C${c}_tl3_at_maxtlless1;
+  tl0_at_maxtl		tlu_cov_top.C${c}_tl0_at_maxtl;
+  tl1_at_maxtl		tlu_cov_top.C${c}_tl1_at_maxtl;
+  tl2_at_maxtl		tlu_cov_top.C${c}_tl2_at_maxtl;
+  tl3_at_maxtl		tlu_cov_top.C${c}_tl3_at_maxtl;
+}
+
+bind tlu_pib_port C${c}_tlu_pib_bind
+{
+  pcr0		 tlu_cov_top.C${c}_pcr0;
+  pcr1		 tlu_cov_top.C${c}_pcr1;
+  pcr2		 tlu_cov_top.C${c}_pcr2;
+  pcr3		 tlu_cov_top.C${c}_pcr3;
+  curr_priv_st   tlu_cov_top.C${c}_curr_priv_st;
+  curr_priv_ut	 tlu_cov_top.C${c}_curr_priv_ut;
+  pcr_st	 tlu_cov_top.C${c}_pcr_st;
+  pcr_ut	 tlu_cov_top.C${c}_pcr_ut;
+  inst_vld	 tlu_cov_top.C${c}_inst_vld;
+  picl_stb_full	 tlu_cov_top.C${c}_picl_stb_full;
+  picl_fpu_inst	 tlu_cov_top.C${c}_picl_fpu_inst;
+  picl_ica_miss	 tlu_cov_top.C${c}_picl_ica_miss;
+  picl_dca_miss	 tlu_cov_top.C${c}_picl_dca_miss;
+  picl_itlb_mis	 tlu_cov_top.C${c}_picl_itlb_mis;
+  picl_dtlb_mis  tlu_cov_top.C${c}_picl_dtlb_mis;
+  picl_l2_imiss	 tlu_cov_top.C${c}_picl_l2_imiss;
+  picl_l2_dmiss	 tlu_cov_top.C${c}_picl_l2_dmiss;
+}
+
+bind tlu_trap_port C${c}_tlu_trap_bind
+{
+  done_inst_m		tlu_cov_top.C${c}_done_inst_m;
+  retry_inst_m		tlu_cov_top.C${c}_retry_inst_m;
+  ifu_ttype_m		tlu_cov_top.C${c}_ifu_ttype_m;
+  ifu_ttype_vld_m	tlu_cov_top.C${c}_ifu_ttype_vld_m;
+  priv_violtn_m		tlu_cov_top.C${c}_priv_violtn_m;
+  exu_ttype_m		tlu_cov_top.C${c}_exu_ttype_m;
+  exu_ttype_vld_m	tlu_cov_top.C${c}_exu_ttype_vld_m;
+  exu_misalign_addr_jmpl_rtn_m	tlu_cov_top.C${c}_exu_misalign_addr_jmpl_rtn_m;
+  exu_ue_trap_m			tlu_cov_top.C${c}_exu_ue_trap_m;
+  exu_va_oor_jl_ret_m		tlu_cov_top.C${c}_exu_va_oor_jl_ret_m;
+  exu_va_oor_m			tlu_cov_top.C${c}_exu_va_oor_m;
+  lsu_ttype_m2		tlu_cov_top.C${c}_lsu_ttype_m2;
+  lsu_ttype_vld_m2	tlu_cov_top.C${c}_lsu_ttype_vld_m2;
+  ifu_ttype_vld_g	tlu_cov_top.C${c}_ifu_ttype_vld_g;
+  iside_ttype_vld_g	tlu_cov_top.C${c}_iside_ttype_vld_g;
+  exu_ttype_vld_g	tlu_cov_top.C${c}_exu_ttype_vld_g;
+  spu_rsrv_illgl_m	tlu_cov_top.C${c}_spu_rsrv_illgl_m;
+  lsu_async_ttype_vld_w2	tlu_cov_top.C${c}_lsu_async_ttype_vld_w2;
+  lsu_async_ttype_w2	tlu_cov_top.C${c}_lsu_async_ttype_w2;
+  lsu_async_tid_w2	tlu_cov_top.C${c}_lsu_async_tid_w2;
+  fp_ill_inst_m		tlu_cov_top.C${c}_fp_ill_inst_m;
+  fp_trap_ieee754	tlu_cov_top.C${c}_fp_trap_ieee754;
+  fp_trap_other		tlu_cov_top.C${c}_fp_trap_other;
+  fp_trap_ue		tlu_cov_top.C${c}_fp_trap_ue;
+  spill_trap		tlu_cov_top.C${c}_spill_trap;
+  spill_other		tlu_cov_top.C${c}_spill_other;
+  cwp_cmplt		tlu_cov_top.C${c}_cwp_cmplt;
+  cwp_cmplt_tid		tlu_cov_top.C${c}_cwp_cmplt_tid;
+  trap_taken_g		tlu_cov_top.C${c}_trap_taken_g;
+  trap_taken_w2		tlu_cov_top.C${c}_trap_taken_w2;
+  priv_traps_w2		tlu_cov_top.C${c}_priv_traps_w2;
+  dnrtry_g		tlu_cov_top.C${c}_dnrtry_g;
+  dnrtry_w2		tlu_cov_top.C${c}_dnrtry_w2;
+  restore_pc_sel_w1	tlu_cov_top.C${c}_restore_pc_sel_w1;
+  cwp_fastcmplt_g	tlu_cov_top.C${c}_cwp_fastcmplt_g;
+  cwp_fastcmplt_m	tlu_cov_top.C${c}_cwp_fastcmplt_m;
+  hwint_m		tlu_cov_top.C${c}_hwint_m;
+  swint_m		tlu_cov_top.C${c}_swint_m;
+  rstint_m		tlu_cov_top.C${c}_rstint_m;
+  sir_inst_m		tlu_cov_top.C${c}_sir_inst_m;
+  hyper_wdr_trap_w2	tlu_cov_top.C${c}_hyper_wdr_trap_w2;
+  internal_wdr_g	tlu_cov_top.C${c}_internal_wdr_g;
+  sir_rst_g		tlu_cov_top.C${c}_sir_rst_g;
+  reset_sel_g		tlu_cov_top.C${c}_reset_sel_g;
+  reset_id_g		tlu_cov_top.C${c}_reset_id_g;
+  tick_priv_act_g	tlu_cov_top.C${c}_tick_priv_act_g;
+  pib_priv_act_g	tlu_cov_top.C${c}_pib_priv_act_g;
+  htrap_ill_inst_g	tlu_cov_top.C${c}_htrap_ill_inst_g;
+  local_dside_trap_g	tlu_cov_top.C${c}_local_dside_trap_g;
+  sync_trap_m		tlu_cov_top.C${c}_sync_trap_m;
+  sync_trap_g		tlu_cov_top.C${c}_sync_trap_g;
+  trappc_vld_w1		tlu_cov_top.C${c}_trappc_vld_w1;
+  trap_pc_w1		tlu_cov_top.C${c}_trap_pc_w1;
+  trap_pc_w2		tlu_cov_top.C${c}_trap_pc_w2;
+  trap_tid_g		tlu_cov_top.C${c}_trap_tid_g;
+  trap_tid_w1		tlu_cov_top.C${c}_trap_tid_w1;
+  fp_trap_tid		tlu_cov_top.C${c}_fp_trap_tid;
+  spill_trap_tid	tlu_cov_top.C${c}_spill_trap_tid;
+  tlz_trap_m		tlu_cov_top.C${c}_tlz_trap_m;
+
+  lsu_misalign_ldst_atm_m	tlu_cov_top.C${c}_lsu_misalign_ldst_atm_m;
+  lsu_squash_va_oor_m	        tlu_cov_top.C${c}_lsu_squash_va_oor_m;
+  lsu_priv_action_g		tlu_cov_top.C${c}_lsu_priv_action_g;
+  lsu_daccess_excptn_g	        tlu_cov_top.C${c}_lsu_daccess_excptn_g;
+  lsu_daccess_prot_g	        tlu_cov_top.C${c}_lsu_daccess_prot_g;
+  lsu_wtchpt_trp_g		tlu_cov_top.C${c}_lsu_wtchpt_trp_g;
+  lsu_defr_trp_taken_g	        tlu_cov_top.C${c}_lsu_defr_trp_taken_g;
+  lsu_early_flush2_w	        tlu_cov_top.C${c}_lsu_early_flush2_w;
+  lsu_early_flush_w		tlu_cov_top.C${c}_lsu_early_flush_w;
+
+  ifu_tlu_flush_fd_w		tlu_cov_top.C${c}_ifu_tlu_flush_fd_w;
+  ifu_tlu_flush_m		tlu_cov_top.C${c}_ifu_tlu_flush_m;
+}
+
+bind tlu_evt_port C${c}_tlu_evt_bind
+{
+  tick_match	tlu_cov_top.C${c}_tick_match;
+  stick_match	tlu_cov_top.C${c}_stick_match;
+  htick_match	tlu_cov_top.C${c}_htick_match;
+  tlz_thread	tlu_cov_top.C${c}_tlz_thread;
+  set_hintp_g	tlu_cov_top.C${c}_set_hintp_g;
+  tickcmp_int	tlu_cov_top.C${c}_tickcmp_int;
+  stickcmp_int	tlu_cov_top.C${c}_stickcmp_int;
+  pib_wrap_m	tlu_cov_top.C${c}_pib_wrap_m;
+  pich_wrap	tlu_cov_top.C${c}_pich_wrap;
+  picl_wrap	tlu_cov_top.C${c}_picl_wrap;
+  cpu_mondo_cmp	tlu_cov_top.C${c}_cpu_mondo_cmp;
+  dev_mondo_cmp	tlu_cov_top.C${c}_dev_mondo_cmp;
+  resum_err_cmp	tlu_cov_top.C${c}_resum_err_cmp;
+  sftint_vld	tlu_cov_top.C${c}_sftint_vld;
+  hintp_vld	tlu_cov_top.C${c}_hintp_vld;
+  hwint_i3	tlu_cov_top.C${c}_hwint_i3;
+  nukeint_i2	tlu_cov_top.C${c}_nukeint_i2;
+  resumint_i2	tlu_cov_top.C${c}_resumint_i2;
+  rstint_i2	tlu_cov_top.C${c}_rstint_i2;
+  rstthr_i2	tlu_cov_top.C${c}_rstthr_i2;
+}
+
+bind tlu_intdp_port C${c}_tlu_intdp_bind
+{
+  t0_inrr	tlu_cov_top.C${c}_t0_inrr ;
+  t1_inrr	tlu_cov_top.C${c}_t1_inrr;
+  t2_inrr	tlu_cov_top.C${c}_t2_inrr;
+  t3_inrr	tlu_cov_top.C${c}_t3_inrr;
+  inc_ind_ld_int	tlu_cov_top.C${c}_inc_ind_ld_int;
+  ind_inc_thrid		tlu_cov_top.C${c}_ind_inc_thrid;
+  int_id	tlu_cov_top.C${c}_int_id;
+}
+
+
+.
+. } # coreBindings
+.
+
+// ***********************************************************
+// Declare bindings for each core
+// ***********************************************************
+
+. foreach $core (@CORE_STR) {
+.	&coreBindings( $core );
+. }
+
+#endif

@@ -1,0 +1,50 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_sparc_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+// This coverage object covers all the Sparc Error Status bits, including
+// multiple error bits, and their combinations.
+//
+// ***************************************************************************
+
+
+// coverage_def ERR_SPARC_COV (bit [17:0] sparc_err_status)
+// {
+    wildcard state meu  (18'b1xxxxxxxxxxxxxxxxx);
+    wildcard state mec  (18'bx1xxxxxxxxxxxxxxxx);
+    // single errors
+    state s_imdu        (18'b001000000000000000);
+    state s_imtu        (18'b000100000000000000);
+    state s_dmdu        (18'b000010000000000000);
+    state s_dmtu        (18'b000001000000000000);
+    state s_idc         (18'b000000100000000000);
+    state s_itc         (18'b000000010000000000);
+    state s_ddc         (18'b000000001000000000);
+    state s_dtc         (18'b000000000100000000);
+    state s_irc         (18'b000000000010000000);
+    state s_iru         (18'b000000000001000000);
+    state s_frc         (18'b000000000000100000);
+    state s_fru         (18'b000000000000010000);
+    state s_ldau        (18'b000000000000001000);
+    state s_ncu         (18'b000000000000000100);
+    state s_dmsu        (18'b000000000000000010);
+    state s_mau         (18'b000000000000000001);
+    
+// }

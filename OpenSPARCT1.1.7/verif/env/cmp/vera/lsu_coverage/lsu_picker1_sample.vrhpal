@@ -1,0 +1,287 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_picker1_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_picker1_state = {pick_presented[11:0], pick_destbusy[11:0], pick_atompend[11:0]};
+
+
+// FWD_RQs are supposed to be issued (by the TAP) to the Core only when the Core is quiescent,
+// therefore there cannot be any CAS packets in the picker to cause atompend
+
+// The only way for a FP packet to be atompend is when there is a another packet bound
+// for the IOB that isn't being granted, which can only happen if the FP/IOB destination
+// is busy, therefore fpop_atompend (not destbusy) is impossible
+
+
+wildcard state stream_presented( {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+wildcard state fpop_presented  ( {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+wildcard state intrpt_presented( {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+wildcard state fwdpkt_presented( {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} );
+wildcard state store3_presented( {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} );
+wildcard state store2_presented( {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} );
+wildcard state store1_presented( {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} );
+wildcard state store0_presented( {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} );
+wildcard state load3_presented ( {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} );
+wildcard state load2_presented ( {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} );
+wildcard state load1_presented ( {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} );
+wildcard state load0_presented ( {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} );
+
+wildcard state stream_destbusy( {12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+wildcard state fpop_destbusy  ( {12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+wildcard state intrpt_destbusy( {12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+wildcard state fwdpkt_destbusy( {12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx} );
+wildcard state store3_destbusy( {12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx} );
+wildcard state store2_destbusy( {12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx} );
+wildcard state store1_destbusy( {12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx} );
+wildcard state store0_destbusy( {12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx} );
+wildcard state load3_destbusy ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx} );
+wildcard state load2_destbusy ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx} );
+wildcard state load1_destbusy ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x} );
+wildcard state load0_destbusy ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0} );
+
+wildcard state stream_atompend( {12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx} );
+wildcard bad_state fpop_atompend  ( {12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx} );
+wildcard state intrpt_atompend( {12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx} );
+wildcard bad_state fwdpkt_atompend( {12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx} );
+wildcard state store3_atompend( {12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx} );
+wildcard state store2_atompend( {12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx} );
+wildcard state store1_atompend( {12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx} );
+wildcard state store0_atompend( {12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx} );
+wildcard state load3_atompend ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx} );
+wildcard state load2_atompend ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx} );
+wildcard state load1_atompend ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x} );
+wildcard state load0_atompend ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1} );
+
+wildcard state stream_destbusy_atompend( {12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx, 12'b1xxxxxxxxxxx} );
+wildcard state fpop_destbusy_atompend  ( {12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx, 12'bx1xxxxxxxxxx} );
+wildcard state intrpt_destbusy_atompend( {12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx, 12'bxx1xxxxxxxxx} );
+wildcard bad_state fwdpkt_destbusy_atompend( {12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx, 12'bxxx1xxxxxxxx} );
+wildcard state store3_destbusy_atompend( {12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx, 12'bxxxx1xxxxxxx} );
+wildcard state store2_destbusy_atompend( {12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx, 12'bxxxxx1xxxxxx} );
+wildcard state store1_destbusy_atompend( {12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx, 12'bxxxxxx1xxxxx} );
+wildcard state store0_destbusy_atompend( {12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx, 12'bxxxxxxx1xxxx} );
+wildcard state load3_destbusy_atompend ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx, 12'bxxxxxxxx1xxx} );
+wildcard state load2_destbusy_atompend ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx, 12'bxxxxxxxxx1xx} );
+wildcard state load1_destbusy_atompend ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx1x} );
+wildcard state load0_destbusy_atompend ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx1} );
+
+wildcard trans stream_idle_presented    ( {12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+wildcard trans stream_idle_destbusy     ( {12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans stream_idle_atompend     ( {12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b0xxxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'b1xxxxxxxxxxx} );
+wildcard trans stream_destbusy_presented( {12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+wildcard trans stream_atompend_presented( {12'b0xxxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'b1xxxxxxxxxxx} ->
+                                          {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+wildcard trans stream_presented_destbusy( {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b0xxxxxxxxxxx, 12'b1xxxxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans stream_presented_atompend( {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b0xxxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'b1xxxxxxxxxxx} );
+wildcard trans stream_presented_idle    ( {12'b1xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} ->
+                                          {12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx, 12'b0xxxxxxxxxxx} );
+
+wildcard trans fpop_idle_presented    ( {12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+wildcard trans fpop_idle_destbusy     ( {12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans fpop_idle_atompend     ( {12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx0xxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bx1xxxxxxxxxx} );
+wildcard trans fpop_destbusy_presented( {12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx, 12'bxxxxxxxxxxxx} ->
+                                        {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+wildcard trans fpop_atompend_presented( {12'bx0xxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bx1xxxxxxxxxx} ->
+                                        {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+wildcard trans fpop_presented_destbusy( {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx0xxxxxxxxxx, 12'bx1xxxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans fpop_presented_atompend( {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx0xxxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bx1xxxxxxxxxx} );
+wildcard trans fpop_presented_idle    ( {12'bx1xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} ->
+                                        {12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx, 12'bx0xxxxxxxxxx} );
+
+wildcard trans intrpt_idle_presented    ( {12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+wildcard trans intrpt_idle_destbusy     ( {12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans intrpt_idle_atompend     ( {12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx0xxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxx1xxxxxxxxx} );
+wildcard trans intrpt_destbusy_presented( {12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+wildcard trans intrpt_atompend_presented( {12'bxx0xxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxx1xxxxxxxxx} ->
+                                          {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+wildcard trans intrpt_presented_destbusy( {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx0xxxxxxxxx, 12'bxx1xxxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans intrpt_presented_atompend( {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx0xxxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxx1xxxxxxxxx} );
+wildcard trans intrpt_presented_idle    ( {12'bxx1xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} ->
+                                          {12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx, 12'bxx0xxxxxxxxx} );
+
+wildcard trans fwdpkt_idle_presented    ( {12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} );
+wildcard trans fwdpkt_idle_destbusy     ( {12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard bad_trans fwdpkt_idle_atompend     ( {12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx0xxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxx1xxxxxxxx} );
+wildcard trans fwdpkt_destbusy_presented( {12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} );
+wildcard bad_trans fwdpkt_atompend_presented( {12'bxxx0xxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxx1xxxxxxxx} ->
+                                          {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} );
+wildcard trans fwdpkt_presented_destbusy( {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx0xxxxxxxx, 12'bxxx1xxxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard bad_trans fwdpkt_presented_atompend( {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx0xxxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxx1xxxxxxxx} );
+wildcard trans fwdpkt_presented_idle    ( {12'bxxx1xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} ->
+                                          {12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx, 12'bxxx0xxxxxxxx} );
+
+wildcard trans store3_idle_presented    ( {12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} );
+wildcard trans store3_idle_destbusy     ( {12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store3_idle_atompend     ( {12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx0xxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxx1xxxxxxx} );
+wildcard trans store3_destbusy_presented( {12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} );
+wildcard trans store3_atompend_presented( {12'bxxxx0xxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxx1xxxxxxx} ->
+                                          {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} );
+wildcard trans store3_presented_destbusy( {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx0xxxxxxx, 12'bxxxx1xxxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store3_presented_atompend( {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx0xxxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxx1xxxxxxx} );
+wildcard trans store3_presented_idle    ( {12'bxxxx1xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} ->
+                                          {12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx, 12'bxxxx0xxxxxxx} );
+
+wildcard trans store2_idle_presented    ( {12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} );
+wildcard trans store2_idle_destbusy     ( {12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store2_idle_atompend     ( {12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx0xxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxx1xxxxxx} );
+wildcard trans store2_destbusy_presented( {12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} );
+wildcard trans store2_atompend_presented( {12'bxxxxx0xxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxx1xxxxxx} ->
+                                          {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} );
+wildcard trans store2_presented_destbusy( {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx0xxxxxx, 12'bxxxxx1xxxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store2_presented_atompend( {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx0xxxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxx1xxxxxx} );
+wildcard trans store2_presented_idle    ( {12'bxxxxx1xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} ->
+                                          {12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx, 12'bxxxxx0xxxxxx} );
+
+wildcard trans store1_idle_presented    ( {12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} );
+wildcard trans store1_idle_destbusy     ( {12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store1_idle_atompend     ( {12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx0xxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxx1xxxxx} );
+wildcard trans store1_destbusy_presented( {12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} );
+wildcard trans store1_atompend_presented( {12'bxxxxxx0xxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxx1xxxxx} ->
+                                          {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} );
+wildcard trans store1_presented_destbusy( {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx0xxxxx, 12'bxxxxxx1xxxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store1_presented_atompend( {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx0xxxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxx1xxxxx} );
+wildcard trans store1_presented_idle    ( {12'bxxxxxx1xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} ->
+                                          {12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx, 12'bxxxxxx0xxxxx} );
+
+wildcard trans store0_idle_presented    ( {12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} );
+wildcard trans store0_idle_destbusy     ( {12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store0_idle_atompend     ( {12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx0xxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxx1xxxx} );
+wildcard trans store0_destbusy_presented( {12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx, 12'bxxxxxxxxxxxx} ->
+                                          {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} );
+wildcard trans store0_atompend_presented( {12'bxxxxxxx0xxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxx1xxxx} ->
+                                          {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} );
+wildcard trans store0_presented_destbusy( {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx0xxxx, 12'bxxxxxxx1xxxx, 12'bxxxxxxxxxxxx} );
+wildcard trans store0_presented_atompend( {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx0xxxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxx1xxxx} );
+wildcard trans store0_presented_idle    ( {12'bxxxxxxx1xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} ->
+                                          {12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx, 12'bxxxxxxx0xxxx} );
+
+wildcard trans load3_idle_presented    ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} );
+wildcard trans load3_idle_destbusy     ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx, 12'bxxxxxxxxxxxx} );
+wildcard trans load3_idle_atompend     ( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx0xxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxx1xxx} );
+wildcard trans load3_destbusy_presented( {12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx, 12'bxxxxxxxxxxxx} ->
+                                         {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} );
+wildcard trans load3_atompend_presented( {12'bxxxxxxxx0xxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxx1xxx} ->
+                                         {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} );
+wildcard trans load3_presented_destbusy( {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx0xxx, 12'bxxxxxxxx1xxx, 12'bxxxxxxxxxxxx} );
+wildcard trans load3_presented_atompend( {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx0xxx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxx1xxx} );
+wildcard trans load3_presented_idle    ( {12'bxxxxxxxx1xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} ->
+                                         {12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx, 12'bxxxxxxxx0xxx} );
+
+wildcard trans load2_idle_presented    ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} );
+wildcard trans load2_idle_destbusy     ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx, 12'bxxxxxxxxxxxx} );
+wildcard trans load2_idle_atompend     ( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx0xx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxx1xx} );
+wildcard trans load2_destbusy_presented( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx, 12'bxxxxxxxxxxxx} ->
+                                         {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} );
+wildcard trans load2_atompend_presented( {12'bxxxxxxxxx0xx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxx1xx} ->
+                                         {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} );
+wildcard trans load2_presented_destbusy( {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx1xx, 12'bxxxxxxxxxxxx} );
+wildcard trans load2_presented_atompend( {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx0xx, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxx1xx} );
+wildcard trans load2_presented_idle    ( {12'bxxxxxxxxx1xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} ->
+                                         {12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx, 12'bxxxxxxxxx0xx} );
+
+wildcard trans load1_idle_presented    ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} );
+wildcard trans load1_idle_destbusy     ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x, 12'bxxxxxxxxxxxx} );
+wildcard trans load1_idle_atompend     ( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxx1x} );
+wildcard trans load1_destbusy_presented( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x, 12'bxxxxxxxxxxxx} ->
+                                         {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} );
+wildcard trans load1_atompend_presented( {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxx1x} ->
+                                         {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} );
+wildcard trans load1_presented_destbusy( {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx1x, 12'bxxxxxxxxxxxx} );
+wildcard trans load1_presented_atompend( {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxx1x} );
+wildcard trans load1_presented_idle    ( {12'bxxxxxxxxxx1x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} ->
+                                         {12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x, 12'bxxxxxxxxxx0x} );
+
+wildcard trans load0_idle_presented    ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} );
+wildcard trans load0_idle_destbusy     ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxxx} );
+wildcard trans load0_idle_atompend     ( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxxx1} );
+wildcard trans load0_destbusy_presented( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxxx} ->
+                                         {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} );
+wildcard trans load0_atompend_presented( {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxxx1} ->
+                                         {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} );
+wildcard trans load0_presented_destbusy( {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxxx} );
+wildcard trans load0_presented_atompend( {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxxx, 12'bxxxxxxxxxxx1} );
+wildcard trans load0_presented_idle    ( {12'bxxxxxxxxxxx1, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} ->
+                                         {12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0, 12'bxxxxxxxxxxx0} );

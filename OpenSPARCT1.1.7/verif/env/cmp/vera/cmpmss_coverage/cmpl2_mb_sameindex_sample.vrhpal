@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_mb_sameindex_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// coverage_def L2_MB_SAMEINDEX_COV(bit [4:0] hit_count_c4) {
+
+    //state hit_count_0 (5'h0);
+    state hit_count_1 (5'h1);
+    state hit_count_2 (5'h2);
+    state hit_count_3 (5'h3);
+    state hit_count_4 (5'h4);
+    state hit_count_5 (5'h5);
+    state hit_count_6 (5'h6);
+    state hit_count_7 (5'h7);
+    state hit_count_8 (5'h8);
+    state hit_count_9 (5'h9);
+    state hit_count_10(5'ha);
+    state hit_count_11(5'hb);
+    state hit_count_12(5'hc);
+
+    bad_state hit_count_13(5'hd);
+    bad_state hit_count_14(5'he);
+    bad_state hit_count_15(5'hf);
+    bad_state hit_count_16(5'h10);
+    bad_state hit_count_17(5'h11);
+    bad_state hit_count_18(5'h12);
+    bad_state hit_count_19(5'h13);
+    bad_state hit_count_20(5'h14);
+    bad_state hit_count_21(5'h15);
+    bad_state hit_count_22(5'h16);
+    bad_state hit_count_23(5'h17);
+    bad_state hit_count_24(5'h18);
+    bad_state hit_count_25(5'h19);
+    bad_state hit_count_26(5'h1a);
+    bad_state hit_count_27(5'h1b);
+    bad_state hit_count_28(5'h1c);
+    bad_state hit_count_29(5'h1d);
+    bad_state hit_count_30(5'h1e);
+    bad_state hit_count_31(5'h1f);
+// }

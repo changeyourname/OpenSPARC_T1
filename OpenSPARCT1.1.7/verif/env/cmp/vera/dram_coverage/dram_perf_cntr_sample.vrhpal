@@ -1,0 +1,62 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_perf_cntr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_perf_cntr_sample.vrh
+// Description:
+// Coverage object for pef control and perf sticky bits for cntr0, cntr1
+//
+// ***************************************************************************
+
+
+// coverage_def dram_perf_cntr_sample (bit [9:0] perf)
+// {
+
+  // state declarations
+       wildcard state s_perf_cntl0_0  (10'b0000xxxxxx);
+       wildcard state s_perf_cntl0_1  (10'b0001xxxxxx);
+       wildcard state s_perf_cntl0_2  (10'b0010xxxxxx);
+       wildcard state s_perf_cntl0_3  (10'b0011xxxxxx);
+       wildcard state s_perf_cntl0_4  (10'b0100xxxxxx);
+       wildcard state s_perf_cntl0_5  (10'b0101xxxxxx);
+       wildcard state s_perf_cntl0_6  (10'b0110xxxxxx);
+       wildcard state s_perf_cntl0_7  (10'b0111xxxxxx);
+       wildcard state s_perf_cntl0_8  (10'b1xxxxxxxxx);
+       wildcard state s_perf_cntl1_0  (10'bxxxx0000xx);
+       wildcard state s_perf_cntl1_1  (10'bxxxx0001xx);
+       wildcard state s_perf_cntl1_2  (10'bxxxx0010xx);
+       wildcard state s_perf_cntl1_3  (10'bxxxx0011xx);
+       wildcard state s_perf_cntl1_4  (10'bxxxx0100xx);
+       wildcard state s_perf_cntl1_5  (10'bxxxx0101xx);
+       wildcard state s_perf_cntl1_6  (10'bxxxx0110xx);
+       wildcard state s_perf_cntl1_7  (10'bxxxx0111xx);
+       wildcard state s_perf_cntl1_8  (10'bxxxx1xxxxx);
+       wildcard state s_perf_stky0_1  (10'bxxxxxxxx1x);
+       wildcard state s_perf_stky1_1  (10'bxxxxxxxxx1);
+
+  // bad states
+  //bad_state s_not_rd_q_full_n_req_state (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_q_full_n_req_trans (not trans);
+
+//}
+

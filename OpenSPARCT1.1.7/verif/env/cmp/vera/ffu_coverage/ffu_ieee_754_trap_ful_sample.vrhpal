@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_ieee_754_trap_ful_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+
+
+// coverage_def IEEE_754_TRAP_FUL_COV (bit[`IEEE_754_TRAP_FUL_WIDTH-1:0] ieee_754_trap_ful_state) {
+  //state declarations
+
+
+wildcard state s_NONE_EXCP        				(NONE_EXCP);
+wildcard state s_NOTRAP_nx_EXCP   				(NOTRAP_nx_EXCP);
+wildcard state s_NOTRAP_uf_nx_EXCP				(NOTRAP_uf_nx_EXCP);
+wildcard state s_NOTRAP_of_nx_EXCP				(NOTRAP_of_nx_EXCP);
+wildcard state s_NOTRAP_nv_EXCP   				(NOTRAP_nv_EXCP);
+wildcard state s_NOTRAP_dz_EXCP   				(NOTRAP_dz_EXCP);
+wildcard state s_TRAP_nx_EXCP     				(TRAP_nx_EXCP);
+wildcard state s_TRAP_uf_nx_EXCP_1				(TRAP_uf_nx_EXCP_1);
+wildcard state s_TRAP_uf_nx_EXCP_2				(TRAP_uf_nx_EXCP_2);
+wildcard state s_TRAP_of_nx_EXCP_1				(TRAP_of_nx_EXCP_1);
+wildcard state s_TRAP_of_nx_EXCP_2				(TRAP_of_nx_EXCP_2);
+wildcard state s_TRAP_nv_EXCP     				(TRAP_nv_EXCP);
+wildcard state s_TRAP_dz_EXCP     				(TRAP_dz_EXCP);
+
+wildcard bad_state s_ILLEGAL_TRAP_of				(TRAP_of_BAD);
+wildcard bad_state s_ILLEGAL_TRAP_uf				(TRAP_uf_BAD);
+
+// }
+

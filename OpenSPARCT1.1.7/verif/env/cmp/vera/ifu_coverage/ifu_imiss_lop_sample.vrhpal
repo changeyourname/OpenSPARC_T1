@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_imiss_lop_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_imiss_lop_cov.vr
+// Description:
+// 
+// This coverage object covers conditions where an imiss happens
+// at the S-stage while there is a long latency operation in the pipe,
+// D-stage. Some of these lop's could be retracted but that
+// doesn't matter. The point is that two maskes get set, they should
+// resolve correctly.
+//
+// State: 8'b: imss,swcd,lop_instr(6)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_IMISS_LOP_COV (bit [7:0] cov_vector)
+// {
+.@lop = ("BPr","BPcc_Bicc","FBfcc_FBPfcc","Call","Mul", "Div","Rdpr","Flushw","Rdy","Rdccr","Rdasi","Rdtick","Rdpc","Rdfprs","Membar","Stbar","Rdasr","Wry","Wrccr","Wrasi","Wrfprs","Sir","Wrasr","Saved","Restored","Wrpr","Fpop1","Fpop2","Jmpl","Return","Tcc","Flush","Save","Restore","Done","Retry","Ld","Ldasi","Stasi","Ldstub","Swap","Ldfp","Stfp","Cas","Pref","Halt");
+.foreach $lop (@lop) {
+.   $loplc = lc $lop;
+.   $lopuc = uc $lop;
+.  print "  state s_imiss_$loplc\t\t(IMISS_WITH_$lopuc);\n";
+.}
+// }

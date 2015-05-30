@@ -1,0 +1,393 @@
+/***************************************************************************
+ * pcx2mb_props.sva:	Properties written for the pcx2mb module.
+ *		Check for:  State machine one-hot, Every request gets a
+ *		grant.  Atomics are granted twice.  No overflow occurs,
+ *		and no stalls
+ *
+ *		Written By:	Tom Thatcher
+ *		Date:		11/1/2006
+ * $Header: $
+ ***************************************************************************/
+
+`include "ccx2mb.h"
+
+module pcx2mb_props (
+	input clk,
+	input reset_l,
+
+	// Input signals
+	input [4:0]            spc_pcx_req_pq,
+	input                  spc_pcx_atom_pq,
+	input [`PCX_WIDTH-1:0] spc_pcx_data_pa,
+
+	input fsl_pcx_m_full,
+
+	// Output signals
+	input [4:0] pcx_spc_grant_px,
+
+	input [`FSL_D_WIDTH-1:0] pcx_fsl_m_data,
+	input                    pcx_fsl_m_write,
+	input                    pcx_fsl_m_control,
+
+	// Internal signals
+	input [4:0] pcx_sm_state,
+	input       atomic_first,
+	input       atomic_second,
+	input       load_data,
+	input       entry1_active,
+	input       entry2_active,
+	input       entry3_active,
+	input       entry4_active,
+	input       entry5_active,
+	input       entry6_active,
+	input       entry7_active,
+	input       entry8_active,
+	input       entry9_active,
+	input       entry10_active,
+	input [4:0] entry2_dest,
+	input       entry2_atom,
+	input [3:0] entry2_data
+	);
+
+    wire [3:0] gear_ratio_m1;
+
+`ifdef PCX2MB_5_BIT_REQ
+    assign gear_ratio_m1 = 4'd4;
+`else
+    assign gear_ratio_m1 = 4'd3;
+`endif
+
+    // Dummy Constraint:  Artificially limit the fsl_m_full signal to a width
+    // of 2.
+    property p_full_width_1;
+	@(posedge clk)
+	    fsl_pcx_m_full |=> !fsl_pcx_m_full;
+    endproperty
+    constr_full_width_1: assert property (p_full_width_1);
+
+    // Reset Constraint:  No requests if reset still active
+    property p_no_req_if_reset;
+	@(posedge clk)
+	    !reset_l |->  
+		(spc_pcx_req_pq == 5'b0000 &&
+		spc_pcx_atom_pq == 1'b0);
+    endproperty
+    constr_no_req_if_reset: assert property (p_no_req_if_reset);
+
+    // Constraint:  5'bit request is one-hot
+    property p_req_one_hot;
+	@(posedge clk)
+	    $onehot0(spc_pcx_req_pq);
+    endproperty
+    constr_req_one_hot: assert property (p_req_one_hot);
+
+
+    // Constraint:  Transmitter may only send two transactions at one time to
+    //		any of the 5 destinations.  It may send only one atomic if both
+    //		entries for a given destination are free.
+    reg [2:0] txn_credits [0:4];
+    reg [4:0] real_requests;
+
+    genvar dest;
+    generate
+    for (dest=0; dest < 5; dest++) begin : link_quota
+	always @ (posedge clk or negedge reset_l) begin
+	    if (!reset_l) begin
+		txn_credits[dest] <= 3'd2;
+	    end
+	    else if (spc_pcx_req_pq[dest] && spc_pcx_atom_pq &&
+		    !pcx_spc_grant_px[dest]) begin
+		txn_credits[dest] <= txn_credits[dest] - 4'd2;
+	    end
+	    else if (spc_pcx_req_pq[dest] && !spc_pcx_atom_pq &&
+		    !pcx_spc_grant_px[dest] && txn_credits[dest] > 0) begin
+		txn_credits[dest] <= txn_credits[dest] - 4'd1;
+	    end
+	    else if (spc_pcx_req_pq[dest] && spc_pcx_atom_pq &&
+		    pcx_spc_grant_px[dest] && txn_credits[dest] > 0) begin
+		txn_credits[dest] <= txn_credits[dest] - 4'd1;
+	    end
+	    else if (!spc_pcx_req_pq[dest] && pcx_spc_grant_px[dest]) begin
+		txn_credits[dest] <= txn_credits[dest] + 4'd1;
+	    end
+	    else begin
+		txn_credits[dest]  <= txn_credits[dest];
+	    end
+	end
+
+	// Constraint:  Only send an atomic if two credits are available
+	property p_no_atom_if_txn_active;
+	    @(posedge clk)
+		txn_credits[dest] < 4'd2 |->
+			!(spc_pcx_req_pq[dest] && spc_pcx_atom_pq);
+	endproperty
+	constr_no_atom_if_txn_active: assert property (p_no_atom_if_txn_active);
+    
+	// Constraint:  Core will speculatively send transaction (not atomics)
+	//	even though no credit is available.  These must be dropped.
+	// property p_no_txn_if_no_credit;
+	//     @(posedge clk)
+	// 	txn_credits < 4'd1 |-> !spc_pcx_req_pq;
+	// endproperty
+	// constr_no_txn_if_no_credit: assert property (p_no_txn_if_no_credit);
+    
+	assign real_requests[dest] =
+		    spc_pcx_req_pq[dest] && ( (txn_credits[dest] > 0) ||
+		    pcx_spc_grant_px[dest]);
+
+	// Sanity Check Property:  Number of credits should not exceed 2
+	property p_no_credits_gt_2;
+	    @(posedge clk)
+		txn_credits[dest] <= 3'd2;
+	endproperty
+	a_no_credits_gt_2: assert property (p_no_credits_gt_2);
+
+    end
+    endgenerate
+
+    // Constraint:  An Atomic request requires 2 cycles:  Cant have a new
+    //		request in the following cycle
+    property p_atomic_2_cycle_req;
+	@(posedge clk)
+	    spc_pcx_atom_pq |=> spc_pcx_req_pq == 5'b00000;
+    endproperty
+    constr_atomic_2_cycle_req: assert property (p_atomic_2_cycle_req);
+
+
+    // Requirement:  Grant is one-hot
+    property p_grant_one_hot;
+	@(posedge clk)
+	    $onehot0(pcx_spc_grant_px);
+    endproperty
+    a_grant_one_hot: assert property (p_grant_one_hot);
+
+
+    // Requirement:  An atomic request will get two back-to-back grants
+    genvar i;
+    generate
+    for (i=0; i<5;i++) begin : req_grant
+	property p_atom_gets_2_grants;
+	    @(posedge clk)
+	//	(spc_pcx_req_pq[i] && spc_pcx_atom_pq && !entry1_active &&
+	//	 !entry2_active) |->
+	//	    ##[2:26] pcx_spc_grant_px[i] ##1 pcx_spc_grant_px[i];
+		(spc_pcx_req_pq[i] && spc_pcx_atom_pq && !entry1_active &&
+		 !entry2_active) ##1
+		(pcx_fsl_m_write && !fsl_pcx_m_full) [->8] |->
+		    ##1 pcx_spc_grant_px[i] [*2];
+	endproperty
+	a_atom_gets_2_grants: assert property (p_atom_gets_2_grants);
+
+	property p_queued_atom_gets_2_grants;
+	    @(posedge clk)
+	//	(entry2_active && entry2_dest[i] && entry2_atom)  |->
+	//	    ##[2:26] pcx_spc_grant_px[i] ##1 pcx_spc_grant_px[i];
+		(entry2_active && entry2_dest[i] && entry2_atom &&
+		 load_data ) ##1
+		(pcx_fsl_m_write && !fsl_pcx_m_full) [->8] |->
+		    ##1 pcx_spc_grant_px[i] [*2];
+	endproperty
+	a_queued_atom_gets_2_grants:
+		assert property (p_queued_atom_gets_2_grants);
+
+	// Requirement:  A regular request will get a grant.
+	property p_req_gets_grant;
+	    @(posedge clk)
+	//	(spc_pcx_req_pq[i] && !spc_pcx_atom_pq && !entry2_active) |->
+	//	    ##[2:26] pcx_spc_grant_px[i];
+		(spc_pcx_req_pq[i] && !spc_pcx_atom_pq && !entry2_active &&
+		 !entry1_active) ##1
+		(pcx_fsl_m_write && !fsl_pcx_m_full) [->4] |->
+		    ##1 pcx_spc_grant_px[i];
+	endproperty
+	a_req_gets_grant: assert property (p_req_gets_grant);
+    end
+    endgenerate
+
+    // Requirement:  The control bit will be high only for every 4 writes
+    reg [4:0] writes_since_last_ctl;
+    always @ (posedge clk or negedge reset_l) begin
+	if (!reset_l) begin
+	    writes_since_last_ctl <= gear_ratio_m1;
+	end
+	else begin
+	    if (pcx_fsl_m_write && pcx_fsl_m_control) begin
+		writes_since_last_ctl <= 4'd0;
+	    end
+	    else if (pcx_fsl_m_write) begin
+		writes_since_last_ctl <= writes_since_last_ctl + 4'd1;
+	    end
+	    else begin
+		writes_since_last_ctl <= writes_since_last_ctl;
+	    end
+	end
+    end
+
+    property p_ctl_every_n_a;
+	@(posedge clk)
+	    pcx_fsl_m_write && writes_since_last_ctl == gear_ratio_m1 |->
+		pcx_fsl_m_control;
+    endproperty
+    a_ctl_every_n_a: assert property (p_ctl_every_n_a);
+
+    property p_ctl_every_n_b;
+	@(posedge clk)
+	    pcx_fsl_m_write && writes_since_last_ctl < gear_ratio_m1 |->
+		!pcx_fsl_m_control;
+    endproperty
+    a_ctl_every_n_b: assert property (p_ctl_every_n_b);
+
+    // Requirement:  Internal state machine variable is one-hot
+    property p_pcx_sm_one_hot;
+	@(posedge clk) $onehot0(pcx_sm_state);
+    endproperty
+    a_pcx_sm_one_hot: assert property (p_pcx_sm_one_hot);
+
+    // Requirement:  Internal state machine variables atomic_first and 
+    //		atomic_second are one_hot
+    property p_atomic_first_second;
+	@(posedge clk) $onehot0({atomic_first, atomic_second});
+    endproperty
+    a_atomic_first_second: assert property (p_atomic_first_second);
+
+    // Requirement:  an entry will not be valid if the next entry down is not
+    //		valid.
+    property p_not_vld_if_next_not_vld_2;
+	@(posedge clk)
+	    !entry2_active |-> !entry3_active;
+    endproperty
+    a_not_vld_if_next_not_vld_2 : assert property (p_not_vld_if_next_not_vld_2);
+
+    property p_not_vld_if_next_not_vld_3;
+	@(posedge clk)
+	    !entry3_active |-> !entry4_active;
+    endproperty
+    a_not_vld_if_next_not_vld_3 : assert property (p_not_vld_if_next_not_vld_3);
+
+    property p_not_vld_if_next_not_vld_4;
+	@(posedge clk)
+	    !entry4_active |-> !entry5_active;
+    endproperty
+    a_not_vld_if_next_not_vld_4 : assert property (p_not_vld_if_next_not_vld_4);
+
+    property p_not_vld_if_next_not_vld_5;
+	@(posedge clk)
+	    !entry5_active |-> !entry6_active;
+    endproperty
+    a_not_vld_if_next_not_vld_5 : assert property (p_not_vld_if_next_not_vld_5);
+
+    property p_not_vld_if_next_not_vld_6;
+	@(posedge clk)
+	    !entry6_active |-> !entry7_active;
+    endproperty
+    a_not_vld_if_next_not_vld_6 : assert property (p_not_vld_if_next_not_vld_6);
+
+    // Requirement:  The state machine will not load data if entry2 is not 
+    //		active and no new request has been received.
+    property p_no_load_if_no_entry2;
+	@(posedge clk)
+	    !entry2_active && !$past(spc_pcx_req_pq,1) &&
+		    !($past(spc_pcx_req_pq,2) && $past(fsl_pcx_m_full,1) ) |->
+		    !load_data;
+    endproperty
+    a_no_load_if_no_entry2 : assert property (p_no_load_if_no_entry2);
+
+    // Requirement:  When a transaction is loaded to the shift register, the
+    //		Data in entry 2 will be sent to the FSL FIFO at the right time
+    property p_entry2_data_sent;
+	logic [3:0] dout_data;
+	@(posedge clk)
+	    (entry2_active && load_data, dout_data = entry2_data[3:0]) ##1
+		(pcx_fsl_m_write && !fsl_pcx_m_full) [->4] |->
+		pcx_fsl_m_data[3:0] == dout_data;
+    endproperty
+    a_entry2_data_sent : assert property (p_entry2_data_sent);
+
+    // Requirement:  Whan state machine returns to IDLE state, the number of
+    //		packets sent should equal the number of packets received.
+    reg [1:0] pkts_received;
+    always @ (posedge clk or negedge reset_l) begin
+	if (!reset_l) begin
+	    pkts_received <= 2'd0;
+	end
+	else if (spc_pcx_req_pq && spc_pcx_atom_pq) begin
+	    pkts_received <= pkts_received + 2'd2;
+	end
+	else if (real_requests && !spc_pcx_atom_pq) begin
+	    pkts_received <= pkts_received + 4'd1;
+	end
+	else begin
+	    pkts_received  <= pkts_received;
+	end
+    end
+
+    reg [3:0] pkts_sent;
+    always @ (posedge clk or negedge reset_l) begin
+	if (!reset_l) begin
+	    pkts_sent <= 4'd0;
+	end
+	else if (pcx_fsl_m_write && !fsl_pcx_m_full) begin
+	    pkts_sent <= pkts_sent + 4'd1;
+	end
+	else begin
+	    pkts_sent <= pkts_sent;
+	end
+    end
+
+    property p_pkts_sent_eq_pkts_rcvd;
+	@(posedge clk)
+	    pcx_sm_state[0] |-> pkts_sent[3:2] == pkts_received;
+    endproperty
+    a_pkts_sent_eq_pkts_rcvd : assert property (p_pkts_sent_eq_pkts_rcvd);
+
+    // Coverage
+    cov_rq_active_2 : cover property ( @(posedge clk) entry2_active);
+    cov_rq_active_3 : cover property ( @(posedge clk) entry3_active);
+    cov_rq_active_4 : cover property ( @(posedge clk) entry4_active);
+    cov_rq_active_5 : cover property ( @(posedge clk) entry5_active);
+    cov_rq_active_6 : cover property ( @(posedge clk) entry6_active);
+    cov_rq_active_7 : cover property ( @(posedge clk) entry7_active);
+    cov_rq_active_8 : cover property ( @(posedge clk) entry8_active);
+    cov_rq_active_9 : cover property ( @(posedge clk) entry9_active);
+    cov_rq_active_10 : cover property ( @(posedge clk) entry10_active);
+
+
+endmodule
+
+bind pcx2mb pcx2mb_props areq (
+	.clk(rclk),
+	.reset_l(reset_l),
+
+	// .signals(signals)
+	.spc_pcx_req_pq(spc_pcx_req_pq),
+	.spc_pcx_atom_pq(spc_pcx_atom_pq),
+	.spc_pcx_data_pa(spc_pcx_data_pa),
+
+	.fsl_pcx_m_full(fsl_pcx_m_full),
+
+	// Output signals
+	.pcx_spc_grant_px(pcx_spc_grant_px),
+
+	.pcx_fsl_m_data(pcx_fsl_m_data),
+	.pcx_fsl_m_write(pcx_fsl_m_write),
+	.pcx_fsl_m_control(pcx_fsl_m_control),
+
+	// Internal signals
+	.pcx_sm_state(shft_state.curr_state),
+	.atomic_first(shft_state.atomic_first),
+	.atomic_second(shft_state.atomic_second),
+	.load_data(load_data),
+	.entry1_active(entry1_active),
+	.entry2_active(entry2_active),
+	.entry3_active(entry3_active),
+	.entry4_active(entry4_active),
+	.entry5_active(entry5_active),
+	.entry6_active(entry6_active),
+	.entry7_active(entry7_active),
+	.entry8_active(entry8_active),
+	.entry9_active(entry9_active),
+	.entry10_active(entry10_active),
+	.entry2_dest(entry2_dest),
+	.entry2_atom(entry2_atom),
+	.entry2_data(entry2_data[3:0])
+	);

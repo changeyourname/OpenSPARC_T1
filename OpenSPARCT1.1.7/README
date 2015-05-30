@@ -1,0 +1,150 @@
+
+===============================================================================
+ Installation Instructions for OpenSPARC T1 design and verification database
+===============================================================================
+
+1. Download OpenSPARCT1.tar.bz2 file to your directory.
+      e.g. you downloaded this file to "/home/johndoe/OpenSPARCT1" directory.
+
+2. Unzip downloaded file by using following command:
+
+   bunzip2 OpenSPARCT1.tar.bz2
+
+   This step will create OpenSPARCT1.tar file.
+
+3. Extract files from tar file by using following command:
+
+   tar xvf OpenSPARCT1.tar
+
+4. Setup environment variables by editing OpenSPARCT1.cshrc file.
+
+   Please set the following variables in OpenSPARCT1.cshrc file
+   
+   DV_ROOT		Directory location where you Extracted 
+			the OpenSPARCT1.tar file.
+
+   MODEL_DIR		Directory location where you will run your 
+			simulations, create this directory.
+			e.g. mkdir /home/johndoe/OpenSPARCT1_model
+
+   CC_BIN		Directory location for CC compiler binaries.
+   VERA_HOME		Directory location for Vera installation.
+   VCS_HOME		Directory location for VCS installation.
+   NCV_HOME		Directory location for NCVerilog installation.
+   SYN_HOME		Directory location for Synopsys installation.
+   SYNP_HOME		Directory location for Synplicity installation.
+   NOVAS_HOME		Directory location for Novas/Debussy installation.
+   LM_LICENSE_FILE	CAD tools license key files.
+
+   For Example :
+
+   setenv DV_ROOT /home/johndoe/OpenSPARCT1
+   setenv MODEL_DIR /home/johndoe/OpenSPARCT1_model
+   setenv CC_BIN "/usr/dist/pkgs/devpro,v4.2/5.x-sparc/bin"
+   setenv VERA_HOME /import/EDAtools/vera/vera,v6.2.8/5.x
+   setenv VCS_HOME /import/EDAtools/vcs/vcs7.1.1R21
+   setenv NCV_HOME /import/EDAtools/ncverilog/ncverilog.v5.3.s2/5.x
+   setenv SYN_HOME /import/EDAtools/synopsys/synopsys.vX-2005.09
+   setenv SYNP_HOME /import/EDAtools/synplicity/synplify.v8.5/fpga_85
+   setenv NOVAS_HOME /import/EDAtools/debussy/debussy,v5.3v19/5.x
+   setenv LM_LICENSE_FILE "/import/EDAtools/licenses/keys/synopsys/synopsys_key:/import/EDAtools/licenses/keys/cadence/cadence_key"
+
+5. Source the environment variable file above by using following command :
+
+   source OpenSPARCT1.cshrc
+
+   You may want to add the above command to your ~/.cshrc file.
+
+6. The OpenSPARC T1 Design/Verification package now comes with 3 
+   environments : thread1, core1 and chip8. 
+
+   The thread1 environment consists of single thread implementation of
+   one SPARC CPU core (without Stream Processing Unit), Cache, Memory, 
+   Crossbar etc. without I/O sub-system.
+
+   The core1 environment consists of one SPARC CPU core, Cache, Memory,
+   Crossbar etc. without I/O sub-system.
+
+   The chip8 environment consists of full OpenSPARC T1 chip including
+   all 8 cores, Cache, Memory, Crossbar, I/O sub-system.
+
+   Each environment has mini regression and full regression.
+
+   To run regression use sims command. The important sims command
+   parameters are :
+
+   1. -sim_type  : Simulator type 
+
+      Please set this to vcs or ncv. 
+
+      For Example: -sim_type=vcs
+
+   2. -group : Regression group 
+
+      The choices for regresion group are thread1_mini, thread1_full, 
+      core1_mini, core1_full, chip8_mini, chip8_full
+
+      For Example : -group=core1_mini
+
+   Change directory to $MODEL_DIR where the simulations will run.
+   Type
+
+   cd $MODEL_DIR
+
+   To run mini regression for core1 environment using VCS simulator, type
+
+   sims -sim_type=vcs -group=core1_mini
+
+   To run mini regression for core1 environment using NCVerilog simulator, type
+
+   sims -sim_type=ncv -group=core1_mini
+
+   If you want to use simulator other than VCS or NCVerilog please use
+   following options for sims command :
+
+	-sim_type="Your simulator name"
+
+	-sim_build_cmd="Your simulator command to build/compile RTL"
+
+	-sim_run_cmd="Your simulator command to run simulations"
+
+	-sim_build_args="Arguments to build/compile"
+
+	-sim_run_args="Arguments to run simulations"
+
+   The sim_type, sim_build_cmd and sim_run_cmd needs to be specified only once,
+   and you can specify sim_build_args and sim_run_args multiple times to
+   specify multiple argument options.
+
+   (A) sims under Linux
+
+       The SAS is not available under Linux. sims script adds "-nosas" 
+       option to run under Linux.
+
+       Some tests will fail when you run without SAS. List of 
+       failing tests without SAS can be found under 
+       $DV_ROOT/verif/diag/nosas_fail.list.
+
+   (B) Optional Vera 
+
+       Vera is optional. If you don't want to use Vera, use 
+       "-novera_build -novera_run" options to sims. e.g.
+
+       sims -sim_type=vcs -group=core1_mini -novera_build -novera_run
+
+       Some tests will fail when you run without Vera. List of 
+       failing tests without Vera can be found under 
+       $DV_ROOT/verif/diag/novera_fail.list.
+
+7. Documents
+
+   Following documents (.pdf format) are available under 'doc' directory :
+
+   OpenSPARC T1 Processor Design and Verification User's Guide
+   OpenSPARC T1 Processor External Interface Specification
+   OpenSPARC T1 Processor Datasheet
+   OpenSPARC T1 Processor Megacell Specification
+   OpenSPARC T1 Micro-Architecture Specification
+
+
+

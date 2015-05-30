@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_stb2b_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for back-to-back synchronous and asynchronous traps
+// on same thread (tests the proper flushing of a thread pipe),
+//***************************************************************************
+
+
+// coverage_def TLU_STB2B_TRAP_COV (bit [5:0] tlu_stb2b_trap_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_B2B_SYNC_TRAPS_TH0		(B2B_SYNC_TRAPS_TH0);
+  wildcard state s_B2B_SYNC_TRAPS_TH1		(B2B_SYNC_TRAPS_TH1);
+  wildcard state s_B2B_SYNC_TRAPS_TH2		(B2B_SYNC_TRAPS_TH2);
+  wildcard state s_B2B_SYNC_TRAPS_TH3		(B2B_SYNC_TRAPS_TH3);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

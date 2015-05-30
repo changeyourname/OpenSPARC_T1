@@ -1,0 +1,84 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_br_ccr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_br_ccr_cov.vr
+// Description:
+// This coverage object monitors that all ccr values have been existant
+// with all branch types and trap type instructions. This is not done
+// on a per thread basis. The diag will exercise all 4 threads. The deprecated
+// br instructions are not covered here though the diag will exercise them
+// as well
+//
+// 20'b: opcode(5),cond(4),anull(1),xcc_or_icc(2),xcc(4),icc(4)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_BR_CCR_COV (bit [19:0] cov_vector)
+// {
+
+. @anull = ("0", "1");
+. @ccrs = ("00","10");
+. %br_insts = (	"ba" 	=> 	"1000",
+.          	"bn" 	=> 	"0000",
+.          	"bne" 	=> 	"1001",
+.          	"be" 	=>	"0001",
+.	   	"bg" 	=>	"1010",
+.	   	"ble"	=>	"0010",
+.	   	"bge"	=> 	"1011",
+.	   	"bl"	=>	"0011",
+.	   	"bgu"	=> 	"1100",
+.	   	"bleu"	=>	"0100",
+.	   	"bcc" 	=>	"1101",
+.	   	"bcs" 	=> 	"0101",
+.	   	"bpos"	=>	"1110",
+.	   	"bneg"	=>	"0110",
+.	   	"bvc"	=>	"1111",
+.	   	"bvs"	=>	"0111",
+.         );
+.   foreach $br_inst (keys %br_insts) {
+.     $j = 0;
+.     foreach $ccr (@ccrs) {
+.       $k = 0;
+.       foreach $a (@anull) {
+.         for ($i = 0; $i < 16; $i++) {
+.	    if ($j == 0) { #ccr 00
+.             if ($k == 0) {#annull = 0
+.               printf "\twildcard state s_%s_icc_$i \(20\'b00001_%s_%s_%s_xxxx_%04b\);\n",$br_inst,$br_insts{$br_inst},$a,$ccr,$i;
+.             } else {#anull = 1
+.               printf "\twildcard state s_%s_a_icc_$i \(20\'b00001_%s_%s_%s_xxxx_%04b\);\n",$br_inst,$br_insts{$br_inst},$a,$ccr,$i;
+.             }
+.           } else { #ccr 10
+.             if ($k == 0) {#anull = 0
+.             	printf "\twildcard state s\_%s_xcc_$i \(20\'b00001_%s_%s_%s_%04b_xxxx\);\n", $br_inst,$br_insts{$br_inst},$a,$ccr,$i;
+.             } else {
+.		 printf "\twildcard state s_%s_a_xcc_$i \(20\'b00001_%s_%s_%s_%04b_xxxx\);\n",$br_inst,$br_insts{$br_inst},$a,$ccr,$i;
+.             }
+.           }
+.         }
+.	  $k++;
+.       }
+.     $j++;
+.     }
+.   }
+   
+// }

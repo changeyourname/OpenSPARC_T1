@@ -1,0 +1,42 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_dvawr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// elaborate writes to dva
+//***********************************************************************
+
+  wildcard state s_DVAWR_ST00	( 17'b1_1xxx_xxxx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST01	( 17'b1_x1xx_xxxx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST02	( 17'b1_xx1x_xxxx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST03	( 17'b1_xxx1_xxxx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST04	( 17'b1_xxxx_1xxx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST05	( 17'b1_xxxx_x1xx_xxxx_xxxx );
+  wildcard state s_DVAWR_ST06	( 17'b1_xxxx_xx1x_xxxx_xxxx );
+  wildcard state s_DVAWR_ST07	( 17'b1_xxxx_xxx1_xxxx_xxxx );
+  wildcard state s_DVAWR_ST08	( 17'b1_xxxx_xxxx_1xxx_xxxx );
+  wildcard state s_DVAWR_ST09	( 17'b1_xxxx_xxxx_x1xx_xxxx );
+  wildcard state s_DVAWR_ST10	( 17'b1_xxxx_xxxx_xx1x_xxxx );
+  wildcard state s_DVAWR_ST11	( 17'b1_xxxx_xxxx_xxx1_xxxx );
+  wildcard state s_DVAWR_ST12	( 17'b1_xxxx_xxxx_xxxx_1xxx );
+  wildcard state s_DVAWR_ST13	( 17'b1_xxxx_xxxx_xxxx_x1xx );
+  wildcard state s_DVAWR_ST14 	( 17'b1_xxxx_xxxx_xxxx_xx1x );
+  wildcard state s_DVAWR_ST15	( 17'b1_xxxx_xxxx_xxxx_xxx1 );
+
+

@@ -1,0 +1,35 @@
+.##########################################################################
+.#
+.# File:	l1_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file that uses a map of the sys(tem) being
+.#	simulated and decides on:
+.#		number of cores
+.#		instance path for each core (for lsu)
+.#
+.##########################################################################
+. $cores	= 1;
+. $sys		= "CMP";
+.# END_INIT
+. $THREADS_PER_CORE	= 4;
+.
+. if ( $sys eq "CMP1" ) { $cores = 1; }
+. if ( $sys eq "CMP2" ) { $cores = 2; }
+
+. if ( $sys eq "CMP3" ) { $cores = 3; }
+. if ( $sys eq "CMP4" ) { $cores = 4; }
+. if ( $sys eq "CMP5" ) { $cores = 5; }
+. if ( $sys eq "CMP6" ) { $cores = 6; }
+. if ( $sys eq "CMP7" ) { $cores = 7; }
+. if ( $sys eq "CMP8" ) { $cores = 8; }
+// sys = $sys, cores = $cores
+.
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]		= $i;
+.	$L1_ICTAG_PATHS[$i]	= "cmp_top.iop.sparc${i}.ifu.ict";
+.	$L1_DCTAG_PATHS[$i]	= "cmp_top.iop.sparc${i}.lsu.dtag";
+.	$L1_ICVLD_PATHS[$i]	= "cmp_top.iop.sparc${i}.ifu.icv";
+.	$L1_DCVLD_PATHS[$i]	= "cmp_top.iop.sparc${i}.lsu.dva";
+. }

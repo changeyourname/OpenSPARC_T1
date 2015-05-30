@@ -1,0 +1,985 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l1_checker.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        l1_checker.vrpal
+//  Description:        Checker to verify that the state of L1 is correct
+//                      when a cache event occurs.
+//
+// We are trying to check the following rules (monitoring the CPX packets):
+// 1) ST_ACK, STRST_ACK, and EVICT_REQ invalidate valid L1 cache lines.
+// 2) LOAD_RET does not have this line in other ways of the L1Dcache
+// 3) IFILL_RET does not have this line in other ways of the L1Icache
+// 4) If a LOAD_RET finds the line in L1Icache, wyvld is set with the appropriate way
+// 5) If a IFILL_RET finds the line in L1Dcache, wyvld is set with the appropriate way
+// 6) On a LOAD_RET with wyvld set, the line is in L1Icache
+// 7) On a IFILL_RET with wyvld set, the line is in L1Dcache
+// and a few other rules. (Search for l1_checker_err to find all checks.)
+//
+////////////////////////////////////////////////////////////////////////
+
+#inc "l1_inc.pal";
+#include <vera_defines.vrh>
+#include "l1.if.vrh"
+#include "l1_ports_binds.vrh"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "cpxpacket.vrh"
+#include "pcxpacket.vrh"
+#include "l1.if.vrh"
+#include "l1_ports_binds.vrh"
+#include "l1_stub.vrh"
+
+
+class L1_CHECKER
+{
+    string name;
+    integer timeout = 0;
+    pcx_port pcx_bind[$cores];
+    cpx_port cpx_bind[$cores];
+    L1_STUB l1_stub[$cores];
+    
+    VeraList_PcxPacket pcx_request_list[$cores * 5];
+    VeraList_PcxPacket pcx_grant_list[];
+    VeraList_CpxPacket cpx_receive_list[$cores];
+
+    integer	icache_ways[32];
+    integer	dcache_ways[32];
+
+    integer	debug;
+    
+
+    task new(string name = "L1_CHECKER");
+    task start();
+    task reset(integer sparc_id, cvld_port icvld_bind);
+    task snoop_pcx(integer sparc_id, cvld_port icvld_bind);
+    task snoop_cpx(integer sparc_id, cvld_port icvld_bind);
+    task check(integer sparc_id, cvld_port icvld_bind);
+    task check_st_strst(CpxPacket cpx, integer sparc_id);
+    task check_evict(CpxPacket cpx, integer sparc_id);
+    task print_pcx_list(VeraList_PcxPacket pcx_list);
+    task print_cpx_list(VeraList_CpxPacket cpx_list);
+    task l1_checker_err(string err_msg, integer sparc_id);
+    task report_ways(integer sparc_id);
+}
+
+///////////////////////////////////////////////////////////////////////
+// Constructor.
+///////////////////////////////////////////////////////////////////////
+
+task L1_CHECKER::new(string name = "L1_CHECKER") {
+    
+    integer i;
+    bit [4:0] thread_id;
+
+
+    if(!get_plus_arg(CHECK, "l1_chkoff")) {
+        this.name = name;
+. for ( $i = 0; $i < $cores; $i++ ) {
+        this.pcx_bind[${i}] = pcx_bind_${i};
+        this.cpx_bind[${i}] = cpx_bind_${i};
+        this.l1_stub[${i}] = new("L1_STUB${i}", ${i}, icvld_bind_${i}, dcvld_bind_${i},
+                                 ictag_bind_${i}, dctag_bind_${i}, int_bind_${i});
+        this.l1_stub[${i}].start();
+        this.cpx_receive_list[${i}] = new();
+. }
+        thread_id = 5'b0;
+        
+        for(i=0; i<32; i++) {
+            this.pcx_grant_list[{thread_id, LOAD_RET}] = new();
+            this.pcx_grant_list[{thread_id, IFILL_RET}] = new();
+            thread_id++;
+            
+            icache_ways[i] = 0;
+            dcache_ways[i] = 0;
+        }
+        
+        for(i=0; i<$cores * 5; i++)
+            this.pcx_request_list[i] = new();
+        
+        if(get_plus_arg(CHECK, "L1_DEBUG"))
+            this.debug = get_plus_arg(NUM, "L1_DEBUG=");
+        else
+            this.debug = 0;
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Snoop on pcx and cpx between sparc and ccx.
+// and check l1 conherency.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::start() {
+
+    if(!get_plus_arg(CHECK, "l1_chkoff")){
+        fork
+. for ( $i = 0; $i < $cores; $i++ ) {
+        {
+            reset(${i}, icvld_bind_${i});
+        }
+        {
+            snoop_pcx(${i}, icvld_bind_${i});
+        }
+        {
+            snoop_cpx(${i}, icvld_bind_${i});
+        }
+        {
+            check(${i}, icvld_bind_${i});
+        }
+        {
+            report_ways(${i});
+        }
+. }
+        join none
+        
+        printf ("%0d: %s: L1 checker started.\n", get_time(LO), this.name);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////
+// Reset
+///////////////////////////////////////////////////////////////////////
+
+task L1_CHECKER::reset(integer sparc_id, cvld_port cvld_bind) {     
+
+    integer i;
+    bit [4:0] thread_id;
+    
+
+    // wait for reset to be asserted
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // reset active
+        if(!cvld_bind.\$spc_grst_l) {
+            thread_id = sparc_id * 4;
+            
+            for(i=0; i<4; i++) {
+                this.pcx_grant_list[{thread_id, LOAD_RET}].clear();
+                this.pcx_grant_list[{thread_id, IFILL_RET}].clear();
+                thread_id++;
+            }
+            
+            thread_id = sparc_id * 5;
+            this.pcx_request_list[thread_id].clear();
+            this.pcx_request_list[thread_id+1].clear();
+            this.pcx_request_list[thread_id+2].clear();
+            this.pcx_request_list[thread_id+3].clear();
+            this.pcx_request_list[thread_id+4].clear();
+            this.cpx_receive_list[sparc_id].clear();
+
+            // wait for reset to be deasserted
+            while(!cvld_bind.\$spc_grst_l)
+                @(posedge l1_top.clk);
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Push PCX packets onto pcx_request_list[cpu_id * 5 + dest] upon
+// spc_pcx_req_pq.
+// Pop PCX packets off pcx_request_list[cpu_id * 5 + dest] upon
+// pcx_spc_grant_pa.
+// Push PCX packets onto pcx_grant_list[{cpu_id, tid, reqtype}]
+// upon pcx_spc_grant_pa.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::snoop_pcx(integer sparc_id, cvld_port cvld_bind) {
+    
+    integer i;
+    PcxPacket pcx;
+    CpxPacket cpx;
+
+    bit [2:0] cpu_id;
+    bit [CPX_RQ_HI-CPX_RQ_LO:0] rtntyp;
+
+    bit [4:0] grant;
+    bit [4:0] spc_pcx_req_pq_d1;
+    bit spc_pcx_atom_pq_d1, spc_pcx_atom_pq = 1'b0;
+
+
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // process only when reset is not asserted
+        if(cvld_bind.\$spc_grst_l) {
+            spc_pcx_req_pq_d1 = pcx_bind[sparc_id].\$spc_pcx_req_pq.1; // delayed by 1
+            
+            spc_pcx_atom_pq_d1 = spc_pcx_atom_pq;
+            spc_pcx_atom_pq = pcx_bind[sparc_id].\$spc_pcx_atom_pq;
+            
+            grant = pcx_bind[sparc_id].\$pcx_spc_grant_pa;
+            
+            // Search through each of the 5 requests.
+            for(i=0; i<5; i++) {
+                // Push PCX packet onto pcx_request_list upon request
+                if(spc_pcx_req_pq_d1[i]) {
+                    if(pcx_request_list[sparc_id * 5 + i].size() < 2) { // up to 2 ungranted requests
+                        pcx = new();
+                        pcx.sparc_id = sparc_id;
+                        pcx.accept(pcx_bind[sparc_id].\$spc_pcx_data_pa);
+                        
+                        if(debug > 2) {
+                            printf("%0d: %s: C%0d pcx_request_list size BEFORE = %0d for qid %h.\n",
+                                   get_time(LO), name, sparc_id, pcx_request_list[sparc_id * 5 + i].size(), i);
+                        }
+                        
+                        pcx_request_list[sparc_id * 5 + i].push_back(pcx);
+                        
+                        if(debug > 2) {
+                            printf("%0d: %s: C%0d pcx_request_list size = %0d push pcx into list for ",
+                                   get_time(LO), name, sparc_id, pcx_request_list[sparc_id * 5 + i].size());
+                            printf("qid %h pcx.rqtype %h pcx.thread_id %h\n", i, pcx.rqtyp, pcx.thread_id);
+                        }
+                        
+                        // 1 more packet for an atomic request
+                        if(spc_pcx_atom_pq_d1) {
+                            pcx_request_list[sparc_id * 5 + i].push_back(pcx);    
+                            
+                            if(debug > 2) {
+                                printf("%0d: %s: C%0d pcx_request_list size = %0d push one more for ATOMIC pcx response ",
+                                       get_time(LO), name, sparc_id, pcx_request_list[sparc_id * 5 + i].size());
+                                printf("into list for qid %h.\n", i);
+                            }
+                        }
+                    }
+                }
+                
+                // Pop PCX packet off pcx_request_list upon grant
+                if(grant[i]) {
+                    // there should be no grant if there is no pending request
+                    if(pcx_request_list[sparc_id *5 + i].size() == 0) {
+                        printf("%0d: %s: C%0d pcx_request_list %0d size is %0d\n",
+                               get_time(LO), name, sparc_id, i, pcx_request_list[sparc_id *5 + i].size());
+                        l1_checker_err("grant without a pending request", sparc_id);
+                    }
+                    
+                    pcx = new();
+                    pcx = pcx_request_list[sparc_id *5 + i].front();
+                    pcx_request_list[sparc_id *5 + i].pop_front();
+                    
+                    if(debug > 2) {
+                        printf("%0d: %s: C%0d pcx_request_list size = %0d pop pcx response off list for qid %h.\n",
+                               get_time(LO), name, pcx.sparc_id, pcx_request_list[sparc_id * 5 + i].size(), i);
+                    }
+                    
+                    // Push PCX packet (just popped off pcx_request_list) onto pcx_grant_list.
+                    // This is merely for storing the address of a LOAD/IMISS to reference when the
+                    // corresponding LOAD_RET/IFILL_RET returns.
+                    // Only LOAD with nc=1, and IMISS (excluding DCACHE_INV and ICACHE_INV)
+                    if(pcx.valid && (pcx.rqtyp == LOAD_RQ && !pcx.nc || pcx.rqtyp == IMISS_RQ) && !pcx.bf_id[2]) {
+                        cpu_id = pcx.sparc_id;
+                        rtntyp = (pcx.rqtyp == LOAD_RQ) ? LOAD_RET : IFILL_RET;
+                        pcx_grant_list[{cpu_id, pcx.thread_id, rtntyp}].push_back(pcx);
+                        
+                        if(debug > 2) {
+                            printf("%0d: %s: C%0d pcx_grant_list size= %0d push thrid %h rtntyp %h pcx.addr %h queue id %h.\n",
+                                   get_time(LO), name, cpu_id, pcx_grant_list[{cpu_id, pcx.thread_id, rtntyp}].size(),
+                                   pcx.thread_id, rtntyp, pcx.addr, {cpu_id, pcx.thread_id, rtntyp});
+                        }
+                        
+                        // Push a second packet for IMISS with addr[39]=0
+                        // (non-IO space IMISS, which has only 1 IFILL_RET packet)
+                        if(pcx.rqtyp == IMISS_RQ && !pcx.addr[PCX_AD_HI-PCX_AD_LO]) {
+                            pcx_grant_list[{cpu_id, pcx.thread_id, rtntyp}].push_back(pcx);
+                            
+                            if(debug > 2) {
+                                printf("%0d: %s: C%0d pcx_grant_list size= %0d push ifillret2 for ",
+                                       get_time(LO), name, cpu_id, pcx_grant_list[{cpu_id, pcx.thread_id, rtntyp}].size());
+                                printf("thrid %h rtntyp %h pcx addr %h queue id %h.\n",
+                                       pcx.thread_id, rtntyp, pcx.addr, {cpu_id, pcx.thread_id, rtntyp});
+                            }
+                        }
+                    }
+                } // if(grant[i])
+            } // for(i=0; i<5; i++)
+        } // if(cvld_bind.\$spc_grst_l)
+    } // while(1)
+}
+
+//////////////////////////////////////////////////////////////
+// Push CPX packet onto cpx_receive_list[cpu_id] upon
+// cpx_spc_data_rdy_cx2.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::snoop_cpx(integer sparc_id, cvld_port cvld_bind) {
+    
+    CpxPacket cpx;
+    
+
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // process only when reset is not asserted
+        // CPX packet returns from MSS
+        if(cvld_bind.\$spc_grst_l && cpx_bind[sparc_id].\$cpx_spc_data_rdy_cx) {
+            cpx = new();
+            cpx.sparc_id = sparc_id;
+            cpx.set_fullpkt(cpx_bind[sparc_id].\$cpx_spc_data_cx);
+            
+            if(cpx.rtntyp == INT_RET && !cpx.nc)
+                l1_stub[sparc_id].wr_intq(cpx.data[17:0]);
+            else if(cpx.rtntyp == LOAD_RET && !cpx.nc || cpx.rtntyp == IFILL_RET ||
+                    cpx.rtntyp == ST_ACK || cpx.rtntyp == STRST_ACK || cpx.rtntyp == EVICT_REQ) {
+                cpx_receive_list[sparc_id].push_back(cpx);
+                
+                if(debug > 2) {
+                    printf("%0d: %s: C%0d cpx_receive_list size = %0d push cpx thrid %h rtntyp %h atom %h\n", get_time(LO),
+                           name, sparc_id, cpx_receive_list[sparc_id].size(), cpx.thread_id, cpx.rtntyp, cpx.atom);
+                }
+            }
+        }
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Pop CPX packet off cpx_receive_list[cpu_id] every cycle.
+// Update virtual caches.
+// Perform checks (see top of this file).
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::check(integer sparc_id, cvld_port cvld_bind) {    
+    
+    PcxPacket pcx;
+    CpxPacket cpx;
+    integer i;
+    integer cache_way_index;
+    
+    bit [2:0] cpu_id;
+    
+    bit dcvld, dcvld0, dcvld1, dcvld2, dcvld3;
+    bit icvld, icvld0, icvld1, icvld2, icvld3;
+    
+    bit [28:0] dctag, dctag0, dctag1, dctag2, dctag3;
+    bit [27:0] ictag, ictag0, ictag1, ictag2, ictag3;
+    
+    bit [8:0] dindex, iindex;
+    bit [28:0] pcx_dctag;
+    bit [27:0] pcx_ictag;
+    
+    bit pa39;
+    
+    bit [1:0] dcinv_way, icinv_way;
+    bit dc_inv, ic_inv;
+    
+    
+    pcx = new();
+    cpx = new();
+    
+    cpu_id = sparc_id;
+    
+    while(1) {
+        @(posedge l1_top.clk);
+
+        // don't process if reset is asserted or if there are no CPX packets to process
+        if(!cvld_bind.\$spc_grst_l || this.cpx_receive_list[sparc_id].size() == 0)
+            continue;
+        
+        // Pop CPX packet
+        cpx = cpx_receive_list[sparc_id].front();
+        this.cpx_receive_list[sparc_id].pop_front();
+        
+        if(debug > 2) {
+            printf("%0d: %s: C%0d cpx_receive_list size = %0d pop thrid %h rtntyp %h.\n", get_time(LO),
+                   name, sparc_id, cpx_receive_list[sparc_id].size(), cpx.thread_id, cpx.rtntyp);
+        }
+        
+        // Check that store ack invalidate invalidates data that is valid.
+        // the pcx packet which causes the cpx packet.
+        if(cpx.rtntyp == ST_ACK || cpx.rtntyp == STRST_ACK) {
+            if(debug > 1) {
+                printf("%0d: %s: C%0d store ack inv thrid %h rtntyp %h addr[11:4] %h addr[11:6] %h\n",
+                       get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp,
+                       {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4]},
+                       cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO]);
+            }
+            
+            this.check_st_strst(cpx, sparc_id);
+        } // if(cpx.rtntyp == ST_ACK || cpx.rtntyp == STRST_ACK)
+
+        else if(cpx.rtntyp == EVICT_REQ) {
+            this.check_evict(cpx, sparc_id);
+        } // if(cpx.rtntyp == EVICT_REQ)
+
+        else if(cpx.rtntyp == LOAD_RET && !cpx.nc) {
+            pcx = pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].front();
+            this.pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].pop_front();
+
+            cache_way_index = cpu_id * 4 + pcx.rep_l1_way;
+            
+            if(debug > 2) {
+                printf("%0d: %s: C%0d pcx_grant_list size = %0d pop thrid %h ", get_time(LO),
+                       name, sparc_id, pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].size(), cpx.thread_id);
+                printf("rtntyp %h index %h cpu_id = %0d rep_l1_way = %0d index = %0d\n",
+                       cpx.rtntyp, {cpu_id, cpx.thread_id, cpx.rtntyp}, cpu_id, pcx.rep_l1_way, cache_way_index);
+            }
+            
+            dcache_ways[cache_way_index]++;
+            
+            pcx_dctag = pcx.addr[39:11];
+            pcx_ictag = pcx.addr[39:12];
+            pa39 = pcx.addr[39];
+            
+            if(!pa39 && debug > 1) {
+                printf("%0d: %s: CHECKING LOAD_RET: C%h thrid %h rtntyp %h addr[11:4] %h\n",
+                       get_time(LO), this.name, cpu_id, cpx.thread_id, cpx.rtntyp, pcx.addr[11:4]);
+            }
+            
+            iindex = {pcx.addr[11:5], 2'b00};
+            dindex = {pcx.addr[10:4], 2'b00};	
+            icvld0 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag0 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld0 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag0 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b01};
+            dindex = {pcx.addr[10:4], 2'b01};	
+            icvld1 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag1 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld1 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag1 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b10};
+            dindex = {pcx.addr[10:4], 2'b10};	
+            icvld2 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag2 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld2 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag2 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b11};
+            dindex = {pcx.addr[10:4], 2'b11};	
+            icvld3 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag3 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld3 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag3 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            // CHECK THAT Dcache DOES NOT ALREADY CONTAIN THE SAME LINE
+            if(!pa39 && dcvld0 && dctag0[28:0] == pcx_dctag && pcx.rep_l1_way != 2'b00) {
+                printf("%0d: %s: C%h load return to a valid set0 rep way %h\n",
+                       get_time(LO), this.name, sparc_id, pcx.rep_l1_way);
+                l1_checker_err("load return to a valid set", sparc_id);
+            }
+            else if(!pa39 && dcvld1 && dctag1[28:0] == pcx_dctag && pcx.rep_l1_way != 2'b01) {
+                printf("%0d: %s: C%h load return to a valid set1 rep way %h\n",
+                       get_time(LO), this.name, sparc_id, pcx.rep_l1_way);
+                l1_checker_err("load return to a valid set", sparc_id);
+            }
+            else if(!pa39 && dcvld2 && dctag2[28:0] == pcx_dctag && pcx.rep_l1_way != 2'b10) {
+                printf("%0d: %s: C%h load return to a valid set2 rep way %h\n",
+                       get_time(LO), this.name, sparc_id, pcx.rep_l1_way);
+                l1_checker_err("load return to a valid set", sparc_id);
+            }
+            else if(!pa39 && dcvld3 && dctag3[28:0] == pcx_dctag && pcx.rep_l1_way != 2'b11) {
+                printf("%0d: %s: C%h load return to a valid set3 rep way %h\n",
+                       get_time(LO), this.name, sparc_id, pcx.rep_l1_way);
+                l1_checker_err("load return to a valid set", sparc_id);
+            }
+            
+            // CHECK THAT WYVLD BIT IS SET IF Icache CONTAINS THE SAME LINE
+            if(!pa39 && icvld0 && ictag0[27:0] == pcx_ictag && !(cpx.way_vld && cpx.way == 2'b00))
+                l1_checker_err("Load return for a line in ICache without invalidation icvld 0", sparc_id);
+            else if(!pa39 && icvld1 && ictag1[27:0] == pcx_ictag && !(cpx.way_vld && cpx.way == 2'b01))
+                l1_checker_err("Load return for a line in ICache without invalidation icvld 1", sparc_id);
+            else if(!pa39 && icvld2 && ictag2[27:0] == pcx_ictag && !(cpx.way_vld && cpx.way == 2'b10))
+                l1_checker_err("Load return for a line in ICache without invalidation icvld 2", sparc_id);
+            else if(!pa39 && icvld3 && ictag3[27:0] == pcx_ictag && !(cpx.way_vld && cpx.way == 2'b11))
+                l1_checker_err("Load return for a line in ICache without invalidation icvld 3", sparc_id);
+            
+            // CHECK THAT IF WYVLD BIT IS SET, Icache ALREADY CONTAINS THAT LINE
+            if(!pa39 && cpx.way_vld && cpx.way == 2'b00 && !(icvld0 && ictag0[27:0] == pcx_ictag))
+                l1_checker_err("Load return invalidates a non existent IC line way 0", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b01 && !(icvld1 && ictag1[27:0] == pcx_ictag))
+                l1_checker_err("Load return invalidates a non existent IC line way 1", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b10 && !(icvld2 && ictag2[27:0] == pcx_ictag))
+                l1_checker_err("Load return invalidates a non existent IC line way 2", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b11 && !(icvld3 && ictag3[27:0] == pcx_ictag))
+                l1_checker_err("Load return invalidates a non existent IC line way 3", sparc_id);
+            
+            // update the virtual caches
+            if(!pa39) {
+                dindex  = {pcx.addr[10:4], pcx.rep_l1_way};	
+                l1_stub[sparc_id].wr_vdcvld(dindex, 1'b1);
+                l1_stub[sparc_id].wr_vdctag(dindex, pcx_dctag);
+                
+                if(cpx.way_vld){
+                    iindex = {pcx.addr[11:5], cpx.way};
+                    l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+                }
+            }
+        } // if(cpx.rtntyp == LOAD_RET && !cpx.nc)
+        
+        else if(cpx.rtntyp == IFILL_RET) {
+            pcx = pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].front();
+            this.pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].pop_front();
+
+            cache_way_index = cpu_id * 4 +  pcx.rep_l1_way;
+
+            if(debug > 2) {
+                printf("%0d: %s: C%0d pcx_grant_list size = %0d pop thrid %h ", get_time(LO),
+                       name, sparc_id, pcx_grant_list[{cpu_id, cpx.thread_id, cpx.rtntyp}].size(), cpx.thread_id);
+                printf("rtntyp %h index %h cpu_id = %0d rep_l1_way = %0d index = %0d\n",
+                       cpx.rtntyp, {cpu_id, cpx.thread_id, cpx.rtntyp}, cpu_id, pcx.rep_l1_way, cache_way_index);
+            }
+            
+            icache_ways[cache_way_index]++;
+            
+            pcx_dctag = pcx.addr[39:11];
+            pcx_ictag = pcx.addr[39:12];
+            pa39 = pcx.addr[39];
+            
+            if(!pa39 && debug > 1) {
+                printf("%0d: %s: CHECKING IFILL_RET: C%h thrid %h rtntyp %h addr[11:4] %h\n",
+                       get_time(LO), this.name, cpu_id, cpx.thread_id, cpx.rtntyp, pcx.addr[11:4]);
+            }
+            
+            iindex = {pcx.addr[11:5], 2'b00};
+            dindex = {pcx.addr[10:5], cpx.atom, 2'b00};
+            icvld0 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag0 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld0 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag0 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b01};
+            dindex = {pcx.addr[10:5], cpx.atom, 2'b01};
+            icvld1 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag1 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld1 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag1 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b10};
+            dindex = {pcx.addr[10:5], cpx.atom, 2'b10};
+            icvld2 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag2 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld2 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag2 = l1_stub[sparc_id].get_vdctag(dindex);
+            
+            iindex = {pcx.addr[11:5], 2'b11};
+            dindex = {pcx.addr[10:5], cpx.atom, 2'b11};
+            icvld3 = l1_stub[sparc_id].get_vicvld(iindex);
+            ictag3 = l1_stub[sparc_id].get_victag(iindex);
+            dcvld3 = l1_stub[sparc_id].get_vdcvld(dindex);
+            dctag3 = l1_stub[sparc_id].get_vdctag(dindex);
+
+            // CHECK THAT Icache DOES NOT ALREADY CONTAIN THE SAME LINE
+            if(!cpx.nc && !pa39 && icvld0 && ictag0[27:0] == pcx_ictag)
+                l1_checker_err("IFILL  but the line is already valid icvld 0", sparc_id);
+            else if(!cpx.nc && !pa39 && icvld1 && ictag1[27:0] == pcx_ictag)
+                l1_checker_err("IFILL  but the line is already valid icvld 1", sparc_id);
+            else if(!cpx.nc && !pa39 && icvld2 && ictag2[27:0] == pcx_ictag)
+                l1_checker_err("IFILL  but the line is already valid icvld 2", sparc_id);
+            else if(!cpx.nc && !pa39 && icvld3 && ictag3[27:0] == pcx_ictag)
+                l1_checker_err("IFILL  but the line is already valid icvld 3", sparc_id);
+            
+            // CHECK THAT WYVLD BIT IS SET IF Dcache CONTAINS THE SAME LINE
+            if(!pa39 && dcvld0 && dctag0[28:0] == pcx_dctag && !(cpx.way_vld && cpx.way == 2'b00))
+                l1_checker_err("IFILL for a line in DCache without invalidation 0", sparc_id);
+            else if(!pa39 && dcvld1 && dctag1[28:0] == pcx_dctag && !(cpx.way_vld && cpx.way == 2'b01))
+                l1_checker_err("IFILL for a line in DCache without invalidation 1", sparc_id);
+            else if(!pa39 && dcvld2 && dctag2[28:0] == pcx_dctag && !(cpx.way_vld && cpx.way == 2'b10))
+                l1_checker_err("IFILL for a line in DCache without invalidation 2", sparc_id);
+            else if(!pa39 && dcvld3 && dctag3[28:0] == pcx_dctag && !(cpx.way_vld && cpx.way == 2'b11))
+                l1_checker_err("IFILL for a line in DCache without invalidation 3", sparc_id);
+            
+            // CHECK THAT IF WYVLD BIT IS SET, Dcache ALREADY CONTAINS THAT LINE
+            if(!pa39 && cpx.way_vld && cpx.way == 2'b00 && !(dcvld0 && dctag0[28:0] == pcx_dctag))
+                l1_checker_err("IFILL invalidating an unneccessary DC line 0", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b01 && !(dcvld1 && dctag1[28:0] == pcx_dctag))
+                l1_checker_err("IFILL invalidating an unneccessary DC line 1", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b10 && !(dcvld2 && dctag2[28:0] == pcx_dctag))
+                l1_checker_err("IFILL invalidating an unneccessary DC line 2", sparc_id);
+            else if(!pa39 && cpx.way_vld && cpx.way == 2'b11 && !(dcvld3 && dctag3[28:0] == pcx_dctag))
+                l1_checker_err("IFILL invalidating an unneccessary DC line 3", sparc_id);
+            
+            // update the virtual caches
+            if(!pa39){
+                if(!cpx.nc) {
+                    iindex = {pcx.addr[11:5], pcx.rep_l1_way};
+                    l1_stub[sparc_id].wr_vicvld(iindex, cpx.atom);
+                    l1_stub[sparc_id].wr_victag(iindex, pcx_ictag);
+                }
+                
+                if(cpx.way_vld){
+                    dindex = {pcx.addr[10:5], cpx.atom, cpx.way};
+                    l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+                }
+            }
+        } // if(cpx.rtntyp == IFILL_RET)
+    } // while(1)
+}
+
+
+//////////////////////////////////////////////////////////////
+// Perform invalidations on virtual caches for ST_ACK, STRST_ACK.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::check_st_strst(CpxPacket cpx, integer sparc_id) {
+    
+    bit [1:0] dcinv_way, icinv_way;
+    bit dc_inv, ic_inv;
+    bit [8:0] dindex, iindex;
+    bit dcvld, icvld;
+    bit [28:0] dctag;
+    bit [27:0] ictag;
+    bit [2:0] cpx_cpu_id;
+    
+
+    // DCACHE_INV_ACK or ICACHE_INV_ACK
+    if(cpx.rtntyp == ST_ACK && (cpx.data[123] || cpx.data[124])) {
+        if(cpx.data[123] && cpx.data[124])
+            l1_checker_err("ST_ACK WITH 124 and 123 set", sparc_id);
+        
+        // DCACHE_INV_ACK
+        if(cpx.data[123]) {
+            if(debug > 1) {
+                printf("%0d: %s: DCACHE_INV_ACK: C%h addr[11:4] %h addr[11:6] %h\n",
+                       get_time(LO), this.name, sparc_id, 
+                       {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4]},
+                       cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO]);
+            }
+            
+            dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4], 2'b00};
+            l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+            dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4], 2'b01};
+            l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+            dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4], 2'b10};
+            l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+            dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4], 2'b11};
+            l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+        }
+        // ICACHE_INV_ACK
+        else {
+            if(debug > 1) {
+                printf("%0d: %s: ICACHE_INV_ACK: C%h addr[11:5] %h addr[11:6]\n",
+                       get_time(LO), this.name, sparc_id, 
+                       {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5]},
+                       cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO]);
+            }
+            
+            iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5], 2'b00};
+            l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+            iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5], 2'b01};
+            l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+            iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5], 2'b10};
+            l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+            iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5], 2'b11};
+            l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+        }
+
+        return;
+    }
+
+    // decode Dcache invalidations
+    case(cpx.data[CPX_INVPA5:CPX_INVPA4]) {
+        2'b00:{
+            dcinv_way = cpx.data[sparc_id*4 + 3 : sparc_id*4 + 2];
+            dc_inv = cpx.data[sparc_id*4];
+        }
+        2'b01: {
+            dcinv_way = cpx.data[sparc_id*3 + 34 : sparc_id*3 + 33];
+            dc_inv = cpx.data[sparc_id*3 + 32];
+        }
+        2'b10: {
+            dcinv_way = cpx.data[sparc_id*4 + 59 : sparc_id*4 + 58];
+            dc_inv = cpx.data[sparc_id*4 + 56];
+        }
+        2'b11: {
+            dcinv_way = cpx.data[sparc_id*3 + 90 : sparc_id*3 + 89];
+            dc_inv = cpx.data[sparc_id*3 + 88];
+        }
+    }
+
+    // decode Icache invalidations
+    case(cpx.data[CPX_INVPA5]) {
+        1'b0:{
+            icinv_way = cpx.data[sparc_id*4 + 3 : sparc_id*4 + 2];
+            ic_inv = cpx.data[sparc_id*4 + 1];
+        }
+        1'b1: {
+            icinv_way = cpx.data[sparc_id*4 + 59 : sparc_id*4 + 58];
+            ic_inv = cpx.data[sparc_id*4 + 57];
+        }
+    }
+    
+    if(dc_inv && ic_inv)
+        l1_checker_err("ic_inv and dc_inv active in the same cycle", sparc_id);
+
+    cpx_cpu_id = cpx.data[CPX_CPUID_HI:CPX_CPUID_LO];
+    
+    // perform invalidations on virtual Dcache for
+    // Strst, Store_foreign, Atomic Store, Blkstore/Blkinitst (all ST_ACK except Store_local)
+    if(dc_inv && !(cpx.rtntyp == ST_ACK && !cpx.atom && !cpx.data[125] && sparc_id == cpx_cpu_id)) {
+        dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5:CPX_INVPA4], dcinv_way};
+        dcvld = l1_stub[sparc_id].get_vdcvld(dindex);
+        dctag = l1_stub[sparc_id].get_vdctag(dindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING st ack dcache invalidation thrid %h rtntyp %h index %h\n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, dindex);
+        }
+        
+        if(!dcvld)
+            l1_checker_err("Wrong DC invalidation", sparc_id);
+
+        l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+    }
+    
+    // perform invalidations on virtual Icache
+    if(ic_inv) {
+        iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], cpx.data[CPX_INVPA5], icinv_way};
+        icvld = l1_stub[sparc_id].get_vicvld(iindex);
+        ictag = l1_stub[sparc_id].get_victag(iindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING thrid %h rtntyp %h index %h \n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, iindex);
+        }
+        
+        if(!icvld)
+            l1_checker_err("Wrong IC invalidation", sparc_id);
+
+        l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Perform invalidations on virtual caches for EVICT_REQ.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::check_evict(CpxPacket cpx, integer sparc_id) {
+
+    bit [1:0] dcinv_way, icinv_way;
+    bit dc_inv, ic_inv;
+    
+    bit [8:0] dindex, iindex;
+    
+    bit dcvld, icvld;
+    
+    bit [28:0] dctag;
+    bit [27:0] ictag;
+    
+    bit [2:0] cpx_cpu_id;
+    
+    
+    // addr[5:4] = 0
+    dcinv_way = cpx.data[sparc_id*4 + 3 : sparc_id*4 + 2];
+    dc_inv = cpx.data[sparc_id*4];
+    
+    icinv_way = cpx.data[sparc_id*4 + 3 : sparc_id*4 + 2];
+    ic_inv = cpx.data[sparc_id*4 + 1];
+    
+    if(dc_inv && ic_inv)
+        l1_checker_err("ic_inv and dc_inv active in the same cycle", sparc_id);
+    
+    if(dc_inv) {
+        dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], 2'b00, dcinv_way};
+        dcvld = l1_stub[sparc_id].get_vdcvld(dindex);
+        dctag = l1_stub[sparc_id].get_vdctag(dindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING evict  dcache invalidation thrid %h rtntyp %h index %h\n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, dindex);
+        }
+        
+        if(!dcvld)
+            l1_checker_err("Wrong DC invalidation", sparc_id);
+        
+        l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+    }
+    
+    if(ic_inv) {
+        iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], 1'b0, icinv_way};
+        icvld = l1_stub[sparc_id].get_vicvld(iindex);
+        ictag = l1_stub[sparc_id].get_victag(iindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: c%0d CHECKING evict icache invalidation thrid %h rtntyp %h index %h \n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, iindex);
+        }
+
+        if(!icvld)
+            l1_checker_err("Wrong IC invalidation", sparc_id);
+
+        l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+    }
+
+
+    // addr[5:4] = 1
+    dcinv_way = cpx.data[sparc_id*3 + 34 : sparc_id*3 + 33];
+    dc_inv  = cpx.data[sparc_id*3 + 32];
+
+    if(dc_inv && ic_inv)
+        l1_checker_err("ic_inv and dc_inv active in the same cycle", sparc_id);
+
+    if(dc_inv) {
+        dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], 2'b01, dcinv_way};
+        dcvld = l1_stub[sparc_id].get_vdcvld(dindex);
+        dctag = l1_stub[sparc_id].get_vdctag(dindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING evict dcache invalidation thrid %h rtntyp %h index %h\n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, dindex);
+        }
+
+        if(!dcvld)
+            l1_checker_err("Wrong DC invalidation", sparc_id);
+        
+        l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+    }
+
+
+    // addr[5:4] = 2
+    dcinv_way = cpx.data[sparc_id*4 + 59 : sparc_id*4 + 58];
+    dc_inv = cpx.data[sparc_id*4 + 56];
+
+    icinv_way = cpx.data[sparc_id*4 + 59 : sparc_id*4 + 58];
+    ic_inv = cpx.data[sparc_id*4 + 57];
+    
+    if(dc_inv && ic_inv)
+        l1_checker_err("ic_inv and dc_inv active in the same cycle", sparc_id);
+
+    if(dc_inv) {
+        dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], 2'b10, dcinv_way};
+        dcvld = l1_stub[sparc_id].get_vdcvld(dindex);
+        dctag = l1_stub[sparc_id].get_vdctag(dindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING evict dcache invalidation thrid %h rtntyp %h index %h\n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, dindex);
+        }
+        
+        if(!dcvld)
+            l1_checker_err("Wrong DC invalidation", sparc_id);
+
+        l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+    }
+    
+    if(ic_inv) {
+        iindex = {cpx.data[CPX_INV_IDX_HI:CPX_INV_IDX_LO], 1'b1, icinv_way};
+        icvld = l1_stub[sparc_id].get_vicvld(iindex);
+        ictag = l1_stub[sparc_id].get_victag(iindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: c%0d CHECKING evict icache invalidation thrid %h rtntyp %h index %h \n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, iindex);
+        }
+        
+        if(!icvld)
+            l1_checker_err("Wrong IC invalidation", sparc_id);
+
+        l1_stub[sparc_id].wr_vicvld(iindex, 1'b0);
+    }
+
+
+    // addr[5:4] = 3
+    dcinv_way = cpx.data[sparc_id*3 + 90: sparc_id*3 + 89];
+    dc_inv = cpx.data[sparc_id*3 + 88];
+
+    if(dc_inv && ic_inv)
+        l1_checker_err("ic_inv and dc_inv active in the same cycle", sparc_id);
+
+    if(dc_inv) {
+        dindex = {cpx.data[CPX_INV_IDX_HI-1:CPX_INV_IDX_LO], 2'b11, dcinv_way};
+        dcvld = l1_stub[sparc_id].get_vdcvld(dindex);
+        dctag = l1_stub[sparc_id].get_vdctag(dindex);
+        
+        if(debug > 1) {
+            printf("%0d: %s: C%0d CHECKING evict dcache invalidation thrid %h rtntyp %h index %h\n",
+                   get_time(LO), this.name, sparc_id, cpx.thread_id, cpx.rtntyp, dindex);
+        }
+
+        if(!dcvld)
+            l1_checker_err("Wrong DC invalidation", sparc_id);
+        
+        l1_stub[sparc_id].wr_vdcvld(dindex, 1'b0);
+    }
+}
+
+//////////////////////////////////////////////////////////////
+// Print contents of PcxPacket list.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::print_pcx_list(VeraList_PcxPacket pcx_list) {
+    
+    PcxPacket pcx;
+    VeraListIterator_PcxPacket I;
+    
+    printf("pcx_list start.\n");
+    I = pcx_list.start();
+    
+    while(I.neq(pcx_list.finish())) {
+        pcx = I.data();
+        pcx.print();
+        I.next(); 
+    }
+    
+    printf("pcx_list end.\n");
+}
+
+//////////////////////////////////////////////////////////////
+// Print contents of CpxPacket list.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::print_cpx_list(VeraList_CpxPacket cpx_list) {
+    
+    CpxPacket cpx;
+    VeraListIterator_CpxPacket I;
+    
+    printf("cpx_list start.\n");
+    I = cpx_list.start();
+    
+    while (I.neq(cpx_list.finish())) {
+        cpx = I.data();
+        cpx.print();
+        I.next(); 
+    }
+
+    printf("cpx_list end.\n");
+}
+
+//////////////////////////////////////////////////////////////
+// Print error message and stop simulation.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::l1_checker_err(string err_msg, integer sparc_id) {
+    
+    printf ("%0d: %s: Simulation -> FAIL C%0d %s\n", get_time(LO), this.name, sparc_id, err_msg);
+    printf ("%0d: %s: Simulation -> FAIL\n", get_time(LO), this.name);
+    repeat(2) @(posedge l1_top.clk);
+    exit (1);
+}
+
+//////////////////////////////////////////////////////////////
+// Print L1 way allocation statistics.
+//////////////////////////////////////////////////////////////
+
+task L1_CHECKER::report_ways(integer sparc_id) {
+
+  @(posedge l1_top.cmp_diag_done);
+  printf("%0d: %s: C%0d icache way0  = %0d\n", get_time(LO), this.name, sparc_id, icache_ways[sparc_id *4 + 2'b00]);
+  printf("%0d: %s: C%0d icache way1  = %0d\n", get_time(LO), this.name, sparc_id, icache_ways[sparc_id *4 + 2'b01]);
+  printf("%0d: %s: C%0d icache way2  = %0d\n", get_time(LO), this.name, sparc_id, icache_ways[sparc_id *4 + 2'b10]);
+  printf("%0d: %s: C%0d icache way3  = %0d\n", get_time(LO), this.name, sparc_id, icache_ways[sparc_id *4 + 2'b11]);
+  
+  printf("%0d: %s: C%0d dcache way0  = %0d\n", get_time(LO), this.name, sparc_id, dcache_ways[sparc_id *4 + 2'b00]);
+  printf("%0d: %s: C%0d dcache way1  = %0d\n", get_time(LO), this.name, sparc_id, dcache_ways[sparc_id *4 + 2'b01]);
+  printf("%0d: %s: C%0d dcache way2  = %0d\n", get_time(LO), this.name, sparc_id, dcache_ways[sparc_id *4 + 2'b10]);
+  printf("%0d: %s: C%0d dcache way3  = %0d\n", get_time(LO), this.name, sparc_id, dcache_ways[sparc_id *4 + 2'b11]);
+}

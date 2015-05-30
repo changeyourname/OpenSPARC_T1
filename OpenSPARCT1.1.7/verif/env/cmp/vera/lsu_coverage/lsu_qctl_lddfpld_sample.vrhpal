@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_qctl_lddfpld_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Instructions that double pump data
+
+// lsu_qctl_ldd_state = {memref_e, lmq_ldd_vld, ldd_in_dfq_out, dfq_ld_vld, lsu_cpx_pkt_prefetch, lsu_l2fill_fpld_e};
+
+wildcard trans ldd1_ldd2_other  ( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b0, 1'b0, 1'bx, 1'bx, 1'bx} );
+
+wildcard trans ldd1_ldd2_lddfpld( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'bx} );
+
+wildcard trans memref_ldd1_ldd2 ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0} );
+
+wildcard trans ldd1_memref_ldd2 ( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b1, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0} ->
+                                  {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0} );
+
+
+wildcard trans fpld1_fpld2_other  ( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b0, 1'b0, 1'bx, 1'bx, 1'bx} );
+
+wildcard trans fpld1_fpld2_lddfpld( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'bx} );
+
+wildcard trans memref_fpld1_fpld2 ( {1'b1, 1'b1, 1'b0, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1} );
+
+wildcard trans fpld1_memref_fpld2 ( {1'b0, 1'b1, 1'b0, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b1, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1} ->
+                                    {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1} );
+
+
+wildcard state prefetch_lddvld( {1'bx, 1'b1, 1'bx, 1'b1, 1'b1, 1'bx} );

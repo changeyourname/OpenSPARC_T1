@@ -1,0 +1,56 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_rwctl_pcx_stb_rd_cancel_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// binding for store buffer read from pcx cancelled because of stb hit by load
+
+state s_PCX_RD_STB_CANCEL_0 (7'b1100000);
+state s_PCX_RD_STB_CANCEL_1 (7'b1100001);
+state s_PCX_RD_STB_CANCEL_2 (7'b1100010);
+state s_PCX_RD_STB_CANCEL_3 (7'b1100011);
+state s_PCX_RD_STB_CANCEL_4 (7'b1100100);
+state s_PCX_RD_STB_CANCEL_5 (7'b1100101);
+state s_PCX_RD_STB_CANCEL_6 (7'b1100110);
+state s_PCX_RD_STB_CANCEL_7 (7'b1100111);
+state s_PCX_RD_STB_CANCEL_8 (7'b1101000);
+state s_PCX_RD_STB_CANCEL_9 (7'b1101001);
+state s_PCX_RD_STB_CANCEL_10 (7'b1101010);
+state s_PCX_RD_STB_CANCEL_11 (7'b1101011);
+state s_PCX_RD_STB_CANCEL_12 (7'b1101100);
+state s_PCX_RD_STB_CANCEL_13 (7'b1101101);
+state s_PCX_RD_STB_CANCEL_14 (7'b1101110);
+state s_PCX_RD_STB_CANCEL_15 (7'b1101111);
+state s_PCX_RD_STB_CANCEL_16 (7'b1110000);
+state s_PCX_RD_STB_CANCEL_17 (7'b1110001);
+state s_PCX_RD_STB_CANCEL_18 (7'b1110010);
+state s_PCX_RD_STB_CANCEL_19 (7'b1110011);
+state s_PCX_RD_STB_CANCEL_20 (7'b1110100);
+state s_PCX_RD_STB_CANCEL_21 (7'b1110101);
+state s_PCX_RD_STB_CANCEL_22 (7'b1110110);
+state s_PCX_RD_STB_CANCEL_23 (7'b1110111);
+state s_PCX_RD_STB_CANCEL_24 (7'b1111000);
+state s_PCX_RD_STB_CANCEL_25 (7'b1111001);
+state s_PCX_RD_STB_CANCEL_26 (7'b1111010);
+state s_PCX_RD_STB_CANCEL_27 (7'b1111011);
+state s_PCX_RD_STB_CANCEL_28 (7'b1111100);
+state s_PCX_RD_STB_CANCEL_29 (7'b1111101);
+state s_PCX_RD_STB_CANCEL_30 (7'b1111110);
+state s_PCX_RD_STB_CANCEL_31 (7'b1111111);
+
+

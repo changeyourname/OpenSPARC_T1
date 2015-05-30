@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_simul_compl_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_simul_compl_COV_VRH
+#define INC__TMP_spu_simul_compl_COV_VRH
+#define SIMUL_COMPL_IDLE_STATE 2'b00
+#define SIMUL_COMPL_MA_SU_TRAP_STATE 2'b11
+
+//
+// This coverage object doesn't cover a state machine, but two signals.
+// So no bad states or transitions are declared.
+// The only goal here is to see if we hit the case of both completion
+// trap requests being asserted simultaneously.
+//
+#endif
+sample spu_simul_compl_sample_bind_C${c}.\$simul_compl_state {
+  // declare states to be covered 
+  state s_SIMUL_COMPL_IDLE_STATE (SIMUL_COMPL_IDLE_STATE);
+  state s_SIMUL_COMPL_MA_SU_TRAP_STATE (SIMUL_COMPL_MA_SU_TRAP_STATE);
+
+  // declare bad states
+  
+  // declare transitions to be covered
+  trans t_SIMUL_COMPL_IDLE_2_MA_SU_TRAP_STATE (SIMUL_COMPL_IDLE_STATE -> SIMUL_COMPL_MA_SU_TRAP_STATE);
+  
+  // bad transitions
+  // None declared because all we really care about is if we hit
+  // the above transition.
+}

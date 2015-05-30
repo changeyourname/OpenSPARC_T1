@@ -1,0 +1,349 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: iob_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "iob_inc.pal";
+#ifndef __IOB_PORTS_VRH__
+#define __IOB_PORTS_VRH__
+
+#include <vera_defines.vrh>
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "iob.if.vrh"
+
+////////////////////////////////////////////////////////////////////////////////
+// define iob ports
+////////////////////////////////////////////////////////////////////////////////
+port pcx_iob_port
+{
+    clk;
+    rst_l;
+    pcx_io_data_px2;
+    pcx_io_data_rdy_px2;
+    io_pcx_stall_pq;
+}
+
+port cpx_iob_port
+{
+    clk;
+    rst_l;
+    io_cpx_data_ca;
+    io_cpx_req_cq;
+    io_cpx_atom_cq;
+    cpx_io_grant_ca;
+}
+
+port iob_port {
+    clk;
+    rst_l;
+    tmp_trig;
+    intvecdisp_int_vld;
+    intvecdisp_int_vec;
+    intvecdisp_int_thr;
+    intvecdisp_int_type;
+    creg_intctrl_wr;
+    int_srvcd_d1;
+    intctrl_addr_dec;
+}
+
+port iob_ucb_port {
+    clk;
+    rst_l;
+    ucb_rd;
+    ucb_wr;
+    ucb_ifill;   // ifill only for spi unit - tie to 0 if unused
+    ucb_thr_id;
+    ucb_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr;
+    ucb_data;
+    ucb_req_ok;  // qualifier signal from unit tie to 1 if unused
+}
+
+port ucb_iob_port {
+    clk;
+    rst_l;
+    rd_ack;
+    rd_nak;
+    wr_ack;     // only for pci
+    ifill;      // only for spi
+    busy;  
+    thr_id;
+    buf_id;
+    data;  
+
+    int;
+    itype;
+    ithr_id;
+    istat;  
+    dev_id ;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// define iob bindings
+////////////////////////////////////////////////////////////////////////////////
+bind pcx_iob_port pcx_iob_bind
+{
+    clk                 	iob_top_cmp.clk ;
+    rst_l               	iob_top_cmp.rst_l ;
+    pcx_io_data_px2     	iob_top_cmp.pcx_io_data_px2 [PCX_WIDTH-1:0] ;
+    pcx_io_data_rdy_px2 	iob_top_cmp.pcx_io_data_rdy_px2 ;
+    io_pcx_stall_pq     	iob_top_cmp.io_pcx_stall_pq ;
+}
+
+bind cpx_iob_port cpx_iob_bind
+{
+    clk                 	iob_top_cmp.clk ;
+    rst_l               	iob_top_cmp.rst_l ;
+    io_cpx_data_ca      	iob_top_cmp.io_cpx_data_ca [CPX_WIDTH-1:0];
+    io_cpx_req_cq       	iob_top_cmp.io_cpx_req_cq[7:0];
+    io_cpx_atom_cq      	iob_top_cmp.io_cpx_atom_cq;
+    cpx_io_grant_ca     	iob_top_cmp.cpx_io_grant_ca[7:0];
+}
+
+bind iob_port iob_bind
+{
+    clk                   	iob_top_jbus.clk;
+    rst_l                 	iob_top_jbus.rst_l;
+    tmp_trig              	iob_top_jbus.iob_temp_trig;
+    intvecdisp_int_vld    	iob_top_jbus.intvecdisp_int_vld;
+    intvecdisp_int_vec    	iob_top_jbus.intvecdisp_int_vec;
+    intvecdisp_int_thr    	iob_top_jbus.intvecdisp_int_thr;
+    intvecdisp_int_type   	iob_top_jbus.intvecdisp_int_type;
+    creg_intctrl_wr       	iob_top_jbus.creg_intctrl_wr;
+    int_srvcd_d1          	iob_top_jbus.int_srvcd_d1;
+    intctrl_addr_dec      	iob_top_jbus.intctrl_addr_dec;
+}
+
+
+//bind ucb_port dram0_stub_iob_bind
+//{
+//    clk                      	iob_top_jbus.clk;
+//    iob_ucb_vld              	iob_top_jbus.iob_dram0_ucb_vld;
+//    iob_ucb_stall            	iob_top_jbus.iob_dram0_ucb_stall;
+//    iob_ucb_data             	iob_top_jbus.iob_dram0_ucb_data;
+//    ucb_iob_stall            	iob_top_jbus.dram0_ucb_iob_stall;
+//    ucb_iob_vld              	iob_top_jbus.dram0_ucb_iob_vld;
+//    ucb_iob_data             	iob_top_jbus.dram0_ucb_iob_data;
+//}
+
+//bind ucb_port dram1_stub_iob_bind
+//{
+//    clk                      	iob_top_jbus.clk;
+//    iob_ucb_vld              	iob_top_jbus.iob_dram1_ucb_vld;
+//    iob_ucb_stall            	iob_top_jbus.iob_dram1_ucb_stall;
+//    iob_ucb_data             	iob_top_jbus.iob_dram1_ucb_data;
+//    ucb_iob_stall            	iob_top_jbus.dram1_ucb_iob_stall;
+//    ucb_iob_vld              	iob_top_jbus.dram1_ucb_iob_vld;
+//    ucb_iob_data             	iob_top_jbus.dram1_ucb_iob_data;
+//}
+
+bind ucb_iob_port tap_iob_bind {
+    clk     			iob_top_jbus.clk;
+    rst_l   			iob_top_jbus.rst_l;
+    rd_ack  			iob_top_jbus.tap_iob_rd_ack;
+    rd_nak  			iob_top_jbus.tap_iob_rd_nak;
+    wr_ack  			iob_top_jbus.tap_iob_wr_ack;     // only for pci 
+    ifill   			iob_top_jbus.tap_iob_ifill;
+    busy    			iob_top_jbus.tap_iob_busy;  
+    thr_id  			iob_top_jbus.tap_iob_thr_id;
+    buf_id  			iob_top_jbus.tap_iob_buf_id;
+    data    			iob_top_jbus.tap_iob_data;  
+         
+    int     			iob_top_jbus.tap_iob_int; 
+    itype   			iob_top_jbus.tap_iob_itype;
+    ithr_id 			iob_top_jbus.tap_iob_ithr_id;
+    istat   			iob_top_jbus.tap_iob_istat;  
+    dev_id  			iob_top_jbus.tap_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_tap_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_tap_rd;  
+    ucb_wr       		iob_top_jbus.iob_tap_wr;
+    ucb_ifill    		iob_top_jbus.iob_tap_ifill;   // ifill only for tap unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_tap_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_tap_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_tap_addr;
+    ucb_data     		iob_top_jbus.iob_tap_data;
+    ucb_req_ok   		iob_top_jbus.iob_tap_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+bind ucb_iob_port jbi_iob_bind {
+   clk     	               	iob_top_jbus.clk;
+   rst_l   			iob_top_jbus.rst_l;
+   rd_ack  			iob_top_jbus.jbi_iob_rd_ack;
+   rd_nak  			iob_top_jbus.jbi_iob_rd_nak;
+   wr_ack  			iob_top_jbus.jbi_iob_wr_ack;     // only for pci 
+   ifill   			iob_top_jbus.jbi_iob_ifill;
+   busy    			iob_top_jbus.jbi_iob_busy;  
+   thr_id  			iob_top_jbus.jbi_iob_thr_id;
+   buf_id  			iob_top_jbus.jbi_iob_buf_id;
+   data    			iob_top_jbus.jbi_iob_data;  
+         
+   int     			iob_top_jbus.jbi_iob_int; 
+   itype   			iob_top_jbus.jbi_iob_itype;
+   ithr_id 			iob_top_jbus.jbi_iob_ithr_id;
+   istat   			iob_top_jbus.jbi_iob_istat;  
+   dev_id  			iob_top_jbus.jbi_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_jbi_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_jbi_rd;  
+    ucb_wr       		iob_top_jbus.iob_jbi_wr;
+    ucb_ifill    		iob_top_jbus.iob_jbi_ifill;   // ifill only for spi unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_jbi_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_jbi_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_jbi_addr;
+    ucb_data     		iob_top_jbus.iob_jbi_data;
+    ucb_req_ok   		iob_top_jbus.iob_jbi_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+bind ucb_iob_port ctu_iob_bind {
+    clk     			iob_top_jbus.clk;
+    rst_l   			iob_top_jbus.rst_l;
+    rd_ack  			iob_top_jbus.ctu_iob_rd_ack;
+    rd_nak  			iob_top_jbus.ctu_iob_rd_nak;
+    wr_ack  			iob_top_jbus.ctu_iob_wr_ack;     // only for pci 
+    ifill   			iob_top_jbus.ctu_iob_ifill;
+    busy    			iob_top_jbus.ctu_iob_busy;  
+    thr_id  			iob_top_jbus.ctu_iob_thr_id;
+    buf_id  			iob_top_jbus.ctu_iob_buf_id;
+    data    			iob_top_jbus.ctu_iob_data;  
+         
+    int     			iob_top_jbus.ctu_iob_int; 
+    itype   			iob_top_jbus.ctu_iob_itype;
+    ithr_id 			iob_top_jbus.ctu_iob_ithr_id;
+    istat   			iob_top_jbus.ctu_iob_istat;  
+    dev_id  			iob_top_jbus.ctu_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_ctu_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_ctu_rd;  
+    ucb_wr       		iob_top_jbus.iob_ctu_wr;
+    ucb_ifill    		iob_top_jbus.iob_ctu_ifill;   // ifill only for ctu unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_ctu_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_ctu_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_ctu_addr;
+    ucb_data     		iob_top_jbus.iob_ctu_data;
+    ucb_req_ok   		iob_top_jbus.iob_ctu_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+bind ucb_iob_port dram0_iob_bind {
+    clk     			iob_top_jbus.clk;
+    rst_l   			iob_top_jbus.rst_l;
+    rd_ack  			iob_top_jbus.dram0_iob_rd_ack;
+    rd_nak  			iob_top_jbus.dram0_iob_rd_nak;
+    wr_ack  			iob_top_jbus.dram0_iob_wr_ack;     // only for pci 
+    ifill   			iob_top_jbus.dram0_iob_ifill;
+    busy    			iob_top_jbus.dram0_iob_busy;  
+    thr_id  			iob_top_jbus.dram0_iob_thr_id;
+    buf_id  			iob_top_jbus.dram0_iob_buf_id;
+    data    			iob_top_jbus.dram0_iob_data;  
+         
+    int     			iob_top_jbus.dram0_iob_int; 
+    itype   			iob_top_jbus.dram0_iob_itype;
+    ithr_id 			iob_top_jbus.dram0_iob_ithr_id;
+    istat   			iob_top_jbus.dram0_iob_istat;  
+    dev_id  			iob_top_jbus.dram0_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_dram0_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_dram0_rd;  
+    ucb_wr       		iob_top_jbus.iob_dram0_wr;
+    ucb_ifill    		iob_top_jbus.iob_dram0_ifill;   // ifill only for dram0 unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_dram0_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_dram0_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_dram0_addr;
+    ucb_data     		iob_top_jbus.iob_dram0_data;
+    ucb_req_ok   		iob_top_jbus.iob_dram0_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+bind ucb_iob_port dram1_iob_bind {
+    clk     			iob_top_jbus.clk;
+    rst_l   			iob_top_jbus.rst_l;
+    rd_ack  			iob_top_jbus.dram1_iob_rd_ack;
+    rd_nak  			iob_top_jbus.dram1_iob_rd_nak;
+    wr_ack  			iob_top_jbus.dram1_iob_wr_ack;     // only for pci 
+    ifill   			iob_top_jbus.dram1_iob_ifill;
+    busy    			iob_top_jbus.dram1_iob_busy;  
+    thr_id  			iob_top_jbus.dram1_iob_thr_id;
+    buf_id  			iob_top_jbus.dram1_iob_buf_id;
+    data    			iob_top_jbus.dram1_iob_data;  
+         
+    int     			iob_top_jbus.dram1_iob_int; 
+    itype   			iob_top_jbus.dram1_iob_itype;
+    ithr_id 			iob_top_jbus.dram1_iob_ithr_id;
+    istat   			iob_top_jbus.dram1_iob_istat;  
+    dev_id  			iob_top_jbus.dram1_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_dram1_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_dram1_rd;  
+    ucb_wr       		iob_top_jbus.iob_dram1_wr;
+    ucb_ifill    		iob_top_jbus.iob_dram1_ifill;   // ifill only for dram1 unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_dram1_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_dram1_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_dram1_addr;
+    ucb_data     		iob_top_jbus.iob_dram1_data;
+    ucb_req_ok   		iob_top_jbus.iob_dram1_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+bind ucb_iob_port spi_iob_bind {
+    clk     			iob_top_jbus.clk;
+    rst_l   			iob_top_jbus.rst_l;
+    rd_ack  			iob_top_jbus.spi_iob_rd_ack;
+    rd_nak  			iob_top_jbus.spi_iob_rd_nak;
+    wr_ack  			iob_top_jbus.spi_iob_wr_ack;     // only for pci 
+    ifill   			iob_top_jbus.spi_iob_ifill;
+    busy    			iob_top_jbus.spi_iob_busy;  
+    thr_id  			iob_top_jbus.spi_iob_thr_id;
+    buf_id  			iob_top_jbus.spi_iob_buf_id;
+    data    			iob_top_jbus.spi_iob_data;  
+         
+    int     			iob_top_jbus.spi_iob_int; 
+    itype   			iob_top_jbus.spi_iob_itype;
+    ithr_id 			iob_top_jbus.spi_iob_ithr_id;
+    istat   			iob_top_jbus.spi_iob_istat;  
+    dev_id  			iob_top_jbus.spi_iob_dev_id;  
+}
+
+bind iob_ucb_port iob_spi_bind {
+    clk          		iob_top_jbus.clk;
+    rst_l        		iob_top_jbus.rst_l;
+    ucb_rd       		iob_top_jbus.iob_spi_rd;  
+    ucb_wr       		iob_top_jbus.iob_spi_wr;
+    ucb_ifill    		iob_top_jbus.iob_spi_ifill;   // ifill only for spi unit - tie to 0 if unused
+    ucb_thr_id   		iob_top_jbus.iob_spi_thr_id;
+    ucb_buf_id   		iob_top_jbus.iob_spi_buf_id;  // ucb buf id diff between tap & cpu
+    ucb_addr     		iob_top_jbus.iob_spi_addr;
+    ucb_data     		iob_top_jbus.iob_spi_data;
+    ucb_req_ok   		iob_top_jbus.iob_spi_req_ok;  // qualifier signal from unit tie to 1 if unused  
+}
+
+#endif

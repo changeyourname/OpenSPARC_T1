@@ -1,0 +1,101 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_jbi_fields_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+
+// request[32:0] = {jbi_sctag_req_vld, jbi_sctag_req[31:0]}
+
+// coverage_def L2_JBI_FIELDS_COV(bit [32:0] request) {
+
+    // WR8 size and address position combinations
+    
+    wildcard trans WR8_8B_0(JBI_REQ_VLD -> JBI_WR8_8B -> JBI_REQ_ADDR0);
+
+    wildcard trans WR8_7B_0(JBI_REQ_VLD -> JBI_WR8_7B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_7B_1(JBI_REQ_VLD -> JBI_WR8_7B -> JBI_REQ_ADDR1);
+
+    wildcard trans WR8_6B_0(JBI_REQ_VLD -> JBI_WR8_6B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_6B_1(JBI_REQ_VLD -> JBI_WR8_6B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_6B_2(JBI_REQ_VLD -> JBI_WR8_6B -> JBI_REQ_ADDR2);
+
+    wildcard trans WR8_5B_0(JBI_REQ_VLD -> JBI_WR8_5B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_5B_1(JBI_REQ_VLD -> JBI_WR8_5B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_5B_2(JBI_REQ_VLD -> JBI_WR8_5B -> JBI_REQ_ADDR2);
+    wildcard trans WR8_5B_3(JBI_REQ_VLD -> JBI_WR8_5B -> JBI_REQ_ADDR3);
+
+    wildcard trans WR8_4B_0(JBI_REQ_VLD -> JBI_WR8_4B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_4B_1(JBI_REQ_VLD -> JBI_WR8_4B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_4B_2(JBI_REQ_VLD -> JBI_WR8_4B -> JBI_REQ_ADDR2);
+    wildcard trans WR8_4B_3(JBI_REQ_VLD -> JBI_WR8_4B -> JBI_REQ_ADDR3);
+    wildcard trans WR8_4B_4(JBI_REQ_VLD -> JBI_WR8_4B -> JBI_REQ_ADDR4);
+
+    wildcard trans WR8_3B_0(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_3B_1(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_3B_2(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR2);
+    wildcard trans WR8_3B_3(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR3);
+    wildcard trans WR8_3B_4(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR4);
+    wildcard trans WR8_3B_5(JBI_REQ_VLD -> JBI_WR8_3B -> JBI_REQ_ADDR5);
+
+    wildcard trans WR8_2B_0(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_2B_1(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_2B_2(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR2);
+    wildcard trans WR8_2B_3(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR3);
+    wildcard trans WR8_2B_4(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR4);
+    wildcard trans WR8_2B_5(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR5);
+    wildcard trans WR8_2B_6(JBI_REQ_VLD -> JBI_WR8_2B -> JBI_REQ_ADDR6);
+
+    wildcard trans WR8_1B_0(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR0);
+    wildcard trans WR8_1B_1(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR1);
+    wildcard trans WR8_1B_2(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR2);
+    wildcard trans WR8_1B_3(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR3);
+    wildcard trans WR8_1B_4(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR4);
+    wildcard trans WR8_1B_5(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR5);
+    wildcard trans WR8_1B_6(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR6);
+    wildcard trans WR8_1B_7(JBI_REQ_VLD -> JBI_WR8_1B -> JBI_REQ_ADDR7);
+
+    // ctag bits
+    
+    wildcard trans CTAG_BIT11_0(JBI_REQ_VLD -> JBI_CTAG11_0);
+    wildcard trans CTAG_BIT11_1(JBI_REQ_VLD -> JBI_CTAG11_1);
+    wildcard trans CTAG_BIT10_0(JBI_REQ_VLD -> JBI_CTAG10_0);
+    wildcard trans CTAG_BIT10_1(JBI_REQ_VLD -> JBI_CTAG10_1);
+    wildcard trans CTAG_BIT9_0 (JBI_REQ_VLD -> JBI_CTAG9_0);
+    wildcard trans CTAG_BIT9_1 (JBI_REQ_VLD -> JBI_CTAG9_1);
+    wildcard trans CTAG_BIT8_0 (JBI_REQ_VLD -> JBI_CTAG8_0);
+    wildcard trans CTAG_BIT8_1 (JBI_REQ_VLD -> JBI_CTAG8_1);
+    wildcard trans CTAG_BIT7_0 (JBI_REQ_VLD -> JBI_CTAG7_0);
+    wildcard trans CTAG_BIT7_1 (JBI_REQ_VLD -> JBI_CTAG7_1);
+    wildcard trans CTAG_BIT6_0 (JBI_REQ_VLD -> JBI_CTAG6_0);
+    wildcard trans CTAG_BIT6_1 (JBI_REQ_VLD -> JBI_CTAG6_1);
+    wildcard trans CTAG_BIT5_0 (JBI_REQ_VLD -> JBI_CTAG5_0);
+    wildcard trans CTAG_BIT5_1 (JBI_REQ_VLD -> JBI_CTAG5_1);
+    wildcard trans CTAG_BIT4_0 (JBI_REQ_VLD -> JBI_CTAG4_0);
+    wildcard trans CTAG_BIT4_1 (JBI_REQ_VLD -> JBI_CTAG4_1);
+    wildcard trans CTAG_BIT3_0 (JBI_REQ_VLD -> JBI_CTAG3_0);
+    wildcard trans CTAG_BIT3_1 (JBI_REQ_VLD -> JBI_CTAG3_1);
+    wildcard trans CTAG_BIT2_0 (JBI_REQ_VLD -> JBI_CTAG2_0);
+    wildcard trans CTAG_BIT2_1 (JBI_REQ_VLD -> JBI_CTAG2_1);
+    wildcard trans CTAG_BIT1_0 (JBI_REQ_VLD -> JBI_CTAG1_0);
+    wildcard trans CTAG_BIT1_1 (JBI_REQ_VLD -> JBI_CTAG1_1);
+    wildcard trans CTAG_BIT0_0 (JBI_REQ_VLD -> JBI_CTAG0_0);
+    wildcard trans CTAG_BIT0_1 (JBI_REQ_VLD -> JBI_CTAG0_1);
+// }

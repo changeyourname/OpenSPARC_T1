@@ -1,0 +1,75 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_asi_stxa_su_busy_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_asi_stxa_su_busy_COV_VRH
+#define INC__TMP_spu_asi_stxa_su_busy_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in asi_stxa_busy_state:
+ * strm_op_inprog, spu_encctl_src_wen, spu_encctl_dst_wen,
+ * spu_encctl_data_internal_wen, spu_encctl_iv1_internal_wen,
+ * spu_encctl_deskey1_wen, spu_encctl_deskey2_wen,
+ * spu_encctl_deskey3_wen, spu_encctl_hashst01_wen,
+ * spu_encctl_hashst23_wen, spu_encctl_hashst4x_wen
+ */
+
+/*
+ * spu_asi_stxa_su_busy_cov
+ *
+ * This coverage object checks that we have written all non-CTL registers while
+ * the SU state machine is busy. We do not use the BUSY bit from the
+ * CTL register to determine busy. We check that the state machines are
+ * not idle. This is because there is a period of time at the end of the
+ * op when the state machines are idle, and we're waiting for st acks to
+ * return. Then either the completion interrupt is issued or the ldxa of
+ * the sync register returns before the BUSY bit is cleared.
+ *
+ * TODO:
+ * + For now, just detect stxas when we are not in the idle state. Later,
+ *   it would be more complete to detect that we've done stxas in every
+ *   non-idle state.
+ * + We need to also detect that we've written ALL non-CTL registers in
+ *   each state.
+ */
+
+#endif
+
+sample spu_asi_stxa_su_busy_sample_bind_C${c}.\$asi_stxa_su_busy_state {
+  // Declare states to be covered 
+  state s_ASI_STXA_SU_BUSY_SRC      (11'b11000000000);
+  state s_ASI_STXA_SU_BUSY_DST      (11'b10100000000);
+  state s_ASI_STXA_SU_BUSY_DATA     (11'b10010000000);
+  state s_ASI_STXA_SU_BUSY_IV1      (11'b10001000000);
+  state s_ASI_STXA_SU_BUSY_KEY1     (11'b10000100000);
+  state s_ASI_STXA_SU_BUSY_KEY2     (11'b10000010000);
+  state s_ASI_STXA_SU_BUSY_KEY3     (11'b10000001000);
+  state s_ASI_STXA_SU_BUSY_HASH_LO  (11'b10000000100);
+  state s_ASI_STXA_SU_BUSY_HASH_MID (11'b10000000010);
+  state s_ASI_STXA_SU_BUSY_HASH_HI  (11'b10000000001);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

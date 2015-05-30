@@ -1,0 +1,72 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_async_starv_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for multiple simultanous synchrous and 
+// asynchronous (trap) events which might starv the asynchronous events
+//***************************************************************************
+
+
+// coverage_def TLU_ASYNC_STARV_COV (bit [10:0] tlu_async_starv_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_ASYNC_FP_TRAP_SYNC_ISIDE_TRAP	(ASYNC_FP_TRAP_SYNC_ISIDE_TRAP);
+  wildcard state s_ASYNC_FP_TRAP_SYNC_DSIDE_TRAP	(ASYNC_FP_TRAP_SYNC_DSIDE_TRAP);
+  wildcard state s_ASYNC_FP_TRAP_SYNC_ESIDE_TRAP	(ASYNC_FP_TRAP_SYNC_ESIDE_TRAP);
+  wildcard state s_ASYNC_FP_TRAP_SYNC_FASTCMPLT		(ASYNC_FP_TRAP_SYNC_FASTCMPLT);
+  wildcard state s_ASYNC_FP_TRAP_ASYNC_CWP_CMPLT	(ASYNC_FP_TRAP_ASYNC_CWP_CMPLT);
+  wildcard state s_ASYNC_SPILL_TRAP_SYNC_ISIDE_TRAP	(ASYNC_SPILL_TRAP_SYNC_ISIDE_TRAP);
+  wildcard state s_ASYNC_SPILL_TRAP_SYNC_DSIDE_TRAP	(ASYNC_SPILL_TRAP_SYNC_DSIDE_TRAP);
+  wildcard state s_ASYNC_SPILL_TRAP_SYNC_ESIDE_TRAP	(ASYNC_SPILL_TRAP_SYNC_ESIDE_TRAP);
+  wildcard state s_ASYNC_SPILL_TRAP_SYNC_FASTCMPLT	(ASYNC_SPILL_TRAP_SYNC_FASTCMPLT);
+  wildcard state s_ASYNC_LSU_TRAP_SYNC_ISIDE_TRAP	(ASYNC_LSU_TRAP_SYNC_ISIDE_TRAP);
+  wildcard state s_ASYNC_LSU_TRAP_SYNC_DSIDE_TRAP	(ASYNC_LSU_TRAP_SYNC_DSIDE_TRAP);
+  wildcard state s_ASYNC_LSU_TRAP_SYNC_ESIDE_TRAP	(ASYNC_LSU_TRAP_SYNC_ESIDE_TRAP);
+  wildcard state s_ASYNC_LSU_TRAP_SYNC_FASTCMPLT	(ASYNC_LSU_TRAP_SYNC_FASTCMPLT);
+  wildcard state s_ASYNC_LSU_TRAP_ASYNC_CWP_CMPLT	(ASYNC_LSU_TRAP_ASYNC_CWP_CMPLT);
+
+  wildcard state s_ASYNC_CWP_CMPLT_SYNC_ISIDE_TRAP	(ASYNC_CWP_CMPLT_SYNC_ISIDE_TRAP);
+  wildcard state s_ASYNC_CWP_CMPLT_SYNC_DSIDE_TRAP	(ASYNC_CWP_CMPLT_SYNC_DSIDE_TRAP);
+  wildcard state s_ASYNC_CWP_CMPLT_SYNC_ESIDE_TRAP	(ASYNC_CWP_CMPLT_SYNC_ESIDE_TRAP);
+  wildcard state s_ASYNC_CWP_CMPLT_SYNC_FASTCMPLT	(ASYNC_CWP_CMPLT_SYNC_FASTCMPLT);
+
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_SYNC_TRAPS	(ASYNC_TRAP_CWP_CMPLT_SYNC_TRAPS);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_SYNC_FASTCMPLT	(ASYNC_TRAP_CWP_CMPLT_SYNC_FASTCMPLT);
+
+  wildcard state s_ST_ASYNC_LSU_TRAP_SYNC_ISIDE_TRAP	(ST_ASYNC_LSU_TRAP_SYNC_ISIDE_TRAP);
+  wildcard state s_ST_ASYNC_LSU_TRAP_SYNC_DSIDE_TRAP	(ST_ASYNC_LSU_TRAP_SYNC_DSIDE_TRAP);
+  wildcard state s_ST_ASYNC_LSU_TRAP_SYNC_ESIDE_TRAP	(ST_ASYNC_LSU_TRAP_SYNC_ESIDE_TRAP);
+  wildcard state s_ST_ASYNC_LSU_TRAP_SYNC_FASTCMPLT	(ST_ASYNC_LSU_TRAP_SYNC_FASTCMPLT);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_ASYNC_SPILL_TRAP_ASYNC_CWP_CMPLT	(ASYNC_SPILL_TRAP_ASYNC_CWP_CMPLT);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

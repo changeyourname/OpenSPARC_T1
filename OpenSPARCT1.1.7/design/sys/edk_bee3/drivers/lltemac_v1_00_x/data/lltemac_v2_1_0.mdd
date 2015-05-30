@@ -1,0 +1,42 @@
+###############################################################
+# Copyright (c) 2005 Xilinx, Inc. All Rights Reserved.
+# You may copy and modify these files for your own internal use solely with
+# Xilinx programmable logic devices and  Xilinx EDK system or create IP
+# modules solely for Xilinx programmable logic devices and Xilinx EDK system.
+# No rights are granted to distribute any files unless they are distributed in
+# Xilinx programmable logic devices. 
+###############################################################
+OPTION psf_version = 2.1;
+
+BEGIN driver lltemac
+
+  OPTION supported_peripherals = (xps_ll_temac);
+  OPTION driver_state = ACTIVE;
+  OPTION depends = (common_v1_00_a llfifo_v1_00_a lldma_v1_00_a);
+  OPTION copyfiles = all;
+
+    BEGIN ARRAY interrupt_handler
+      PROPERTY desc = "Interrupt Handler Information";
+      PROPERTY size = 1, permit = none;
+      PARAM name = int_handler, default = XNullHandler, desc = "Name of Interrupt Handler", type = string;
+      PARAM name = int_port, default = IP2INTC_Irpt, desc = "Interrupt pin associated with the interrupt handler", permit = none;
+    END ARRAY
+
+    BEGIN INTERFACE vxworks5_5
+    END INTERFACE
+
+    BEGIN INTERFACE vxworks6_1
+    END INTERFACE
+
+    BEGIN INTERFACE vxworks6_3
+    END INTERFACE
+
+    BEGIN INTERFACE vxworks6_5
+    END INTERFACE
+    
+    BEGIN INTERFACE linux
+    END INTERFACE
+
+END driver
+
+

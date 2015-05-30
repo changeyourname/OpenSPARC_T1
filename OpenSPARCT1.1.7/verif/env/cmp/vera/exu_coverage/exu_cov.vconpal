@@ -1,0 +1,248 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "exu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// exu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+// global signals
+connect input exu_cov_top.cmp_clk = "cmp_top.iop.sparc0.rclk" iskew -1 
+connect input exu_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+. sub connectInstance {
+.	my ( $instancePath, $coreNum, $ifu_instancepath )	= @_;
+.	my $c				= $coreNum;
+.
+
+// TAG ADD & SUB
+connect input exu_cov_top.C${c}_exu_rs1_data_1 = "${instancePath}.ecl.byp_ecl_rs1_2_0_e[1]" iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_data_0 = "${instancePath}.ecl.byp_ecl_rs1_2_0_e[0]" iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_data_1 = "${instancePath}.ecl.byp_ecl_rs2_3_0_e[1]" iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_data_0 = "${instancePath}.ecl.byp_ecl_rs2_3_0_e[0]" iskew -1
+connect input exu_cov_top.C${c}_exu_tagop      = "${instancePath}.ecl.ifu_exu_tagop_e" iskew -1
+connect input exu_cov_top.C${c}_exu_tv	       = "${instancePath}.ecl.ifu_exu_tv_e" iskew -1
+connect input exu_cov_top.C${c}_exu_alu_sub    = "${instancePath}.ecl.sub_e" iskew -1
+
+// LOGIC
+connect input exu_cov_top.C${c}_exu_isand = "${instancePath}.alu.logic.isand" iskew -1
+connect input exu_cov_top.C${c}_exu_isor  = "${instancePath}.alu.logic.isor" iskew -1
+connect input exu_cov_top.C${c}_exu_isxor = "${instancePath}.alu.logic.isxor" iskew -1
+connect input exu_cov_top.C${c}_exu_inv   = "${instancePath}.alu.logic.inv_logic" iskew -1
+connect input exu_cov_top.C${c}_exu_xcc_nz   = "${instancePath}.ecl.alu_xcc_e[3:2]" iskew -1
+connect input exu_cov_top.C${c}_exu_icc_nz   = "${instancePath}.ecl.alu_icc_e[3:2]" iskew -1
+connect input exu_cov_top.C${c}_exu_setcc   = "${instancePath}.ecl.ccr.valid_setcc_e" iskew -1
+
+// DIV
+connect input exu_cov_top.C${c}_exu_div_state = "${instancePath}.ecl.divcntl.div_state" iskew -1
+connect input exu_cov_top.C${c}_exu_isdiv_e_vld = "${instancePath}.ecl.mdqctl.isdiv_w" iskew -1
+connect input exu_cov_top.C${c}_exu_isdiv_m_vld = "${instancePath}.ecl.mdqctl.isdiv_m_valid" iskew -1
+connect input exu_cov_top.C${c}_ifu_running_e   = "${ifu_instancepath}.fcl.ifu_tlu_inst_vld_w" iskew -1
+connect input exu_cov_top.C${c}_ifu_tlu_inst_vld_m = "${ifu_instancepath}.fcl.ifu_tlu_inst_vld_m" iskew -1 
+
+// GLOBAL SWAP
+connect input exu_cov_top.C${c}_exu_swap_global = "${instancePath}.rml_irf_swap_global" iskew -1
+connect input exu_cov_top.C${c}_exu_global_tid  = "${instancePath}.rml_irf_global_tid" iskew -1
+connect input exu_cov_top.C${c}_exu_old_agp     = "${instancePath}.rml_irf_old_agp" iskew -1
+connect input exu_cov_top.C${c}_exu_new_agp     = "${instancePath}.rml_irf_new_agp" iskew -1
+
+// SWAP LOCAL
+connect input exu_cov_top.C${c}_exu_swap_local  = "${instancePath}.rml_irf_swap_local_e" iskew -1
+connect input exu_cov_top.C${c}_exu_cwpswap_tid = "${instancePath}.rml_irf_cwpswap_tid_e" iskew -1
+connect input exu_cov_top.C${c}_exu_old_lo_cwp  = "${instancePath}.rml_irf_old_lo_cwp_e" iskew -1
+connect input exu_cov_top.C${c}_exu_new_lo_cwp  = "${instancePath}.rml_irf_new_lo_cwp_e" iskew -1
+
+// SWAP IN/OUTS
+connect input exu_cov_top.C${c}_exu_swap_even  = "${instancePath}.rml_irf_swap_even_e" iskew -1
+connect input exu_cov_top.C${c}_exu_swap_odd  = "${instancePath}.rml_irf_swap_odd_e" iskew -1
+connect input exu_cov_top.C${c}_exu_old_e_cwp  = "${instancePath}.rml_irf_old_e_cwp_e" iskew -1
+connect input exu_cov_top.C${c}_exu_new_e_cwp  = "${instancePath}.rml_irf_new_e_cwp_e" iskew -1
+
+// WMG - reg values
+connect input exu_cov_top.C${c}_exu_cwp		= "${instancePath}.rml.rml_ecl_cwp_e" iskew -1
+connect input exu_cov_top.C${c}_exu_cwp_wen	= "${instancePath}.rml.ecl_rml_cwp_wen_e" iskew -1
+connect input exu_cov_top.C${c}_exu_cansave	 = "${instancePath}.rml.rml_ecl_cansave_e" iskew -1
+connect input exu_cov_top.C${c}_exu_canrestore	 = "${instancePath}.rml.rml_ecl_canrestore_e" iskew -1
+connect input exu_cov_top.C${c}_exu_otherwin	 = "${instancePath}.rml.rml_ecl_otherwin_e" iskew -1
+connect input exu_cov_top.C${c}_exu_cleanwin	 = "${instancePath}.rml.rml_ecl_cleanwin_e" iskew -1
+// WMG - instruction recognition
+connect input exu_cov_top.C${c}_exu_saved	 = "${instancePath}.rml.ifu_exu_saved_e" iskew -1
+connect input exu_cov_top.C${c}_exu_restored	 = "${instancePath}.rml.ifu_exu_restored_e" iskew -1
+connect input exu_cov_top.C${c}_exu_flushw	 = "${instancePath}.rml.ifu_exu_flushw_e" iskew -1
+connect input exu_cov_top.C${c}_exu_save	 = "${instancePath}.rml.save_e" iskew -1
+connect input exu_cov_top.C${c}_exu_restore	 = "${instancePath}.rml.restore_e" iskew -1
+// WMG - trap recognition
+connect input exu_cov_top.C${c}_exu_spill	 = "${instancePath}.rml.exu_tlu_spill_e" iskew -1
+connect input exu_cov_top.C${c}_exu_fill	 = "${instancePath}.rml.rml_ecl_fill_e" iskew -1
+connect input exu_cov_top.C${c}_exu_clean_window = "${instancePath}.rml.rml_ecl_clean_window_e" iskew -1
+
+
+
+// ECC
+connect input exu_cov_top.C${c}_exu_detect_ce	= "${instancePath}.ecl.eccctl.detect_ce_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_detect_ue	= "${instancePath}.ecl.eccctl.detect_ue_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_ce	= "${instancePath}.ecl.eccctl.ecc_ecl_rs1_ce" iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_ue	= "${instancePath}.ecl.eccctl.ecc_ecl_rs1_ue" iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_ce	= "${instancePath}.ecl.eccctl.ecc_ecl_rs2_ce" iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_ue	= "${instancePath}.ecl.eccctl.ecc_ecl_rs2_ue" iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_ce	= "${instancePath}.ecl.eccctl.ecc_ecl_rs3_ce" iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_ue   	= "${instancePath}.ecl.eccctl.ecc_ecl_rs3_ue" iskew -1
+connect input exu_cov_top.C${c}_exu_ce2ue	= "${instancePath}.ecl.eccctl.ifu_exu_disable_ce_e" iskew -1
+
+// Bypass Single
+connect input exu_cov_top.C${c}_exu_rs1_byp		= "${instancePath}.ecl.byplog_rs1.bypass"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_mux1_sel_m      = "${instancePath}.ecl.ecl_byp_rs1_mux1_sel_m"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_mux1_sel_w      = "${instancePath}.ecl.ecl_byp_rs1_mux1_sel_w"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_mux1_sel_w2     = "${instancePath}.ecl.ecl_byp_rs1_mux1_sel_w2"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs1_mux2_sel_e      = "${instancePath}.ecl.ecl_byp_rs1_mux2_sel_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_mux2_sel_ld     = "${instancePath}.ecl.ecl_byp_rs1_mux2_sel_ld"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_mux2_sel_usemux1= "${instancePath}.ecl.ecl_byp_rs1_mux2_sel_usemux1"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs2_byp		= "${instancePath}.ecl.byplog_rs2.bypass"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_mux1_sel_m      = "${instancePath}.ecl.ecl_byp_rs2_mux1_sel_m"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_mux1_sel_w      = "${instancePath}.ecl.ecl_byp_rs2_mux1_sel_w"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_mux1_sel_w2     = "${instancePath}.ecl.ecl_byp_rs2_mux1_sel_w2"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs2_mux2_sel_e      = "${instancePath}.ecl.ecl_byp_rs2_mux2_sel_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_mux2_sel_ld     = "${instancePath}.ecl.ecl_byp_rs2_mux2_sel_ld"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_mux2_sel_usemux1= "${instancePath}.ecl.ecl_byp_rs2_mux2_sel_usemux1"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3_byp		= "${instancePath}.ecl.byplog_rs3.bypass"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_mux1_sel_m      = "${instancePath}.ecl.ecl_byp_rs3_mux1_sel_m"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_mux1_sel_w  	= "${instancePath}.ecl.ecl_byp_rs3_mux1_sel_w"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_mux1_sel_w2	= "${instancePath}.ecl.ecl_byp_rs3_mux1_sel_w2"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3_mux2_sel_e	= "${instancePath}.ecl.ecl_byp_rs3_mux2_sel_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_mux2_sel_ld	= "${instancePath}.ecl.ecl_byp_rs3_mux2_sel_ld"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_mux2_sel_usemux1= "${instancePath}.ecl.ecl_byp_rs3_mux2_sel_usemux1"    iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3h_byp		= "${instancePath}.ecl.byplog_rs3h.bypass"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux1_sel_m      = "${instancePath}.ecl.ecl_byp_rs3h_mux1_sel_m"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux1_sel_w  	= "${instancePath}.ecl.ecl_byp_rs3h_mux1_sel_w"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux1_sel_w2	= "${instancePath}.ecl.ecl_byp_rs3h_mux1_sel_w2"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux2_sel_e	= "${instancePath}.ecl.ecl_byp_rs3h_mux2_sel_e"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux2_sel_ld	= "${instancePath}.ecl.ecl_byp_rs3h_mux2_sel_ld"    iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_mux2_sel_usemux1= "${instancePath}.ecl.ecl_byp_rs3h_mux2_sel_usemux1"    iskew -1
+
+// Bypass State
+connect input exu_cov_top.C${c}_exu_valid_e		= "${instancePath}.ecl.writeback.valid_e"		iskew -1
+connect input exu_cov_top.C${c}_exu_valid_m		= "${instancePath}.ecl.writeback.valid_m"		iskew -1
+connect input exu_cov_top.C${c}_exu_bypass_w		= "${instancePath}.ecl.bypass_w"	iskew -1
+connect input exu_cov_top.C${c}_exu_wen_w2		= "${instancePath}.ecl.wb_byplog_wen_w2"	iskew -1
+connect input exu_cov_top.C${c}_exu_ld_vld		= "${instancePath}.ecl.lsu_exu_dfill_vld_g"	iskew -1
+
+connect input exu_cov_top.C${c}_ifu_rcc_mvbr_d   	= "${ifu_instancepath}.dcl.cc_mvbr_d" iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs1_byp_g2		= "${instancePath}.ecl.ecl_byp_rs1_longmux_sel_g2"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_byp_g2		= "${instancePath}.ecl.ecl_byp_rs2_longmux_sel_g2"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_byp_g2		= "${instancePath}.ecl.ecl_byp_rs3_longmux_sel_g2"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_byp_g2		= "${instancePath}.ecl.ecl_byp_rs3h_longmux_sel_g2"	iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs1_ifu_vld		= "${instancePath}.ecl.ifu_exu_rs1_vld_d"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_match_e		= "${instancePath}.ecl.byplog_rs1.match_e"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_match_m		= "${instancePath}.ecl.byplog_rs1.match_m"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_match_w		= "${instancePath}.ecl.byplog_rs1.match_w"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_match_ld	= "${instancePath}.ecl.byplog_rs1.match_ld"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs1_match_w2	= "${instancePath}.ecl.byplog_rs1.match_w2"	iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs2_ifu_vld		= "${instancePath}.ecl.ifu_exu_rs2_vld_d"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_match_e		= "${instancePath}.ecl.byplog_rs2.match_e"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_match_m		= "${instancePath}.ecl.byplog_rs2.match_m"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_match_w		= "${instancePath}.ecl.byplog_rs2.match_w"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_match_ld	= "${instancePath}.ecl.byplog_rs2.match_ld"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs2_match_w2	= "${instancePath}.ecl.byplog_rs2.match_w2"	iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3e_ifu_vld	= "${instancePath}.ecl.ifu_exu_rs3e_vld_d"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3o_ifu_vld	= "${instancePath}.ecl.ifu_exu_rs3o_vld_d"	iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3_match_e		= "${instancePath}.ecl.byplog_rs3.match_e"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_match_m		= "${instancePath}.ecl.byplog_rs3.match_m"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_match_w		= "${instancePath}.ecl.byplog_rs3.match_w"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_match_ld	= "${instancePath}.ecl.byplog_rs3.match_ld"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3_match_w2	= "${instancePath}.ecl.byplog_rs3.match_w2"	iskew -1
+
+connect input exu_cov_top.C${c}_exu_rs3h_match_e	= "${instancePath}.ecl.byplog_rs3h.match_e"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_match_m	= "${instancePath}.ecl.byplog_rs3h.match_m"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_match_w	= "${instancePath}.ecl.byplog_rs3h.match_w"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_match_ld	= "${instancePath}.ecl.byplog_rs3h.match_ld"	iskew -1
+connect input exu_cov_top.C${c}_exu_rs3h_match_w2	= "${instancePath}.ecl.byplog_rs3h.match_w2"	iskew -1
+
+//CWP SWAP
+connect input exu_cov_top.C${c}_exu_swap_slot0_st	= "${instancePath}.rml.cwp.swap_slot0_state" iskew -1
+connect input exu_cov_top.C${c}_exu_swap_slot1_st	= "${instancePath}.rml.cwp.swap_slot1_state" iskew -1
+connect input exu_cov_top.C${c}_exu_swap_slot2_st	= "${instancePath}.rml.cwp.swap_slot2_state" iskew -1
+connect input exu_cov_top.C${c}_exu_swap_slot3_st	= "${instancePath}.rml.cwp.swap_slot3_state" iskew -1
+
+//WB
+//Has six categories of "done" requests which initiate register updates:
+//	normal pipeline (ALU): exu.ecl.writeback.valid_m
+//	ECC: ecl_byp_sel_ecc_w
+//	load: exu.ecl.writeback.dfill_vld_g2
+//	restore: exu.ecl.writeback.restore_request
+//	mul: exu.ecl.writeback.divcntl_wb_req_g & exu.ecl.mdqctl.mul_done
+//	div: exu.ecl.writeback.divcntl_wb_req_g & exu.ecl.divcntl.div_state[5]
+connect input exu_cov_top.C${c}_exu_alu_wb 	= "${instancePath}.ecl.writeback.valid_m" iskew -1
+connect input exu_cov_top.C${c}_exu_ecc_wb 	= "${instancePath}.ecl.writeback.ecl_byp_sel_ecc_m" iskew -1
+connect input exu_cov_top.C${c}_exu_load_wb 	= "${instancePath}.ecl.writeback.dfill_vld_g2" iskew -1
+connect input exu_cov_top.C${c}_exu_restore_wb 	= "${instancePath}.ecl.writeback.restore_request" iskew -1
+connect input exu_cov_top.C${c}_exu_muldiv_wb 	= "${instancePath}.ecl.writeback.divcntl_wb_req_g" iskew -1
+connect input exu_cov_top.C${c}_exu_mul_done 	= "${instancePath}.ecl.mdqctl.mul_done" iskew -1
+connect input exu_cov_top.C${c}_exu_div_done 	= "${instancePath}.ecl.divcntl.div_state[5]" iskew -1
+
+
+
+//IRF
+connect input exu_cov_top.C${c}_exu_rd_tid_d	= "${instancePath}.irf.ifu_exu_thr_d" iskew -1
+connect input exu_cov_top.C${c}_exu_rd_ren1_d	= "${instancePath}.irf.ifu_exu_ren1_d" iskew -1
+connect input exu_cov_top.C${c}_exu_rd_ren2_d	= "${instancePath}.irf.ifu_exu_ren2_d" iskew -1
+connect input exu_cov_top.C${c}_exu_rd_ren3_d	= "${instancePath}.irf.ifu_exu_ren3_d" iskew -1
+connect input exu_cov_top.C${c}_exu_wr_tid_w	= "${instancePath}.irf.ecl_irf_tid_w" iskew -1
+connect input exu_cov_top.C${c}_exu_wr_wen_w	= "${instancePath}.irf.ecl_irf_wen_w" iskew -1
+connect input exu_cov_top.C${c}_exu_wr_tid_w2	= "${instancePath}.irf.ecl_irf_tid_w2" iskew -1
+connect input exu_cov_top.C${c}_exu_wr_wen_w2	= "${instancePath}.irf.ecl_irf_wen_w2" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_tid_m	= "${instancePath}.irf.cwpswap_tid_m" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_lcl_m	= "${instancePath}.irf.swap_local_m" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_eve_m	= "${instancePath}.irf.swap_even_m" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_odd_m	= "${instancePath}.irf.swap_odd_m" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_tid_w	= "${instancePath}.irf.cwpswap_tid_w" iskew -1
+connect input exu_cov_top.C${c}_exu_sw_lcl_w	= "${instancePath}.irf.swap_local_w" iskew -1
+connect input exu_cov_top.C${c}_exu_kil_rt_w 	= "${instancePath}.irf.rml_irf_kill_restore_w" iskew -1
+
+
+
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $EXU_COV_PATHS[$core];
+. 	my $ifu_inst = $IFU_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core, $ifu_inst );
+. }
+
+`endif // ifdef GATE_SIM

@@ -1,0 +1,51 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_ldbypass_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu load bypass with error conditions
+
+state s_LDBP_FP_LDST_THRD0         (14'b10001000000000);
+state s_LDBP_FP_LDST_THRD1         (14'b01000100000000);
+state s_LDBP_FP_LDST_THRD2         (14'b00100010000000);
+state s_LDBP_FP_LDST_THRD3         (14'b00010001000000);
+state s_LDBP_SPU_T0                (14'b10000000100000);
+state s_LDBP_SPU_T1                (14'b01000000100000);
+state s_LDBP_SPU_T2                (14'b00100000100000);
+state s_LDBP_SPU_T3                (14'b00010000100000);
+state s_LDBP_TTE_DATA_PERR_UNC_T0  (14'b10000000010000);
+state s_LDBP_TTE_DATA_PERR_UNC_T1  (14'b01000000010000);
+state s_LDBP_TTE_DATA_PERR_UNC_T2  (14'b00100000010000);
+state s_LDBP_TTE_DATA_PERR_UNC_T3  (14'b00010000010000);
+state s_LDBP_ATM_LD_W_UERR_T0      (14'b10000000001000);
+state s_LDBP_ATM_LD_W_UERR_T1      (14'b01000000001000);
+state s_LDBP_ATM_LD_W_UERR_T2      (14'b00100000001000);
+state s_LDBP_ATM_LD_W_UERR_T3      (14'b00010000001000);
+state s_LDBP_ASI_TTE_DATA_PERR_T0  (14'b10000000000100);
+state s_LDBP_ASI_TTE_DATA_PERR_T1  (14'b01000000000100);
+state s_LDBP_ASI_TTE_DATA_PERR_T2  (14'b00100000000100);
+state s_LDBP_ASI_TTE_DATA_PERR_T3  (14'b00010000000100);
+state s_LDBP_ASI_TTE_TAG_PERR_T0   (14'b10000000000010);
+state s_LDBP_ASI_TTE_TAG_PERR_T1   (14'b01000000000010);
+state s_LDBP_ASI_TTE_TAG_PERR_T2   (14'b00100000000010);
+state s_LDBP_ASI_TTE_TAG_PERR_T3   (14'b00010000000010);
+state s_LDBP_IFU_LSU_ASI_RD_UNC_T0 (14'b10000000000001);
+state s_LDBP_IFU_LSU_ASI_RD_UNC_T1 (14'b01000000000001);
+state s_LDBP_IFU_LSU_ASI_RD_UNC_T2 (14'b00100000000001);
+state s_LDBP_IFU_LSU_ASI_RD_UNC_T3 (14'b00010000000001);
+

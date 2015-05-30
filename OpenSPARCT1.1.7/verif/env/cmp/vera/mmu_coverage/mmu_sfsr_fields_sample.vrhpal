@@ -1,0 +1,42 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_sfsr_fields_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// State machine coverage for MMU SFSR fields
+//
+//
+// ***************************************************************************
+
+
+wildcard state s_SFSR_FTPRIV_VIO       (SFSR_FTPRIV_VIO);
+wildcard state s_SFSR_FTSPEC_FLT       (SFSR_FTSPEC_FLT);
+wildcard state s_SFSR_ATOMIC           (SFSR_ATOMIC);
+wildcard state s_SFSR_ILL_LDA          (SFSR_ILL_LDA);
+wildcard state s_SFSR_NFO_VIO          (SFSR_NFO_VIO);
+wildcard state s_SFSR_VA_OOR_DMMU      (SFSR_VA_OOR_DMMU);
+wildcard state s_SFSR_VA_OOR_IMMU      (SFSR_VA_OOR_IMMU);
+wildcard state s_SFSR_E                (SFSR_E);
+wildcard state s_SFSR_CT_PRIM          (SFSR_CT_PRIM);
+wildcard state s_SFSR_CT_NUC           (SFSR_CT_NUC);
+//wildcard state s_SFSR_PR               (SFSR_PR);
+wildcard state s_SFSR_W                (SFSR_W);
+wildcard state s_SFSR_OW               (SFSR_OW);
+wildcard state s_SFSR_FV               (SFSR_FV);

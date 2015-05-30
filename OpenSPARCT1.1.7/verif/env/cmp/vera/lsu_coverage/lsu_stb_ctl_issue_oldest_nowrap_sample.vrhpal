@@ -1,0 +1,30 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_issue_oldest_nowrap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for oldest store issued with no younger store wrapped around
+wildcard state s_ISSUE_OLDEST_0 ({8'b00000001,8'b00000001,8'b0xxxxxx1,8'b00000000});
+wildcard state s_ISSUE_OLDEST_1 ({8'b00000010,8'b00000010,8'bxxxxxx10,8'b00000000});
+wildcard state s_ISSUE_OLDEST_2 ({8'b00000100,8'b00000100,8'bxxxxx10x,8'b00000000});
+wildcard state s_ISSUE_OLDEST_3 ({8'b00001000,8'b00001000,8'bxxxx10xx,8'b00000000});
+wildcard state s_ISSUE_OLDEST_4 ({8'b00010000,8'b00010000,8'bxxx10xxx,8'b00000000});
+wildcard state s_ISSUE_OLDEST_5 ({8'b00100000,8'b00100000,8'bxx10xxxx,8'b00000000});
+wildcard state s_ISSUE_OLDEST_6 ({8'b01000000,8'b01000000,8'bx10xxxxx,8'b00000000});
+wildcard state s_ISSUE_OLDEST_7 ({8'b10000000,8'b10000000,8'b10xxxxxx,8'b00000000});
+

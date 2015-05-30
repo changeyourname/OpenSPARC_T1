@@ -1,0 +1,66 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_rqpopfsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	jbi_rqpopfsm_sample.vrh
+// Description: Coverage object for the jbi_min request queue pop fsm.
+//
+// ***************************************************************************
+
+
+// coverage_def JBI_RQPOPFSM_COV (bit [7:0] jbi_rqpopfsm_state)
+// {
+
+  // state declarations
+  state s_POP_IDLE      (POP_IDLE);
+  state s_POP_HDR0      (POP_HDR0);
+  state s_POP_HDR1      (POP_HDR1);
+  state s_POP_WRI_D     (POP_WRI_D);
+  state s_POP_WRM_D0    (POP_WRM_D0);
+  state s_POP_WRM_D1    (POP_WRM_D1);
+  state s_POP_RD_WAIT0  (POP_RD_WAIT0);
+  state s_POP_RD_WAIT1  (POP_RD_WAIT1);
+
+  // transitions (to same)
+  trans t_s_POP_IDLE_s_POP_IDLE         (POP_IDLE -> POP_IDLE);
+  trans t_s_POP_WRI_D_s_POP_WRI_D       (POP_WRI_D -> POP_WRI_D);
+
+  // transitions (to different)
+  trans t_s_POP_IDLE_s_POP_HDR0         (POP_IDLE -> POP_HDR0);
+  trans t_s_POP_HDR0_s_POP_HDR1         (POP_HDR0 -> POP_HDR1);
+  trans t_s_POP_HDR1_s_POP_RD_WAIT0     (POP_HDR1 -> POP_RD_WAIT0);
+  trans t_s_POP_HDR1_s_POP_WRI_D        (POP_HDR1 -> POP_WRI_D);
+  trans t_s_POP_HDR1_s_POP_WRM_D0       (POP_HDR1 -> POP_WRM_D0);
+  trans t_s_POP_RD_WAIT0_s_POP_RD_WAIT1 (POP_RD_WAIT0 -> POP_RD_WAIT1);
+  trans t_s_POP_WRM_D0_s_POP_WRM_D1     (POP_WRM_D0 -> POP_WRM_D1);
+  trans t_s_POP_RD_WAIT1_s_POP_IDLE     (POP_RD_WAIT1 -> POP_IDLE);
+  trans t_s_POP_WRM_D1_s_POP_IDLE       (POP_WRM_D1 -> POP_IDLE);
+  trans t_s_POP_WRI_D_s_POP_IDLE        (POP_WRI_D -> POP_IDLE);
+
+  // transitions (combinations)
+
+  // bad states
+  bad_state s_not_RQPOPFSM_STATE (not state);
+
+  // bad transitions 
+  bad_trans t_not_RQPOPFSM_TRANS (not trans) if (jbi_cmpcov_ifc.rst_l === 1);
+
+// }

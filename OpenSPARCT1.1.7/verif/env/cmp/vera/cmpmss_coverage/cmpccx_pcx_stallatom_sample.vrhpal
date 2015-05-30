@@ -1,0 +1,38 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_pcx_stallatom_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// atom_stall[16:0] = {pcx.arb0.arbdp.atom[7:0], pcx.arb0.arbdp.grant_a[7:0], pcx.arb0.arbdp.stall_a}
+
+// coverage_def CCX_PCX_STALLATOM_COV(bit [16:0] atom_grant_stall) {
+
+    // Transitions
+
+    // stalls from bank0 only
+    wildcard trans core0_stallatm2(17'bxxxxxxx1_xxxxxxx1_0 -> 17'bxxxxxxxx_xxxxxxx0_1);
+    wildcard trans core1_stallatm2(17'bxxxxxx1x_xxxxxx1x_0 -> 17'bxxxxxxxx_xxxxxx0x_1);
+    wildcard trans core2_stallatm2(17'bxxxxx1xx_xxxxx1xx_0 -> 17'bxxxxxxxx_xxxxx0xx_1);
+    wildcard trans core3_stallatm2(17'bxxxx1xxx_xxxx1xxx_0 -> 17'bxxxxxxxx_xxxx0xxx_1);
+    wildcard trans core4_stallatm2(17'bxxx1xxxx_xxx1xxxx_0 -> 17'bxxxxxxxx_xxx0xxxx_1);
+    wildcard trans core5_stallatm2(17'bxx1xxxxx_xx1xxxxx_0 -> 17'bxxxxxxxx_xx0xxxxx_1);
+    wildcard trans core6_stallatm2(17'bx1xxxxxx_x1xxxxxx_0 -> 17'bxxxxxxxx_x0xxxxxx_1);
+    wildcard trans core7_stallatm2(17'b1xxxxxxx_1xxxxxxx_0 -> 17'bxxxxxxxx_0xxxxxxx_1);
+// }

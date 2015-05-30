@@ -1,0 +1,112 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "err_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:  err_coverage.vr
+ * Description:
+ * -----------
+ *  Top level Error coverage class.
+ *  Contains the new() task which instantiates all the Error coverage
+ *  objects using "newcov", as well as calls the REPORT method within
+ *  them when the diag. is complete.
+ *
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "err.if.vrh"
+#include "err_ports_binds.vrh"
+#include "err_defines.vrh"
+
+class err_coverage {
+
+  coverage_group err_coverage_group {
+
+    const_sample_reference	= 1;
+    sample_event		= @(posedge err_coverage_ifc.clk);
+    cov_weight			= 0;	// default, unless diag_done is true
+
+    sample err_dram_sample.\$dram_err_status_ch0 {
+#inc "err_dram_sample.vrhpal";
+    }
+    sample err_dram_sample.\$dram_err_status_ch1 {
+#inc "err_dram_sample.vrhpal";
+    }
+    sample err_dram_sample.\$dram_err_status_ch2 {
+#inc "err_dram_sample.vrhpal";
+    }
+    sample err_dram_sample.\$dram_err_status_ch3 {
+#inc "err_dram_sample.vrhpal";
+    }
+
+    sample err_l2_sample.\$l2_err_status_bank0 {
+#inc "err_l2_sample.vrhpal";
+    }
+    sample err_l2_sample.\$l2_err_status_bank1 {
+#inc "err_l2_sample.vrhpal";
+    }
+    sample err_l2_sample.\$l2_err_status_bank2 {
+#inc "err_l2_sample.vrhpal";
+    }
+    sample err_l2_sample.\$l2_err_status_bank3 {
+#inc "err_l2_sample.vrhpal";
+    }
+
+.   foreach $c (@CORE_STR) {
+.     for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+    sample err_sparc_sample_C${c}.\$sparc_err_status_${t} {
+#inc "err_sparc_sample.vrhpal";
+    }
+.    }
+.   }
+
+  } // coverage_group
+
+
+  task new();
+
+}
+
+task err_coverage::new() {
+
+  bit coverage_on;
+
+  if (get_plus_arg (CHECK, "err_coverage") || get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+
+    err_coverage_group	= new();
+    printf("\n\n  %d : Coverage turned on for ERR objects\n\n", get_time(LO));
+
+    fork {
+      @ (posedge err_coverage_ifc.cmp_diag_done);
+      err_coverage_group.set_cov_weight(1);	// passing diag. counts.
+      coverage_save_database(1);
+      printf("\n\n  %d : Coverage for ERR objects generated\n\n", get_time(LO));
+    } join none
+  }
+}
+

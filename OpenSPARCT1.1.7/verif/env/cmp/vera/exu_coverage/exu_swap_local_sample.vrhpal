@@ -1,0 +1,156 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_swap_local_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// coverage_def EXU_SWAP_LOCAL_COV exu_swap_local_state
+//state declarations
+
+state s_T0_L_0_1			(T0_L_0_1);		
+state s_T0_L_0_2			(T0_L_0_2);	
+state s_T0_L_0_7			(T0_L_0_7);		
+state s_T0_L_0_6			(T0_L_0_6);		
+state s_T0_L_1_2			(T0_L_1_2);		
+state s_T0_L_1_3			(T0_L_1_3);		
+state s_T0_L_1_0			(T0_L_1_0);		
+state s_T0_L_1_7			(T0_L_1_7);		
+state s_T0_L_2_3			(T0_L_2_3);		
+state s_T0_L_2_4			(T0_L_2_4);		
+state s_T0_L_2_1			(T0_L_2_1);		
+state s_T0_L_2_0			(T0_L_2_0);		
+state s_T0_L_3_4			(T0_L_3_4);		
+state s_T0_L_3_5			(T0_L_3_5);		
+state s_T0_L_3_2			(T0_L_3_2);		
+state s_T0_L_3_1			(T0_L_3_1);		
+state s_T0_L_4_5			(T0_L_4_5);		
+state s_T0_L_4_6			(T0_L_4_6);		
+state s_T0_L_4_3			(T0_L_4_3);		
+state s_T0_L_4_2			(T0_L_4_2);		
+state s_T0_L_5_6			(T0_L_5_6);		
+state s_T0_L_5_7			(T0_L_5_7);		
+state s_T0_L_5_4			(T0_L_5_4);		
+state s_T0_L_5_3			(T0_L_5_3);		
+state s_T0_L_6_7			(T0_L_6_7);		
+state s_T0_L_6_0			(T0_L_6_0);		
+state s_T0_L_6_5			(T0_L_6_5);		
+state s_T0_L_6_4			(T0_L_6_4);		
+state s_T0_L_7_0			(T0_L_7_0);		
+state s_T0_L_7_1			(T0_L_7_1);		
+state s_T0_L_7_6			(T0_L_7_6);		
+state s_T0_L_7_5			(T0_L_7_5);		
+				
+state s_T1_L_0_1			(T1_L_0_1);		
+state s_T1_L_0_2			(T1_L_0_2);		
+state s_T1_L_0_7			(T1_L_0_7);		
+state s_T1_L_0_6			(T1_L_0_6);		
+state s_T1_L_1_2			(T1_L_1_2);		
+state s_T1_L_1_3			(T1_L_1_3);		
+state s_T1_L_1_0			(T1_L_1_0);		
+state s_T1_L_1_7			(T1_L_1_7);		
+state s_T1_L_2_3			(T1_L_2_3);		
+state s_T1_L_2_4			(T1_L_2_4);		
+state s_T1_L_2_1			(T1_L_2_1);		
+state s_T1_L_2_0			(T1_L_2_0);		
+state s_T1_L_3_4			(T1_L_3_4);		
+state s_T1_L_3_5			(T1_L_3_5);		
+state s_T1_L_3_2			(T1_L_3_2);		
+state s_T1_L_3_1			(T1_L_3_1);		
+state s_T1_L_4_5			(T1_L_4_5);		
+state s_T1_L_4_6			(T1_L_4_6);		
+state s_T1_L_4_3			(T1_L_4_3);		
+state s_T1_L_4_2			(T1_L_4_2);		
+state s_T1_L_5_6			(T1_L_5_6);		
+state s_T1_L_5_7			(T1_L_5_7);		
+state s_T1_L_5_4			(T1_L_5_4);		
+state s_T1_L_5_3			(T1_L_5_3);		
+state s_T1_L_6_7			(T1_L_6_7);		
+state s_T1_L_6_0			(T1_L_6_0);		
+state s_T1_L_6_5			(T1_L_6_5);		
+state s_T1_L_6_4			(T1_L_6_4);		
+state s_T1_L_7_0			(T1_L_7_0);		
+state s_T1_L_7_1			(T1_L_7_1);		
+state s_T1_L_7_6			(T1_L_7_6);		
+state s_T1_L_7_5			(T1_L_7_5);		
+				
+state s_T2_L_0_1			(T2_L_0_1);		
+state s_T2_L_0_2			(T2_L_0_2);		
+state s_T2_L_0_7			(T2_L_0_7);		
+state s_T2_L_0_6			(T2_L_0_6);		
+state s_T2_L_1_2			(T2_L_1_2);		
+state s_T2_L_1_3			(T2_L_1_3);		
+state s_T2_L_1_0			(T2_L_1_0);		
+state s_T2_L_1_7			(T2_L_1_7);		
+state s_T2_L_2_3			(T2_L_2_3);		
+state s_T2_L_2_4			(T2_L_2_4);		
+state s_T2_L_2_1			(T2_L_2_1);		
+state s_T2_L_2_0			(T2_L_2_0);		
+state s_T2_L_3_4			(T2_L_3_4);		
+state s_T2_L_3_5			(T2_L_3_5);		
+state s_T2_L_3_2			(T2_L_3_2);		
+state s_T2_L_3_1			(T2_L_3_1);		
+state s_T2_L_4_5			(T2_L_4_5);		
+state s_T2_L_4_6			(T2_L_4_6);		
+state s_T2_L_4_3			(T2_L_4_3);		
+state s_T2_L_4_2			(T2_L_4_2);		
+state s_T2_L_5_6			(T2_L_5_6);		
+state s_T2_L_5_7			(T2_L_5_7);		
+state s_T2_L_5_4			(T2_L_5_4);		
+state s_T2_L_5_3			(T2_L_5_3);		
+state s_T2_L_6_7			(T2_L_6_7);		
+state s_T2_L_6_0			(T2_L_6_0);		
+state s_T2_L_6_5			(T2_L_6_5);		
+state s_T2_L_6_4			(T2_L_6_4);		
+state s_T2_L_7_0			(T2_L_7_0);		
+state s_T2_L_7_1			(T2_L_7_1);		
+state s_T2_L_7_6			(T2_L_7_6);		
+state s_T2_L_7_5			(T2_L_7_5);		
+				
+state s_T3_L_0_1			(T3_L_0_1);		
+state s_T3_L_0_2			(T3_L_0_2);		
+state s_T3_L_0_7			(T3_L_0_7);		
+state s_T3_L_0_6			(T3_L_0_6);		
+state s_T3_L_1_2			(T3_L_1_2);		
+state s_T3_L_1_3			(T3_L_1_3);		
+state s_T3_L_1_0			(T3_L_1_0);		
+state s_T3_L_1_7			(T3_L_1_7);		
+state s_T3_L_2_3			(T3_L_2_3);		
+state s_T3_L_2_4			(T3_L_2_4);		
+state s_T3_L_2_1			(T3_L_2_1);		
+state s_T3_L_2_0			(T3_L_2_0);		
+state s_T3_L_3_4			(T3_L_3_4);		
+state s_T3_L_3_5			(T3_L_3_5);		
+state s_T3_L_3_2			(T3_L_3_2);		
+state s_T3_L_3_1			(T3_L_3_1);		
+state s_T3_L_4_5			(T3_L_4_5);		
+state s_T3_L_4_6			(T3_L_4_6);		
+state s_T3_L_4_3			(T3_L_4_3);		
+state s_T3_L_4_2			(T3_L_4_2);
+state s_T3_L_5_6			(T3_L_5_6);		
+state s_T3_L_5_7			(T3_L_5_7);		
+state s_T3_L_5_4			(T3_L_5_4);		
+state s_T3_L_5_3			(T3_L_5_3);		
+state s_T3_L_6_7			(T3_L_6_7);		
+state s_T3_L_6_0			(T3_L_6_0);		
+state s_T3_L_6_5			(T3_L_6_5);		
+state s_T3_L_6_4			(T3_L_6_4);
+state s_T3_L_7_0			(T3_L_7_0);
+state s_T3_L_7_1			(T3_L_7_1);
+state s_T3_L_7_6			(T3_L_7_6);		
+state s_T3_L_7_5			(T3_L_7_5);		
+

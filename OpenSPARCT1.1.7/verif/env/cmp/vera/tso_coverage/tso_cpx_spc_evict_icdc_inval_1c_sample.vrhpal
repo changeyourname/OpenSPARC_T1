@@ -1,0 +1,36 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_cpx_spc_evict_icdc_inval_1c_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is a combination of IC and DC invalidates from an evict
+// for the same core. So, up to 4 DC or 2 IC or 2DC and 1 IC or 1Dc and 1 IC.
+// EVICT1 to 4 - DC invalidates. EVICT 5 - 1IC, EVICT 6 - 1IC 1DC,
+// EVICT7 - 1IC 2DC, EVICT 9 2IC
+// EVICT9 is just piggybacking here - it denotes 2 b2b invalidates.
+//***********************************************************************
+state s_TSO_1CEVICT1    (TSO_1CEVICT1);
+state s_TSO_1CEVICT2    (TSO_1CEVICT2);
+state s_TSO_1CEVICT3    (TSO_1CEVICT3);
+state s_TSO_1CEVICT4    (TSO_1CEVICT4);
+state s_TSO_1CEVICT5    (TSO_1CEVICT5);
+state s_TSO_1CEVICT6    (TSO_1CEVICT6);
+state s_TSO_1CEVICT7    (TSO_1CEVICT7);
+state s_TSO_1CEVICT8    (TSO_1CEVICT8);
+wildcard state s_TSO_1CEVICT9    (TSO_1CEVICT9);

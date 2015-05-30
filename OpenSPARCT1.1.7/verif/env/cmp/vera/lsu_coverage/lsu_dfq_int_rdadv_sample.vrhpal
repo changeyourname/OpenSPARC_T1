@@ -1,0 +1,72 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dfq_int_rdadv_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// Coverage of this line in dfq_rd_advance equation:
+// dfq_int_type & (~ifu_lsu_ibuf_busy & dfq_byp_ff_en & ((inv_clear_d1 & ~dfq_rd_advance_d1) | dfq_stall_d1))
+
+
+
+// lsu_dfq_int_rdadv_state = {ifu_lsu_ibuf_busy, dfq_byp_ff_en, inv_clear_d1, dfq_rd_advance_d1, dfq_stall_d1,
+//                            dfq_rd_vld_d1, dfq_byp_mx_data[151], dfq_byp_mx_data_local,
+//                            dfq_byp_mx_data_Dinv, dfq_byp_mx_data_Iinv, dfq_byp_mx_data[144:96]};
+
+
+//                               signals   dfqrd b151  local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:96]
+wildcard state Int_rdadv_case0( {5'b01000, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case1( {5'b01001, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case2( {5'b01010, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case3( {5'b01011, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case4( {5'b01100, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case5( {5'b01101, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case6( {5'b01110, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+wildcard state Int_rdadv_case7( {5'b01111, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_case8( {5'b00000, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10000, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11000, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_case9( {5'b00001, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10001, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11001, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseA( {5'b00010, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10010, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11010, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseB( {5'b00011, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10011, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11011, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseC( {5'b00100, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10100, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11100, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseD( {5'b00101, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10101, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11101, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseE( {5'b00110, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10110, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11110, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );
+
+wildcard state Int_rdadv_caseF( {5'b00111, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b10111, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx},
+                                {5'b11111, 1'b1, 1'bx, 1'bx, 1'bx, 1'bx, 1'b1, INT_RET,     6'bx, 3'bxxx, 1'bx, 2'bx0, 32'bx} );

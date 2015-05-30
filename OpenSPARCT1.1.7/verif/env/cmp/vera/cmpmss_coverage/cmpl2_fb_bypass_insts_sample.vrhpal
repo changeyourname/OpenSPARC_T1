@@ -1,0 +1,92 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_fb_bypass_insts_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// bypass[12:0] = {fbctl_hit_c2, arbctl_inst_diag_c2, reqtype[4:0], nc, jbi_inst, inv, pf, addr[5:4]}
+
+// LOAD                        fbhit diag  reqtype  nc    jbi   inv   pf    addr54
+wildcard state LOAD_addr54_0( {1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h0} );
+wildcard state LOAD_addr54_1( {1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h1} );
+wildcard state LOAD_addr54_2( {1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h2} );
+wildcard state LOAD_addr54_3( {1'b1, 1'b0, LOAD_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// PREFETCH               fbhit diag  reqtype  nc    jbi   inv   pf    addr54
+state PREFETCH_addr54_0( {1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b1, 2'h0} );
+state PREFETCH_addr54_1( {1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b1, 2'h1} );
+state PREFETCH_addr54_2( {1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b1, 2'h2} );
+state PREFETCH_addr54_3( {1'b1, 1'b0, LOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b1, 2'h3} );
+
+// IMISS                       fbhit diag  reqtype   nc    jbi   inv   pf    addr54
+wildcard state IMISS_addr5_0( {1'b1, 1'b0, IMISS_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h0} );
+wildcard state IMISS_addr5_1( {1'b1, 1'b0, IMISS_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h2} );
+
+// STORE/BLKSTORE/BLKINITST     fbhit diag  reqtype   nc    jbi   inv   pf    addr54
+wildcard state STORE_addr54_0( {1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 1'b0, 1'bx, 2'h0} );
+wildcard state STORE_addr54_1( {1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 1'b0, 1'bx, 2'h1} );
+wildcard state STORE_addr54_2( {1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 1'b0, 1'bx, 2'h2} );
+wildcard state STORE_addr54_3( {1'b1, 1'b0, STORE_RQ, 1'bx, 1'b0, 1'b0, 1'bx, 2'h3} );
+
+// CAS1               fbhit diag  reqtype  nc    jbi   inv   pf    addr54
+state CAS1_addr54_0( {1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h0} );
+state CAS1_addr54_1( {1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h1} );
+state CAS1_addr54_2( {1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h2} );
+state CAS1_addr54_3( {1'b1, 1'b0, CAS1_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// SWAP               fbhit diag  reqtype  nc    jbi   inv   pf    addr54
+state SWAP_addr54_0( {1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h0} );
+state SWAP_addr54_1( {1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h1} );
+state SWAP_addr54_2( {1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h2} );
+state SWAP_addr54_3( {1'b1, 1'b0, SWAP_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// STRLOAD               fbhit diag  reqtype     nc    jbi   inv   pf    addr54
+state STRLOAD_addr54_0( {1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h0} );
+state STRLOAD_addr54_1( {1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h1} );
+state STRLOAD_addr54_2( {1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h2} );
+state STRLOAD_addr54_3( {1'b1, 1'b0, STRLOAD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// STRST                        fbhit diag  reqtype   nc    jbi   inv   pf    addr54
+wildcard state STRST_addr54_0( {1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h0} );
+wildcard state STRST_addr54_1( {1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h1} );
+wildcard state STRST_addr54_2( {1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h2} );
+wildcard state STRST_addr54_3( {1'b1, 1'b0, STRST_RQ, 1'bx, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// FWDRQ_LOAD               fbhit diag  reqtype nc    jbi   inv   pf    addr54
+state FWDRQ_LOAD_addr54_0( {1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h0} );
+state FWDRQ_LOAD_addr54_1( {1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h1} );
+state FWDRQ_LOAD_addr54_2( {1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h2} );
+state FWDRQ_LOAD_addr54_3( {1'b1, 1'b0, FWD_RQ, 1'b1, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// FWDRQ_STORE               fbhit diag  reqtype nc    jbi   inv   pf    addr54
+state FWDRQ_STORE_addr54_0( {1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 1'b0, 1'b0, 2'h0} );
+state FWDRQ_STORE_addr54_1( {1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 1'b0, 1'b0, 2'h1} );
+state FWDRQ_STORE_addr54_2( {1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 1'b0, 1'b0, 2'h2} );
+state FWDRQ_STORE_addr54_3( {1'b1, 1'b0, FWD_RQ, 1'b0, 1'b0, 1'b0, 1'b0, 2'h3} );
+
+// RDD                       fbhit  diag  reqtype   nc    jbi   inv   pf    addr54
+wildcard state RDD_addr54_0( {1'b1, 1'b0, 5'bxx001, 1'bx, 1'b1, 1'bx, 1'bx, 2'h0} ); 
+wildcard state RDD_addr54_1( {1'b1, 1'b0, 5'bxx001, 1'bx, 1'b1, 1'bx, 1'bx, 2'h1} ); 
+wildcard state RDD_addr54_2( {1'b1, 1'b0, 5'bxx001, 1'bx, 1'b1, 1'bx, 1'bx, 2'h2} ); 
+wildcard state RDD_addr54_3( {1'b1, 1'b0, 5'bxx001, 1'bx, 1'b1, 1'bx, 1'bx, 2'h3} ); 
+
+// WR8                       fbhit  diag  reqtype   nc    jbi   inv   pf    addr54
+wildcard state WR8_addr54_0( {1'b1, 1'b0, 5'bxx010, 1'bx, 1'b1, 1'bx, 1'bx, 2'h0} ); 
+wildcard state WR8_addr54_1( {1'b1, 1'b0, 5'bxx010, 1'bx, 1'b1, 1'bx, 1'bx, 2'h1} ); 
+wildcard state WR8_addr54_2( {1'b1, 1'b0, 5'bxx010, 1'bx, 1'b1, 1'bx, 1'bx, 2'h2} ); 
+wildcard state WR8_addr54_3( {1'b1, 1'b0, 5'bxx010, 1'bx, 1'b1, 1'bx, 1'bx, 2'h3} ); 

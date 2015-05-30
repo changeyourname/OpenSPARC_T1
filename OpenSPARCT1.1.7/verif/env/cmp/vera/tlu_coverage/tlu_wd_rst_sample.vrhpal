@@ -1,0 +1,52 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_wd_rst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU Watchdog and reset trap conditions
+//
+//
+//***************************************************************************
+ 
+
+// coverage_def TLU_WD_RST_COV (bit [29:0] tlu_wd_rst_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_WDG_TRAP_TO_HPERV		(WDG_TRAP_TO_HPERV);
+  wildcard state s_WDG_RST_TRAP_AT_MAXTL	(WDG_RST_TRAP_AT_MAXTL);
+  wildcard state s_SIR_RST_TRAP_AT_MAXTL 	(SIR_RST_TRAP_AT_MAXTL);	
+  wildcard state s_WRM_RST_TRAP_AT_MAXTL	(WRM_RST_TRAP_AT_MAXTL);
+  wildcard state s_XIR_RST_TRAP_AT_MAXTL	(XIR_RST_TRAP_AT_MAXTL);
+  wildcard state s_SSIR_RST_TRAP_AT_NMAXTL	(SSIR_RST_TRAP_AT_NMAXTL);	
+  wildcard state s_HSIR_RST_TRAP_AT_NMAXTL	(HSIR_RST_TRAP_AT_NMAXTL);	
+  wildcard state s_WRM_RST_TRAP_AT_NMAXTL	(WRM_RST_TRAP_AT_NMAXTL);	
+  wildcard state s_XIR_RST_TRAP_AT_NMAXTL	(XIR_RST_TRAP_AT_NMAXTL);
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

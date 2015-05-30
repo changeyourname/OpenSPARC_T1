@@ -1,0 +1,172 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2jbi.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// This task ensures that the L2 sends requests to the CPX for WR8/WRI invalidations
+// before sending the WR8/WRI ack to the JBI.
+
+#include <vera_defines.vrh>
+#include "l2jbi_ports_binds.vrh"
+#include "iop_rtl.h"
+#include "cmp_top.if.vrh"
+
+
+#define JBI         13
+#define JBI_REQTYPE 17:15
+#define RDD         15
+#define CTAG_UPPER  19:18
+#define CTAG_LOWER  12:3
+
+
+class JbiClass {
+    bit [2:0] reqtype;
+    bit [39:0] address;
+    bit [11:0] ctag;
+    bit [31:0] ack;
+    bit inv_before_ack;
+    bit [7:0] sctag_cpx_req;
+    bit [CPX_WIDTH-1:0] sctag_cpx_data;
+
+    task new() {
+        inv_before_ack = 1'b0;
+    }
+}
+
+
+task CheckJbiInvBeforeAck() {
+
+    shadow integer i;
+    l2jbi_port l2jbi_bind[4];
+    shadow l2jbi_port lp;
+
+
+    // assign l2jbi_bind_N (defined in l2jbi_ports_binds.vrh) to the array of l2jbi_ports
+    l2jbi_bind[0] = l2jbi_bind_0;
+    l2jbi_bind[1] = l2jbi_bind_1;
+    l2jbi_bind[2] = l2jbi_bind_2;
+    l2jbi_bind[3] = l2jbi_bind_3;
+
+    printf("%0d: L2JBI (inv before ack) Monitor started\n", get_time(LO));
+
+    for(i=0; i<4; i++) {
+        fork
+        /// Ensure that the L2 sends requests to the CPX for WR8/WRI invalidations before sending the WR8/WRI ack
+        {
+            lp = l2jbi_bind[i];
+
+            while(1) {
+                // Wait for WR8/WRI to complete
+                if(lp.$arbctl_inst_vld_c3 && lp.$arbdp_inst_c3[JBI] && !lp.$arbdp_inst_c3[RDD] &&
+                   lp.$tagctl_rdma_wr_comp_c3) {
+                    fork
+                    {
+                        WaitForInvAndAck(lp);
+                    }
+                    join none
+                }
+                
+                @(posedge l2jbi.ccx_rclk);
+            } // while(1)
+        }
+        join none
+    } // for(i=0; i<4; i++)
+
+}
+
+
+task WaitForInvAndAck(l2jbi_port lp) {
+
+    integer j;
+    bit [7:0] sctag_cpx_req_cq, sctag_cpx_req_cq_d1;
+    JbiClass jbi;
+
+
+    jbi = new();
+
+    // C3 at this point
+    jbi.reqtype = lp.$arbdp_inst_c3[JBI_REQTYPE];
+    jbi.address = lp.$arbdp_addr_c3;
+    jbi.ctag = {lp.$arbdp_inst_c3[CTAG_UPPER], lp.$arbdp_inst_c3[CTAG_LOWER]};
+
+    jbi.ack = {17'b0, jbi.address[1:0], jbi.reqtype[0], jbi.ctag};
+    
+    fork
+    {
+        // wait till C6 (req_out_c6 is asserted 3 cycles after tagctl_rdma_wr_comp_c3 for WR8s/WRIs)
+        repeat(3) @(posedge l2jbi.ccx_rclk);
+        jbi.sctag_cpx_req = lp.$req_out_c6;
+        
+        // WR8/WRI causes L1 invalidations
+        if(jbi.sctag_cpx_req != 8'b0) {
+            // wait till C7
+            @(posedge l2jbi.ccx_rclk);
+            jbi.sctag_cpx_data = {1'b1, EVICT_REQ, 3'b0, 8'bx, 1'b0, lp.$ext_inval_data_c7};
+
+            j = 0;
+            while(j++ < 500) {
+                sctag_cpx_req_cq_d1 = sctag_cpx_req_cq;
+                sctag_cpx_req_cq = lp.$sctag_cpx_req_cq;
+                
+                // match both sctag_cpx_req_cq and sctag_cpx_data_ca
+                if(sctag_cpx_req_cq_d1 == jbi.sctag_cpx_req && lp.$sctag_cpx_data_ca =?= jbi.sctag_cpx_data) {
+                    jbi.inv_before_ack = 1'b1;
+                    break;
+                }
+                @(posedge l2jbi.ccx_rclk);
+            }
+            if(j > 500)
+                error("%0d: L2JBI: Timeout waiting for CPX requests for WR8/WRI invalidations\n\n", get_time(LO));
+        }
+        // no L1 invalidations
+        else
+            jbi.inv_before_ack = 1'b1;
+    }
+    {
+        // Wait for oqctl_st_complete_c6 to be asserted, because scbuf_jbi_ctag_vld is always asserted
+        // exactly 5 cycles after oqctl_st_complete_c6.
+        // Only 1 WR8/WRI will be issued out of the MB and waiting for store completion at any time.
+        @0,500 lp.$oqctl_st_complete_c6 == 1'b1;
+
+        // ack arrives exactly 5 cycles after oqctl_st_complete_c6
+        // Expecting the ack in the exact cycle is necessary because the diags issue different WR8s/WRIs with
+        // the same ctag, which results in non-unique acks.
+        @5 lp.$scbuf_jbi_ctag_vld == 1'b1, lp.$scbuf_jbi_data == jbi.ack;
+        
+        // check that CPX request for INV was sent before JBI ack
+        if(!jbi.inv_before_ack) {
+            if(jbi.reqtype == 3'b100)
+                error("%0d: L2JBI: WRI ack sent to JBI before invalidations were sent to cores (ctag = %x, addr = %x)\n\n",
+                      get_time(LO), jbi.ctag, jbi.address);
+            else if(jbi.reqtype == 3'b010)
+                error("%0d: L2JBI: WR8 ack sent to JBI before invalidations were sent to cores (ctag = %x, addr = %x)\n\n",
+                      get_time(LO), jbi.ctag, jbi.address);
+        }
+        
+        // optional: print out message when inv-before-ack condition is satisfied
+        if(jbi.sctag_cpx_req != 8'b0) {
+            if(jbi.reqtype == 3'b100)
+                printf("%0d: L2JBI: inv-before-ack condition satisfied for WRI (ctag = %x, addr = %x)\n",
+                       get_time(LO), jbi.ctag, jbi.address);
+            else if(jbi.reqtype == 3'b010)
+                printf("%0d: L2JBI: inv-before-ack condition satisfied for WR8 (ctag = %x, addr = %x)\n",
+                       get_time(LO), jbi.ctag, jbi.address);
+        }
+    }
+    join all
+}

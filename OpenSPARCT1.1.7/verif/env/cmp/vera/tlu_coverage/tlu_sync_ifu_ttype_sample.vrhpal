@@ -1,0 +1,56 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_sync_ifu_ttype_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for all the synchronous trap types reported by ifu.
+//***************************************************************************
+
+
+// coverage_def TLU_SYNC_IFU_TTYPE (bit [9:0] tlu_sync_ifu_ttype_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_IFU_TT_SIR			(IFU_TT_SIR);
+  wildcard state s_IFU_TT_INST_ACC_EXC		(IFU_TT_INST_ACC_EXC);
+  wildcard state s_IFU_TT_INST_ACC_ERR		(IFU_TT_INST_ACC_ERR);
+  wildcard state s_IFU_TT_ILL_INST		(IFU_TT_ILL_INST);
+  wildcard state s_IFU_TT_PRIV_OPC		(IFU_TT_PRIV_OPC);
+  wildcard state s_IFU_TT_FP_DISABLED		(IFU_TT_FP_DISABLED);
+  wildcard state s_IFU_TT_REAL_TRANS_IMISS	(IFU_TT_REAL_TRANS_IMISS);
+  wildcard state s_IFU_TT_HSTICK_MATCH		(IFU_TT_HSTICK_MATCH);
+  wildcard state s_IFU_TT_CORR_ECC_ERR		(IFU_TT_CORR_ECC_ERR);
+  wildcard state s_IFU_TT_FAST_IMMU_MISS	(IFU_TT_FAST_IMMU_MISS);
+  wildcard state s_IFU_TT_SPU_MAINT		(IFU_TT_SPU_MAINT);
+  wildcard state s_IFU_TT_INST_BRK_PT		(IFU_TT_INST_BRK_PT);
+  wildcard state s_IFU_TT_DATA_ERR		(IFU_TT_DATA_ERR);
+  wildcard state s_IFU_TT_RESUMABLE_ERR		(IFU_TT_RESUMABLE_ERR);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

@@ -1,0 +1,188 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dva_rdwr_sameaddr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_dva_rdwr_state = {ifu_lsu_ld_inst_e_d1,
+//                       lsu_dtagv_wr_vld_e_d2, lsu_dtagv_wr_vld_e_d1, lsu_dtagv_wr_vld_e,
+//                       dva_rdwr_sameline_diffvalue, dva_rd_wr_sameline_diffvalue, dva_wr_rd_sameline_diffvalue,
+//                       local_d2, Dinv_d2, Iinv_d2, dfq_byp_ff_data_d2[144:123],
+//                       local_d1, Dinv_d1, Iinv_d1, dfq_byp_ff_data_d1[144:123],
+//                       local,    Dinv,    Iinv,    dfq_byp_ff_data[144:123]};
+
+
+/// wr: Load
+wildcard state dva_sameline_rd0load_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'bxxx, 1'bx, 2'b00, 5'bx,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_load         ( {1'b1, 3'bxx1, 3'bx1x,
+//  local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'bxxx, 1'bx, 2'b00, 5'bx} );
+
+wildcard state dva_sameline_load_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'bx, 1'bx, 1'bx, 1'b1, LOAD_RET,    6'bx, 3'bxxx, 1'bx, 2'b00, 5'bx,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Ifill_Dinv
+wildcard state dva_sameline_rd0ifill_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b1xx, 1'b0, 2'bx0, 5'bx,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_ifill         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b1xx, 1'b0, 2'bx0, 5'bx} );
+
+wildcard state dva_sameline_ifill_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'bx, 1'bx, 1'bx, 1'b1, IFILL_RET,   6'bx, 3'b1xx, 1'b0, 2'bx0, 5'bx,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Store_foreign_Dinv
+wildcard state dva_sameline_rd0stforeign_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00000,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_stforeign         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00000} );
+
+wildcard state dva_sameline_stforeign_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00000,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Blkst_foreign_Dinv
+wildcard state dva_sameline_rd0blkstforeign_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00100,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_blkstforeign         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00100} );
+
+wildcard state dva_sameline_blkstforeign_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b00, 5'b00100,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Atomic_local_Dupdate
+wildcard state dva_sameline_rd0atmstlocal_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_atmstlocal         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000} );
+
+wildcard state dva_sameline_atmstlocal_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'b1, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Atomic_foreign_Dinv
+wildcard state dva_sameline_rd0atmstforeign_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_atmstforeign         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000} );
+
+wildcard state dva_sameline_atmstforeign_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'b0, 1'b1, 1'b0, 1'b1, ST_ACK,      6'bx, 3'bxxx, 1'bx, 2'b10, 5'b00000,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Strst_foreign_Dinv
+wildcard state dva_sameline_rd0strstforeign_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_strstforeign         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000} );
+
+wildcard state dva_sameline_strstforeign_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'b0, 1'b1, 1'b0, 1'b1, STRST_ACK,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000,
+   25'bx,
+   25'bx} );
+
+
+/// wr: Evict
+wildcard state dva_sameline_rd0evict_samecycle( {1'b1, 3'bx1x, 3'b1xx,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   1'bx, 1'b1, 1'bx, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000,
+   25'bx} );
+
+wildcard state dva_sameline_rd0_evict         ( {1'b1, 3'bxx1, 3'bx1x,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   25'bx,
+   25'bx,
+   1'bx, 1'b1, 1'bx, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000} );
+
+wildcard state dva_sameline_evict_rd0         ( {1'b1, 3'b1xx, 3'bxx1,
+// local Dinv  Iinv  vld   reqtype            invway  f4b   at pf  data[127:123]
+   1'bx, 1'b1, 1'bx, 1'b1, EVICT_REQ,   6'bx, 3'bxxx, 1'bx, 2'bx0, 5'b00000,
+   25'bx,
+   25'bx} );
+

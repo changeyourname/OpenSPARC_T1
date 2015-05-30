@@ -1,0 +1,7 @@
+lib ccx2mb_v1_00_a ccx2mb verilog
+lib ccx2mb_v1_00_a mb2cpx verilog
+lib ccx2mb_v1_00_a mb2cpx_sm verilog
+lib ccx2mb_v1_00_a pcx2mb verilog
+lib ccx2mb_v1_00_a pcx2mb_sm verilog
+lib ccx2mb_v1_00_a pcx2mb_entry verilog
+lib ccx2mb_v1_00_a pcx2mb_link_ctr verilog

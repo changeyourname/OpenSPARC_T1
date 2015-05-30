@@ -1,0 +1,65 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_dcachemask_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// writes to cache
+//***********************************************************************
+
+  state	s_DCACHEMASK_ST00 ( 16'b1111_1111_1111_1111 );
+
+  state	s_DCACHEMASK_ST01 ( 16'b1111_1111_0000_0000 );
+  state	s_DCACHEMASK_ST02 ( 16'b0000_0000_1111_1111 );
+
+  state	s_DCACHEMASK_ST03 ( 16'b1111_0000_0000_0000 );
+  state	s_DCACHEMASK_ST04 ( 16'b0000_1111_0000_0000 );
+  state	s_DCACHEMASK_ST05 ( 16'b0000_0000_1111_0000 );
+  state	s_DCACHEMASK_ST06 ( 16'b0000_0000_0000_1111 );
+
+  state	s_DCACHEMASK_ST07 ( 16'b1100_0000_0000_0000 );
+  state	s_DCACHEMASK_ST08 ( 16'b0011_0000_0000_0000 );
+
+  state	s_DCACHEMASK_ST09 ( 16'b0000_1100_0000_0000 );
+  state	s_DCACHEMASK_ST10 ( 16'b0000_0011_0000_0000 );
+
+  state	s_DCACHEMASK_ST11 ( 16'b0000_0000_1100_0000 );
+  state	s_DCACHEMASK_ST12 ( 16'b0000_0000_0011_0000 );
+
+  state	s_DCACHEMASK_ST13 ( 16'b0000_0000_0000_1100 );
+  state	s_DCACHEMASK_ST14 ( 16'b0000_0000_0000_0011 );
+
+  state	s_DCACHEMASK_ST15 ( 16'b1000_0000_0000_0000 );
+  state	s_DCACHEMASK_ST16 ( 16'b0100_0000_0000_0000 );
+  state	s_DCACHEMASK_ST17 ( 16'b0010_0000_0000_0000 );
+  state	s_DCACHEMASK_ST18 ( 16'b0001_0000_0000_0000 );
+
+  state	s_DCACHEMASK_ST19 ( 16'b0000_1000_0000_0000 );
+  state	s_DCACHEMASK_ST20 ( 16'b0000_0100_0000_0000 );
+  state	s_DCACHEMASK_ST21 ( 16'b0000_0010_0000_0000 );
+  state	s_DCACHEMASK_ST22 ( 16'b0000_0001_0000_0000 );
+
+  state	s_DCACHEMASK_ST23 ( 16'b0000_0000_1000_0000 );
+  state	s_DCACHEMASK_ST24 ( 16'b0000_0000_0100_0000 );
+  state	s_DCACHEMASK_ST25 ( 16'b0000_0000_0010_0000 );
+  state	s_DCACHEMASK_ST26 ( 16'b0000_0000_0001_0000 );
+
+  state	s_DCACHEMASK_ST27 ( 16'b0000_0000_0000_1000 );
+  state	s_DCACHEMASK_ST28 ( 16'b0000_0000_0000_0100 );
+  state	s_DCACHEMASK_ST29 ( 16'b0000_0000_0000_0010 );
+  state	s_DCACHEMASK_ST30 ( 16'b0000_0000_0000_0001 );

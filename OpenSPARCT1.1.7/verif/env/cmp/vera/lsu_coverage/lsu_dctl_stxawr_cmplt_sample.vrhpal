@@ -1,0 +1,39 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_stxawr_cmplt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// completing a stxa wr to thread
+//***********************************************************************
+
+  state s_STXAWR_CMPLT_ST00	(9'b1100_1000_1);
+  state s_STXAWR_CMPLT_ST01	(9'b1010_1000_1);
+  state s_STXAWR_CMPLT_ST02	(9'b1001_1000_1);
+
+  state s_STXAWR_CMPLT_ST03	(9'b1100_0100_1);
+  state s_STXAWR_CMPLT_ST04	(9'b0110_0100_1);
+  state s_STXAWR_CMPLT_ST05	(9'b0101_0100_1);
+
+  state s_STXAWR_CMPLT_ST06	(9'b1010_0010_1);
+  state s_STXAWR_CMPLT_ST07	(9'b0110_0010_1);
+  state s_STXAWR_CMPLT_ST08	(9'b0011_0010_1);
+
+  state s_STXAWR_CMPLT_ST09	(9'b1001_0001_1);
+  state s_STXAWR_CMPLT_ST10	(9'b0101_0001_1);
+  state s_STXAWR_CMPLT_ST11	(9'b0011_0001_1);

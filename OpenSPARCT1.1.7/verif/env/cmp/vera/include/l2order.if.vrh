@@ -1,0 +1,123 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: l2order.if.vrh
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC_L2ORDER_IF_VRH
+#define INC_L2ORDER_IF_VRH
+
+interface l2order {
+
+    input rclk CLOCK;
+    input dbginit_l PSAMPLE;
+    input cmp_diag_done PSAMPLE;
+    
+    // l2order_port 0,1,2,3
+
+    input arbctl_inst_vld_c2_0 PSAMPLE;
+    input arbdp_inst_mb_c2_0 PSAMPLE;
+    input arbdp_inst_fb_c2_0 PSAMPLE;
+    input arbctl_inst_diag_c2_0 PSAMPLE;
+    input [19:0] arbdp_inst_c2_0 PSAMPLE;
+    input [39:0] arbdp_addr_c2_0 PSAMPLE;
+    input [63:0] arbdp_inst_data_c2_0 PSAMPLE;
+    input tagctl_hit_l2orfb_c2_0 PSAMPLE;
+    input mbctl_hit_c2_0 PSAMPLE;
+    
+    input arbctl_inst_vld_c2_1 PSAMPLE;
+    input arbdp_inst_mb_c2_1 PSAMPLE;
+    input arbdp_inst_fb_c2_1 PSAMPLE;
+    input arbctl_inst_diag_c2_1 PSAMPLE;
+    input [19:0] arbdp_inst_c2_1 PSAMPLE;
+    input [39:0] arbdp_addr_c2_1 PSAMPLE;
+    input [63:0] arbdp_inst_data_c2_1 PSAMPLE;
+    input tagctl_hit_l2orfb_c2_1 PSAMPLE;
+    input mbctl_hit_c2_1 PSAMPLE;
+
+    input arbctl_inst_vld_c2_2 PSAMPLE;
+    input arbdp_inst_mb_c2_2 PSAMPLE;
+    input arbdp_inst_fb_c2_2 PSAMPLE;
+    input arbctl_inst_diag_c2_2 PSAMPLE;
+    input [19:0] arbdp_inst_c2_2 PSAMPLE;
+    input [39:0] arbdp_addr_c2_2 PSAMPLE;
+    input [63:0] arbdp_inst_data_c2_2 PSAMPLE;
+    input tagctl_hit_l2orfb_c2_2 PSAMPLE;
+    input mbctl_hit_c2_2 PSAMPLE;
+
+    input arbctl_inst_vld_c2_3 PSAMPLE;
+    input arbdp_inst_mb_c2_3 PSAMPLE;
+    input arbdp_inst_fb_c2_3 PSAMPLE;
+    input arbctl_inst_diag_c2_3 PSAMPLE;
+    input [19:0] arbdp_inst_c2_3 PSAMPLE;
+    input [39:0] arbdp_addr_c2_3 PSAMPLE;
+    input [63:0] arbdp_inst_data_c2_3 PSAMPLE;
+    input tagctl_hit_l2orfb_c2_3 PSAMPLE;
+    input mbctl_hit_c2_3 PSAMPLE;
+
+
+    // camhit_port 0,1,2,3
+    
+    input [3:0] dc_lkup_panel_dec_c4_0 PSAMPLE;
+    input [3:0] dc_lkup_row_dec_c4_0 PSAMPLE;
+    input [3:0] ic_lkup_panel_dec_c4_0 PSAMPLE;
+    input [3:0] ic_lkup_row_dec_c4_0 PSAMPLE;
+    input [39:0] arbdp_addr_c4_0 PSAMPLE;
+    input [127:0] dc_cam_hit_c6_0 PSAMPLE;
+    input [127:0] ic_cam_hit_c6_0 PSAMPLE;
+
+    input [3:0] dc_lkup_panel_dec_c4_1 PSAMPLE;
+    input [3:0] dc_lkup_row_dec_c4_1 PSAMPLE;
+    input [3:0] ic_lkup_panel_dec_c4_1 PSAMPLE;
+    input [3:0] ic_lkup_row_dec_c4_1 PSAMPLE;
+    input [39:0] arbdp_addr_c4_1 PSAMPLE;
+    input [127:0] dc_cam_hit_c6_1 PSAMPLE;
+    input [127:0] ic_cam_hit_c6_1 PSAMPLE;
+
+    input [3:0] dc_lkup_panel_dec_c4_2 PSAMPLE;
+    input [3:0] dc_lkup_row_dec_c4_2 PSAMPLE;
+    input [3:0] ic_lkup_panel_dec_c4_2 PSAMPLE;
+    input [3:0] ic_lkup_row_dec_c4_2 PSAMPLE;
+    input [39:0] arbdp_addr_c4_2 PSAMPLE;
+    input [127:0] dc_cam_hit_c6_2 PSAMPLE;
+    input [127:0] ic_cam_hit_c6_2 PSAMPLE;
+
+    input [3:0] dc_lkup_panel_dec_c4_3 PSAMPLE;
+    input [3:0] dc_lkup_row_dec_c4_3 PSAMPLE;
+    input [3:0] ic_lkup_panel_dec_c4_3 PSAMPLE;
+    input [3:0] ic_lkup_row_dec_c4_3 PSAMPLE;
+    input [39:0] arbdp_addr_c4_3 PSAMPLE;
+    input [127:0] dc_cam_hit_c6_3 PSAMPLE;
+    input [127:0] ic_cam_hit_c6_3 PSAMPLE;
+
+
+    // evictstat_port 0,1,2,3
+    
+    input vuad_evict_c3_0 PSAMPLE;
+    input [11:0] lru_way_c3_0 PSAMPLE;
+    
+    input vuad_evict_c3_1 PSAMPLE;
+    input [11:0] lru_way_c3_1 PSAMPLE;
+    
+    input vuad_evict_c3_2 PSAMPLE;
+    input [11:0] lru_way_c3_2 PSAMPLE;
+    
+    input vuad_evict_c3_3 PSAMPLE;
+    input [11:0] lru_way_c3_3 PSAMPLE;    
+}
+
+#endif

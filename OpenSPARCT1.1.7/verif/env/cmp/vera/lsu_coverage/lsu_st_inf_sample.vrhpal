@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_st_inf_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Store instruction coverage object which check for
+//  1) integer store
+//  2) integer store double
+//  3) fp store
+//  4) fp store double
+//***********************************************************************
+
+  state s_T0_ST		({4'b1100,2'b00});
+  state s_T0_ST_DBL 	({4'b1110,2'b00});
+  state s_T0_ST_FP	({4'b1101,2'b00});
+  state s_T0_ST_FP_DBL 	({4'b1111,2'b00});
+
+  state s_T1_ST		({4'b1100,2'b01});
+  state s_T1_ST_DBL 	({4'b1110,2'b01});
+  state s_T1_ST_FP	({4'b1101,2'b01});
+  state s_T1_ST_FP_DBL 	({4'b1111,2'b01});
+
+  state s_T2_ST		({4'b1100,2'b10});
+  state s_T2_ST_DBL 	({4'b1110,2'b10});
+  state s_T2_ST_FP	({4'b1101,2'b10});
+  state s_T2_ST_FP_DBL 	({4'b1111,2'b10});
+
+  state s_T3_ST		({4'b1100,2'b11});
+  state s_T3_ST_DBL 	({4'b1110,2'b11});
+  state s_T3_ST_FP	({4'b1101,2'b11});
+  state s_T3_ST_FP_DBL 	({4'b1111,2'b11});

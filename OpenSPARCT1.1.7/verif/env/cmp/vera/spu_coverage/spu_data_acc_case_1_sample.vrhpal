@@ -1,0 +1,62 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_data_acc_case_1_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_data_acc_case_1_COV_VRH
+#define INC__TMP_spu_data_acc_case_1_COV_VRH
+
+#define DATA_ACC_CASE_1_MA_STATE 3'b111
+
+/* TODO:
+ */
+
+/*
+ * Order of the signals in data_acc_case_1_state:
+ * spu_mactl_flush_g2, spu_mactl_asi40_alt_st_vld_g2,
+ * spu_mactl_masync_va_vld_g2
+ */
+
+/*
+ * spu_data_acc_case_1_cov
+ *
+ * This coverage object checks for one of four data access exception cases in
+ * the SPU. Here is the case, taken from the spu_testplan.tex
+ * file:
+ *
+ *  Case 1: When there is a store to MA Sync
+ *    reg's($VA=0xa0$)(precise trap). LSU sends cancel signal to SPU.
+ *    SPU signals completion on STXA and cancel.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample spu_data_acc_case_1_sample_bind_C${c}.\$data_acc_case_1_state {
+  // Declare states to be covered 
+  state s_DATA_ACC_CASE_1_MA_STATE (DATA_ACC_CASE_1_MA_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

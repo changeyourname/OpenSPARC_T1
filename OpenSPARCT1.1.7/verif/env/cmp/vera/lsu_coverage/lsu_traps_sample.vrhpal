@@ -1,0 +1,135 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_traps_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_traps_state = {ifu_tlu_inst_vld_m, ifu_lsu_ld_inst_e, ifu_lsu_st_inst_e,
+//
+//                    ifu_tlu_flush_m, ifu_mmu_trap_m,                               // group 1
+//                    exu_lsu_priority_trap_m, ffu_tlu_ill_inst_m,
+//
+//                    lsu_tlu_wtchpt_trp_g, lsu_tlu_dmmu_miss_g,                     // group 2
+//                    misalignaddr(early_trap_vld_g), lsu_tlu_daccess_excptn_g,
+//                    lsu_tlu_daccess_prot_g, lsu_tlu_priv_action_g,
+//
+//                    ifu_tlu_immu_miss_m, ifu_tlu_priv_violtn_m, exu_ifu_va_oor_m}; // group 3
+
+// signals are staged to the W/G stage where necessary
+
+
+// spu_tlu_rsrv_illgl_m no longer exists as a signal
+// lsu_tlu_daccess_prot_g is signaled only on stores
+// when ifu_tlu_immu_miss_m, instruction decoding has not occurred
+
+
+// single traps occurring on load
+wildcard state ld_flush        ( {3'b110, 4'b1xxx, 6'bxxxxxx, 3'bxxx} );
+wildcard state ld_trap         ( {3'b110, 4'bx1xx, 6'bxxxxxx, 3'bxxx} );
+wildcard state ld_prioritytrap ( {3'b110, 4'bxx1x, 6'bxxxxxx, 3'bxxx} );
+wildcard state ld_illinst      ( {3'b110, 4'bxxx1, 6'bxxxxxx, 3'bxxx} );
+wildcard state ld_wtchpttrp    ( {3'b110, 4'bxxxx, 6'b1xxxxx, 3'bxxx} );
+wildcard state ld_dmmumiss     ( {3'b110, 4'bxxxx, 6'bx1xxxx, 3'bxxx} );
+wildcard state ld_misalignaddr ( {3'b110, 4'bxxxx, 6'bxx1xxx, 3'bxxx} );
+wildcard state ld_daccessexcptn( {3'b110, 4'bxxxx, 6'bxxx1xx, 3'bxxx} );
+wildcard bad_state ld_daccessprot  ( {3'b110, 4'bxxxx, 6'bxxxx1x, 3'bxxx} );
+wildcard state ld_privaction   ( {3'b110, 4'bxxxx, 6'bxxxxx1, 3'bxxx} );
+wildcard bad_state ld_immumiss     ( {3'b110, 4'bxxxx, 6'bxxxxxx, 3'b1xx} );
+wildcard state ld_privvioltn   ( {3'b110, 4'bxxxx, 6'bxxxxxx, 3'bx1x} );
+wildcard state ld_vaoor        ( {3'b110, 4'bxxxx, 6'bxxxxxx, 3'bxx1} );
+
+// single traps occurring on store
+wildcard state st_flush        ( {3'b101, 4'b1xxx, 6'bxxxxxx, 3'bxxx} );
+wildcard state st_trap         ( {3'b101, 4'bx1xx, 6'bxxxxxx, 3'bxxx} );
+wildcard state st_prioritytrap ( {3'b101, 4'bxx1x, 6'bxxxxxx, 3'bxxx} );
+wildcard state st_illinst      ( {3'b101, 4'bxxx1, 6'bxxxxxx, 3'bxxx} );
+wildcard state st_wtchpttrp    ( {3'b101, 4'bxxxx, 6'b1xxxxx, 3'bxxx} );
+wildcard state st_dmmumiss     ( {3'b101, 4'bxxxx, 6'bx1xxxx, 3'bxxx} );
+wildcard state st_misalignaddr ( {3'b101, 4'bxxxx, 6'bxx1xxx, 3'bxxx} );
+wildcard state st_daccessexcptn( {3'b101, 4'bxxxx, 6'bxxx1xx, 3'bxxx} );
+wildcard state st_daccessprot  ( {3'b101, 4'bxxxx, 6'bxxxx1x, 3'bxxx} );
+wildcard state st_privaction   ( {3'b101, 4'bxxxx, 6'bxxxxx1, 3'bxxx} );
+wildcard bad_state st_immumiss     ( {3'b101, 4'bxxxx, 6'bxxxxxx, 3'b1xx} );
+wildcard state st_privvioltn   ( {3'b101, 4'bxxxx, 6'bxxxxxx, 3'bx1x} );
+wildcard state st_vaoor        ( {3'b101, 4'bxxxx, 6'bxxxxxx, 3'bxx1} );
+
+// group 2 X group 1 traps occurring on load
+wildcard state ld_wtchpttrp_flush           ( {3'b110, 4'b1xxx, 6'b1xxxxx, 3'bxxx} );
+wildcard state ld_dmmumiss_flush            ( {3'b110, 4'b1xxx, 6'bx1xxxx, 3'bxxx} );
+wildcard state ld_misalignaddr_flush        ( {3'b110, 4'b1xxx, 6'bxx1xxx, 3'bxxx} );
+wildcard state ld_daccessexcptn_flush       ( {3'b110, 4'b1xxx, 6'bxxx1xx, 3'bxxx} );
+wildcard bad_state ld_daccessprot_flush         ( {3'b110, 4'b1xxx, 6'bxxxx1x, 3'bxxx} );
+wildcard state ld_privaction_flush          ( {3'b110, 4'b1xxx, 6'bxxxxx1, 3'bxxx} );
+wildcard state ld_wtchpttrp_trap            ( {3'b110, 4'bx1xx, 6'b1xxxxx, 3'bxxx} );
+wildcard state ld_dmmumiss_trap             ( {3'b110, 4'bx1xx, 6'bx1xxxx, 3'bxxx} );
+wildcard state ld_misalignaddr_trap         ( {3'b110, 4'bx1xx, 6'bxx1xxx, 3'bxxx} );
+wildcard state ld_daccessexcptn_trap        ( {3'b110, 4'bx1xx, 6'bxxx1xx, 3'bxxx} );
+wildcard bad_state ld_daccessprot_trap          ( {3'b110, 4'bx1xx, 6'bxxxx1x, 3'bxxx} );
+wildcard state ld_privaction_trap           ( {3'b110, 4'bx1xx, 6'bxxxxx1, 3'bxxx} );
+wildcard state ld_wtchpttrp_prioritytrap    ( {3'b110, 4'bxx1x, 6'b1xxxxx, 3'bxxx} );
+wildcard state ld_dmmumiss_prioritytrap     ( {3'b110, 4'bxx1x, 6'bx1xxxx, 3'bxxx} );
+wildcard state ld_misalignaddr_prioritytrap ( {3'b110, 4'bxx1x, 6'bxx1xxx, 3'bxxx} );
+wildcard state ld_daccessexcptn_prioritytrap( {3'b110, 4'bxx1x, 6'bxxx1xx, 3'bxxx} );
+wildcard bad_state ld_daccessprot_prioritytrap  ( {3'b110, 4'bxx1x, 6'bxxxx1x, 3'bxxx} );
+wildcard state ld_privaction_prioritytrap   ( {3'b110, 4'bxx1x, 6'bxxxxx1, 3'bxxx} );
+wildcard state ld_wtchpttrp_illinst         ( {3'b110, 4'bxxx1, 6'b1xxxxx, 3'bxxx} );
+wildcard state ld_dmmumiss_illinst          ( {3'b110, 4'bxxx1, 6'bx1xxxx, 3'bxxx} );
+wildcard state ld_misalignaddr_illinst      ( {3'b110, 4'bxxx1, 6'bxx1xxx, 3'bxxx} );
+wildcard state ld_daccessexcptn_illinst     ( {3'b110, 4'bxxx1, 6'bxxx1xx, 3'bxxx} );
+wildcard bad_state ld_daccessprot_illinst       ( {3'b110, 4'bxxx1, 6'bxxxx1x, 3'bxxx} );
+wildcard state ld_privaction_illinst        ( {3'b110, 4'bxxx1, 6'bxxxxx1, 3'bxxx} );
+
+// group 2 X group 1 traps occurring on store
+wildcard state st_wtchpttrp_flush           ( {3'b101, 4'b1xxx, 6'b1xxxxx, 3'bxxx} );
+wildcard state st_dmmumiss_flush            ( {3'b101, 4'b1xxx, 6'bx1xxxx, 3'bxxx} );
+wildcard state st_misalignaddr_flush        ( {3'b101, 4'b1xxx, 6'bxx1xxx, 3'bxxx} );
+wildcard state st_daccessexcptn_flush       ( {3'b101, 4'b1xxx, 6'bxxx1xx, 3'bxxx} );
+wildcard state st_daccessprot_flush         ( {3'b101, 4'b1xxx, 6'bxxxx1x, 3'bxxx} );
+wildcard state st_privaction_flush          ( {3'b101, 4'b1xxx, 6'bxxxxx1, 3'bxxx} );
+wildcard state st_wtchpttrp_trap            ( {3'b101, 4'bx1xx, 6'b1xxxxx, 3'bxxx} );
+wildcard state st_dmmumiss_trap             ( {3'b101, 4'bx1xx, 6'bx1xxxx, 3'bxxx} );
+wildcard state st_misalignaddr_trap         ( {3'b101, 4'bx1xx, 6'bxx1xxx, 3'bxxx} );
+wildcard state st_daccessexcptn_trap        ( {3'b101, 4'bx1xx, 6'bxxx1xx, 3'bxxx} );
+wildcard state st_daccessprot_trap          ( {3'b101, 4'bx1xx, 6'bxxxx1x, 3'bxxx} );
+wildcard state st_privaction_trap           ( {3'b101, 4'bx1xx, 6'bxxxxx1, 3'bxxx} );
+wildcard state st_wtchpttrp_prioritytrap    ( {3'b101, 4'bxx1x, 6'b1xxxxx, 3'bxxx} );
+wildcard state st_dmmumiss_prioritytrap     ( {3'b101, 4'bxx1x, 6'bx1xxxx, 3'bxxx} );
+wildcard state st_misalignaddr_prioritytrap ( {3'b101, 4'bxx1x, 6'bxx1xxx, 3'bxxx} );
+wildcard state st_daccessexcptn_prioritytrap( {3'b101, 4'bxx1x, 6'bxxx1xx, 3'bxxx} );
+wildcard state st_daccessprot_prioritytrap  ( {3'b101, 4'bxx1x, 6'bxxxx1x, 3'bxxx} );
+wildcard state st_privaction_prioritytrap   ( {3'b101, 4'bxx1x, 6'bxxxxx1, 3'bxxx} );
+wildcard state st_wtchpttrp_illinst         ( {3'b101, 4'bxxx1, 6'b1xxxxx, 3'bxxx} );
+wildcard state st_dmmumiss_illinst          ( {3'b101, 4'bxxx1, 6'bx1xxxx, 3'bxxx} );
+wildcard state st_misalignaddr_illinst      ( {3'b101, 4'bxxx1, 6'bxx1xxx, 3'bxxx} );
+wildcard state st_daccessexcptn_illinst     ( {3'b101, 4'bxxx1, 6'bxxx1xx, 3'bxxx} );
+wildcard state st_daccessprot_illinst       ( {3'b101, 4'bxxx1, 6'bxxxx1x, 3'bxxx} );
+wildcard state st_privaction_illinst        ( {3'b101, 4'bxxx1, 6'bxxxxx1, 3'bxxx} );
+
+// group 3 X ifu_tlu_flush_m traps occurring on load
+wildcard bad_state ld_immumiss_flush  ( {3'b110, 4'b1xxx, 6'bxxxxxx, 3'b1xx} );
+wildcard bad_state ld_privvioltn_flush( {3'b110, 4'b1xxx, 6'bxxxxxx, 3'bx1x} );
+wildcard state ld_vaoor_flush     ( {3'b110, 4'b1xxx, 6'bxxxxxx, 3'bxx1} );
+
+// group 3 X ifu_tlu_flush_m traps occurring on store
+wildcard bad_state st_immumiss_flush  ( {3'b101, 4'b1xxx, 6'bxxxxxx, 3'b1xx} );
+wildcard bad_state st_privvioltn_flush( {3'b101, 4'b1xxx, 6'bxxxxxx, 3'bx1x} );
+wildcard state st_vaoor_flush     ( {3'b101, 4'b1xxx, 6'bxxxxxx, 3'bxx1} );
+
+// ifu_tlu_immu_miss_m, not specific to load or store
+wildcard state immumiss      ( {3'b1xx, 4'bxxxx, 6'bxxxxxx, 3'b1xx} );
+wildcard state immumiss_flush( {3'b1xx, 4'b1xxx, 6'bxxxxxx, 3'b1xx} );

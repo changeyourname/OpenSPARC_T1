@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_fill_ld_b2b_sameaddr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_fill_ld_b2b_sameaddr_state = {ldfilladdrw_eq_ldaddrm,
+//                                   ld3_fill_reset_w, ld2_fill_reset_w, ld1_fill_reset_w, ld0_fill_reset_w,
+//                                   ld3_inst_vld_m, ld2_inst_vld_m, ld1_inst_vld_m, ld0_inst_vld_m};
+
+state ldfill0_ldinst1_sameaddr( {1'b1, 4'b0001, 4'b0010} );
+state ldfill0_ldinst2_sameaddr( {1'b1, 4'b0001, 4'b0100} );
+state ldfill0_ldinst3_sameaddr( {1'b1, 4'b0001, 4'b1000} );
+
+state ldfill1_ldinst0_sameaddr( {1'b1, 4'b0010, 4'b0001} );
+state ldfill1_ldinst2_sameaddr( {1'b1, 4'b0010, 4'b0100} );
+state ldfill1_ldinst3_sameaddr( {1'b1, 4'b0010, 4'b1000} );
+
+state ldfill2_ldinst0_sameaddr( {1'b1, 4'b0100, 4'b0001} );
+state ldfill2_ldinst1_sameaddr( {1'b1, 4'b0100, 4'b0010} );
+state ldfill2_ldinst3_sameaddr( {1'b1, 4'b0100, 4'b1000} );
+
+state ldfill3_ldinst0_sameaddr( {1'b1, 4'b1000, 4'b0001} );
+state ldfill3_ldinst1_sameaddr( {1'b1, 4'b1000, 4'b0010} );
+state ldfill3_ldinst2_sameaddr( {1'b1, 4'b1000, 4'b0100} );

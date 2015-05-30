@@ -1,0 +1,62 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_cov.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "coreccx_cov_inc.pal"
+
+#ifndef INC_CORECCX_COV_IF_VRH
+#define INC_CORECCX_COV_IF_VRH
+
+interface coreccx_cov {
+
+    input clk CLOCK;
+    input diag_done PSAMPLE;
+
+    // CORECCX_PCX_RETRY_REQ_COV
+    input [3:0] spc0_pcx_req PSAMPLE;
+    input spc0_pcx_atom PSAMPLE;
+    input [3:0] pcx_spc0_grant PSAMPLE;
+    input [11:0] coreccx_pcx_retry_req_cov PSAMPLE;
+    output [11:0] coreccx_pcx_retry_req PRZ;
+
+    // CORECCX_CPX_CONSECUTIVE_COV
+    input cpx_spc0_data_rdy_cx2 PSAMPLE;
+    input [144:0] cpx_spc0_data_cx2 PSAMPLE;
+    
+.for($b=0; $b<$BANKS; $b++) {
+
+    // CORECCX_PCX_FIELDS_COV
+    input pcx_sctag${b}_data_rdy PSAMPLE;
+    input [123:0] pcx_sctag${b}_data PSAMPLE;
+
+    // CORECCX_CPX_FIELDS_COV
+    input [144:0] sctag${b}_cpx_data PSAMPLE;
+
+    // CORECCX_L2ADDR_COV
+    input arbctl_inst_vld_c2_${b} PSAMPLE;
+    input arbctl_inst_diag_c2_${b} PSAMPLE;
+    input arbctl_inval_inst_c2_${b} PSAMPLE;
+    input decdp_inst_int_c2_${b} PSAMPLE;
+    input [39:0] arbdp_addr_c2_${b} PSAMPLE;
+
+.}
+
+}
+
+#endif

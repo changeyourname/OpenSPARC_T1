@@ -1,0 +1,222 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_sechit_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_sechit_state = {ld3_inst_vld_w2, ld2_inst_vld_w2, ld1_inst_vld_w2, ld0_inst_vld_w2,
+//                     ld3_sec_hit_w2, ld2_sec_hit_w2, ld1_sec_hit_w2, ld0_sec_hit_w2,
+//                     lsu_way_hit_or_w2, ncache_pcx_rq_w2};
+
+
+// 1 thread hits 1 thread
+state th0_sechit_th1_miss_cacheable   ( {4'b0001, 4'b0010, 1'b0, 1'b0} );
+state th0_sechit_th1_miss_noncacheable( {4'b0001, 4'b0010, 1'b0, 1'b1} );
+state th0_sechit_th1_hit_cacheable    ( {4'b0001, 4'b0010, 1'b1, 1'b0} );
+state th0_sechit_th1_hit_noncacheable ( {4'b0001, 4'b0010, 1'b1, 1'b1} );
+
+state th0_sechit_th2_miss_cacheable   ( {4'b0001, 4'b0100, 1'b0, 1'b0} );
+state th0_sechit_th2_miss_noncacheable( {4'b0001, 4'b0100, 1'b0, 1'b1} );
+state th0_sechit_th2_hit_cacheable    ( {4'b0001, 4'b0100, 1'b1, 1'b0} );
+state th0_sechit_th2_hit_noncacheable ( {4'b0001, 4'b0100, 1'b1, 1'b1} );
+
+state th0_sechit_th3_miss_cacheable   ( {4'b0001, 4'b1000, 1'b0, 1'b0} );
+state th0_sechit_th3_miss_noncacheable( {4'b0001, 4'b1000, 1'b0, 1'b1} );
+state th0_sechit_th3_hit_cacheable    ( {4'b0001, 4'b1000, 1'b1, 1'b0} );
+state th0_sechit_th3_hit_noncacheable ( {4'b0001, 4'b1000, 1'b1, 1'b1} );
+
+state th1_sechit_th0_miss_cacheable   ( {4'b0010, 4'b0001, 1'b0, 1'b0} );
+state th1_sechit_th0_miss_noncacheable( {4'b0010, 4'b0001, 1'b0, 1'b1} );
+state th1_sechit_th0_hit_cacheable    ( {4'b0010, 4'b0001, 1'b1, 1'b0} );
+state th1_sechit_th0_hit_noncacheable ( {4'b0010, 4'b0001, 1'b1, 1'b1} );
+
+state th1_sechit_th2_miss_cacheable   ( {4'b0010, 4'b0100, 1'b0, 1'b0} );
+state th1_sechit_th2_miss_noncacheable( {4'b0010, 4'b0100, 1'b0, 1'b1} );
+state th1_sechit_th2_hit_cacheable    ( {4'b0010, 4'b0100, 1'b1, 1'b0} );
+state th1_sechit_th2_hit_noncacheable ( {4'b0010, 4'b0100, 1'b1, 1'b1} );
+
+state th1_sechit_th3_miss_cacheable   ( {4'b0010, 4'b1000, 1'b0, 1'b0} );
+state th1_sechit_th3_miss_noncacheable( {4'b0010, 4'b1000, 1'b0, 1'b1} );
+state th1_sechit_th3_hit_cacheable    ( {4'b0010, 4'b1000, 1'b1, 1'b0} );
+state th1_sechit_th3_hit_noncacheable ( {4'b0010, 4'b1000, 1'b1, 1'b1} );
+
+state th2_sechit_th0_miss_cacheable   ( {4'b0100, 4'b0001, 1'b0, 1'b0} );
+state th2_sechit_th0_miss_noncacheable( {4'b0100, 4'b0001, 1'b0, 1'b1} );
+state th2_sechit_th0_hit_cacheable    ( {4'b0100, 4'b0001, 1'b1, 1'b0} );
+state th2_sechit_th0_hit_noncacheable ( {4'b0100, 4'b0001, 1'b1, 1'b1} );
+
+state th2_sechit_th1_miss_cacheable   ( {4'b0100, 4'b0010, 1'b0, 1'b0} );
+state th2_sechit_th1_miss_noncacheable( {4'b0100, 4'b0010, 1'b0, 1'b1} );
+state th2_sechit_th1_hit_cacheable    ( {4'b0100, 4'b0010, 1'b1, 1'b0} );
+state th2_sechit_th1_hit_noncacheable ( {4'b0100, 4'b0010, 1'b1, 1'b1} );
+
+state th2_sechit_th3_miss_cacheable   ( {4'b0100, 4'b1000, 1'b0, 1'b0} );
+state th2_sechit_th3_miss_noncacheable( {4'b0100, 4'b1000, 1'b0, 1'b1} );
+state th2_sechit_th3_hit_cacheable    ( {4'b0100, 4'b1000, 1'b1, 1'b0} );
+state th2_sechit_th3_hit_noncacheable ( {4'b0100, 4'b1000, 1'b1, 1'b1} );
+
+state th3_sechit_th0_miss_cacheable   ( {4'b1000, 4'b0001, 1'b0, 1'b0} );
+state th3_sechit_th0_miss_noncacheable( {4'b1000, 4'b0001, 1'b0, 1'b1} );
+state th3_sechit_th0_hit_cacheable    ( {4'b1000, 4'b0001, 1'b1, 1'b0} );
+state th3_sechit_th0_hit_noncacheable ( {4'b1000, 4'b0001, 1'b1, 1'b1} );
+
+state th3_sechit_th1_miss_cacheable   ( {4'b1000, 4'b0010, 1'b0, 1'b0} );
+state th3_sechit_th1_miss_noncacheable( {4'b1000, 4'b0010, 1'b0, 1'b1} );
+state th3_sechit_th1_hit_cacheable    ( {4'b1000, 4'b0010, 1'b1, 1'b0} );
+state th3_sechit_th1_hit_noncacheable ( {4'b1000, 4'b0010, 1'b1, 1'b1} );
+
+state th3_sechit_th2_miss_cacheable   ( {4'b1000, 4'b0100, 1'b0, 1'b0} );
+state th3_sechit_th2_miss_noncacheable( {4'b1000, 4'b0100, 1'b0, 1'b1} );
+state th3_sechit_th2_hit_cacheable    ( {4'b1000, 4'b0100, 1'b1, 1'b0} );
+state th3_sechit_th2_hit_noncacheable ( {4'b1000, 4'b0100, 1'b1, 1'b1} );
+
+// 1 thread hits 2 threads
+state th0_sechit_th12_miss_cacheable   ( {4'b0001, 4'b0110, 1'b0, 1'b0} );
+state th0_sechit_th12_miss_noncacheable( {4'b0001, 4'b0110, 1'b0, 1'b1} );
+state th0_sechit_th12_hit_cacheable    ( {4'b0001, 4'b0110, 1'b1, 1'b0} );
+state th0_sechit_th12_hit_noncacheable ( {4'b0001, 4'b0110, 1'b1, 1'b1} );
+
+state th0_sechit_th13_miss_cacheable   ( {4'b0001, 4'b1010, 1'b0, 1'b0} );
+state th0_sechit_th13_miss_noncacheable( {4'b0001, 4'b1010, 1'b0, 1'b1} );
+state th0_sechit_th13_hit_cacheable    ( {4'b0001, 4'b1010, 1'b1, 1'b0} );
+state th0_sechit_th13_hit_noncacheable ( {4'b0001, 4'b1010, 1'b1, 1'b1} );
+
+state th0_sechit_th23_miss_cacheable   ( {4'b0001, 4'b1100, 1'b0, 1'b0} );
+state th0_sechit_th23_miss_noncacheable( {4'b0001, 4'b1100, 1'b0, 1'b1} );
+state th0_sechit_th23_hit_cacheable    ( {4'b0001, 4'b1100, 1'b1, 1'b0} );
+state th0_sechit_th23_hit_noncacheable ( {4'b0001, 4'b1100, 1'b1, 1'b1} );
+
+state th1_sechit_th02_miss_cacheable   ( {4'b0010, 4'b0101, 1'b0, 1'b0} );
+state th1_sechit_th02_miss_noncacheable( {4'b0010, 4'b0101, 1'b0, 1'b1} );
+state th1_sechit_th02_hit_cacheable    ( {4'b0010, 4'b0101, 1'b1, 1'b0} );
+state th1_sechit_th02_hit_noncacheable ( {4'b0010, 4'b0101, 1'b1, 1'b1} );
+
+state th1_sechit_th03_miss_cacheable   ( {4'b0010, 4'b1001, 1'b0, 1'b0} );
+state th1_sechit_th03_miss_noncacheable( {4'b0010, 4'b1001, 1'b0, 1'b1} );
+state th1_sechit_th03_hit_cacheable    ( {4'b0010, 4'b1001, 1'b1, 1'b0} );
+state th1_sechit_th03_hit_noncacheable ( {4'b0010, 4'b1001, 1'b1, 1'b1} );
+
+state th1_sechit_th23_miss_cacheable   ( {4'b0010, 4'b1100, 1'b0, 1'b0} );
+state th1_sechit_th23_miss_noncacheable( {4'b0010, 4'b1100, 1'b0, 1'b1} );
+state th1_sechit_th23_hit_cacheable    ( {4'b0010, 4'b1100, 1'b1, 1'b0} );
+state th1_sechit_th23_hit_noncacheable ( {4'b0010, 4'b1100, 1'b1, 1'b1} );
+
+state th2_sechit_th01_miss_cacheable   ( {4'b0100, 4'b0011, 1'b0, 1'b0} );
+state th2_sechit_th01_miss_noncacheable( {4'b0100, 4'b0011, 1'b0, 1'b1} );
+state th2_sechit_th01_hit_cacheable    ( {4'b0100, 4'b0011, 1'b1, 1'b0} );
+state th2_sechit_th01_hit_noncacheable ( {4'b0100, 4'b0011, 1'b1, 1'b1} );
+
+state th2_sechit_th03_miss_cacheable   ( {4'b0100, 4'b1001, 1'b0, 1'b0} );
+state th2_sechit_th03_miss_noncacheable( {4'b0100, 4'b1001, 1'b0, 1'b1} );
+state th2_sechit_th03_hit_cacheable    ( {4'b0100, 4'b1001, 1'b1, 1'b0} );
+state th2_sechit_th03_hit_noncacheable ( {4'b0100, 4'b1001, 1'b1, 1'b1} );
+
+state th2_sechit_th13_miss_cacheable   ( {4'b0100, 4'b1010, 1'b0, 1'b0} );
+state th2_sechit_th13_miss_noncacheable( {4'b0100, 4'b1010, 1'b0, 1'b1} );
+state th2_sechit_th13_hit_cacheable    ( {4'b0100, 4'b1010, 1'b1, 1'b0} );
+state th2_sechit_th13_hit_noncacheable ( {4'b0100, 4'b1010, 1'b1, 1'b1} );
+
+state th3_sechit_th01_miss_cacheable   ( {4'b1000, 4'b0011, 1'b0, 1'b0} );
+state th3_sechit_th01_miss_noncacheable( {4'b1000, 4'b0011, 1'b0, 1'b1} );
+state th3_sechit_th01_hit_cacheable    ( {4'b1000, 4'b0011, 1'b1, 1'b0} );
+state th3_sechit_th01_hit_noncacheable ( {4'b1000, 4'b0011, 1'b1, 1'b1} );
+
+state th3_sechit_th02_miss_cacheable   ( {4'b1000, 4'b0101, 1'b0, 1'b0} );
+state th3_sechit_th02_miss_noncacheable( {4'b1000, 4'b0101, 1'b0, 1'b1} );
+state th3_sechit_th02_hit_cacheable    ( {4'b1000, 4'b0101, 1'b1, 1'b0} );
+state th3_sechit_th02_hit_noncacheable ( {4'b1000, 4'b0101, 1'b1, 1'b1} );
+
+state th3_sechit_th12_miss_cacheable   ( {4'b1000, 4'b0110, 1'b0, 1'b0} );
+state th3_sechit_th12_miss_noncacheable( {4'b1000, 4'b0110, 1'b0, 1'b1} );
+state th3_sechit_th12_hit_cacheable    ( {4'b1000, 4'b0110, 1'b1, 1'b0} );
+state th3_sechit_th12_hit_noncacheable ( {4'b1000, 4'b0110, 1'b1, 1'b1} );
+
+// 1 thread hits 3 threads
+state th0_sechit_th123_miss_cacheable   ( {4'b0001, 4'b1110, 1'b0, 1'b0} );
+state th0_sechit_th123_miss_noncacheable( {4'b0001, 4'b1110, 1'b0, 1'b1} );
+state th0_sechit_th123_hit_cacheable    ( {4'b0001, 4'b1110, 1'b1, 1'b0} );
+state th0_sechit_th123_hit_noncacheable ( {4'b0001, 4'b1110, 1'b1, 1'b1} );
+
+state th1_sechit_th023_miss_cacheable   ( {4'b0010, 4'b1101, 1'b0, 1'b0} );
+state th1_sechit_th023_miss_noncacheable( {4'b0010, 4'b1101, 1'b0, 1'b1} );
+state th1_sechit_th023_hit_cacheable    ( {4'b0010, 4'b1101, 1'b1, 1'b0} );
+state th1_sechit_th023_hit_noncacheable ( {4'b0010, 4'b1101, 1'b1, 1'b1} );
+
+state th2_sechit_th013_miss_cacheable   ( {4'b0100, 4'b1011, 1'b0, 1'b0} );
+state th2_sechit_th013_miss_noncacheable( {4'b0100, 4'b1011, 1'b0, 1'b1} );
+state th2_sechit_th013_hit_cacheable    ( {4'b0100, 4'b1011, 1'b1, 1'b0} );
+state th2_sechit_th013_hit_noncacheable ( {4'b0100, 4'b1011, 1'b1, 1'b1} );
+
+state th3_sechit_th012_miss_cacheable   ( {4'b1000, 4'b0111, 1'b0, 1'b0} );
+state th3_sechit_th012_miss_noncacheable( {4'b1000, 4'b0111, 1'b0, 1'b1} );
+state th3_sechit_th012_hit_cacheable    ( {4'b1000, 4'b0111, 1'b1, 1'b0} );
+state th3_sechit_th012_hit_noncacheable ( {4'b1000, 4'b0111, 1'b1, 1'b1} );
+
+
+// 1 load with secondary hit on another load valid in the previous cycle
+wildcard trans b2b_sechit_miss_cacheable   ( {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bxxx1, 1'b0, 1'b0},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxxx1, 1'b0, 1'b0},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxxx1, 1'b0, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bxx1x, 1'b0, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxx1x, 1'b0, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxx1x, 1'b0, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bx1xx, 1'b0, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bx1xx, 1'b0, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bx1xx, 1'b0, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'b1xxx, 1'b0, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'b1xxx, 1'b0, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'b1xxx, 1'b0, 1'b0} );
+
+wildcard trans b2b_sechit_miss_noncacheable( {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bxxx1, 1'b0, 1'b1},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxxx1, 1'b0, 1'b1},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxxx1, 1'b0, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bxx1x, 1'b0, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxx1x, 1'b0, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxx1x, 1'b0, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bx1xx, 1'b0, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bx1xx, 1'b0, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bx1xx, 1'b0, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'b1xxx, 1'b0, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'b1xxx, 1'b0, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'b1xxx, 1'b0, 1'b1} );
+
+wildcard trans b2b_sechit_hit_cacheable    ( {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bxxx1, 1'b1, 1'b0},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxxx1, 1'b1, 1'b0},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxxx1, 1'b1, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bxx1x, 1'b1, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxx1x, 1'b1, 1'b0},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxx1x, 1'b1, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bx1xx, 1'b1, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bx1xx, 1'b1, 1'b0},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bx1xx, 1'b1, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'b1xxx, 1'b1, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'b1xxx, 1'b1, 1'b0},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'b1xxx, 1'b1, 1'b0} );
+
+wildcard trans b2b_sechit_hit_noncacheable ( {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bxxx1, 1'b1, 1'b1},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxxx1, 1'b1, 1'b1},
+                                             {4'b0001, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxxx1, 1'b1, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bxx1x, 1'b1, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'bxx1x, 1'b1, 1'b1},
+                                             {4'b0010, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bxx1x, 1'b1, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'bx1xx, 1'b1, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'bx1xx, 1'b1, 1'b1},
+                                             {4'b0100, 4'bxxxx, 1'bx, 1'bx} -> {4'b1000, 4'bx1xx, 1'b1, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0001, 4'b1xxx, 1'b1, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0010, 4'b1xxx, 1'b1, 1'b1},
+                                             {4'b1000, 4'bxxxx, 1'bx, 1'bx} -> {4'b0100, 4'b1xxx, 1'b1, 1'b1} );

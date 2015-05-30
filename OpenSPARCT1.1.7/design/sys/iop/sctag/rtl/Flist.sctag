@@ -1,0 +1,77 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.sctag
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
++incdir+.
+sctag.v
+sctag_stdatarep.v
+sctag_arbaddrdp.v
+sctag_arbdatadp.v
+sctag_arbctl.v
+sctag_arbdecdp.v
+sctag_csr.v
+sctag_csr_ctl.v
+sctag_dbgdp.v
+sctag_deccdp.v
+sctag_decc_ctl.v
+sctag_dirvec_dp.v
+sctag_evicttag_dp.v
+sctag_fbctl.v
+sctag_iqctl.v
+sctag_iqdp.v
+sctag_mbctl.v
+sctag_oqdp.v
+sctag_oqctl.v
+sctag_rdmatctl.v 
+sctag_retdp.v 
+sctag_snpctl.v
+sctag_mbist.v
+sctag_tagctl.v
+sctag_tagdp.v
+sctag_tagdp_ctl.v
+sctag_tagl_dp.v
+sctag_snpdp.v
+sctag_wbctl.v
+sctag_scbufrep.v
+sctag_dirrep.v
+sctag_retbuf.v
+sctag_tagctlrep.v
+
+sctag_vuad_io.v
+sctag_vuadcol_dp.v
+sctag_vuad_ctl.v
+
+bw_clk_cl_sctag_cmp.v
+
+
+sctag_dirl_buf.v
+sctag_dirg_buf.v
+sctag_dir_ctl.v
+sctag_dir_in.v
+sctag_dir_out.v
+
+
+sctag_vuaddp_ctl.v
+sctag_vuad_dpm.v
+sctag_vd_dp.v
+sctag_ua_dp.v
+
+sctag_sig_rptr.v
+sctag_slow_rptr.v
+sctag_min_rptr.v

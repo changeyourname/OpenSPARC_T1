@@ -1,0 +1,285 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mmu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// mmu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+
+// global signals
+connect input mmu_coverage_ifc.cmp_diag_done = "cmp_top.diag_done" iskew -1
+connect input mmu_coverage_ifc.clk = "cmp_top.iop.sparc0.rclk" iskew -1 
+
+	
+. sub connectInstance {
+.	my ( $instancePath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+
+connect input mmu_coverage_ifc.C${c}_dmmu_ps1_ptr_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_64k_ptr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_ps0_ptr_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_8k_ptr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_ctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_ctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_direct_ptr_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_direct_ptr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_nzctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_nzctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_nzctxt_ps0_tsb_en_m  =	"${instancePath}.tlu.mmu_ctl.dmmu_nzctxt_ps0_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_nzctxt_ps1_tsb_en_m  =	"${instancePath}.tlu.mmu_ctl.dmmu_nzctxt_ps1_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_sfsr_wr_en_l  =		"${instancePath}.tlu.mmu_ctl.dmmu_sfsr_wr_en_l" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_sync_far_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_sync_far_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_sync_fsr_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_sync_fsr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_tag_access_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_tag_access_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_tag_target_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_tag_target_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_tsb_en_m  =			"${instancePath}.tlu.mmu_ctl.dmmu_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_zctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_zctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_zctxt_ps0_tsb_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_zctxt_ps0_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_zctxt_ps1_tsb_en_m  =		"${instancePath}.tlu.mmu_ctl.dmmu_zctxt_ps1_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_64k_ptr_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_64k_ptr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_8k_ptr_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_8k_ptr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_ctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_ctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_nzctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_nzctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_nzctxt_ps0_tsb_en_m  =	"${instancePath}.tlu.mmu_ctl.immu_nzctxt_ps0_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_nzctxt_ps1_tsb_en_m  =	"${instancePath}.tlu.mmu_ctl.immu_nzctxt_ps1_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_sfsr_wr_en_l  =		"${instancePath}.tlu.mmu_ctl.immu_sfsr_wr_en_l" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_sync_fsr_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_sync_fsr_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_tag_access_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_tag_access_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_tag_target_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_tag_target_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_tsb_en_m  =			"${instancePath}.tlu.mmu_ctl.immu_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_zctxt_cfg_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_zctxt_cfg_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_zctxt_ps0_tsb_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_zctxt_ps0_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_zctxt_ps1_tsb_en_m  =		"${instancePath}.tlu.mmu_ctl.immu_zctxt_ps1_tsb_en_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlb_access_en_l =			"${instancePath}.tlu.mmu_ctl.tlb_access_en_l" iskew -1
+
+.
+// Connections for MMU_FAULTS_COV
+
+connect input mmu_coverage_ifc.C${c}_ifu_tlu_immu_miss_m	=	"${instancePath}.tlu.mmu_ctl.ifu_tlu_immu_miss_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_dmmu_miss_g	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_dmmu_miss_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_daccess_excptn_g	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_daccess_excptn_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_lsu_int_ld_ill_va_w2	=	"${instancePath}.tlu.tlu_lsu_int_ld_ill_va_w2" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_va_oor_brnchetc_m	=	"${instancePath}.tlu.tcl.immu_va_oor_brnchetc_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_exu_tlu_va_oor_jl_ret_m	=	"${instancePath}.tlu.tcl.exu_tlu_va_oor_jl_ret_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_exu_tlu_va_oor_m	=	"${instancePath}.tlu.tcl.exu_tlu_va_oor_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_va_oor_inst_acc_excp_g	=	"${instancePath}.tlu.tcl.va_oor_inst_acc_excp_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_va_oor_g	=	"${instancePath}.tlu.tcl.dmmu_va_oor_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_va_oor_data_acc_excp_g	=	"${instancePath}.tlu.tcl.va_oor_data_acc_excp_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_wtchpt_trp_g	=	"${instancePath}.tlu.tcl.lsu_tlu_wtchpt_trp_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_misalign_addr_ldst_atm_m	=	"${instancePath}.tlu.tcl.lsu_tlu_misalign_addr_ldst_atm_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_mmu_sync_data_excp_g	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_daccess_excptn_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_ifu_tlu_flsh_inst_e	=	"${instancePath}.lsu.ifu_tlu_flsh_inst_e" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_sync_illgl_va_m	=	"${instancePath}.tlu.mmu_ctl.dmmu_sync_illgl_va_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_sync_illgl_va_m	=	"${instancePath}.tlu.mmu_ctl.immu_sync_illgl_va_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_async_illgl_va_g	=	"${instancePath}.tlu.mmu_ctl.dmmu_async_illgl_va_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_async_illgl_va_g	=	"${instancePath}.tlu.mmu_ctl.immu_async_illgl_va_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_demap_sctxt	=	"${instancePath}.tlu.mmu_ctl.demap_sctxt" iskew -1
+connect input mmu_coverage_ifc.C${c}_demap_resrv	=	"${instancePath}.tlu.mmu_ctl.demap_resrv" iskew -1
+
+connect input mmu_coverage_ifc.C${c}_dtlb_demap 	=	"${instancePath}.lsu.dtlb.tlb_demap" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_demap         =       "${instancePath}.ifu.itlb.tlb_demap" iskew -1
+
+connect input mmu_coverage_ifc.C${c}_lsu_tlbop_force_swo         =       "${instancePath}.lsu.dctl.lsu_tlbop_force_swo" iskew -1
+
+
+// the faults need to be qualified with this
+connect input mmu_coverage_ifc.C${c}_exu_tlu_ttype_m		=	"${instancePath}.tlu.exu_tlu_ttype_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_exu_tlu_ttype_vld_m		=	"${instancePath}.exu_tlu_ttype_vld_m" iskew -1
+
+// Connections for TTE_ATTRIBUTES_COV
+
+connect input mmu_coverage_ifc.C${c}_tlu_dtlb_tte_data_w2	=	"${instancePath}.tlu.mmu_dp.tlu_dtlb_tte_data_w2" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_itlb_tte_data_w2	=	"${instancePath}.tlu.mmu_dp.tlu_itlb_tte_data_w2" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlb_rd_tte_data		=	"${instancePath}.lsu.dtlb.tlb_rd_tte_data" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_rd_data_vld		=	"${instancePath}.lsu.dtlb.tlb_rd_data_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_cam_vld		=	"${instancePath}.lsu.dtlb.cam_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlb_cam_hit			=	"${instancePath}.lsu.dtlb.tlb_cam_hit" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_tlb_st_inst_m	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_tlb_st_inst_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_tlb_ld_inst_m	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_tlb_ld_inst_m" iskew -1
+
+// Connections for PID filed of attr's
+connect input mmu_coverage_ifc.C${c}_dtlb_rd_tte_tag		=	"${instancePath}.lsu.dtlb.rd_tte_tag" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_rd_tte_tag		=	"${instancePath}.ifu.itlb.rd_tte_tag" iskew -1
+
+// Connections for MMU_TLB_OPS_COV
+
+connect input mmu_coverage_ifc.C${c}_dtlb_entry_vld	=	"${instancePath}.lsu.dtlb.tlb_entry_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_entry_vld	=	"${instancePath}.ifu.itlb.tlb_entry_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_ddemap_by_page	=	"${instancePath}.tlu.mmu_ctl.ddemap_by_page" iskew -1
+connect input mmu_coverage_ifc.C${c}_idemap_by_page	=	"${instancePath}.tlu.mmu_ctl.idemap_by_page" iskew -1
+connect input mmu_coverage_ifc.C${c}_ddemap_by_ctxt	=	"${instancePath}.tlu.mmu_ctl.ddemap_by_ctxt" iskew -1
+connect input mmu_coverage_ifc.C${c}_idemap_by_ctxt	=	"${instancePath}.tlu.mmu_ctl.idemap_by_ctxt" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_all_g	=	"${instancePath}.tlu.mmu_ctl.tlu_dtlb_dmp_all_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_itlb_dmp_all_g	=	"${instancePath}.tlu.mmu_ctl.tlu_itlb_dmp_all_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_demap_auto	=	"${instancePath}.lsu.dtlb.tlb_demap_auto" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_demap_auto	=	"${instancePath}.ifu.itlb.tlb_demap_auto" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_inv_all_g	=	"${instancePath}.tlu.mmu_ctl.dmmu_inv_all_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_inv_all_g	=	"${instancePath}.tlu.mmu_ctl.immu_inv_all_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_data_access_rd_en	=	"${instancePath}.tlu.mmu_ctl.dmmu_data_access_rd_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_data_access_rd_en	=	"${instancePath}.tlu.mmu_ctl.immu_data_access_rd_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_data_access_wr_en	=	"${instancePath}.tlu.mmu_ctl.dmmu_data_access_wr_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_data_access_wr_en	=	"${instancePath}.tlu.mmu_ctl.immu_data_access_wr_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_dmmu_data_in_wr_en	=	"${instancePath}.tlu.mmu_ctl.dmmu_data_in_wr_en" iskew -1
+connect input mmu_coverage_ifc.C${c}_immu_data_in_wr_en	=	"${instancePath}.tlu.mmu_ctl.immu_data_in_wr_en" iskew -1
+
+// Connections for DTLB_WR_FL_RD_COV
+connect input mmu_coverage_ifc.C${c}_dtlb_wr_tte_tag     = 	"${instancePath}.lsu.dtlb.tlb_wr_tte_tag" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_wr_tte_data     = 	"${instancePath}.lsu.dtlb.tlb_wr_tte_data" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_wr_vld         =	"${instancePath}.tlu.mmu_ctl.dtlb_wr_vld_g"   iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_cam_data      	=	"${instancePath}.lsu.dtlb.tlb_cam_data" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_cam_data_vld   =	"${instancePath}.lsu.dtlb.tlb_cam_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_cam_hit        =	"${instancePath}.lsu.dtlb.tlb_cam_hit" iskew -1
+connect input mmu_coverage_ifc.C${c}_dtlb_bypass         =	"${instancePath}.lsu.dtlb.tlb_bypass" iskew -1
+
+// inputs for new tlb checks
+connect input    mmu_coverage_ifc.C${c}_dtlb_wr_vld	=	"${instancePath}.lsu.dtlb.tlb_wr_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_dtlb_rd_data_vld	=	"${instancePath}.lsu.dtlb.tlb_rd_data_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_dtlb_rd_tag_vld	=	"${instancePath}.lsu.dtlb.tlb_rd_tag_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_dtlb_rw_index	=	"${instancePath}.lsu.dtlb.tlb_rw_index"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_dtlb_rw_index_vld	=	"${instancePath}.lsu.dtlb.tlb_rw_index_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_ddemap_key	=	"${instancePath}.lsu.dtlb.tlb_demap_key"	iskew -1
+
+// inputs for new tlb checks
+connect input    mmu_coverage_ifc.C${c}_itlb_wr_vld	=	"${instancePath}.ifu.itlb.tlb_wr_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_itlb_rd_data_vld	=	"${instancePath}.ifu.itlb.tlb_rd_data_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_itlb_rd_tag_vld	=	"${instancePath}.ifu.itlb.tlb_rd_tag_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_itlb_rw_index	=	"${instancePath}.ifu.itlb.tlb_rw_index"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_itlb_rw_index_vld	=	"${instancePath}.ifu.itlb.tlb_rw_index_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_idemap_key	=	"${instancePath}.ifu.itlb.tlb_demap_key"	iskew -1
+
+// Connections for ITLB_WR_FL_RD_COV
+connect input mmu_coverage_ifc.C${c}_itlb_wr_tte_tag	=	"${instancePath}.ifu.itlb.tlb_wr_tte_tag" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_wr_tte_data     = 	"${instancePath}.ifu.itlb.tlb_wr_tte_data" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_cam_data	=	"${instancePath}.ifu.itlb.tlb_cam_data" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_cam_data_vld	=	"${instancePath}.ifu.itlb.cam_vld" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_cam_hit	=	"${instancePath}.ifu.itlb.tlb_cam_hit" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_bypass		=	"${instancePath}.ifu.itlb.tlb_bypass" iskew -1
+
+// Connections for MMU_DMP_FL_RD_COV
+
+connect input mmu_coverage_ifc.C${c}_clk	=	"${instancePath}.rclk" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_tlb_asi_state_m	=	"${instancePath}.tlu.mmu_ctl.lsu_tlu_tlb_asi_state_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_tlb_dmp_va_m	=	"${instancePath}.tlu.mmu_dp.lsu_tlu_tlb_dmp_va_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_tlu_tlb_ldst_va_m	=	"${instancePath}.lsu.dctldp.lsu_tlu_tlb_ldst_va_m" iskew -1
+connect input mmu_coverage_ifc.C${c}_lsu_dtlb_cam_pid_e	=	"${instancePath}.lsu.dctldp.lsu_dtlb_cam_pid_e" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_idtlb_dmp_key_g	=	"${instancePath}.tlu.mmu_dp.tlu_idtlb_dmp_key_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_dtlb_dmp_vld_g	=	"${instancePath}.tlu.mmu_ctl.tlu_dtlb_dmp_vld_g" iskew -1
+connect input mmu_coverage_ifc.C${c}_tlu_itlb_dmp_vld_g	=	"${instancePath}.tlu.mmu_ctl.tlu_itlb_dmp_vld_g" iskew -1
+
+// Connections for MMU_TLB_BYPASS_COV
+
+connect input mmu_coverage_ifc.C${c}_pstate_priv	=	"${instancePath}.tlu.local_pstate_priv" iskew -1
+connect input mmu_coverage_ifc.C${c}_hstate_priv	=	"${instancePath}.tlu.local_hpstate_priv" iskew -1
+
+
+// Connections for MMU_ASI_ACCESSES_COV
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+connect input mmu_coverage_ifc.C${c}_T${t}_lsu_asi_reg	= 	"${instancePath}.lsu.dctldp.lsu_asi_reg${t}" iskew -1
+.}
+
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_casa_e	=	"${instancePath}.ifu_lsu_casa_e" iskew -1
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_ldstub_e	=	"${instancePath}.ifu_lsu_ldstub_e" iskew -1
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_swap_e	=	"${instancePath}.ifu_lsu_swap_e" iskew -1
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+connect input mmu_coverage_ifc.C${c}_pstate${t}		=	"${instancePath}.tlu.tdp.true_pstate${t}" iskew -1
+.}
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+connect input mmu_coverage_ifc.C${c}_trap_level${t}		=	"${instancePath}.tlu.tcl.trp_lvl${t}" iskew -1
+.}
+
+connect input mmu_coverage_ifc.C${c}_dtlb_cam_hit	=	"${instancePath}.lsu.dtlb.cam_hit" iskew -1
+connect input mmu_coverage_ifc.C${c}_itlb_cam_hit	=	"${instancePath}.ifu.itlb.cam_hit" iskew -1
+
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_ld_inst_e  = 	"${instancePath}.ifu_lsu_ld_inst_e" iskew -1
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_st_inst_e  = 	"${instancePath}.ifu_lsu_st_inst_e" iskew -1
+
+// Connections for MMU_SFSR_ATTR
+connect input mmu_coverage_ifc.C${c}_dsfsr0		=	"${instancePath}.tlu.mmu_dp.dsfsr0"	iskew -1
+connect input mmu_coverage_ifc.C${c}_isfsr0		=	"${instancePath}.tlu.mmu_dp.isfsr0"	iskew -1
+
+// Connections for Error injection
+connect input mmu_coverage_ifc.C${c}_ifu_lsu_error_inj	= 	"${instancePath}.ifu_lsu_error_inj"	iskew -1
+
+// Connections for MRA filed enables assertion check
+connect input    mmu_coverage_ifc.C${c}_mra_wr_ptr 	=	"${instancePath}.tlu.mmu_ctl.mra_wr_ptr"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_rd_ptr	=	"${instancePath}.tlu.mmu_ctl.mra_rd_ptr"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_wr_vld	=	"${instancePath}.tlu.mmu_ctl.mra_wr_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_rd_vld	=	"${instancePath}.tlu.mmu_ctl.mra_rd_vld"	iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_field1_en	=	"${instancePath}.tlu.mmu_ctl.mra_field1_en"    iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_field2_en	=	"${instancePath}.tlu.mmu_ctl.mra_field2_en"    iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_field3_en	=	"${instancePath}.tlu.mmu_ctl.mra_field3_en"    iskew -1
+connect input    mmu_coverage_ifc.C${c}_mra_field4_en	=	"${instancePath}.tlu.mmu_ctl.mra_field4_en"    iskew -1
+connect input    mmu_coverage_ifc.C${c}_lsu_exu_ldxa_m	=	"${instancePath}.lsu_exu_ldxa_m"    iskew -1
+
+// Connections for mmu_async_monitor
+
+connect input    mmu_coverage_ifc.C${c}_lsu_tlu_tlb_access_tid_m = "${instancePath}.lsu_tlu_tlb_access_tid_m" iskew -1
+connect input    mmu_coverage_ifc.C${c}_tlu_lsu_ldxa_async_data_vld = "${instancePath}.tlu_lsu_ldxa_async_data_vld" iskew -1
+connect input    mmu_coverage_ifc.C${c}_tlu_lsu_ldxa_tid_w2 = "${instancePath}.tlu_lsu_ldxa_tid_w2" iskew -1
+connect input    mmu_coverage_ifc.C${c}_tlu_lsu_stxa_ack_tid = "${instancePath}.tlu_lsu_stxa_ack_tid" iskew -1
+connect input    mmu_coverage_ifc.C${c}_tlu_lsu_stxa_ack = "${instancePath}.tlu_lsu_stxa_ack" iskew -1
+connect input    mmu_coverage_ifc.C${c}_ifu_lsu_ldxa_data_vld_w2 = "${instancePath}.ifu_lsu_ldxa_data_vld_w2" iskew -1
+connect input    mmu_coverage_ifc.C${c}_ifu_lsu_ldxa_tid_w2 = "${instancePath}.ifu_lsu_ldxa_tid_w2" iskew -1
+connect input    mmu_coverage_ifc.C${c}_grst_l = "${instancePath}.cmp_grst_l" iskew -1
+connect input    mmu_coverage_ifc.C${c}_lsu_ifu_asi_load = "${instancePath}.lsu_ifu_asi_load" iskew -1
+connect input    mmu_coverage_ifc.C${c}_ifu_lsu_asi_ack = "${instancePath}.ifu_lsu_asi_ack" iskew -1
+
+// Connections for mmu_async_fairness_check
+
+connect input        mmu_coverage_ifc.C${c}_tlb_ld_inst0 = "${instancePath}.lsu.dctl.tlb_ld_inst0" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_ld_inst1 = "${instancePath}.lsu.dctl.tlb_ld_inst1" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_ld_inst2 = "${instancePath}.lsu.dctl.tlb_ld_inst2" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_ld_inst3 = "${instancePath}.lsu.dctl.tlb_ld_inst3" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_st_inst0 = "${instancePath}.lsu.dctl.tlb_st_inst0" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_st_inst1 = "${instancePath}.lsu.dctl.tlb_st_inst1" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_st_inst2 = "${instancePath}.lsu.dctl.tlb_st_inst2" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_st_inst3 = "${instancePath}.lsu.dctl.tlb_st_inst3" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_en0_g     = "${instancePath}.lsu.dctl.tlb_access_en0_g" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_en1_g     = "${instancePath}.lsu.dctl.tlb_access_en1_g" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_en2_g     = "${instancePath}.lsu.dctl.tlb_access_en2_g" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_en3_g     = "${instancePath}.lsu.dctl.tlb_access_en3_g" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_rst0      = "${instancePath}.lsu.dctl.tlb_access_rst0" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_rst1      = "${instancePath}.lsu.dctl.tlb_access_rst1" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_rst2      = "${instancePath}.lsu.dctl.tlb_access_rst2" iskew -1
+connect input        mmu_coverage_ifc.C${c}_tlb_access_rst3      = "${instancePath}.lsu.dctl.tlb_access_rst3" iskew -1
+
+// for MRA RD?WR contention test
+connect input        mmu_coverage_ifc.C${c}_ifu_tlu_inst_vld_m	= "${instancePath}.ifu_tlu_inst_vld_m" iskew -1
+connect input        mmu_coverage_ifc.C${c}_flush_w_inst_vld_m	= "${instancePath}.tlu.mmu_ctl.flush_w_inst_vld_m" iskew -1
+
+. } ## connectInstance
+.
+.
+.
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $MMU_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }
+
+`endif

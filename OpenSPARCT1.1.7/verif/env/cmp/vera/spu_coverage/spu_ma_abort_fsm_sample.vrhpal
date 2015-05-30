@@ -1,0 +1,112 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_ma_abort_fsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_ma_abort_fsm_COV_VRH
+#define INC__TMP_spu_ma_abort_fsm_COV_VRH
+
+#define MACTL_00_STATE				8'b1000xxxx
+#define MACTL_01_STATE				8'b0100xxxx
+#define MACTL_10_STATE				8'b0010xxxx
+#define MACTL_11_STATE				8'b0001xxxx
+
+/*
+ * Order of the signals in ma_abort_fsm_state from spu_mactl:
+ * cur_state_00,
+ * cur_state_01,
+ * cur_state_10,
+ * cur_state_11,
+ * stxa_2ctl_reg,
+ * ma_op_complete_mask,
+ * waiting_4stb_tobecome_empty,
+ * wait_4stb_tobecome_empty
+ */
+
+/*
+ * spu_ma_abort_fsm_cov
+ *
+ * This coverage object covers the state machine in spu_mactl which
+ * maintains the ctl register abort state.
+ *
+ */
+
+#endif
+
+sample spu_ma_abort_fsm_sample_bind_C${c}.\$ma_abort_fsm_state {
+  /*
+   * This first section is just for states and transitions without
+   * regard to which inputs were asserted to cause the transition.
+   */
+
+  // Declare states to be covered 
+  wildcard state s_MACTL_00_STATE (MACTL_00_STATE);
+  wildcard state s_MACTL_01_STATE (MACTL_01_STATE);
+  wildcard state s_MACTL_10_STATE (MACTL_10_STATE);
+  wildcard state s_MACTL_11_STATE (MACTL_11_STATE);
+
+  // State 00 with waiting_4stb_tobecome_empty - 
+  // I don't see how this could happen. Seeing if we ever hit it.
+  wildcard state s_MACTL_00_stb_STATE (8'b1000_xx1x);
+
+  // Declare bad states
+  bad_state s_not_MACTL_STATE (not state);
+
+  // Declare transitions to be covered
+  wildcard trans t_MACTL_00_2_00_STATE (MACTL_00_STATE -> MACTL_00_STATE);
+  wildcard trans t_MACTL_00_2_01_STATE (MACTL_00_STATE -> MACTL_01_STATE);
+  wildcard trans t_MACTL_00_2_10_STATE (MACTL_00_STATE -> MACTL_10_STATE);
+
+  wildcard trans t_MACTL_01_2_00_STATE (MACTL_01_STATE -> MACTL_00_STATE);
+  wildcard trans t_MACTL_01_2_01_STATE (MACTL_01_STATE -> MACTL_01_STATE);
+  wildcard trans t_MACTL_01_2_11_STATE (MACTL_01_STATE -> MACTL_11_STATE);
+
+  wildcard trans t_MACTL_10_2_01_STATE (MACTL_10_STATE -> MACTL_01_STATE);
+  wildcard trans t_MACTL_10_2_10_STATE (MACTL_10_STATE -> MACTL_10_STATE);
+
+  wildcard trans t_MACTL_11_2_10_STATE (MACTL_11_STATE -> MACTL_10_STATE);
+  wildcard trans t_MACTL_11_2_11_STATE (MACTL_11_STATE -> MACTL_11_STATE);
+
+  /*
+   * This section takes into account the inputs applied to cause the transition,
+   * so we can find out if we are doing certain back to back transactions...
+   */
+  // b2b stxas, no stb_empty stuff
+  // 00 -> 01 -> 11
+  wildcard trans t_MACTL_b2b_stxa_1 (8'b1000_1xx0 -> 8'b0100_1xxx -> 8'b0001_1xxx);
+  // 00 -> 10 -> 10
+  wildcard trans t_MACTL_b2b_stxa_2 (8'b1000_xxx1 -> 8'b0010_1xxx -> 8'b0010_1xxx);
+
+  // b2b2b stxas, no stb_empty stuff
+  // 00 -> 01 -> 11 -> 11
+  wildcard trans t_MACTL_b2b2b_stxa_1 (8'b1000_1xx0 -> 8'b0100_1xxx -> 8'b0001_1xxx -> 8'b0001_1xxx);
+  // 00 -> 10 -> 10 -> 10
+  wildcard trans t_MACTL_b2b2b_stxa_2 (8'b1000_xxx1 -> 8'b0010_1xxx -> 8'b0010_1xxx -> 8'b0010_1xxx);
+  
+  // 00 -> 01 -> 11 with stxa then simult stxa and completion
+  wildcard trans t_MACTL_simult_stxa_compl (8'b1000_1xx0 -> 8'b0100_0xx0 -> 8'b0001_11xx);
+
+  // 00 -> 10 -> 10 with stxa_2ctl_reg and wait_4stb_to_become_empty then waiting...
+  wildcard trans t_MACTL_busy (8'b1000_1xx1 -> 8'b0010_0x1x -> 8'b0010_0x1x);
+
+   // Declare bad transitions
+  bad_trans t_not_MACTL_TRANS (not trans);
+}

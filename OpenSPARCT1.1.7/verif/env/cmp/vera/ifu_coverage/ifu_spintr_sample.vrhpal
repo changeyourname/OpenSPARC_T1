@@ -1,0 +1,83 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_spintr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_spintr_cov.vr
+// Description:
+// This coverage object covers special conditions with reset, idle and resume
+// interrupts
+//
+// State: 9'b: rstint,nukeint,resumint,halt_inst,thrfsm
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_SPINTR_COV (bit [8:0] cov_vector)
+// {
+  wildcard state s_dead_rstint           (9'b100x/**/DEAD_STATE);
+  wildcard state s_halt_rstint           (9'b100x/**/HALT_STATE);
+  wildcard state s_rdy_rstint            (9'b100x/**/RDY_STATE);
+  wildcard state s_spec_rdy_rstint       (9'b100x/**/SPEC_RDY_STATE);
+  wildcard state s_run_rstint            (9'b100x/**/RUN_STATE);
+  wildcard state s_spec_run_rstint       (9'b100x/**/SPEC_RUN_STATE);
+  wildcard state s_wait_rstint           (9'b100x/**/WAIT_STATE);
+  wildcard state s_dead_nukeint          (9'b010x/**/DEAD_STATE);
+  wildcard state s_halt_nukeint          (9'b010x/**/HALT_STATE);
+  wildcard state s_rdy_nukeint           (9'b010x/**/RDY_STATE);
+  wildcard state s_spec_rdy_nukeint      (9'b010x/**/SPEC_RDY_STATE);
+  wildcard state s_run_nukeint           (9'b010x/**/RUN_STATE);
+  wildcard state s_spec_run_nukeint      (9'b010x/**/SPEC_RUN_STATE);
+  wildcard state s_wait_nukeint          (9'b010x/**/WAIT_STATE);
+  wildcard state s_dead_resumint         (9'b100x/**/DEAD_STATE);
+  wildcard state s_halt_resumint         (9'b010x/**/HALT_STATE);
+  wildcard state s_rdy_resumint          (9'b010x/**/RDY_STATE);
+  wildcard state s_spec_rdy_resumint     (9'b010x/**/SPEC_RDY_STATE);
+  wildcard state s_run_resumint          (9'b010x/**/RUN_STATE);
+  wildcard state s_spec_run_resumint     (9'b010x/**/SPEC_RUN_STATE);
+  wildcard state s_wait_resumint         (9'b010x/**/WAIT_STATE);
+  wildcard state s_halt_inst_resumit     (9'b0011/**/WAIT_STATE);
+  wildcard state s_halt_inst_rstint      (9'b1001/**/WAIT_STATE);
+
+  wildcard trans t_nukeint_0_rstint      (9'b010xxxxxx -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_1_rstint      (9'b010xxxxxx -> 9'b000xxxxxx -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_2_rstint      (9'b010xxxxxx -> 9'b000xxxxxx[.2.] -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_3_rstint      (9'b010xxxxxx -> 9'b000xxxxxx[.3.] -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_4_rstint      (9'b010xxxxxx -> 9'b000xxxxxx[.4.] -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_n_rstint      (9'b010xxxxxx -> 9'b000xxxxxx[.5:15.] -> 9'b100xxxxxx);
+  wildcard trans t_nukeint_0_resumint    (9'b010xxxxxx -> 9'b001xxxxxx);    
+  wildcard trans t_nukeint_1_resumint    (9'b010xxxxxx -> 9'b000xxxxxx -> 9'b001xxxxxx);
+  wildcard trans t_nukeint_2_resumint    (9'b010xxxxxx -> 9'b000xxxxxx[.2.] -> 9'b001xxxxxx);
+  wildcard trans t_nukeint_3_resumint    (9'b010xxxxxx -> 9'b000xxxxxx[.3.] -> 9'b001xxxxxx);
+  wildcard trans t_nukeint_4_resumint    (9'b010xxxxxx -> 9'b000xxxxxx[.4.] -> 9'b001xxxxxx);
+  wildcard trans t_nukeint_n_resumint    (9'b010xxxxxx -> 9'b000xxxxxx[.5:15.] -> 9'b001xxxxxx);
+  wildcard trans t_halt_0_resumint       (9'b0001xxxxx -> 9'b001xxxxxx);
+  wildcard trans t_halt_1_resumint       (9'b0001xxxxx -> 9'b0000xxxxx -> 9'b001xxxxxx);
+  wildcard trans t_halt_2_resumint       (9'b0001xxxxx -> 9'b0000xxxxx[.2.] -> 9'b001xxxxxx);
+  wildcard trans t_halt_3_resumint       (9'b0001xxxxx -> 9'b0000xxxxx[.3.] -> 9'b001xxxxxx);
+  wildcard trans t_halt_4_resumint       (9'b0001xxxxx -> 9'b0000xxxxx[.4.] -> 9'b001xxxxxx);
+  wildcard trans t_halt_n_resumint       (9'b0001xxxxx -> 9'b0000xxxxx[.5:30.] -> 9'b001xxxxxx);
+  wildcard trans t_halt_0_rstint         (9'b0001xxxxx -> 9'b100xxxxxx);
+  wildcard trans t_halt_1_rstint         (9'b0001xxxxx -> 9'b0000xxxxx -> 9'b100xxxxxx);
+  wildcard trans t_halt_2_rstint         (9'b0001xxxxx -> 9'b0000xxxxx[.2.] -> 9'b100xxxxxx);
+  wildcard trans t_halt_3_rstint         (9'b0001xxxxx -> 9'b0000xxxxx[.3.] -> 9'b100xxxxxx);
+  wildcard trans t_halt_4_rstint         (9'b0001xxxxx -> 9'b0000xxxxx[.4.] -> 9'b100xxxxxx);
+  wildcard trans t_halt_n_rstint         (9'b0001xxxxx -> 9'b0000xxxxx[.5:30.] -> 9'b100xxxxxx);
+// }

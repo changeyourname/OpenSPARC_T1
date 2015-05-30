@@ -1,0 +1,32 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldst_va_inf_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// exu_lsu_ldst_va_e
+//***********************************************************************
+
+  state s_LDST_VA_ST0 ( {48'bx, 8'b0_1000000} ); // ld
+  state s_LDST_VA_ST1 ( {48'bx, 8'b0_0100000} ); // st
+  state s_LDST_VA_ST2 ( {48'bx, 8'b0_1110000} ); // casa
+  state s_LDST_VA_ST3 ( {48'bx, 8'b0_1101000} ); // ldstub
+  state s_LDST_VA_ST4 ( {48'bx, 8'b0_1100100} ); // swap
+  state s_LDST_VA_ST5 ( {48'bx, 8'b0_0000010} ); // pref
+  state s_LDST_VA_ST6 ( {48'bx, 8'b0_0000001} ); // flsh
+

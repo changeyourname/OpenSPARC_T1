@@ -1,0 +1,47 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_inflight_issue_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// store inflight issue
+wildcard state s_INFLIGHT_ISSUE_0     ({8'b00000001, 8'b00000001, 8'bxxxxxxx0, 16'bxxxxxxxxxxxxxx00});
+wildcard state s_INFLIGHT_ISSUE_1     ({8'b00000010, 8'b00000010, 8'bxxxxxx0x, 16'bxxxxxxxxxxxx00xx});
+wildcard state s_INFLIGHT_ISSUE_2     ({8'b00000100, 8'b00000100, 8'bxxxxx0xx, 16'bxxxxxxxxxx00xxxx});
+wildcard state s_INFLIGHT_ISSUE_3     ({8'b00001000, 8'b00001000, 8'bxxxx0xxx, 16'bxxxxxxxx00xxxxxx});
+wildcard state s_INFLIGHT_ISSUE_4     ({8'b00010000, 8'b00010000, 8'bxxx0xxxx, 16'bxxxxxx00xxxxxxxx});
+wildcard state s_INFLIGHT_ISSUE_5     ({8'b00100000, 8'b00100000, 8'bxx0xxxxx, 16'bxxxx00xxxxxxxxxx});
+wildcard state s_INFLIGHT_ISSUE_6     ({8'b01000000, 8'b01000000, 8'bx0xxxxxx, 16'bxx00xxxxxxxxxxxx});
+wildcard state s_INFLIGHT_ISSUE_7     ({8'b10000000, 8'b10000000, 8'b0xxxxxxx, 16'b00xxxxxxxxxxxxxx});
+
+wildcard state s_INFLIGHT_CAS_ISSUE_0 ({8'b00000001, 8'b00000001, 8'bxxxxxxx0, 16'bxxxxxxxxxxxxxx01});
+wildcard state s_INFLIGHT_CAS_ISSUE_1 ({8'b00000010, 8'b00000010, 8'bxxxxxx0x, 16'bxxxxxxxxxxxx01xx});
+wildcard state s_INFLIGHT_CAS_ISSUE_2 ({8'b00000100, 8'b00000100, 8'bxxxxx0xx, 16'bxxxxxxxxxx01xxxx});
+wildcard state s_INFLIGHT_CAS_ISSUE_3 ({8'b00001000, 8'b00001000, 8'bxxxx0xxx, 16'bxxxxxxxx01xxxxxx});
+wildcard state s_INFLIGHT_CAS_ISSUE_4 ({8'b00010000, 8'b00010000, 8'bxxx0xxxx, 16'bxxxxxx01xxxxxxxx});
+wildcard state s_INFLIGHT_CAS_ISSUE_5 ({8'b00100000, 8'b00100000, 8'bxx0xxxxx, 16'bxxxx01xxxxxxxxxx});
+wildcard state s_INFLIGHT_CAS_ISSUE_6 ({8'b01000000, 8'b01000000, 8'bx0xxxxxx, 16'bxx01xxxxxxxxxxxx});
+wildcard state s_INFLIGHT_CAS_ISSUE_7 ({8'b10000000, 8'b10000000, 8'b0xxxxxxx, 16'b01xxxxxxxxxxxxxx});
+
+wildcard state s_INFLIGHT_SWAP_ISSUE_0({8'b00000001, 8'b00000001, 8'bxxxxxxx0, 16'bxxxxxxxxxxxxxx11});
+wildcard state s_INFLIGHT_SWAP_ISSUE_1({8'b00000010, 8'b00000010, 8'bxxxxxx0x, 16'bxxxxxxxxxxxx11xx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_2({8'b00000100, 8'b00000100, 8'bxxxxx0xx, 16'bxxxxxxxxxx11xxxx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_3({8'b00001000, 8'b00001000, 8'bxxxx0xxx, 16'bxxxxxxxx11xxxxxx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_4({8'b00010000, 8'b00010000, 8'bxxx0xxxx, 16'bxxxxxx11xxxxxxxx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_5({8'b00100000, 8'b00100000, 8'bxx0xxxxx, 16'bxxxx11xxxxxxxxxx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_6({8'b01000000, 8'b01000000, 8'bx0xxxxxx, 16'bxx11xxxxxxxxxxxx});
+wildcard state s_INFLIGHT_SWAP_ISSUE_7({8'b10000000, 8'b10000000, 8'b0xxxxxxx, 16'b11xxxxxxxxxxxxxx});

@@ -1,0 +1,90 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_multi_tsasr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for simultanous access to TSA (Trap Stack) write
+// port (async trap and wrpr), and read port (async cwp_cmplt, and rdpr)
+// at same time on different threads
+//***************************************************************************
+
+
+// coverage_def TLU_MULTI_TSASR_COV (bit [14:0] tlu_multi_tsasr_st)
+// {
+
+  /////////
+  // States
+
+  wildcard state s_ASYNC_TRAP_WSR_TPC			(ASYNC_TRAP_WSR_TPC);
+  wildcard state s_ASYNC_TRAP_WSR_TNPC			(ASYNC_TRAP_WSR_TNPC);
+  wildcard state s_ASYNC_TRAP_WSR_TSTATE		(ASYNC_TRAP_WSR_TSTATE);
+  wildcard state s_ASYNC_TRAP_WSR_TT			(ASYNC_TRAP_WSR_TT);
+  wildcard state s_ASYNC_TRAP_WSR_HTSTATE		(ASYNC_TRAP_WSR_HTSTATE);
+  wildcard state s_ASYNC_TRAP_WSR_PSTATE		(ASYNC_TRAP_WSR_PSTATE);
+  wildcard state s_ASYNC_TRAP_WSR_HPSTATE		(ASYNC_TRAP_WSR_HPSTATE);
+                                                                                                   
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_TPC		(ASYNC_CWP_CMPLT_RSR_TPC);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_TNPC		(ASYNC_CWP_CMPLT_RSR_TNPC);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_TSTATE		(ASYNC_CWP_CMPLT_RSR_TSTATE);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_TT		(ASYNC_CWP_CMPLT_RSR_TT);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_HTSTATE		(ASYNC_CWP_CMPLT_RSR_HTSTATE);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_PSTATE		(ASYNC_CWP_CMPLT_RSR_PSTATE);
+  wildcard state s_ASYNC_CWP_CMPLT_RSR_HPSTATE		(ASYNC_CWP_CMPLT_RSR_HPSTATE);
+                                                                                                   
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_WSR_TSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_TSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_WSR_TT		(ASYNC_TRAP_CWP_CMPLT_WSR_TT);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_WSR_HTSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_HTSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_WSR_PSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_PSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_WSR_HPSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_HPSTATE);
+                                                                                                   
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_TPC		(ASYNC_TRAP_CWP_CMPLT_RSR_TPC);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_TNPC	(ASYNC_TRAP_CWP_CMPLT_RSR_TNPC);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_TSTATE	(ASYNC_TRAP_CWP_CMPLT_RSR_TSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_TT		(ASYNC_TRAP_CWP_CMPLT_RSR_TT);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_HTSTATE	(ASYNC_TRAP_CWP_CMPLT_RSR_HTSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_PSTATE	(ASYNC_TRAP_CWP_CMPLT_RSR_PSTATE);
+  wildcard state s_ASYNC_TRAP_CWP_CMPLT_RSR_HPSTATE	(ASYNC_TRAP_CWP_CMPLT_RSR_HPSTATE);
+                                                                                                   
+  //////////////
+  // Transitions
+
+  wildcard trans t_s_ASYNC_TRAP_WSR_TPC_s_TSA_READ_TPC		(ASYNC_TRAP_WSR_TPC -> TSA_ASR_NOP -> TSA_READ_TPC);
+  wildcard trans t_s_ASYNC_TRAP_WSR_TNPC_s_TSA_READ_TNPC	(ASYNC_TRAP_WSR_TNPC -> TSA_ASR_NOP -> TSA_READ_TNPC);
+  wildcard trans t_s_ASYNC_TRAP_WSR_TSTATE_s_TSA_READ_TSTATE	(ASYNC_TRAP_WSR_TSTATE -> TSA_ASR_NOP -> TSA_READ_TSTATE);
+  wildcard trans t_s_ASYNC_TRAP_WSR_TT_s_TSA_READ_TT		(ASYNC_TRAP_WSR_TT -> TSA_ASR_NOP -> TSA_READ_TT);
+  wildcard trans t_s_ASYNC_TRAP_WSR_HTSTATE_s_TSA_READ_HTSTATE	(ASYNC_TRAP_WSR_HTSTATE -> TSA_ASR_NOP -> TSA_READ_HTSTATE);
+  wildcard trans t_s_ASYNC_TRAP_WSR_PSTATE_s_ASR_READ_PSTATE	(ASYNC_TRAP_WSR_PSTATE -> TSA_ASR_NOP -> ASR_READ_PSTATE);
+  wildcard trans t_s_ASYNC_TRAP_WSR_HPSTATE_s_ASR_READ_HPSTATE	(ASYNC_TRAP_WSR_HPSTATE -> TSA_ASR_NOP -> ASR_READ_HPSTATE);
+
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_TPC_s_TSA_READ_TPC		(ASYNC_TRAP_CWP_CMPLT_WSR_TPC -> TSA_ASR_NOP[.1:512.] -> TSA_READ_TPC);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_TNPC_s_TSA_READ_TNPC		(ASYNC_TRAP_CWP_CMPLT_WSR_TNPC -> TSA_ASR_NOP[.1:512.] -> TSA_READ_TNPC);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_TSTATE_s_TSA_READ_TSTATE		(ASYNC_TRAP_CWP_CMPLT_WSR_TSTATE -> TSA_ASR_NOP[.1:512.] -> TSA_READ_TSTATE);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_TT_s_TSA_READ_TT			(ASYNC_TRAP_CWP_CMPLT_WSR_TT -> TSA_ASR_NOP[.1:512.] -> TSA_READ_TT);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_HTSTATE_s_TSA_READ_HTSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_HTSTATE -> TSA_ASR_NOP[.1:512.] -> TSA_READ_HTSTATE);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_PSTATE_s_ASR_READ_PSTATE		(ASYNC_TRAP_CWP_CMPLT_WSR_PSTATE -> TSA_ASR_NOP[.1:512.] -> ASR_READ_PSTATE);
+  wildcard bad_trans t_s_ASYNC_TRAP_CWP_CMPLT_WSR_HPSTATE_s_ASR_READ_HPSTATE	(ASYNC_TRAP_CWP_CMPLT_WSR_HPSTATE -> TSA_ASR_NOP[.1:512.] -> ASR_READ_HPSTATE);
+
+// }

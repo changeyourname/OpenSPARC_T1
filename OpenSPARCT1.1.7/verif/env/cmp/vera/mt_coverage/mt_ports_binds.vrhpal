@@ -1,0 +1,356 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mt_cov_inc.pal";
+#ifndef __MT_PORTS_BINDS_VRH__
+#define __MT_PORTS_BINDS_VRH__
+
+// IFU coverage ports definition
+
+port mt_cov_port {
+ cmp_clk;
+ cmp_diag_done;
+
+
+ // starve
+ lsu_ifu_stallreq;
+ ffu_ifu_stallreq_never;
+ itlb_starv_alert;
+ ifqctl_starv_alert;
+
+ // flush
+ lsu_tlu_early_flush;
+ ffu_lsu_kill_fst_w;
+
+
+ instr_s;
+
+ pc_s;
+ pc_d;
+ pc_e;
+ pc_m;
+ pc_w;
+
+ thr_f;
+ thr_s;
+ thr_d;
+ thr_e;
+ thr_m;
+ thr_w;
+
+ vld_f;
+ vld_s;
+ vld_d;
+ vld_e;
+ vld_m;
+ vld_w;
+
+ trap_e;
+ ttype_e;
+
+ trap_m;
+ ttype_m;
+
+ trap_0w1;
+ trap_1w1;
+ trap_2w1;
+ trap_3w1;
+
+// exu_trap_e; split into 2
+
+ early_ttype_vld_e;
+ ecc_ue_trap_e;
+
+ exu_ttype_e;
+
+ rst_m;
+ thrid_m;
+
+
+ // for the mt switch fsm
+ fsm_state0;
+ fsm_state1;
+ fsm_state2;
+ fsm_state3;
+
+
+ // rollback wires
+ // spec_rollback_w1;
+ // dev_rollback_d;
+ rb_stg_d;
+ rb_stg_e;
+ rb_stg_w;
+
+// bypass
+
+ byp_rs1_ld;
+ byp_rs2_ld;
+
+ byp_rs1_e;
+ byp_rs2_e;
+
+ byp_rs1_w;
+ byp_rs2_w;
+
+ byp_rs1_m;
+ byp_rs2_m;
+
+
+ byp_dfq;
+ byp_dfq_thrid;
+
+ // Xbar
+
+ cpx_fp_req;
+ cpx_io_req;
+ cpx_sc0_req;
+ cpx_sc1_req;
+ cpx_sc2_req;
+ cpx_sc3_req;
+
+ cpx_rdy_spc0;
+ cpx_rdy_spc1;
+ cpx_rdy_spc2;
+ cpx_rdy_spc3;
+ cpx_rdy_spc4;
+ cpx_rdy_spc5;
+ cpx_rdy_spc6;
+ cpx_rdy_spc7;
+
+ spc0_pcx_req;
+ spc1_pcx_req;
+ spc2_pcx_req;
+ spc3_pcx_req;
+ spc4_pcx_req;
+ spc5_pcx_req;
+ spc6_pcx_req;
+ spc7_pcx_req;
+
+ pcx_fpio_rdy;
+ pcx_sc0_rdy;
+ pcx_sc1_rdy;
+ pcx_sc2_rdy;
+ pcx_sc3_rdy;
+
+
+
+    // mul and div
+    new_div_d;        
+    new_mul_d;        
+
+// interrupt again
+ intr_vld;
+ intr_req;
+ int_thid;
+
+    // reg write port W1
+    ecl_byp_sel_load_m;
+    ecl_byp_sel_pipe_m;
+    ecl_byp_sel_restore_m; 
+    ecl_irf_tid_m;    
+
+    // reg write port W2
+    ecl_byp_sel_load_g;
+    ecl_byp_sel_restore_g;
+    ecl_sel_mul_g;
+    ecl_sel_div_g;
+    ecl_irf_tid_g;
+
+    // long instruction wake up!
+    exu_ifu_longop_done_g;
+
+    // bug2770
+    ifu_lsu_ibuf_busy;
+
+}
+
+. sub coreBindings {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+bind mt_cov_port C${c}_mt_cov_bind {
+    cmp_clk          mt_cov_top.cmp_clk;
+    cmp_diag_done    mt_cov_top.cmp_diag_done;
+
+    // starve
+    lsu_ifu_stallreq       mt_cov_top.C${c}_lsu_ifu_stallreq;
+    ffu_ifu_stallreq_never mt_cov_top.C${c}_ffu_ifu_stallreq_never;
+    itlb_starv_alert       mt_cov_top.C${c}_itlb_starv_alert;
+    ifqctl_starv_alert     mt_cov_top.C${c}_ifqctl_starv_alert;
+   
+    // flush
+    lsu_tlu_early_flush    mt_cov_top.C${c}_lsu_tlu_early_flush;
+    ffu_lsu_kill_fst_w     mt_cov_top.C${c}_ffu_lsu_kill_fst_w;
+
+    instr_s          mt_cov_top.C${c}_instr_s;
+
+// interrupt again
+    intr_vld          mt_cov_top.C${c}_intr_vld;
+    intr_req          mt_cov_top.C${c}_intr_req;
+    int_thid         mt_cov_top.C${c}_int_thid;
+
+// Thu Jul 17 10:14:56 PDT 2003
+// new thing for delayslot rollback
+
+	pc_s	mt_cov_top.C${c}_pc_s;
+	pc_d	mt_cov_top.C${c}_pc_d;
+	pc_e	mt_cov_top.C${c}_pc_e;
+	pc_m	mt_cov_top.C${c}_pc_m;
+	pc_w	mt_cov_top.C${c}_pc_w;
+
+
+    thr_f            mt_cov_top.C${c}_thr_f;
+    thr_s            mt_cov_top.C${c}_thr_s;
+    thr_d            mt_cov_top.C${c}_thr_d;
+    thr_e            mt_cov_top.C${c}_thr_e;
+    thr_m            mt_cov_top.C${c}_thr_m;
+    thr_w            mt_cov_top.C${c}_thr_w;
+
+    vld_f            mt_cov_top.C${c}_vld_f;
+    vld_s            mt_cov_top.C${c}_vld_s;
+    vld_d            mt_cov_top.C${c}_vld_d;
+    vld_e            mt_cov_top.C${c}_vld_e;
+    vld_m            mt_cov_top.C${c}_vld_m;
+    vld_w            mt_cov_top.C${c}_vld_w;
+
+    trap_e           mt_cov_top.C${c}_trap_e;
+    ttype_e          mt_cov_top.C${c}_ttype_e;
+
+    trap_m           mt_cov_top.C${c}_trap_m;
+    ttype_m          mt_cov_top.C${c}_ttype_m;
+
+    trap_0w1         mt_cov_top.C${c}_trap_0w1;
+    trap_1w1         mt_cov_top.C${c}_trap_1w1;
+    trap_2w1         mt_cov_top.C${c}_trap_2w1;
+    trap_3w1         mt_cov_top.C${c}_trap_3w1;
+
+    // exu_trap_e       mt_cov_top.C${c}_trap_exu_e;
+    // split into 2
+
+    early_ttype_vld_e  mt_cov_top.C${c}_early_ttype_vld_e;
+    ecc_ue_trap_e      mt_cov_top.C${c}_ecc_ue_trap_e;
+
+    exu_ttype_e      mt_cov_top.C${c}_ttype_exu_e;
+
+    rst_m	     mt_cov_top.C${c}_ifu_rst_m;
+    thrid_m	     mt_cov_top.C${c}_thrid_m;
+
+    fsm_state0       mt_cov_top.C${c}_fsm_state0;
+    fsm_state1       mt_cov_top.C${c}_fsm_state1;
+    fsm_state2       mt_cov_top.C${c}_fsm_state2;
+    fsm_state3       mt_cov_top.C${c}_fsm_state3;
+/*
+    spec_rollback_w1 mt_cov_top.C${c}_rollback_load;
+    dev_rollback_d   mt_cov_top.C${c}_rollback_hazard;
+*/
+    rb_stg_d         mt_cov_top.C${c}_rb_stg_d;
+    rb_stg_e         mt_cov_top.C${c}_rb_stg_e;
+    rb_stg_w         mt_cov_top.C${c}_rb_stg_w;
+
+    byp_rs1_ld       mt_cov_top.C${c}_byp_rs1_ld;
+    byp_rs2_ld       mt_cov_top.C${c}_byp_rs2_ld;
+
+    byp_rs1_e        mt_cov_top.C${c}_byp_rs1_e;
+    byp_rs2_e        mt_cov_top.C${c}_byp_rs2_e;
+
+    byp_rs1_w        mt_cov_top.C${c}_byp_rs1_w;
+    byp_rs2_w        mt_cov_top.C${c}_byp_rs2_w;
+
+    byp_rs1_m        mt_cov_top.C${c}_byp_rs1_m;
+    byp_rs2_m        mt_cov_top.C${c}_byp_rs2_m;
+
+    byp_dfq          mt_cov_top.C${c}_byp_dfq;
+    byp_dfq_thrid    mt_cov_top.C${c}_byp_dfq_thrid;
+
+    // mul and div
+    new_div_d        mt_cov_top.C${c}_new_div_d;
+    new_mul_d        mt_cov_top.C${c}_new_mul_d;
+
+    // reg write port W2
+    ecl_byp_sel_load_m    mt_cov_top.C${c}_ecl_byp_sel_load_m;
+    ecl_byp_sel_pipe_m    mt_cov_top.C${c}_ecl_byp_sel_pipe_m;
+    ecl_byp_sel_restore_m mt_cov_top.C${c}_ecl_byp_sel_restore_m;
+    ecl_irf_tid_m         mt_cov_top.C${c}_ecl_irf_tid_m;
+
+
+    // reg write port W1
+    ecl_byp_sel_load_g     mt_cov_top.C${c}_ecl_byp_sel_load_g;
+    ecl_byp_sel_restore_g  mt_cov_top.C${c}_ecl_byp_sel_restore_g;
+    ecl_sel_mul_g          mt_cov_top.C${c}_ecl_sel_mul_g;
+    ecl_sel_div_g          mt_cov_top.C${c}_ecl_sel_div_g;
+    ecl_irf_tid_g          mt_cov_top.C${c}_ecl_irf_tid_g;
+ 
+
+    // long instruction wake up!
+    exu_ifu_longop_done_g mt_cov_top.C${c}_exu_ifu_longop_done_g;
+
+    // bug2770
+    ifu_lsu_ibuf_busy mt_cov_top.C${c}_ifu_lsu_ibuf_busy;
+
+ // Xbar
+
+ cpx_fp_req          mt_cov_top.cpx_fp_req;
+ cpx_io_req          mt_cov_top.cpx_io_req;
+ cpx_sc0_req         mt_cov_top.cpx_sc0_req;
+ cpx_sc1_req         mt_cov_top.cpx_sc1_req;
+ cpx_sc2_req         mt_cov_top.cpx_sc2_req;
+ cpx_sc3_req         mt_cov_top.cpx_sc3_req;
+
+ cpx_rdy_spc0        mt_cov_top.cpx_rdy_spc0;
+ cpx_rdy_spc1        mt_cov_top.cpx_rdy_spc1;
+ cpx_rdy_spc2        mt_cov_top.cpx_rdy_spc2;
+ cpx_rdy_spc3        mt_cov_top.cpx_rdy_spc3;
+ cpx_rdy_spc4        mt_cov_top.cpx_rdy_spc4;
+ cpx_rdy_spc5        mt_cov_top.cpx_rdy_spc5;
+ cpx_rdy_spc6        mt_cov_top.cpx_rdy_spc6;
+ cpx_rdy_spc7        mt_cov_top.cpx_rdy_spc7;
+
+ spc0_pcx_req        mt_cov_top.spc0_pcx_req;
+ spc1_pcx_req        mt_cov_top.spc1_pcx_req;
+ spc2_pcx_req        mt_cov_top.spc2_pcx_req;
+ spc3_pcx_req        mt_cov_top.spc3_pcx_req;
+ spc4_pcx_req        mt_cov_top.spc4_pcx_req;
+ spc5_pcx_req        mt_cov_top.spc5_pcx_req;
+ spc6_pcx_req        mt_cov_top.spc6_pcx_req;
+ spc7_pcx_req        mt_cov_top.spc7_pcx_req;
+
+ pcx_fpio_rdy        mt_cov_top.pcx_fpio_rdy;
+ pcx_sc0_rdy         mt_cov_top.pcx_sc0_rdy;
+ pcx_sc1_rdy         mt_cov_top.pcx_sc1_rdy;
+ pcx_sc2_rdy         mt_cov_top.pcx_sc2_rdy;
+ pcx_sc3_rdy         mt_cov_top.pcx_sc3_rdy;
+
+
+
+
+
+}
+.
+. } # coreBindings
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+
+#endif
+

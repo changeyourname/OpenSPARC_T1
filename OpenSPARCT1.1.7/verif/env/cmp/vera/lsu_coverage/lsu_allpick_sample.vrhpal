@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_allpick_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Load picker coverage object which check for how many rq are vld
+// and ready to be picked. Based on picker in qctl1
+//
+//***********************************************************************
+
+
+
+// coverage_def LSU_ALLPICK_COV (bit [3:0] all_pcx_rq_vld)
+// {
+  // state declarations
+
+  state s_AREQ0   (AREQ0);
+  state s_AREQ1   (AREQ1);
+  state s_AREQ2   (AREQ2);
+  state s_AREQ3   (AREQ3);
+  state s_AREQ4   (AREQ4);
+  state s_AREQ5   (AREQ5);
+  state s_AREQ6   (AREQ6);
+  state s_AREQ7   (AREQ7);
+  state s_AREQ8   (AREQ8);
+  state s_AREQ9   (AREQ9);
+  state s_AREQ10  (AREQ10);
+  state s_AREQ11  (AREQ11);
+  state s_AREQ12  (AREQ12);
+  state s_AREQ13  (AREQ13);
+  state s_AREQ14  (AREQ14);
+  state s_AREQ15  (AREQ15);
+
+  bad_state s_not_ASTATE (not state);
+
+  m_trans Final_Picker (4'b0000:4'b1111 -> 4'b0000:4'b1111);
+  
+  wildcard trans t_back2back_imiss 	( 4'bxxx1 -> 4'bxxx1[.1:3.] -> 4'bxxx0);
+  wildcard trans t_back2back_lds 	( 4'bxx10 -> 4'bxx10[.1:3.] -> 4'bxx0x);
+  wildcard trans t_back2back_sts 	( 4'bx100 -> 4'bx100[.1:3.] -> 4'bx0xx);
+  wildcard trans t_back2back_misc 	( 4'b1000 -> 4'b1000[.1:3.] -> 4'b0xxx);
+  wildcard trans t_5back2back_sts 	( 4'bx100 -> 4'bx100[.4.]);
+  wildcard trans t_5back2back_imiss 	( 4'bxxx1 -> 4'bxxx1[.4.]);
+  wildcard trans t_5back2back_lds 		( 4'bxx10 -> 4'bxx10[.4.]);
+  wildcard trans t_5back2back_misc 		( 4'b1000 -> 4'b1000[.4.]);
+
+// }
+

@@ -1,0 +1,35 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_error_b2b_async_trap_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// lsu b2b async trap valid
+
+trans s_LSU_B2B_ASYNC_TRAP_T0_T1           (3'b100 -> 3'b101);
+trans s_LSU_B2B_ASYNC_TRAP_T0_T2           (3'b100 -> 3'b110);
+trans s_LSU_B2B_ASYNC_TRAP_T0_T3           (3'b100 -> 3'b111);
+trans s_LSU_B2B_ASYNC_TRAP_T1_T0           (3'b101 -> 3'b100);
+trans s_LSU_B2B_ASYNC_TRAP_T1_T2           (3'b101 -> 3'b110);
+trans s_LSU_B2B_ASYNC_TRAP_T1_T3           (3'b101 -> 3'b111);
+trans s_LSU_B2B_ASYNC_TRAP_T2_T0           (3'b110 -> 3'b100);
+trans s_LSU_B2B_ASYNC_TRAP_T2_T1           (3'b110 -> 3'b101);
+trans s_LSU_B2B_ASYNC_TRAP_T2_T3           (3'b110 -> 3'b111);
+trans s_LSU_B2B_ASYNC_TRAP_T3_T0           (3'b111 -> 3'b100);
+trans s_LSU_B2B_ASYNC_TRAP_T3_T1           (3'b111 -> 3'b101);
+trans s_LSU_B2B_ASYNC_TRAP_T3_T2           (3'b111 -> 3'b110);
+

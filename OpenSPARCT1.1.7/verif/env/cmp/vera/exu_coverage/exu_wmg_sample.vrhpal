@@ -1,0 +1,128 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_wmg_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// coverage_def EXU_WMG_COV (bit[`EXU_WMG_WIDTH-1:0] exu_wmg_state) {
+  //state declarations
+
+wildcard state s_WMG_SAVE_CWP0 			(WMG_SAVE_CWP0);
+wildcard state s_WMG_SAVE_CWP1 			(WMG_SAVE_CWP1);
+wildcard state s_WMG_SAVE_CWP2 			(WMG_SAVE_CWP2);
+wildcard state s_WMG_SAVE_CWP3 			(WMG_SAVE_CWP3);
+wildcard state s_WMG_SAVE_CWP4 			(WMG_SAVE_CWP4);
+wildcard state s_WMG_SAVE_CWP5 			(WMG_SAVE_CWP5);
+wildcard state s_WMG_SAVE_CWP6 			(WMG_SAVE_CWP6);
+wildcard state s_WMG_SAVE_CWP7 			(WMG_SAVE_CWP7);
+
+wildcard state s_WMG_RESTORE_CWP0 		(WMG_RESTORE_CWP0);
+wildcard state s_WMG_RESTORE_CWP1 		(WMG_RESTORE_CWP1);
+wildcard state s_WMG_RESTORE_CWP2 		(WMG_RESTORE_CWP2);
+wildcard state s_WMG_RESTORE_CWP3 		(WMG_RESTORE_CWP3);
+wildcard state s_WMG_RESTORE_CWP4 		(WMG_RESTORE_CWP4);
+wildcard state s_WMG_RESTORE_CWP5 		(WMG_RESTORE_CWP5);
+wildcard state s_WMG_RESTORE_CWP6 		(WMG_RESTORE_CWP6);
+wildcard state s_WMG_RESTORE_CWP7 		(WMG_RESTORE_CWP7);
+
+wildcard state s_WMG_SAVE_CANSAVE_WRAP		(WMG_SAVE_CANSAVE_WRAP);
+wildcard state s_WMG_SAVE_CANRESTORE_WRAP	(WMG_SAVE_CANRESTORE_WRAP);
+wildcard state s_WMG_RESTORE_CANRESTORE_WRAP	(WMG_RESTORE_CANRESTORE_WRAP);
+wildcard state s_WMG_RESTORE_CANSAVE_WRAP	(WMG_RESTORE_CANSAVE_WRAP);
+
+wildcard state s_WMG_SAVE_CWP0_SPILL		(WMG_SAVE_CWP0_SPILL);
+wildcard state s_WMG_SAVE_CWP1_SPILL		(WMG_SAVE_CWP1_SPILL);
+wildcard state s_WMG_SAVE_CWP2_SPILL		(WMG_SAVE_CWP2_SPILL);
+wildcard state s_WMG_SAVE_CWP3_SPILL		(WMG_SAVE_CWP3_SPILL);
+wildcard state s_WMG_SAVE_CWP4_SPILL		(WMG_SAVE_CWP4_SPILL);
+wildcard state s_WMG_SAVE_CWP5_SPILL		(WMG_SAVE_CWP5_SPILL);
+wildcard state s_WMG_SAVE_CWP6_SPILL		(WMG_SAVE_CWP6_SPILL);
+wildcard state s_WMG_SAVE_CWP7_SPILL		(WMG_SAVE_CWP7_SPILL);
+
+wildcard state s_WMG_SAVE_CWP0_SPILLN		(WMG_SAVE_CWP0_SPILLN);
+wildcard state s_WMG_SAVE_CWP1_SPILLN		(WMG_SAVE_CWP1_SPILLN);
+wildcard state s_WMG_SAVE_CWP2_SPILLN		(WMG_SAVE_CWP2_SPILLN);
+wildcard state s_WMG_SAVE_CWP3_SPILLN		(WMG_SAVE_CWP3_SPILLN);
+wildcard state s_WMG_SAVE_CWP4_SPILLN		(WMG_SAVE_CWP4_SPILLN);
+wildcard state s_WMG_SAVE_CWP5_SPILLN		(WMG_SAVE_CWP5_SPILLN);
+wildcard state s_WMG_SAVE_CWP6_SPILLN		(WMG_SAVE_CWP6_SPILLN);
+wildcard state s_WMG_SAVE_CWP7_SPILLN		(WMG_SAVE_CWP7_SPILLN);
+
+wildcard state s_WMG_SAVE_CLEAN_WINDOW_CW0_OW0	(WMG_SAVE_CLEAN_WINDOW_CW0_OW0);
+wildcard state s_WMG_SAVE_CLEAN_WINDOW_CW1_OW0	(WMG_SAVE_CLEAN_WINDOW_CW1_OW0);
+wildcard state s_WMG_SAVE_CLEAN_WINDOW_CW0_OWNZ	(WMG_SAVE_CLEAN_WINDOW_CW0_OWNZ);
+wildcard state s_WMG_SAVE_CLEAN_WINDOW_CW1_OWNZ	(WMG_SAVE_CLEAN_WINDOW_CW1_OWNZ);
+
+wildcard state s_WMG_RESTORE_CWP0_FILL		(WMG_RESTORE_CWP0_FILL);
+wildcard state s_WMG_RESTORE_CWP1_FILL		(WMG_RESTORE_CWP1_FILL);
+wildcard state s_WMG_RESTORE_CWP2_FILL		(WMG_RESTORE_CWP2_FILL);
+wildcard state s_WMG_RESTORE_CWP3_FILL		(WMG_RESTORE_CWP3_FILL);
+wildcard state s_WMG_RESTORE_CWP4_FILL		(WMG_RESTORE_CWP4_FILL);
+wildcard state s_WMG_RESTORE_CWP5_FILL		(WMG_RESTORE_CWP5_FILL);
+wildcard state s_WMG_RESTORE_CWP6_FILL		(WMG_RESTORE_CWP6_FILL);
+wildcard state s_WMG_RESTORE_CWP7_FILL		(WMG_RESTORE_CWP7_FILL);
+
+wildcard state s_WMG_RESTORE_CWP0_FILLN		(WMG_RESTORE_CWP0_FILLN);
+wildcard state s_WMG_RESTORE_CWP1_FILLN		(WMG_RESTORE_CWP1_FILLN);
+wildcard state s_WMG_RESTORE_CWP2_FILLN		(WMG_RESTORE_CWP2_FILLN);
+wildcard state s_WMG_RESTORE_CWP3_FILLN		(WMG_RESTORE_CWP3_FILLN);
+wildcard state s_WMG_RESTORE_CWP4_FILLN		(WMG_RESTORE_CWP4_FILLN);
+wildcard state s_WMG_RESTORE_CWP5_FILLN		(WMG_RESTORE_CWP5_FILLN);
+wildcard state s_WMG_RESTORE_CWP6_FILLN		(WMG_RESTORE_CWP6_FILLN);
+wildcard state s_WMG_RESTORE_CWP7_FILLN		(WMG_RESTORE_CWP7_FILLN);
+
+wildcard state s_WMG_FLUSHW_CANSAVE0_SPILL	(WMG_FLUSHW_CANSAVE0_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE1_SPILL	(WMG_FLUSHW_CANSAVE1_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE2_SPILL	(WMG_FLUSHW_CANSAVE2_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE3_SPILL	(WMG_FLUSHW_CANSAVE3_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE4_SPILL	(WMG_FLUSHW_CANSAVE4_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE5_SPILL	(WMG_FLUSHW_CANSAVE5_SPILL);
+wildcard state s_WMG_FLUSHW_CANSAVE6_NOP1	(WMG_FLUSHW_CANSAVE6_NOP1);
+wildcard state s_WMG_FLUSHW_CANSAVE7_SPILL	(WMG_FLUSHW_CANSAVE7_SPILL);
+
+wildcard state s_WMG_FLUSHW_CANSAVE0_SPILLN	(WMG_FLUSHW_CANSAVE0_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE1_SPILLN	(WMG_FLUSHW_CANSAVE1_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE2_SPILLN	(WMG_FLUSHW_CANSAVE2_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE3_SPILLN	(WMG_FLUSHW_CANSAVE3_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE4_SPILLN	(WMG_FLUSHW_CANSAVE4_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE5_SPILLN	(WMG_FLUSHW_CANSAVE5_SPILLN);
+wildcard state s_WMG_FLUSHW_CANSAVE6_NOP2	(WMG_FLUSHW_CANSAVE6_NOP2);
+wildcard state s_WMG_FLUSHW_CANSAVE7_SPILLN	(WMG_FLUSHW_CANSAVE7_SPILLN);
+
+wildcard state s_WMG_SAVED_OW0			(WMG_SAVED_OW0);
+wildcard state s_WMG_SAVED_OW1			(WMG_SAVED_OW1);
+wildcard state s_WMG_SAVED_OW2			(WMG_SAVED_OW2);
+wildcard state s_WMG_SAVED_OW3			(WMG_SAVED_OW3);
+wildcard state s_WMG_SAVED_OW4			(WMG_SAVED_OW4);
+wildcard state s_WMG_SAVED_OW5			(WMG_SAVED_OW5);
+wildcard state s_WMG_SAVED_OW6			(WMG_SAVED_OW6);
+wildcard state s_WMG_SAVED_OW7			(WMG_SAVED_OW7);
+
+wildcard state s_WMG_RESTORED_OW0_CWLT7		(WMG_RESTORED_OW0_CWLT7);
+wildcard state s_WMG_RESTORED_OW1_CWLT7		(WMG_RESTORED_OW1_CWLT7);
+wildcard state s_WMG_RESTORED_OW2_CWLT7		(WMG_RESTORED_OW2_CWLT7);
+wildcard state s_WMG_RESTORED_OW3_CWLT7		(WMG_RESTORED_OW3_CWLT7);
+wildcard state s_WMG_RESTORED_OW4_CWLT7		(WMG_RESTORED_OW4_CWLT7);
+wildcard state s_WMG_RESTORED_OW5_CWLT7		(WMG_RESTORED_OW5_CWLT7);
+wildcard state s_WMG_RESTORED_OW6_CWLT7		(WMG_RESTORED_OW6_CWLT7);
+wildcard state s_WMG_RESTORED_OW7_CWLT7		(WMG_RESTORED_OW7_CWLT7);
+
+wildcard state s_WMG_RESTORED_OW0_CW7		(WMG_RESTORED_OW0_CW7);
+wildcard state s_WMG_RESTORED_OWNZ_CW7		(WMG_RESTORED_OWNZ_CW7);
+
+// }
+

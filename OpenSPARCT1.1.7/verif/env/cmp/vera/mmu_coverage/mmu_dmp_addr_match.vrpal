@@ -1,0 +1,186 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_dmp_addr_match.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        mmu_dmp_addr_match.vr
+//  Description:        Tasks for comparing TTE getting demapped with that looked up from TLB
+//                      
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+#ifndef MMU_DMP_ADDR_MATCH__
+#define MMU_DMP_ADDR_MATCH__
+
+#include <vera_defines.vrh>
+#include "mmu_ports_binds.vrh"
+#include "mmu.if.vrh"
+
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Class definitions
+////////////////////////////
+
+class MMU_DMP_ADDR_MATCH
+{
+	string name;
+	tlb_demap_port tlb_demap_bind;
+
+        bit [2:0] dmp_addr_match;
+	bit demap_op_present;
+
+	task new (string name, tlb_demap_port tlb_demap_bind);
+        task find_dmp_addr_match ();
+        task find_dmp_operation();
+	function bit compare_dmp_addr(bit [58:0] cam_tag, bit [40:0] tte_write_tag);
+}
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Definitions of methods of class MMU_DMP_ADDR_MATCH
+////////////////////////////
+
+task MMU_DMP_ADDR_MATCH:: new(string name, tlb_demap_port tlb_demap_bind)
+{
+	this.name = name;
+        this.tlb_demap_bind = tlb_demap_bind;
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_DMP_ADDR_MATCH:: find_dmp_operation()
+{
+
+fork{
+      while(1){
+          if(this.name == "DMMU") {
+              if( (this.tlb_demap_bind.\$lsu_tlu_tlb_asi_state_m == 8'h5F) && (this.tlb_demap_bind.\$lsu_tlu_tlb_st_inst_m) ){
+		  this.demap_op_present = 1'b1;
+	      }else{
+		  this.demap_op_present = 1'b0;
+	      }
+	  }else{
+              if( (this.tlb_demap_bind.\$lsu_tlu_tlb_asi_state_m == 8'h57) && (this.tlb_demap_bind.\$lsu_tlu_tlb_st_inst_m) ){
+		  this.demap_op_present = 1'b1;
+	      }else{
+		  this.demap_op_present = 1'b0;
+	      }
+	  }
+	  @ ( posedge this.tlb_demap_bind.\$clk );
+      }
+}join none
+}
+
+//------------------------------------------------------------------------------------------
+
+task MMU_DMP_ADDR_MATCH:: find_dmp_addr_match()
+{
+ 
+ // this.dmp_addr_match[2] -> match (tlb_cam_data_vld) found 1 clk before tlb_wr_vld 
+ // this.dmp_addr_match[1] -> match (tlb_cam_data_vld) found at the same clk as tlb_wr_vld 
+ // this.dmp_addr_match[0] -> match (tlb_cam_data_vld) found 1 clk after tlb_wr_vld 
+
+fork{
+    while(1) {
+       @ ( posedge this.tlb_demap_bind.\$clk );
+	   if(this.name == "IMMU"){
+	       if(this.tlb_demap_bind.\$itlb_bypass != 1'b1){
+	           if(this.demap_op_present == 1'b1){
+		       if(this.tlb_demap_bind.\$itlb_cam_data_vld == 1'b1){
+		           this.dmp_addr_match[2] = 
+		               compare_dmp_addr( this.tlb_demap_bind.\$itlb_cam_data , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g );
+                       }
+		       if(this.tlb_demap_bind.\$itlb_cam_data_vld.1 == 1'b1){
+		           this.dmp_addr_match[1] = 
+			       compare_dmp_addr( this.tlb_demap_bind.\$itlb_cam_data.1 , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g );
+                       }
+		       fork{
+		           @ (     posedge this.tlb_demap_bind.\$clk );
+		           if(this.tlb_demap_bind.\$itlb_cam_data_vld == 1'b1){
+			       this.dmp_addr_match[0] = 
+			           compare_dmp_addr( this.tlb_demap_bind.\$itlb_cam_data , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g.1 );
+                           }
+		       }    join none
+	           } //     wr_vld == 1
+               } // no bypass
+	   }else{
+               if(this.tlb_demap_bind.\$dtlb_bypass != 1'b1){
+	           if(this.demap_op_present == 1'b1){
+		       if(this.tlb_demap_bind.\$dtlb_cam_data_vld == 1'b1){
+		           this.dmp_addr_match[2] = 
+		               compare_dmp_addr( this.tlb_demap_bind.\$dtlb_cam_data , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g );
+                       }
+		       if(this.tlb_demap_bind.\$dtlb_cam_data_vld.1 == 1'b1){
+		           this.dmp_addr_match[1] = 
+			       compare_dmp_addr( this.tlb_demap_bind.\$dtlb_cam_data.1 , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g );
+                       }
+		       fork{
+		           @ (     posedge this.tlb_demap_bind.\$clk );
+		           if(this.tlb_demap_bind.\$dtlb_cam_data_vld == 1'b1){
+			       this.dmp_addr_match[0] = 
+			           compare_dmp_addr( this.tlb_demap_bind.\$dtlb_cam_data , this.tlb_demap_bind.\$tlu_idtlb_dmp_key_g.1 );
+                           }
+		       }    join none
+	           } //     wr_vld == 1
+               } // no bypass
+	  }
+    } // while(1)
+} join none // main fork
+
+}
+//------------------------------------------------------------------------------------------
+
+function bit MMU_DMP_ADDR_MATCH:: compare_dmp_addr ( bit [58:0] cam_tag, bit [40:0] dmp_key )
+{
+   
+     if( ((dmp_key[40:21] !== cam_tag[53:34])) ||
+         ((~cam_tag[27] && dmp_key[20]) && (dmp_key[19:14] !== cam_tag[33:28])) ||
+         ((~cam_tag[17] && dmp_key[13]) && (dmp_key[12:7] !== cam_tag[23:18])) ||
+         ((~cam_tag[13] && dmp_key[6]) && (dmp_key[5:3] !== cam_tag[16:14])) ||
+         (dmp_key[0] !== cam_tag[54]) )
+     {
+         // mismatch no demap clash with incoming VA
+         compare_dmp_addr = 1'b0;
+     }else{
+         compare_dmp_addr = 1'b1;
+     }
+}
+
+//-------------------------
+
+//. foreach $c (@CORE_STR) {
+//
+//      MMU_DMP_ADDR_MATCH C${c}_idemap_addr_match;
+//      MMU_DMP_ADDR_MATCH C${c}_ddemap_addr_match;
+//
+//      C${c}_idemap_addr_match = new ("IMMU", C${c}_tlb_demap_bind);
+//      C${c}_ddemap_addr_match = new ("DMMU", C${c}_tlb_demap_bind);
+//
+//      C${c}_idemap_addr_match.find_dmp_addr_match();
+//      C${c}_ddemap_addr_match.find_dmp_addr_match();
+//
+//.}
+
+
+#endif

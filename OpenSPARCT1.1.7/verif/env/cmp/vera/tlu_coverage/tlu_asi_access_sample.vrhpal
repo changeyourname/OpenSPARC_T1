@@ -1,0 +1,597 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_asi_access_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TLU ASI access
+//
+//
+//***************************************************************************
+
+
+// coverage_def TLU_ASI_ACCESS_COV (bit [61:0] tlu_asi_acc_st)
+// {
+
+  /////////
+  // States
+
+  // User writting to Q pointers
+  wildcard state s_U_ST_CPU_QTAIL      	( U_ST_CPU_QTAIL );
+  wildcard state s_U_ST_CPU_QHEAD      	( U_ST_CPU_QHEAD );
+  wildcard state s_U_ST_DEV_QTAIL      	( U_ST_DEV_QTAIL );
+  wildcard state s_U_ST_DEV_QHEAD      	( U_ST_DEV_QHEAD );
+  wildcard state s_U_ST_RES_QTAIL      	( U_ST_RES_QTAIL );
+  wildcard state s_U_ST_RES_QHEAD      	( U_ST_RES_QHEAD );
+  wildcard state s_U_ST_NRE_QTAIL      	( U_ST_NRE_QTAIL );
+  wildcard state s_U_ST_NRE_QHEAD      	( U_ST_NRE_QHEAD );
+
+  // User writting to Scratchpad
+  wildcard state s_U_ST_SCPD0          	( U_ST_SCPD0 );
+  wildcard state s_U_ST_SCPD1          	( U_ST_SCPD1 );
+  wildcard state s_U_ST_SCPD2          	( U_ST_SCPD2 );
+  wildcard state s_U_ST_SCPD3          	( U_ST_SCPD3 );
+  wildcard state s_U_ST_SCPD4          	( U_ST_SCPD4 );
+  wildcard state s_U_ST_SCPD5          	( U_ST_SCPD5 );
+  wildcard state s_U_ST_SCPD6          	( U_ST_SCPD6 );
+  wildcard state s_U_ST_SCPD7          	( U_ST_SCPD7 );
+
+  // User writting to Scratchpad using hypervisor ASI
+  wildcard state s_U_ST_HSCPD0         	( U_ST_HSCPD0 );
+  wildcard state s_U_ST_HSCPD1         	( U_ST_HSCPD1 );
+  wildcard state s_U_ST_HSCPD2         	( U_ST_HSCPD2 );
+  wildcard state s_U_ST_HSCPD3         	( U_ST_HSCPD3 );
+  wildcard state s_U_ST_HSCPD4         	( U_ST_HSCPD4 );
+  wildcard state s_U_ST_HSCPD5         	( U_ST_HSCPD5 );
+  wildcard state s_U_ST_HSCPD6         	( U_ST_HSCPD6 );
+  wildcard state s_U_ST_HSCPD7         	( U_ST_HSCPD7 );
+
+  // User writting to Interrupt ASIs
+  wildcard state s_U_ST_INTR_RECEIVE   	( U_ST_INTR_RECEIVE );
+  wildcard state s_U_ST_UDB_INTR_W     	( U_ST_UDB_INTR_W );
+  wildcard state s_U_ST_UDB_INTR_R     	( U_ST_UDB_INTR_R );
+
+  // User readind from Q pointers
+  wildcard state s_U_LD_CPU_QTAIL      	( U_LD_CPU_QTAIL );
+  wildcard state s_U_LD_CPU_QHEAD      	( U_LD_CPU_QHEAD );
+  wildcard state s_U_LD_DEV_QTAIL      	( U_LD_DEV_QTAIL );
+  wildcard state s_U_LD_DEV_QHEAD      	( U_LD_DEV_QHEAD );
+  wildcard state s_U_LD_RES_QTAIL      	( U_LD_RES_QTAIL );
+  wildcard state s_U_LD_RES_QHEAD      	( U_LD_RES_QHEAD );
+  wildcard state s_U_LD_NRE_QTAIL      	( U_LD_NRE_QTAIL );
+  wildcard state s_U_LD_NRE_QHEAD      	( U_LD_NRE_QHEAD );
+
+  // User reading from Scratchpad
+  wildcard state s_U_LD_SCPD0          	( U_LD_SCPD0 );
+  wildcard state s_U_LD_SCPD1          	( U_LD_SCPD1 );
+  wildcard state s_U_LD_SCPD2          	( U_LD_SCPD2 );
+  wildcard state s_U_LD_SCPD3          	( U_LD_SCPD3 );
+  wildcard state s_U_LD_SCPD4          	( U_LD_SCPD4 );
+  wildcard state s_U_LD_SCPD5          	( U_LD_SCPD5 );
+  wildcard state s_U_LD_SCPD6          	( U_LD_SCPD6 );
+  wildcard state s_U_LD_SCPD7          	( U_LD_SCPD7 );
+
+  // User reading from Scratchpad using hypervisor ASI
+  wildcard state s_U_LD_HSCPD0         	( U_LD_HSCPD0 );
+  wildcard state s_U_LD_HSCPD1         	( U_LD_HSCPD1 );
+  wildcard state s_U_LD_HSCPD2         	( U_LD_HSCPD2 );
+  wildcard state s_U_LD_HSCPD3         	( U_LD_HSCPD3 );
+  wildcard state s_U_LD_HSCPD4         	( U_LD_HSCPD4 );
+  wildcard state s_U_LD_HSCPD5         	( U_LD_HSCPD5 );
+  wildcard state s_U_LD_HSCPD6         	( U_LD_HSCPD6 );
+  wildcard state s_U_LD_HSCPD7         	( U_LD_HSCPD7 );
+
+  // User reading from Interrupt ASIs
+  wildcard state s_U_LD_INTR_RECEIVE   	( U_LD_INTR_RECEIVE );
+  wildcard state s_U_LD_UDB_INTR_W     	( U_LD_UDB_INTR_W );
+  wildcard state s_U_LD_UDB_INTR_R     	( U_LD_UDB_INTR_R );
+
+  // Supervisor writting to Q pointers
+  wildcard state s_S_ST_CPU_QTAIL      	( S_ST_CPU_QTAIL );
+  wildcard state s_S_ST_CPU_QHEAD      	( S_ST_CPU_QHEAD );
+  wildcard state s_S_ST_DEV_QTAIL      	( S_ST_DEV_QTAIL );
+  wildcard state s_S_ST_DEV_QHEAD      	( S_ST_DEV_QHEAD );
+  wildcard state s_S_ST_RES_QTAIL      	( S_ST_RES_QTAIL );
+  wildcard state s_S_ST_RES_QHEAD      	( S_ST_RES_QHEAD );
+  wildcard state s_S_ST_NRE_QTAIL      	( S_ST_NRE_QTAIL );
+  wildcard state s_S_ST_NRE_QHEAD      	( S_ST_NRE_QHEAD );
+
+  // Supervisor writting to Scratchpad
+  wildcard state s_S_ST_SCPD0          	( S_ST_SCPD0 );
+  wildcard state s_S_ST_SCPD1          	( S_ST_SCPD1 );
+  wildcard state s_S_ST_SCPD2          	( S_ST_SCPD2 );
+  wildcard state s_S_ST_SCPD3          	( S_ST_SCPD3 );
+  wildcard state s_S_ST_SCPD4          	( S_ST_SCPD4 );
+  wildcard state s_S_ST_SCPD5          	( S_ST_SCPD5 );
+  wildcard state s_S_ST_SCPD6          	( S_ST_SCPD6 );
+  wildcard state s_S_ST_SCPD7          	( S_ST_SCPD7 );
+
+  // Supervisor writting to Scratchpad using hypervisor ASI
+  wildcard state s_S_ST_HSCPD0         	( S_ST_HSCPD0 );
+  wildcard state s_S_ST_HSCPD1         	( S_ST_HSCPD1 );
+  wildcard state s_S_ST_HSCPD2         	( S_ST_HSCPD2 );
+  wildcard state s_S_ST_HSCPD3         	( S_ST_HSCPD3 );
+  wildcard state s_S_ST_HSCPD4         	( S_ST_HSCPD4 );
+  wildcard state s_S_ST_HSCPD5         	( S_ST_HSCPD5 );
+  wildcard state s_S_ST_HSCPD6         	( S_ST_HSCPD6 );
+  wildcard state s_S_ST_HSCPD7         	( S_ST_HSCPD7 );
+
+  // Supervisor writting to Interrupt ASIs
+  wildcard state s_S_ST_INTR_RECEIVE   	( S_ST_INTR_RECEIVE );
+  wildcard state s_S_ST_UDB_INTR_W     	( S_ST_UDB_INTR_W );
+  wildcard state s_S_ST_UDB_INTR_R     	( S_ST_UDB_INTR_R );
+
+  // Supervisor reading from Q pointers
+  wildcard state s_S_LD_CPU_QTAIL      	( S_LD_CPU_QTAIL );
+  wildcard state s_S_LD_CPU_QHEAD      	( S_LD_CPU_QHEAD );
+  wildcard state s_S_LD_DEV_QTAIL      	( S_LD_DEV_QTAIL );
+  wildcard state s_S_LD_DEV_QHEAD      	( S_LD_DEV_QHEAD );
+  wildcard state s_S_LD_RES_QTAIL      	( S_LD_RES_QTAIL );
+  wildcard state s_S_LD_RES_QHEAD      	( S_LD_RES_QHEAD );
+  wildcard state s_S_LD_NRE_QTAIL      	( S_LD_NRE_QTAIL );
+  wildcard state s_S_LD_NRE_QHEAD      	( S_LD_NRE_QHEAD );
+
+  // Supervisor reading from Scratchpad
+  wildcard state s_S_LD_SCPD0          	( S_LD_SCPD0 );
+  wildcard state s_S_LD_SCPD1          	( S_LD_SCPD1 );
+  wildcard state s_S_LD_SCPD2          	( S_LD_SCPD2 );
+  wildcard state s_S_LD_SCPD3          	( S_LD_SCPD3 );
+  wildcard state s_S_LD_SCPD4          	( S_LD_SCPD4 );
+  wildcard state s_S_LD_SCPD5          	( S_LD_SCPD5 );
+  wildcard state s_S_LD_SCPD6          	( S_LD_SCPD6 );
+  wildcard state s_S_LD_SCPD7          	( S_LD_SCPD7 );
+
+  // Supervisor Reading from Scratchpad using hypervisor ASI
+  wildcard state s_S_LD_HSCPD0         	( S_LD_HSCPD0 );
+  wildcard state s_S_LD_HSCPD1         	( S_LD_HSCPD1 );
+  wildcard state s_S_LD_HSCPD2         	( S_LD_HSCPD2 );
+  wildcard state s_S_LD_HSCPD3         	( S_LD_HSCPD3 );
+  wildcard state s_S_LD_HSCPD4         	( S_LD_HSCPD4 );
+  wildcard state s_S_LD_HSCPD5         	( S_LD_HSCPD5 );
+  wildcard state s_S_LD_HSCPD6         	( S_LD_HSCPD6 );
+  wildcard state s_S_LD_HSCPD7         	( S_LD_HSCPD7 );
+
+  // Supervisor reading from Interrupt ASIs
+  wildcard state s_S_LD_INTR_RECEIVE   	( S_LD_INTR_RECEIVE );
+  wildcard state s_S_LD_UDB_INTR_W     	( S_LD_UDB_INTR_W );
+  wildcard state s_S_LD_UDB_INTR_R     	( S_LD_UDB_INTR_R );
+
+  // Hypervisor writting to Q pointers
+  wildcard state s_H_ST_CPU_QTAIL      	( H_ST_CPU_QTAIL );
+  wildcard state s_H_ST_CPU_QHEAD      	( H_ST_CPU_QHEAD );
+  wildcard state s_H_ST_DEV_QTAIL      	( H_ST_DEV_QTAIL );
+  wildcard state s_H_ST_DEV_QHEAD      	( H_ST_DEV_QHEAD );
+  wildcard state s_H_ST_RES_QTAIL      	( H_ST_RES_QTAIL );
+  wildcard state s_H_ST_RES_QHEAD      	( H_ST_RES_QHEAD );
+  wildcard state s_H_ST_NRE_QTAIL      	( H_ST_NRE_QTAIL );
+  wildcard state s_H_ST_NRE_QHEAD      	( H_ST_NRE_QHEAD );
+
+  // Hypervisor writting to Scratchpad
+  wildcard state s_H_ST_SCPD0          	( H_ST_SCPD0 );
+  wildcard state s_H_ST_SCPD1          	( H_ST_SCPD1 );
+  wildcard state s_H_ST_SCPD2          	( H_ST_SCPD2 );
+  wildcard state s_H_ST_SCPD3          	( H_ST_SCPD3 );
+  wildcard state s_H_ST_SCPD4          	( H_ST_SCPD4 );
+  wildcard state s_H_ST_SCPD5          	( H_ST_SCPD5 );
+  wildcard state s_H_ST_SCPD6          	( H_ST_SCPD6 );
+  wildcard state s_H_ST_SCPD7          	( H_ST_SCPD7 );
+
+  // Hypervisor writting to Scratchpad using hypervisor ASI
+  wildcard state s_H_ST_HSCPD0         	( H_ST_HSCPD0 );
+  wildcard state s_H_ST_HSCPD1         	( H_ST_HSCPD1 );
+  wildcard state s_H_ST_HSCPD2         	( H_ST_HSCPD2 );
+  wildcard state s_H_ST_HSCPD3         	( H_ST_HSCPD3 );
+  wildcard state s_H_ST_HSCPD4         	( H_ST_HSCPD4 );
+  wildcard state s_H_ST_HSCPD5         	( H_ST_HSCPD5 );
+  wildcard state s_H_ST_HSCPD6         	( H_ST_HSCPD6 );
+  wildcard state s_H_ST_HSCPD7         	( H_ST_HSCPD7 );
+
+  // Hypervisor writting to Interrupt ASIs
+  wildcard state s_H_ST_INTR_RECEIVE   	( H_ST_INTR_RECEIVE );
+  wildcard state s_H_ST_UDB_INTR_W     	( H_ST_UDB_INTR_W );
+  wildcard state s_H_ST_UDB_INTR_R     	( H_ST_UDB_INTR_R );
+
+  // Hypervisor reading from Q pointers
+  wildcard state s_H_LD_CPU_QTAIL      	( H_LD_CPU_QTAIL );
+  wildcard state s_H_LD_CPU_QHEAD      	( H_LD_CPU_QHEAD );
+  wildcard state s_H_LD_DEV_QTAIL      	( H_LD_DEV_QTAIL );
+  wildcard state s_H_LD_DEV_QHEAD      	( H_LD_DEV_QHEAD );
+  wildcard state s_H_LD_RES_QTAIL      	( H_LD_RES_QTAIL );
+  wildcard state s_H_LD_RES_QHEAD      	( H_LD_RES_QHEAD );
+  wildcard state s_H_LD_NRE_QTAIL      	( H_LD_NRE_QTAIL );
+  wildcard state s_H_LD_NRE_QHEAD      	( H_LD_NRE_QHEAD );
+
+  // Hypervisor rading from Scratchpad
+  wildcard state s_H_LD_SCPD0          	( H_LD_SCPD0 );
+  wildcard state s_H_LD_SCPD1          	( H_LD_SCPD1 );
+  wildcard state s_H_LD_SCPD2          	( H_LD_SCPD2 );
+  wildcard state s_H_LD_SCPD3          	( H_LD_SCPD3 );
+  wildcard state s_H_LD_SCPD4          	( H_LD_SCPD4 );
+  wildcard state s_H_LD_SCPD5          	( H_LD_SCPD5 );
+  wildcard state s_H_LD_SCPD6          	( H_LD_SCPD6 );
+  wildcard state s_H_LD_SCPD7          	( H_LD_SCPD7 );
+
+  // Hypervisor reading from Scratchpad using hypervisor ASI
+  wildcard state s_H_LD_HSCPD0         	( H_LD_HSCPD0 );
+  wildcard state s_H_LD_HSCPD1         	( H_LD_HSCPD1 );
+  wildcard state s_H_LD_HSCPD2         	( H_LD_HSCPD2 );
+  wildcard state s_H_LD_HSCPD3         	( H_LD_HSCPD3 );
+  wildcard state s_H_LD_HSCPD4         	( H_LD_HSCPD4 );
+  wildcard state s_H_LD_HSCPD5         	( H_LD_HSCPD5 );
+  wildcard state s_H_LD_HSCPD6         	( H_LD_HSCPD6 );
+  wildcard state s_H_LD_HSCPD7         	( H_LD_HSCPD7 );
+
+  // Hypervisor reading from Interrupt ASIs
+  wildcard state s_H_LD_INTR_RECEIVE   	( H_LD_INTR_RECEIVE );
+  wildcard state s_H_LD_UDB_INTR_W     	( H_LD_UDB_INTR_W );
+  wildcard state s_H_LD_UDB_INTR_R     	( H_LD_UDB_INTR_R );
+
+  // User writting to Q-ASI illegal VA
+  wildcard state s_U_ST_ILL_QPTR01     	( U_ST_ILL_QPTR01 );
+  wildcard state s_U_ST_ILL_QPTR02     	( U_ST_ILL_QPTR02 );
+  wildcard state s_U_ST_ILL_QPTR03     	( U_ST_ILL_QPTR03 );
+  wildcard state s_U_ST_ILL_QPTR04     	( U_ST_ILL_QPTR04 );
+  wildcard state s_U_ST_ILL_QPTR05     	( U_ST_ILL_QPTR05 );
+  wildcard state s_U_ST_ILL_QPTR06     	( U_ST_ILL_QPTR06 );
+  wildcard state s_U_ST_ILL_QPTR07     	( U_ST_ILL_QPTR07 );
+  wildcard state s_U_ST_ILL_QPTR10     	( U_ST_ILL_QPTR10 );
+  wildcard state s_U_ST_ILL_QPTR11     	( U_ST_ILL_QPTR11 );
+  wildcard state s_U_ST_ILL_QPTR12     	( U_ST_ILL_QPTR12 );
+  wildcard state s_U_ST_ILL_QPTR13     	( U_ST_ILL_QPTR13 );
+  wildcard state s_U_ST_ILL_QPTR14     	( U_ST_ILL_QPTR14 );
+  wildcard state s_U_ST_ILL_QPTR15     	( U_ST_ILL_QPTR15 );
+  wildcard state s_U_ST_ILL_QPTR16     	( U_ST_ILL_QPTR16 );
+  wildcard state s_U_ST_ILL_QPTR17     	( U_ST_ILL_QPTR17 );
+  wildcard state s_U_ST_ILL_QPTR20     	( U_ST_ILL_QPTR20 );
+  wildcard state s_U_ST_ILL_QPTR21     	( U_ST_ILL_QPTR21 );
+
+  // User writting to SCPAD-ASI illegal VA
+  wildcard state s_U_ST_ILL_SCPD01     	( U_ST_ILL_SCPD01 );
+  wildcard state s_U_ST_ILL_SCPD02     	( U_ST_ILL_SCPD02 );
+  wildcard state s_U_ST_ILL_SCPD03     	( U_ST_ILL_SCPD03 );
+  wildcard state s_U_ST_ILL_SCPD04     	( U_ST_ILL_SCPD04 );
+  wildcard state s_U_ST_ILL_SCPD05     	( U_ST_ILL_SCPD05 );
+  wildcard state s_U_ST_ILL_SCPD06     	( U_ST_ILL_SCPD06 );
+  wildcard state s_U_ST_ILL_SCPD07     	( U_ST_ILL_SCPD07 );
+  wildcard state s_U_ST_ILL_SCPD10     	( U_ST_ILL_SCPD10 );
+  wildcard state s_U_ST_ILL_SCPD11     	( U_ST_ILL_SCPD11 );
+  wildcard state s_U_ST_ILL_SCPD12     	( U_ST_ILL_SCPD12 );
+  wildcard state s_U_ST_ILL_SCPD13     	( U_ST_ILL_SCPD13 );
+  wildcard state s_U_ST_ILL_SCPD14     	( U_ST_ILL_SCPD14 );
+  wildcard state s_U_ST_ILL_SCPD15     	( U_ST_ILL_SCPD15 );
+  wildcard state s_U_ST_ILL_SCPD16     	( U_ST_ILL_SCPD16 );
+  wildcard state s_U_ST_ILL_SCPD17     	( U_ST_ILL_SCPD17 );
+  wildcard state s_U_ST_ILL_SCPD20     	( U_ST_ILL_SCPD20 );
+  wildcard state s_U_ST_ILL_SCPD21     	( U_ST_ILL_SCPD21 );
+
+  // User writting to HSCPAD-ASI illegal VA
+  wildcard state s_U_ST_ILL_HSCPD01    	( U_ST_ILL_HSCPD01 );
+  wildcard state s_U_ST_ILL_HSCPD02    	( U_ST_ILL_HSCPD02 );
+  wildcard state s_U_ST_ILL_HSCPD03    	( U_ST_ILL_HSCPD03 );
+  wildcard state s_U_ST_ILL_HSCPD04    	( U_ST_ILL_HSCPD04 );
+  wildcard state s_U_ST_ILL_HSCPD05    	( U_ST_ILL_HSCPD05 );
+  wildcard state s_U_ST_ILL_HSCPD06    	( U_ST_ILL_HSCPD06 );
+  wildcard state s_U_ST_ILL_HSCPD07    	( U_ST_ILL_HSCPD07 );
+  wildcard state s_U_ST_ILL_HSCPD10    	( U_ST_ILL_HSCPD10 );
+  wildcard state s_U_ST_ILL_HSCPD11    	( U_ST_ILL_HSCPD11 );
+  wildcard state s_U_ST_ILL_HSCPD12    	( U_ST_ILL_HSCPD12 );
+  wildcard state s_U_ST_ILL_HSCPD13    	( U_ST_ILL_HSCPD13 );
+  wildcard state s_U_ST_ILL_HSCPD14    	( U_ST_ILL_HSCPD14 );
+  wildcard state s_U_ST_ILL_HSCPD15    	( U_ST_ILL_HSCPD15 );
+  wildcard state s_U_ST_ILL_HSCPD16    	( U_ST_ILL_HSCPD16 );
+  wildcard state s_U_ST_ILL_HSCPD17    	( U_ST_ILL_HSCPD17 );
+  wildcard state s_U_ST_ILL_HSCPD20    	( U_ST_ILL_HSCPD20 );
+  wildcard state s_U_ST_ILL_HSCPD21    	( U_ST_ILL_HSCPD21 );
+
+  // User reading from Q-ASI illegal VA
+  wildcard state s_U_LD_ILL_QPTR01     	( U_LD_ILL_QPTR01 );
+  wildcard state s_U_LD_ILL_QPTR02     	( U_LD_ILL_QPTR02 );
+  wildcard state s_U_LD_ILL_QPTR03     	( U_LD_ILL_QPTR03 );
+  wildcard state s_U_LD_ILL_QPTR04     	( U_LD_ILL_QPTR04 );
+  wildcard state s_U_LD_ILL_QPTR05     	( U_LD_ILL_QPTR05 );
+  wildcard state s_U_LD_ILL_QPTR06     	( U_LD_ILL_QPTR06 );
+  wildcard state s_U_LD_ILL_QPTR07     	( U_LD_ILL_QPTR07 );
+  wildcard state s_U_LD_ILL_QPTR10     	( U_LD_ILL_QPTR10 );
+  wildcard state s_U_LD_ILL_QPTR11     	( U_LD_ILL_QPTR11 );
+  wildcard state s_U_LD_ILL_QPTR12     	( U_LD_ILL_QPTR12 );
+  wildcard state s_U_LD_ILL_QPTR13     	( U_LD_ILL_QPTR13 );
+  wildcard state s_U_LD_ILL_QPTR14     	( U_LD_ILL_QPTR14 );
+  wildcard state s_U_LD_ILL_QPTR15     	( U_LD_ILL_QPTR15 );
+  wildcard state s_U_LD_ILL_QPTR16     	( U_LD_ILL_QPTR16 );
+  wildcard state s_U_LD_ILL_QPTR17     	( U_LD_ILL_QPTR17 );
+  wildcard state s_U_LD_ILL_QPTR20     	( U_LD_ILL_QPTR20 );
+  wildcard state s_U_LD_ILL_QPTR21     	( U_LD_ILL_QPTR21 );
+
+  // User reading from SCPAD-ASI illegal VA
+  wildcard state s_U_LD_ILL_SCPD01     	( U_LD_ILL_SCPD01 );
+  wildcard state s_U_LD_ILL_SCPD02     	( U_LD_ILL_SCPD02 );
+  wildcard state s_U_LD_ILL_SCPD03     	( U_LD_ILL_SCPD03 );
+  wildcard state s_U_LD_ILL_SCPD04     	( U_LD_ILL_SCPD04 );
+  wildcard state s_U_LD_ILL_SCPD05     	( U_LD_ILL_SCPD05 );
+  wildcard state s_U_LD_ILL_SCPD06     	( U_LD_ILL_SCPD06 );
+  wildcard state s_U_LD_ILL_SCPD07     	( U_LD_ILL_SCPD07 );
+  wildcard state s_U_LD_ILL_SCPD10     	( U_LD_ILL_SCPD10 );
+  wildcard state s_U_LD_ILL_SCPD11     	( U_LD_ILL_SCPD11 );
+  wildcard state s_U_LD_ILL_SCPD12     	( U_LD_ILL_SCPD12 );
+  wildcard state s_U_LD_ILL_SCPD13     	( U_LD_ILL_SCPD13 );
+  wildcard state s_U_LD_ILL_SCPD14     	( U_LD_ILL_SCPD14 );
+  wildcard state s_U_LD_ILL_SCPD15     	( U_LD_ILL_SCPD15 );
+  wildcard state s_U_LD_ILL_SCPD16     	( U_LD_ILL_SCPD16 );
+  wildcard state s_U_LD_ILL_SCPD17     	( U_LD_ILL_SCPD17 );
+  wildcard state s_U_LD_ILL_SCPD20     	( U_LD_ILL_SCPD20 );
+  wildcard state s_U_LD_ILL_SCPD21     	( U_LD_ILL_SCPD21 );
+
+  // User reading from HSCPAD-ASI illegal VA
+  wildcard state s_U_LD_ILL_HSCPD01    	( U_LD_ILL_HSCPD01 );
+  wildcard state s_U_LD_ILL_HSCPD02    	( U_LD_ILL_HSCPD02 );
+  wildcard state s_U_LD_ILL_HSCPD03    	( U_LD_ILL_HSCPD03 );
+  wildcard state s_U_LD_ILL_HSCPD04    	( U_LD_ILL_HSCPD04 );
+  wildcard state s_U_LD_ILL_HSCPD05    	( U_LD_ILL_HSCPD05 );
+  wildcard state s_U_LD_ILL_HSCPD06    	( U_LD_ILL_HSCPD06 );
+  wildcard state s_U_LD_ILL_HSCPD07    	( U_LD_ILL_HSCPD07 );
+  wildcard state s_U_LD_ILL_HSCPD10    	( U_LD_ILL_HSCPD10 );
+  wildcard state s_U_LD_ILL_HSCPD11    	( U_LD_ILL_HSCPD11 );
+  wildcard state s_U_LD_ILL_HSCPD12    	( U_LD_ILL_HSCPD12 );
+  wildcard state s_U_LD_ILL_HSCPD13    	( U_LD_ILL_HSCPD13 );
+  wildcard state s_U_LD_ILL_HSCPD14    	( U_LD_ILL_HSCPD14 );
+  wildcard state s_U_LD_ILL_HSCPD15    	( U_LD_ILL_HSCPD15 );
+  wildcard state s_U_LD_ILL_HSCPD16    	( U_LD_ILL_HSCPD16 );
+  wildcard state s_U_LD_ILL_HSCPD17    	( U_LD_ILL_HSCPD17 );
+  wildcard state s_U_LD_ILL_HSCPD20    	( U_LD_ILL_HSCPD20 );
+  wildcard state s_U_LD_ILL_HSCPD21    	( U_LD_ILL_HSCPD21 );
+
+  // Supervisor writting to Q-ASI illegal VA
+  wildcard state s_S_ST_ILL_QPTR01     	( S_ST_ILL_QPTR01 );
+  wildcard state s_S_ST_ILL_QPTR02     	( S_ST_ILL_QPTR02 );
+  wildcard state s_S_ST_ILL_QPTR03     	( S_ST_ILL_QPTR03 );
+  wildcard state s_S_ST_ILL_QPTR04     	( S_ST_ILL_QPTR04 );
+  wildcard state s_S_ST_ILL_QPTR05     	( S_ST_ILL_QPTR05 );
+  wildcard state s_S_ST_ILL_QPTR06     	( S_ST_ILL_QPTR06 );
+  wildcard state s_S_ST_ILL_QPTR07     	( S_ST_ILL_QPTR07 );
+  wildcard state s_S_ST_ILL_QPTR10     	( S_ST_ILL_QPTR10 );
+  wildcard state s_S_ST_ILL_QPTR11     	( S_ST_ILL_QPTR11 );
+  wildcard state s_S_ST_ILL_QPTR12     	( S_ST_ILL_QPTR12 );
+  wildcard state s_S_ST_ILL_QPTR13     	( S_ST_ILL_QPTR13 );
+  wildcard state s_S_ST_ILL_QPTR14     	( S_ST_ILL_QPTR14 );
+  wildcard state s_S_ST_ILL_QPTR15     	( S_ST_ILL_QPTR15 );
+  wildcard state s_S_ST_ILL_QPTR16     	( S_ST_ILL_QPTR16 );
+  wildcard state s_S_ST_ILL_QPTR17     	( S_ST_ILL_QPTR17 );
+  wildcard state s_S_ST_ILL_QPTR20     	( S_ST_ILL_QPTR20 );
+  wildcard state s_S_ST_ILL_QPTR21     	( S_ST_ILL_QPTR21 );
+
+  // Supervisor writting to SCPAD-ASI illegal VA
+  wildcard state s_S_ST_ILL_SCPD01     	( S_ST_ILL_SCPD01 );
+  wildcard state s_S_ST_ILL_SCPD02     	( S_ST_ILL_SCPD02 );
+  wildcard state s_S_ST_ILL_SCPD03     	( S_ST_ILL_SCPD03 );
+  wildcard state s_S_ST_ILL_SCPD04     	( S_ST_ILL_SCPD04 );
+  wildcard state s_S_ST_ILL_SCPD05     	( S_ST_ILL_SCPD05 );
+  wildcard state s_S_ST_ILL_SCPD06     	( S_ST_ILL_SCPD06 );
+  wildcard state s_S_ST_ILL_SCPD07     	( S_ST_ILL_SCPD07 );
+  wildcard state s_S_ST_ILL_SCPD10     	( S_ST_ILL_SCPD10 );
+  wildcard state s_S_ST_ILL_SCPD11     	( S_ST_ILL_SCPD11 );
+  wildcard state s_S_ST_ILL_SCPD12     	( S_ST_ILL_SCPD12 );
+  wildcard state s_S_ST_ILL_SCPD13     	( S_ST_ILL_SCPD13 );
+  wildcard state s_S_ST_ILL_SCPD14     	( S_ST_ILL_SCPD14 );
+  wildcard state s_S_ST_ILL_SCPD15     	( S_ST_ILL_SCPD15 );
+  wildcard state s_S_ST_ILL_SCPD16     	( S_ST_ILL_SCPD16 );
+  wildcard state s_S_ST_ILL_SCPD17     	( S_ST_ILL_SCPD17 );
+  wildcard state s_S_ST_ILL_SCPD20     	( S_ST_ILL_SCPD20 );
+  wildcard state s_S_ST_ILL_SCPD21     	( S_ST_ILL_SCPD21 );
+
+  // Supervisor writting to HSCPAD-ASI illegal VA
+  wildcard state s_S_ST_ILL_HSCPD01    	( S_ST_ILL_HSCPD01 );
+  wildcard state s_S_ST_ILL_HSCPD02    	( S_ST_ILL_HSCPD02 );
+  wildcard state s_S_ST_ILL_HSCPD03    	( S_ST_ILL_HSCPD03 );
+  wildcard state s_S_ST_ILL_HSCPD04    	( S_ST_ILL_HSCPD04 );
+  wildcard state s_S_ST_ILL_HSCPD05    	( S_ST_ILL_HSCPD05 );
+  wildcard state s_S_ST_ILL_HSCPD06    	( S_ST_ILL_HSCPD06 );
+  wildcard state s_S_ST_ILL_HSCPD07    	( S_ST_ILL_HSCPD07 );
+  wildcard state s_S_ST_ILL_HSCPD10    	( S_ST_ILL_HSCPD10 );
+  wildcard state s_S_ST_ILL_HSCPD11    	( S_ST_ILL_HSCPD11 );
+  wildcard state s_S_ST_ILL_HSCPD12    	( S_ST_ILL_HSCPD12 );
+  wildcard state s_S_ST_ILL_HSCPD13    	( S_ST_ILL_HSCPD13 );
+  wildcard state s_S_ST_ILL_HSCPD14    	( S_ST_ILL_HSCPD14 );
+  wildcard state s_S_ST_ILL_HSCPD15    	( S_ST_ILL_HSCPD15 );
+  wildcard state s_S_ST_ILL_HSCPD16    	( S_ST_ILL_HSCPD16 );
+  wildcard state s_S_ST_ILL_HSCPD17    	( S_ST_ILL_HSCPD17 );
+  wildcard state s_S_ST_ILL_HSCPD20    	( S_ST_ILL_HSCPD20 );
+  wildcard state s_S_ST_ILL_HSCPD21    	( S_ST_ILL_HSCPD21 );
+
+  // Supervisor reading from Q-ASI illegal VA
+  wildcard state s_S_LD_ILL_QPTR01     	( S_LD_ILL_QPTR01 );
+  wildcard state s_S_LD_ILL_QPTR02     	( S_LD_ILL_QPTR02 );
+  wildcard state s_S_LD_ILL_QPTR03     	( S_LD_ILL_QPTR03 );
+  wildcard state s_S_LD_ILL_QPTR04     	( S_LD_ILL_QPTR04 );
+  wildcard state s_S_LD_ILL_QPTR05     	( S_LD_ILL_QPTR05 );
+  wildcard state s_S_LD_ILL_QPTR06     	( S_LD_ILL_QPTR06 );
+  wildcard state s_S_LD_ILL_QPTR07     	( S_LD_ILL_QPTR07 );
+  wildcard state s_S_LD_ILL_QPTR10     	( S_LD_ILL_QPTR10 );
+  wildcard state s_S_LD_ILL_QPTR11     	( S_LD_ILL_QPTR11 );
+  wildcard state s_S_LD_ILL_QPTR12     	( S_LD_ILL_QPTR12 );
+  wildcard state s_S_LD_ILL_QPTR13     	( S_LD_ILL_QPTR13 );
+  wildcard state s_S_LD_ILL_QPTR14     	( S_LD_ILL_QPTR14 );
+  wildcard state s_S_LD_ILL_QPTR15     	( S_LD_ILL_QPTR15 );
+  wildcard state s_S_LD_ILL_QPTR16     	( S_LD_ILL_QPTR16 );
+  wildcard state s_S_LD_ILL_QPTR17     	( S_LD_ILL_QPTR17 );
+  wildcard state s_S_LD_ILL_QPTR20     	( S_LD_ILL_QPTR20 );
+  wildcard state s_S_LD_ILL_QPTR21     	( S_LD_ILL_QPTR21 );
+
+  // Supervisor reading from SCPAD-ASI illegal VA
+  wildcard state s_S_LD_ILL_SCPD01     	( S_LD_ILL_SCPD01 );
+  wildcard state s_S_LD_ILL_SCPD02     	( S_LD_ILL_SCPD02 );
+  wildcard state s_S_LD_ILL_SCPD03     	( S_LD_ILL_SCPD03 );
+  wildcard state s_S_LD_ILL_SCPD04     	( S_LD_ILL_SCPD04 );
+  wildcard state s_S_LD_ILL_SCPD05     	( S_LD_ILL_SCPD05 );
+  wildcard state s_S_LD_ILL_SCPD06     	( S_LD_ILL_SCPD06 );
+  wildcard state s_S_LD_ILL_SCPD07     	( S_LD_ILL_SCPD07 );
+  wildcard state s_S_LD_ILL_SCPD10     	( S_LD_ILL_SCPD10 );
+  wildcard state s_S_LD_ILL_SCPD11     	( S_LD_ILL_SCPD11 );
+  wildcard state s_S_LD_ILL_SCPD12     	( S_LD_ILL_SCPD12 );
+  wildcard state s_S_LD_ILL_SCPD13     	( S_LD_ILL_SCPD13 );
+  wildcard state s_S_LD_ILL_SCPD14     	( S_LD_ILL_SCPD14 );
+  wildcard state s_S_LD_ILL_SCPD15     	( S_LD_ILL_SCPD15 );
+  wildcard state s_S_LD_ILL_SCPD16     	( S_LD_ILL_SCPD16 );
+  wildcard state s_S_LD_ILL_SCPD17     	( S_LD_ILL_SCPD17 );
+  wildcard state s_S_LD_ILL_SCPD20     	( S_LD_ILL_SCPD20 );
+  wildcard state s_S_LD_ILL_SCPD21     	( S_LD_ILL_SCPD21 );
+
+  // Supervisor reading from HSCPAD-ASI illegal VA
+  wildcard state s_S_LD_ILL_HSCPD01    	( S_LD_ILL_HSCPD01 );
+  wildcard state s_S_LD_ILL_HSCPD02    	( S_LD_ILL_HSCPD02 );
+  wildcard state s_S_LD_ILL_HSCPD03    	( S_LD_ILL_HSCPD03 );
+  wildcard state s_S_LD_ILL_HSCPD04    	( S_LD_ILL_HSCPD04 );
+  wildcard state s_S_LD_ILL_HSCPD05    	( S_LD_ILL_HSCPD05 );
+  wildcard state s_S_LD_ILL_HSCPD06    	( S_LD_ILL_HSCPD06 );
+  wildcard state s_S_LD_ILL_HSCPD07    	( S_LD_ILL_HSCPD07 );
+  wildcard state s_S_LD_ILL_HSCPD10    	( S_LD_ILL_HSCPD10 );
+  wildcard state s_S_LD_ILL_HSCPD11    	( S_LD_ILL_HSCPD11 );
+  wildcard state s_S_LD_ILL_HSCPD12    	( S_LD_ILL_HSCPD12 );
+  wildcard state s_S_LD_ILL_HSCPD13    	( S_LD_ILL_HSCPD13 );
+  wildcard state s_S_LD_ILL_HSCPD14    	( S_LD_ILL_HSCPD14 );
+  wildcard state s_S_LD_ILL_HSCPD15    	( S_LD_ILL_HSCPD15 );
+  wildcard state s_S_LD_ILL_HSCPD16    	( S_LD_ILL_HSCPD16 );
+  wildcard state s_S_LD_ILL_HSCPD17    	( S_LD_ILL_HSCPD17 );
+  wildcard state s_S_LD_ILL_HSCPD20    	( S_LD_ILL_HSCPD20 );
+  wildcard state s_S_LD_ILL_HSCPD21    	( S_LD_ILL_HSCPD21 );
+
+  // Hypervisor writting to Q-ASI illegal VA
+  wildcard state s_H_ST_ILL_QPTR01     	( H_ST_ILL_QPTR01 );
+  wildcard state s_H_ST_ILL_QPTR02     	( H_ST_ILL_QPTR02 );
+  wildcard state s_H_ST_ILL_QPTR03     	( H_ST_ILL_QPTR03 );
+  wildcard state s_H_ST_ILL_QPTR04     	( H_ST_ILL_QPTR04 );
+  wildcard state s_H_ST_ILL_QPTR05     	( H_ST_ILL_QPTR05 );
+  wildcard state s_H_ST_ILL_QPTR06     	( H_ST_ILL_QPTR06 );
+  wildcard state s_H_ST_ILL_QPTR07     	( H_ST_ILL_QPTR07 );
+  wildcard state s_H_ST_ILL_QPTR10     	( H_ST_ILL_QPTR10 );
+  wildcard state s_H_ST_ILL_QPTR11     	( H_ST_ILL_QPTR11 );
+  wildcard state s_H_ST_ILL_QPTR12     	( H_ST_ILL_QPTR12 );
+  wildcard state s_H_ST_ILL_QPTR13     	( H_ST_ILL_QPTR13 );
+  wildcard state s_H_ST_ILL_QPTR14     	( H_ST_ILL_QPTR14 );
+  wildcard state s_H_ST_ILL_QPTR15     	( H_ST_ILL_QPTR15 );
+  wildcard state s_H_ST_ILL_QPTR16     	( H_ST_ILL_QPTR16 );
+  wildcard state s_H_ST_ILL_QPTR17     	( H_ST_ILL_QPTR17 );
+  wildcard state s_H_ST_ILL_QPTR20     	( H_ST_ILL_QPTR20 );
+  wildcard state s_H_ST_ILL_QPTR21     	( H_ST_ILL_QPTR21 );
+
+  // Hypervisor writting to SCPAD-ASI illegal VA
+  wildcard state s_H_ST_ILL_SCPD01     	( H_ST_ILL_SCPD01 );
+  wildcard state s_H_ST_ILL_SCPD02     	( H_ST_ILL_SCPD02 );
+  wildcard state s_H_ST_ILL_SCPD03     	( H_ST_ILL_SCPD03 );
+  wildcard state s_H_ST_ILL_SCPD04     	( H_ST_ILL_SCPD04 );
+  wildcard state s_H_ST_ILL_SCPD05     	( H_ST_ILL_SCPD05 );
+  wildcard state s_H_ST_ILL_SCPD06     	( H_ST_ILL_SCPD06 );
+  wildcard state s_H_ST_ILL_SCPD07     	( H_ST_ILL_SCPD07 );
+  wildcard state s_H_ST_ILL_SCPD10     	( H_ST_ILL_SCPD10 );
+  wildcard state s_H_ST_ILL_SCPD11     	( H_ST_ILL_SCPD11 );
+  wildcard state s_H_ST_ILL_SCPD12     	( H_ST_ILL_SCPD12 );
+  wildcard state s_H_ST_ILL_SCPD13     	( H_ST_ILL_SCPD13 );
+  wildcard state s_H_ST_ILL_SCPD14     	( H_ST_ILL_SCPD14 );
+  wildcard state s_H_ST_ILL_SCPD15     	( H_ST_ILL_SCPD15 );
+  wildcard state s_H_ST_ILL_SCPD16     	( H_ST_ILL_SCPD16 );
+  wildcard state s_H_ST_ILL_SCPD17     	( H_ST_ILL_SCPD17 );
+  wildcard state s_H_ST_ILL_SCPD20     	( H_ST_ILL_SCPD20 );
+  wildcard state s_H_ST_ILL_SCPD21     	( H_ST_ILL_SCPD21 );
+
+  // Hypervisor writting to HSCPAD-ASI illegal VA
+  wildcard state s_H_ST_ILL_HSCPD01    	( H_ST_ILL_HSCPD01 );
+  wildcard state s_H_ST_ILL_HSCPD02    	( H_ST_ILL_HSCPD02 );
+  wildcard state s_H_ST_ILL_HSCPD03    	( H_ST_ILL_HSCPD03 );
+  wildcard state s_H_ST_ILL_HSCPD04    	( H_ST_ILL_HSCPD04 );
+  wildcard state s_H_ST_ILL_HSCPD05    	( H_ST_ILL_HSCPD05 );
+  wildcard state s_H_ST_ILL_HSCPD06    	( H_ST_ILL_HSCPD06 );
+  wildcard state s_H_ST_ILL_HSCPD07    	( H_ST_ILL_HSCPD07 );
+  wildcard state s_H_ST_ILL_HSCPD10    	( H_ST_ILL_HSCPD10 );
+  wildcard state s_H_ST_ILL_HSCPD11    	( H_ST_ILL_HSCPD11 );
+  wildcard state s_H_ST_ILL_HSCPD12    	( H_ST_ILL_HSCPD12 );
+  wildcard state s_H_ST_ILL_HSCPD13    	( H_ST_ILL_HSCPD13 );
+  wildcard state s_H_ST_ILL_HSCPD14    	( H_ST_ILL_HSCPD14 );
+  wildcard state s_H_ST_ILL_HSCPD15    	( H_ST_ILL_HSCPD15 );
+  wildcard state s_H_ST_ILL_HSCPD16    	( H_ST_ILL_HSCPD16 );
+  wildcard state s_H_ST_ILL_HSCPD17    	( H_ST_ILL_HSCPD17 );
+  wildcard state s_H_ST_ILL_HSCPD20    	( H_ST_ILL_HSCPD20 );
+  wildcard state s_H_ST_ILL_HSCPD21    	( H_ST_ILL_HSCPD21 );
+
+  // Hypervisor reading from Q-ASI illegal VA
+  wildcard state s_H_LD_ILL_QPTR01     	( H_LD_ILL_QPTR01 );
+  wildcard state s_H_LD_ILL_QPTR02     	( H_LD_ILL_QPTR02 );
+  wildcard state s_H_LD_ILL_QPTR03     	( H_LD_ILL_QPTR03 );
+  wildcard state s_H_LD_ILL_QPTR04     	( H_LD_ILL_QPTR04 );
+  wildcard state s_H_LD_ILL_QPTR05     	( H_LD_ILL_QPTR05 );
+  wildcard state s_H_LD_ILL_QPTR06     	( H_LD_ILL_QPTR06 );
+  wildcard state s_H_LD_ILL_QPTR07     	( H_LD_ILL_QPTR07 );
+  wildcard state s_H_LD_ILL_QPTR10     	( H_LD_ILL_QPTR10 );
+  wildcard state s_H_LD_ILL_QPTR11     	( H_LD_ILL_QPTR11 );
+  wildcard state s_H_LD_ILL_QPTR12     	( H_LD_ILL_QPTR12 );
+  wildcard state s_H_LD_ILL_QPTR13     	( H_LD_ILL_QPTR13 );
+  wildcard state s_H_LD_ILL_QPTR14     	( H_LD_ILL_QPTR14 );
+  wildcard state s_H_LD_ILL_QPTR15     	( H_LD_ILL_QPTR15 );
+  wildcard state s_H_LD_ILL_QPTR16     	( H_LD_ILL_QPTR16 );
+  wildcard state s_H_LD_ILL_QPTR17     	( H_LD_ILL_QPTR17 );
+  wildcard state s_H_LD_ILL_QPTR20     	( H_LD_ILL_QPTR20 );
+  wildcard state s_H_LD_ILL_QPTR21     	( H_LD_ILL_QPTR21 );
+
+  // Hypervisor reading from SCPAD-ASI illegal VA
+  wildcard state s_H_LD_ILL_SCPD01     	( H_LD_ILL_SCPD01 );
+  wildcard state s_H_LD_ILL_SCPD02     	( H_LD_ILL_SCPD02 );
+  wildcard state s_H_LD_ILL_SCPD03     	( H_LD_ILL_SCPD03 );
+  wildcard state s_H_LD_ILL_SCPD04     	( H_LD_ILL_SCPD04 );
+  wildcard state s_H_LD_ILL_SCPD05     	( H_LD_ILL_SCPD05 );
+  wildcard state s_H_LD_ILL_SCPD06     	( H_LD_ILL_SCPD06 );
+  wildcard state s_H_LD_ILL_SCPD07     	( H_LD_ILL_SCPD07 );
+  wildcard state s_H_LD_ILL_SCPD10     	( H_LD_ILL_SCPD10 );
+  wildcard state s_H_LD_ILL_SCPD11     	( H_LD_ILL_SCPD11 );
+  wildcard state s_H_LD_ILL_SCPD12     	( H_LD_ILL_SCPD12 );
+  wildcard state s_H_LD_ILL_SCPD13     	( H_LD_ILL_SCPD13 );
+  wildcard state s_H_LD_ILL_SCPD14     	( H_LD_ILL_SCPD14 );
+  wildcard state s_H_LD_ILL_SCPD15     	( H_LD_ILL_SCPD15 );
+  wildcard state s_H_LD_ILL_SCPD16     	( H_LD_ILL_SCPD16 );
+  wildcard state s_H_LD_ILL_SCPD17     	( H_LD_ILL_SCPD17 );
+  wildcard state s_H_LD_ILL_SCPD20     	( H_LD_ILL_SCPD20 );
+  wildcard state s_H_LD_ILL_SCPD21     	( H_LD_ILL_SCPD21 );
+
+  // Hypervisor reading from HSCPAD-ASI illegal VA
+  wildcard state s_H_LD_ILL_HSCPD01    	( H_LD_ILL_HSCPD01 );
+  wildcard state s_H_LD_ILL_HSCPD02    	( H_LD_ILL_HSCPD02 );
+  wildcard state s_H_LD_ILL_HSCPD03    	( H_LD_ILL_HSCPD03 );
+  wildcard state s_H_LD_ILL_HSCPD04    	( H_LD_ILL_HSCPD04 );
+  wildcard state s_H_LD_ILL_HSCPD05    	( H_LD_ILL_HSCPD05 );
+  wildcard state s_H_LD_ILL_HSCPD06    	( H_LD_ILL_HSCPD06 );
+  wildcard state s_H_LD_ILL_HSCPD07    	( H_LD_ILL_HSCPD07 );
+  wildcard state s_H_LD_ILL_HSCPD10    	( H_LD_ILL_HSCPD10 );
+  wildcard state s_H_LD_ILL_HSCPD11    	( H_LD_ILL_HSCPD11 );
+  wildcard state s_H_LD_ILL_HSCPD12    	( H_LD_ILL_HSCPD12 );
+  wildcard state s_H_LD_ILL_HSCPD13    	( H_LD_ILL_HSCPD13 );
+  wildcard state s_H_LD_ILL_HSCPD14    	( H_LD_ILL_HSCPD14 );
+  wildcard state s_H_LD_ILL_HSCPD15    	( H_LD_ILL_HSCPD15 );
+  wildcard state s_H_LD_ILL_HSCPD16    	( H_LD_ILL_HSCPD16 );
+  wildcard state s_H_LD_ILL_HSCPD17    	( H_LD_ILL_HSCPD17 );
+  wildcard state s_H_LD_ILL_HSCPD20    	( H_LD_ILL_HSCPD20 );
+  wildcard state s_H_LD_ILL_HSCPD21    	( H_LD_ILL_HSCPD21 );
+
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

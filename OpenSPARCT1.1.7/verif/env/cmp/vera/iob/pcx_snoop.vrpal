@@ -1,0 +1,119 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: pcx_snoop.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        pcx_snoop.vrpal
+//  Description:        Snoops commands going to BSC from RDMA
+//                      and initializes expects
+//
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#include "pcx_cmd.vrh"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class PCX_SNOOP 
+{
+  string        name;
+  bit [6:0]     nodeid;
+  pcx_iob_port  pcx_iob_bind;
+  integer       snoop_mbox;
+  integer       iob_mbox;
+  integer       intchk_mbox;
+
+  task          new((string name = "PCX_SNOOP"), bit [6:0] nodeid, pcx_iob_port pcx_iob_bind);
+  task          snoop();
+}
+
+////////////////////////////////////////////////////////////////////////
+// constructor
+////////////////////////////////////////////////////////////////////////
+task PCX_SNOOP::new ((string name = "PCX_SNOOP"), bit [6:0] nodeid, pcx_iob_port pcx_iob_bind)
+{
+  string filename ;
+ 
+  this.name                     = name;
+  this.nodeid                   = nodeid;
+  this.pcx_iob_bind             = pcx_iob_bind;
+  this.name                     = name;
+  this.snoop_mbox               = alloc(MAILBOX, 0, 1);
+  this.iob_mbox                 = alloc(MAILBOX, 0, 1);
+  this.intchk_mbox              = alloc(MAILBOX, 0, 1);
+}
+
+////////////////////////////////////////////////////////////////////////
+// snoop
+////////////////////////////////////////////////////////////////////////
+task PCX_SNOOP::snoop()
+{
+  fork
+  {
+    integer i = 0 ;
+    integer offset = 0 ;
+    integer left = 0 ;
+    integer right = 0 ;
+    bit [2:0] coreid ;
+    bit [1:0] threadid ;
+    bit [2:0] queueid ;
+    bit [PCX_WIDTH-1:0] rx_dat [];
+    PCX_CMD pcx_cmd, iob_cmd;
+    // bit stall = this.pcx_iob_bind.\$io_pcx_stall_pq ;
+
+    while (1)
+    {
+      @(posedge this.pcx_iob_bind.\$clk);
+
+      if (this.pcx_iob_bind.\$pcx_io_data_rdy_px2 && this.pcx_iob_bind.\$rst_l)
+      {
+        rx_dat [0] = this.pcx_iob_bind.\$pcx_io_data_px2 ;
+
+        pcx_cmd = new () ;
+        pcx_cmd.nodeid = this.nodeid ;
+        left = 0 ;
+        right = 0 ;
+        offset = 0 ;
+        void = pcx_cmd.unpack (rx_dat, left, right, offset) ;
+
+        if (get_plus_arg(CHECK, "iob_debug"))
+        {
+          pcx_cmd.print (name);
+        }
+        iob_cmd = new pcx_cmd;
+        mailbox_put (snoop_mbox, pcx_cmd) ;
+        mailbox_put (intchk_mbox, pcx_cmd) ;
+        mailbox_put (iob_mbox, iob_cmd) ;
+      }
+
+      if (this.pcx_iob_bind.\$io_pcx_stall_pq)
+      {
+         pcx_cmd.print_stall (this.pcx_iob_bind.\$io_pcx_stall_pq, this.name) ;
+      }
+
+      // stall = this.pcx_iob_bind.\$io_pcx_stall_pq ;
+    }
+  }
+  join none
+}

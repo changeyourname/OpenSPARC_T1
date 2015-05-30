@@ -1,0 +1,503 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "dram_cov_inc.pal";
+//***************************************************************************
+//
+// File:	dram_coverage.vrpal
+// Description:
+// Top level DRAM coverage class which instantiates the lower level
+// coverage objects and enables coverage when dram_coverage switch
+// is on. This file is used to generate dram_coverage.vr.
+//
+//***************************************************************************/
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "dram_defines.vrh"
+#include "dram.if.vrh"
+#include "dram_ports_binds.vrh"
+
+extern event dram_diag_done;
+
+
+class ${prefix}dram_coverage {
+
+
+
+
+  // ----------- start of coverage object 1 ----------------
+  // this coverage group samples on dram clock
+  coverage_group dram_coverage_group {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_dram_clk.dram_gclk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+. foreach $c (@DRC_STR) {
+  sample ${prefix}dram_que_fsm_sample_bind_Ch${c}.\$que_pos {
+#inc "dram_cntrlfsm_sample.vrhpal";
+  //#include "dram_cntrlfsm_sample.vrh"
+  }
+  sample ${prefix}dram_rd_que_status_sample_bind_Ch${c}.\$rd_que_status {
+  #include "dram_rd_que_sample.vrh"
+  }
+  sample ${prefix}dram_wr_que_status_sample_bind_Ch${c}.\$wr_que_status {
+  #include "dram_wr_que_sample.vrh"
+  }
+  sample ${prefix}dram_que_pick_wr_first_sample_bind_Ch${c}.\$wr_pick {
+  #include "dram_wr_q_full_starv_cntr_sample.vrh"
+   }
+  sample ${prefix}dram_wr_data_rd_mem_sample_bind_Ch${c}.\$en_n_addr {
+  #include "dram_wr_data_rd_mem_sample.vrh"
+   }
+  sample ${prefix}dram_ras_cas_pend_cnt_sample_bind_Ch${c}.\$ras_cas_pend_cnt {
+  #include "dram_ras_cas_pend_cnt_sample.vrh"
+   }
+  sample ${prefix}dram_ras_picked_sample_bind_Ch${c}.\$ras_picked{
+  #include "dram_ras_picked_sample.vrh"
+   }
+  sample ${prefix}dram_cas_picked_sample_bind_Ch${c}.\$cas_picked{
+  #include "dram_cas_picked_sample.vrh"
+   }
+  sample ${prefix}dram_rd_wr_hit_sample_bind_Ch${c}.\$rd_wr_hit{
+  #include "dram_rd_wr_hit_sample.vrh"
+   }
+  sample ${prefix}dram_scb_req_same_bank_sample_bind_Ch${c}.\$scb_req{
+  #include "dram_scb_req_same_bank_sample.vrh"
+   }
+  sample ${prefix}dram_refresh_all_clr_mon_state_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_refrsh_issued_all_cas_clr_sample.vrh"
+   }
+  sample ${prefix}dram_cas_que_sample_bind_Ch${c}.\$cas_valid {
+  #include "dram_cas_que_sample.vrh"
+   }
+  sample ${prefix}dram_rd_wr_scrb_schmoo_sample_bind_Ch${c}.\$rd_wr_scrb_vld {
+  #include "dram_rd_wr_schmoo_sample.vrh"
+   }
+  sample ${prefix}dram_reg_port_sample_bind_Ch${c}.\$registers {
+  #include "dram_reg_toggle_sample.vrh"
+   }
+  sample ${prefix}dram_perf_cntr_sample_bind_Ch${c}.\$perf {
+  #include "dram_perf_cntr_sample.vrh"
+   }
+  sample ${prefix}dram_reg_ack_nack_sample_bind_Ch${c}.\$ack_nack {
+  #include "dram_reg_ack_nack_sample.vrh"
+   }
+  sample ${prefix}dram_rank_stack_addr_param_rd_hi_sample_bind_Ch${c}.\$addr_etc_info_rd_hi {
+  #include "dram_rank_stack_addr_param_rd_hi_sample.vrh"
+   }
+  sample ${prefix}dram_rank_stack_addr_param_wr_hi_sample_bind_Ch${c}.\$addr_etc_info_wr_hi {
+  #include "dram_rank_stack_addr_param_wr_hi_sample.vrh"
+   }
+  sample ${prefix}dram_rank_stack_addr_param_rd_lo_sample_bind_Ch${c}.\$addr_etc_info_rd_lo {
+  #include "dram_rank_stack_addr_param_rd_lo_sample.vrh"
+   }
+  sample ${prefix}dram_rank_stack_addr_param_wr_lo_sample_bind_Ch${c}.\$addr_etc_info_wr_lo {
+  #include "dram_rank_stack_addr_param_wr_lo_sample.vrh"
+   }
+  sample ${prefix}dram_dp_pioson_l2_data_sample_bind_Ch${c}.\$dp_pioson_l2_data {
+  #include "dram_dp_pioson_l2_data_sample.vrh"
+   }
+//  sample ${prefix}dram_line_cov_sample_bind_Ch${c}.\$line_cov {
+//  #include "dram_line_cov.vrh"
+//   }
+. for ( $i = 0; $i < 8; $i++ ) {
+  sample ${prefix}dram_rd_q_cntr${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_q_cntr_sample.vrh"
+   }
+  sample ${prefix}dram_wr_q_cntr${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_q_cntr_sample.vrh"
+   }
+  sample ${prefix}dram_rd_req_ack_${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_rd_req_ack_cntr_sample.vrh"
+   }
+.}
+  sample ${prefix}dram_wr_req_ack_sample_bind_Ch${c}.\$cntr {
+  #include "dram_wr_req_ack_cntr_sample.vrh"
+   }
+
+. for ( $ch = 0; $ch < 4; $ch++ ) {
+. for ( $i = 0; $i < 8; $i++ ) {
+  sample ${prefix}dram_cs${ch}_bank_req_cntr_${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_cs_bank_req_cntr_sample.vrh"
+   }
+.}
+.}
+
+
+. } # for $c
+//  sample ${prefix}dram_pt_refresh_blk_bank_sample_bind_Ch0.\$pt_refresh_blk_bank {
+//  #include "dram_pt_refresh_blk_bank_sample.vrh"
+//   }
+//  sample ${prefix}dram_pt_refresh_blk_bank_sample_bind_Ch1.\$pt_refresh_blk_bank {
+//  #include "dram_pt_refresh_blk_bank_sample.vrh"
+//   }
+
+
+  } // coverage_group
+
+  // ----------- start of coverage object 2 ----------------
+  // this coverage group samples on core clock
+  coverage_group dram_coverage_group_l2 {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_core_clk.cmp_clk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+. foreach $c (@DRC_STR) {
+  sample ${prefix}dram_rd_wr_l2if_sample_bind_Ch${c}.\$rd_wr_l2if {
+  #include "dram_rd_wr_l2if_sample.vrh"
+   }
+  sample ${prefix}dram_wr_data_mem_sample_bind_Ch${c}.\$en_n_addr {
+  #include "dram_wr_data_mem_sample.vrh"
+   }
+  sample ${prefix}dram_l2if_data_ret_fifo_en_sample_bind_Ch${c}.\$fifo_en {
+  #include "dram_l2if_data_ret_fifo_sample.vrh"
+   }
+  sample ${prefix}dram_rd_sync_schmoo_sample_bind_Ch${c}.\$rd_sync {
+  #include "dram_rd_sync_schmoo_sample.vrh"
+   }
+  sample ${prefix}dram_wr_sync_schmoo_sample_bind_Ch${c}.\$wr_sync {
+  #include "dram_wr_sync_schmoo_sample.vrh"
+   }
+  sample ${prefix}dram_err_l2if_sample_bind_Ch${c}.\$secc_pa_mecc_scb_secc_mecc {
+  #include "dram_err_l2if_sample.vrh"
+   }
+  sample ${prefix}dram_err_sts_sample_bind_Ch${c}.\$err_en_n_sts {
+  #include "dram_err_sts_sample.vrh"
+   }
+  sample ${prefix}dram_rd_q_full_n_req_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_rd_q_full_n_req_sample.vrh"
+  }
+  sample ${prefix}dram_wr_q_full_n_req_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_wr_q_full_n_req_sample.vrh"
+   }
+  // though they sync on jbus clock but are asserted on cmp_clk
+  sample ${prefix}dram_err_intr_ucb_trig_sample_bind_Ch${c}.\$err_intr_ucb_trig {
+  #include "dram_err_intr_ucb_trig_sample.vrh"
+   }
+  sample ${prefix}dram_err_intr_ucb_trig1_sample_bind_Ch${c}.\$err_intr_ucb_trig1 {
+  #include "dram_err_intr_ucb_trig1_sample.vrh"
+   }
+. } # for $c
+  } // coverage_group 2
+
+
+
+  // ----------- start of coverage object 3(jbus) ----------------
+  // this coverage group samples on jbus clock
+  coverage_group dram_coverage_group_jbus {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_jbus_clk.jbus_gclk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+  sample ${prefix}dram_ucb_req_pend_ack_int_busy_sample_bind_Ch0.\$ucb_etc {
+  #include "dram_ucb_req_pend_ack_int_busy_sample.vrh"
+   }
+  sample ${prefix}dram_ucb_req_pend_ack_int_busy_sample_bind_Ch1.\$ucb_etc {
+  #include "dram_ucb_req_pend_ack_int_busy_sample.vrh"
+   }
+
+  } // coverage_group 3
+
+  task new();
+
+}
+
+/////////////////////////////////////////////////////////////////
+// Class creation 
+/////////////////////////////////////////////////////////////////
+
+task ${prefix}dram_coverage::new() {
+
+
+  bit coverage_on;
+  integer j;
+
+  if (get_plus_arg (CHECK, "dram_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+
+    dram_coverage_group	= new();
+    dram_coverage_group_l2	= new();
+    printf("\n\n        %d : Coverage turned on for DRAM objects\n\n", get_time(LO));
+
+    fork {
+      //@ (posedge dram_coverage_ifc_core_clk.cmp_diag_done); //change this to be based on all cores
+      //@ (posedge dram_diag_done); //change this to be based on all cores
+      //while (dram_diag_done == 0) { }  //change this to be based on all cores
+      //printf("\n\n        %d : Waiting on dram_diag_done \n\n", get_time(LO));
+#ifdef DRAM
+       sync(ANY,dram_diag_done);
+#else
+      @ (posedge dram_coverage_ifc_core_clk.cmp_diag_done); //change this to be based on all cores
+#endif
+      //printf("\n\n        %d : After dram_diag_done \n\n", get_time(LO));
+      dram_coverage_group.set_cov_weight(1);
+      dram_coverage_group_l2.set_cov_weight(1);
+      coverage_save_database(1);
+      printf("\n\n        %d : Coverage for DRAM objects generated\n\n", get_time(LO));
+    } join none
+  } // if coverage_on
+} // ${prefix}dram_coverage::new()
+
+
+#ifdef COMMENTED_OUT
+
+// For cmp
+
+class cmpdram_coverage {
+
+
+
+
+  // ----------- start of coverage object 1 ----------------
+  // this coverage group samples on dram clock
+  coverage_group dram_coverage_group {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_dram_clk.dram_gclk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+. foreach $c (@DRC_STR) {
+  sample dram_que_fsm_sample_bind_Ch${c}.\$que_pos {
+#inc "dram_cntrlfsm_sample.vrhpal";
+  //#include "dram_cntrlfsm_sample.vrh"
+  }
+  sample dram_rd_que_status_sample_bind_Ch${c}.\$rd_que_status {
+  #include "dram_rd_que_sample.vrh"
+  }
+  sample dram_wr_que_status_sample_bind_Ch${c}.\$wr_que_status {
+  #include "dram_wr_que_sample.vrh"
+  }
+  sample dram_que_pick_wr_first_sample_bind_Ch${c}.\$wr_pick {
+  #include "dram_wr_q_full_starv_cntr_sample.vrh"
+   }
+  sample dram_wr_data_rd_mem_sample_bind_Ch${c}.\$en_n_addr {
+  #include "dram_wr_data_rd_mem_sample.vrh"
+   }
+  sample dram_ras_cas_pend_cnt_sample_bind_Ch${c}.\$ras_cas_pend_cnt {
+  #include "dram_ras_cas_pend_cnt_sample.vrh"
+   }
+  sample dram_ras_picked_sample_bind_Ch${c}.\$ras_picked{
+  #include "dram_ras_picked_sample.vrh"
+   }
+  sample dram_cas_picked_sample_bind_Ch${c}.\$cas_picked{
+  #include "dram_cas_picked_sample.vrh"
+   }
+  sample dram_rd_wr_hit_sample_bind_Ch${c}.\$rd_wr_hit{
+  #include "dram_rd_wr_hit_sample.vrh"
+   }
+  sample dram_scb_req_same_bank_sample_bind_Ch${c}.\$scb_req{
+  #include "dram_scb_req_same_bank_sample.vrh"
+   }
+  sample dram_refresh_all_clr_mon_state_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_refrsh_issued_all_cas_clr_sample.vrh"
+   }
+  sample dram_cas_que_sample_bind_Ch${c}.\$cas_valid {
+  #include "dram_cas_que_sample.vrh"
+   }
+  sample dram_rd_wr_scrb_schmoo_sample_bind_Ch${c}.\$rd_wr_scrb_vld {
+  #include "dram_rd_wr_schmoo_sample.vrh"
+   }
+  sample dram_reg_port_sample_bind_Ch${c}.\$registers {
+  #include "dram_reg_toggle_sample.vrh"
+   }
+  sample dram_perf_cntr_sample_bind_Ch${c}.\$perf {
+  #include "dram_perf_cntr_sample.vrh"
+   }
+  sample dram_reg_ack_nack_sample_bind_Ch${c}.\$ack_nack {
+  #include "dram_reg_ack_nack_sample.vrh"
+   }
+  sample dram_rank_stack_addr_param_rd_hi_sample_bind_Ch${c}.\$addr_etc_info_rd_hi {
+  #include "dram_rank_stack_addr_param_rd_hi_sample.vrh"
+   }
+  sample dram_rank_stack_addr_param_wr_hi_sample_bind_Ch${c}.\$addr_etc_info_wr_hi {
+  #include "dram_rank_stack_addr_param_wr_hi_sample.vrh"
+   }
+  sample dram_rank_stack_addr_param_rd_lo_sample_bind_Ch${c}.\$addr_etc_info_rd_lo {
+  #include "dram_rank_stack_addr_param_rd_lo_sample.vrh"
+   }
+  sample dram_rank_stack_addr_param_wr_lo_sample_bind_Ch${c}.\$addr_etc_info_wr_lo {
+  #include "dram_rank_stack_addr_param_wr_lo_sample.vrh"
+   }
+  sample dram_dp_pioson_l2_data_sample_bind_Ch${c}.\$dp_pioson_l2_data {
+  #include "dram_dp_pioson_l2_data_sample.vrh"
+   }
+. for ( $i = 0; $i < 8; $i++ ) {
+  sample dram_rd_q_cntr${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_q_cntr_sample.vrh"
+   }
+  sample dram_wr_q_cntr${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_q_cntr_sample.vrh"
+   }
+  sample dram_rd_req_ack_${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_rd_req_ack_cntr_sample.vrh"
+   }
+.}
+  sample dram_wr_req_ack_sample_bind_Ch${c}.\$cntr {
+  #include "dram_wr_req_ack_cntr_sample.vrh"
+   }
+
+. for ( $ch = 0; $ch < 4; $ch++ ) {
+. for ( $i = 0; $i < 8; $i++ ) {
+  sample dram_cs${ch}_bank_req_cntr_${i}_sample_bind_Ch${c}.\$cntr {
+  #include "dram_cs_bank_req_cntr_sample.vrh"
+   }
+.}
+.}
+
+
+. } # for $c
+  sample dram_pt_refresh_blk_bank_sample_bind_Ch0.\$pt_refresh_blk_bank {
+  #include "dram_pt_refresh_blk_bank_sample.vrh"
+   }
+  sample dram_pt_refresh_blk_bank_sample_bind_Ch1.\$pt_refresh_blk_bank {
+  #include "dram_pt_refresh_blk_bank_sample.vrh"
+   }
+
+
+  } // coverage_group
+
+  // ----------- start of coverage object 2 ----------------
+  // this coverage group samples on core clock
+  coverage_group dram_coverage_group_l2 {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_core_clk.cmp_clk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+. foreach $c (@DRC_STR) {
+  sample dram_rd_wr_l2if_sample_bind_Ch${c}.\$rd_wr_l2if {
+  #include "dram_rd_wr_l2if_sample.vrh"
+   }
+  sample dram_wr_data_mem_sample_bind_Ch${c}.\$en_n_addr {
+  #include "dram_wr_data_mem_sample.vrh"
+   }
+  sample dram_l2if_data_ret_fifo_en_sample_bind_Ch${c}.\$fifo_en {
+  #include "dram_l2if_data_ret_fifo_sample.vrh"
+   }
+  sample dram_rd_sync_schmoo_sample_bind_Ch${c}.\$rd_sync {
+  #include "dram_rd_sync_schmoo_sample.vrh"
+   }
+  sample dram_wr_sync_schmoo_sample_bind_Ch${c}.\$wr_sync {
+  #include "dram_wr_sync_schmoo_sample.vrh"
+   }
+  sample dram_err_l2if_sample_bind_Ch${c}.\$secc_pa_mecc_scb_secc_mecc {
+  #include "dram_err_l2if_sample.vrh"
+   }
+  sample dram_err_sts_sample_bind_Ch${c}.\$err_en_n_sts {
+  #include "dram_err_sts_sample.vrh"
+   }
+  sample dram_rd_q_full_n_req_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_rd_q_full_n_req_sample.vrh"
+  }
+  sample dram_wr_q_full_n_req_sample_bind_Ch${c}.\$fsm_state {
+  #include "dram_wr_q_full_n_req_sample.vrh"
+   }
+  // though they sync on jbus clock but are asserted on cmp_clk
+  sample dram_err_intr_ucb_trig_sample_bind_Ch${c}.\$err_intr_ucb_trig {
+  #include "dram_err_intr_ucb_trig_sample.vrh"
+   }
+  sample dram_err_intr_ucb_trig1_sample_bind_Ch${c}.\$err_intr_ucb_trig1 {
+  #include "dram_err_intr_ucb_trig1_sample.vrh"
+   }
+. } # for $c
+  } // coverage_group 2
+
+
+
+  // ----------- start of coverage object 3(jbus) ----------------
+  // this coverage group samples on jbus clock
+  coverage_group dram_coverage_group_jbus {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event	=  @(posedge dram_coverage_ifc_jbus_clk.jbus_gclk);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+  sample dram_ucb_req_pend_ack_int_busy_sample_bind_Ch0.\$ucb_etc {
+  #include "dram_ucb_req_pend_ack_int_busy_sample.vrh"
+   }
+  sample dram_ucb_req_pend_ack_int_busy_sample_bind_Ch1.\$ucb_etc {
+  #include "dram_ucb_req_pend_ack_int_busy_sample.vrh"
+   }
+
+  } // coverage_group 3
+
+  task new();
+
+}
+
+/////////////////////////////////////////////////////////////////
+// Class creation 
+/////////////////////////////////////////////////////////////////
+
+task cmpdram_coverage::new() {
+
+
+  bit coverage_on;
+  integer j;
+
+  if (get_plus_arg (CHECK, "dram_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+
+    dram_coverage_group	= new();
+    dram_coverage_group_l2	= new();
+    printf("\n\n        %d : Coverage turned on for DRAM objects\n\n", get_time(LO));
+
+    fork {
+      //@ (posedge dram_coverage_ifc_core_clk.cmp_diag_done); //change this to be based on all cores
+      //@ (posedge dram_diag_done); //change this to be based on all cores
+      //while (dram_diag_done == 0) { }  //change this to be based on all cores
+      //printf("\n\n        %d : Waiting on dram_diag_done \n\n", get_time(LO));
+#ifdef DRAM
+       sync(ANY,dram_diag_done);
+#else
+      @ (posedge dram_coverage_ifc_core_clk.cmp_diag_done); //change this to be based on all cores
+#endif
+      //printf("\n\n        %d : After dram_diag_done \n\n", get_time(LO));
+      dram_coverage_group.set_cov_weight(1);
+      dram_coverage_group_l2.set_cov_weight(1);
+      coverage_save_database(1);
+      printf("\n\n        %d : Coverage for DRAM objects generated\n\n", get_time(LO));
+    } join none
+  } // if coverage_on
+} // dram_coverage::new()
+
+#endif

@@ -1,0 +1,55 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_mout_j_pack_out_gen.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	jbi_mout_j_pack_out_gen.vrhpal
+// Description: Coverage object for the jbi_mout jbi_j_pack_out_gen state machine.
+//
+// ***************************************************************************
+
+// Group:      jbi_mout
+// FSM:        j_pack_out_gen
+// Interfaces:
+//    Acronym	RTL signal w/ scope						Interface
+//    -------   ----------------------------------------------------------	---------
+//    state	"${JBUS_COV_PATH}.jbi.u_mout.j_pack_out_gen.state[2:0]"		jbi_jbuscov_ifc
+
+
+  // State declarations.
+  state S_IDLE          (JBI_J_PACK_OUT_GEN_STATE_IDLE);
+  state S_DOK_FATAL2    (JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL2);
+  state S_DOK_FATAL3    (JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL3);
+  state S_DOK_FATAL4    (JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL4);
+
+
+  // Transitions.
+  trans t_s_IDLE_s_IDLE			(JBI_J_PACK_OUT_GEN_STATE_IDLE       -> JBI_J_PACK_OUT_GEN_STATE_IDLE);
+  trans t_s_IDLE_s_DOK_FATAL2		(JBI_J_PACK_OUT_GEN_STATE_IDLE       -> JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL2);
+  trans t_s_DOK_FATAL2_s_DOK_FATAL3	(JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL2 -> JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL3);
+  trans t_s_DOK_FATAL3_s_DOK_FATAL4	(JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL3 -> JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL4);
+  trans t_s_DOK_FATAL4_s_IDLE		(JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL4 -> JBI_J_PACK_OUT_GEN_STATE_IDLE);
+
+
+  // Bad states.
+  bad_state s_not_J_PACK_OUT_GEN_STATE (not state);
+
+  // Bad transitions. 
+  //bad_trans t_not_J_PACK_OUT_GEN_TRANS (not trans);

@@ -1,0 +1,87 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "fpu_cov_inc.pal";
+#ifndef __FPU_IF_VRH__
+#define __FPU_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface fpu_cov_top
+ {
+  // common signals
+  input cmp_clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+// Add pipe valids
+.for ( $i = 1; $i <= 6; $i++ ) {
+   input a${i}stg_fadd PSAMPLE ;
+.}
+
+// Mult pipe valids
+.for ( $i = 1; $i <= 6; $i++ ) {
+   input m${i}stg_fmul PSAMPLE ;
+.}
+
+//Fdiv pipe valids
+.for ( $i = 1; $i <= 8; $i++ ) {
+   input d${i}stg_fdiv PSAMPLE ;
+.}
+
+input [5:0] a2stg_shr_cnt  PSAMPLE;
+input [5:0] a4stg_shl_cnt  PSAMPLE;
+
+input [2:0] inq_rdptr  PSAMPLE;
+input [2:0] inq_wrptr  PSAMPLE;
+
+input [2:0] inq_div_rdptr  PSAMPLE;
+input [2:0] inq_div_wrptr  PSAMPLE;
+
+input [55:0] m4stg_shl PSAMPLE;
+input [55:0] m4stg_shr PSAMPLE;
+
+input [31:0] a2stg_shr_tmp4 PSAMPLE;
+input [55:0] a2stg_shr      PSAMPLE;
+
+input [54:0] div_frac_add_in1  PSAMPLE;
+input        d6stg_frac_0      PSAMPLE;
+input        d6stg_frac_29     PSAMPLE;
+
+input [5:0]  div_shl_cnt     PSAMPLE;
+
+input [4:0]  add_exc_out     PSAMPLE;
+input [4:0]  mul_exc_out     PSAMPLE;
+input [4:0]  div_exc_out     PSAMPLE;
+
+input        a4stg_rndadd_cout    PSAMPLE;
+input        add_exp_out_expinc   PSAMPLE;
+input        add_exp_out_exp      PSAMPLE;
+input        add_exp_out_exp1     PSAMPLE;
+input        add_exp_out_expadd   PSAMPLE;
+
+input        m5stg_fracadd_cout   PSAMPLE;
+input        mul_exp_out_exp_plus1   PSAMPLE;
+input        m4stg_inc_exp_54     PSAMPLE;
+input        m4stg_inc_exp_55     PSAMPLE;
+input        m4stg_inc_exp_105    PSAMPLE;
+}
+
+#endif
+

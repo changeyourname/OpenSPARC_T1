@@ -1,0 +1,37 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_rmost_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This coverage object monitors the number of rmo stores 
+// without an ACK betwen them. In addition to that it checks 
+// for the st_blkst_mixture flag which is raised when rmo stores
+// and normal stores are mixed.
+// it monitors the following signals:
+//   st_blkst_mixture;
+//   blk_st_cnt[3:0];
+// for block stores, and the equivalent signals for streaming stores
+// and init stores.
+//***********************************************************************
+  state s_TSO_LSU_2RMOSTORES   		(TSO_LSU_2RMOSTORES);
+  state s_TSO_LSU_3RMOSTORES   		(TSO_LSU_3RMOSTORES);
+  state s_TSO_LSU_4RMOSTORES   		(TSO_LSU_4RMOSTORES);
+  state s_TSO_LSU_6RMOSTORES   		(TSO_LSU_6RMOSTORES);
+  state s_TSO_LSU_MIXRMO1     		(TSO_LSU_MIXRMO1);
+  state s_TSO_LSU_MIXRMO2     		(TSO_LSU_MIXRMO2);

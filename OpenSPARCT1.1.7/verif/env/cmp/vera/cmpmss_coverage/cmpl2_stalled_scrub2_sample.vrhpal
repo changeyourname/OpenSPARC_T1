@@ -1,0 +1,46 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_stalled_scrub2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// l2_stalled_scrub2_state[25:0] = {8 stall bits,
+//                                  arbctl_stall_c2, arbctl_inst_vld_c1, arbctl_inst_fb_c1, arbctl_inst_tecc_c1};
+//
+// each (C1) stall bit must be qualified with (!arbctl_stall_c2 & arbctl_inst_vld_c1)
+
+
+// Tag Scrub
+wildcard trans TagScrub_7({8'b1xxxxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_6({8'bx1xxxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_5({8'bxx1xxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_4({8'bxxx1xxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_3({8'bxxxx1xxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_2({8'bxxxxx1xx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_1({8'bxxxxxx1x, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+wildcard trans TagScrub_0({8'bxxxxxxx1, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b01});
+
+// Data Scrub
+wildcard trans DataScrub_7({8'b1xxxxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_6({8'bx1xxxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_5({8'bxx1xxxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_4({8'bxxx1xxxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_3({8'bxxxx1xxx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_2({8'bxxxxx1xx, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_1({8'bxxxxxx1x, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});
+wildcard trans DataScrub_0({8'bxxxxxxx1, 2'b01, 2'bx} -> {8'bx, 2'b11, 2'b11});

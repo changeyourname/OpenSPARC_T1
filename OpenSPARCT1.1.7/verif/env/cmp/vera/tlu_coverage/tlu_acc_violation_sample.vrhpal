@@ -1,0 +1,118 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_acc_violation_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for TICK/STICK access violations detection and trap
+//generation by TLU itself.
+//
+//***************************************************************************
+
+// coverage_def TLU_ACC_VIOLATION_COV (bit [17:0] tlu_acc_violation_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_U_TH0_WR_TICK_NPTn0	   (U_TH0_WR_TICK_NPTn0);
+  wildcard state s_U_TH1_WR_TICK_NPTn0     (U_TH1_WR_TICK_NPTn0);
+  wildcard state s_U_TH2_WR_TICK_NPTn0     (U_TH2_WR_TICK_NPTn0);
+  wildcard state s_U_TH3_WR_TICK_NPTn0     (U_TH3_WR_TICK_NPTn0);
+                                           
+  wildcard state s_U_TH0_WR_TICK_NPTn1     (U_TH0_WR_TICK_NPTn1);
+  wildcard state s_U_TH1_WR_TICK_NPTn1     (U_TH1_WR_TICK_NPTn1);
+  wildcard state s_U_TH2_WR_TICK_NPTn1     (U_TH2_WR_TICK_NPTn1);
+  wildcard state s_U_TH3_WR_TICK_NPTn1     (U_TH3_WR_TICK_NPTn1);
+                                           
+  wildcard state s_S_TH0_WR_TICK_NPTn0     (S_TH0_WR_TICK_NPTn0);
+  wildcard state s_S_TH1_WR_TICK_NPTn0     (S_TH1_WR_TICK_NPTn0);
+  wildcard state s_S_TH2_WR_TICK_NPTn0     (S_TH2_WR_TICK_NPTn0);
+  wildcard state s_S_TH3_WR_TICK_NPTn0     (S_TH3_WR_TICK_NPTn0);
+                                           
+  wildcard state s_S_TH0_WR_TICK_NPTn1     (S_TH0_WR_TICK_NPTn1);
+  wildcard state s_S_TH1_WR_TICK_NPTn1     (S_TH1_WR_TICK_NPTn1);
+  wildcard state s_S_TH2_WR_TICK_NPTn1     (S_TH2_WR_TICK_NPTn1);
+  wildcard state s_S_TH3_WR_TICK_NPTn1     (S_TH3_WR_TICK_NPTn1);
+                                           
+  wildcard state s_H_TH0_WR_TICK_NPTn1     (H_TH0_WR_TICK_NPTn1);
+  wildcard state s_H_TH1_WR_TICK_NPTn1     (H_TH1_WR_TICK_NPTn1);
+  wildcard state s_H_TH2_WR_TICK_NPTn1     (H_TH2_WR_TICK_NPTn1);
+  wildcard state s_H_TH3_WR_TICK_NPTn1     (H_TH3_WR_TICK_NPTn1);
+                                           
+  wildcard state s_U_TH0_RD_TICK_NPTn0      (U_TH0_RD_TICK_NPTn0);
+  wildcard state s_U_TH1_RD_TICK_NPTn0      (U_TH1_RD_TICK_NPTn0); 
+  wildcard state s_U_TH2_RD_TICK_NPTn0      (U_TH2_RD_TICK_NPTn0); 
+  wildcard state s_U_TH3_RD_TICK_NPTn0      (U_TH3_RD_TICK_NPTn0);
+
+  wildcard state s_U_TH0_RD_TICK_NPTn1      (U_TH0_RD_TICK_NPTn1);
+  wildcard state s_U_TH1_RD_TICK_NPTn1      (U_TH1_RD_TICK_NPTn1); 
+  wildcard state s_U_TH2_RD_TICK_NPTn1      (U_TH2_RD_TICK_NPTn1); 
+  wildcard state s_U_TH3_RD_TICK_NPTn1      (U_TH3_RD_TICK_NPTn1);
+
+  wildcard state s_S_TH0_RD_TICK_NPTn0      (S_TH0_RD_TICK_NPTn0); 
+  wildcard state s_S_TH1_RD_TICK_NPTn0      (S_TH1_RD_TICK_NPTn0); 
+  wildcard state s_S_TH2_RD_TICK_NPTn0      (S_TH2_RD_TICK_NPTn0); 
+  wildcard state s_S_TH3_RD_TICK_NPTn0      (S_TH3_RD_TICK_NPTn0); 
+                                           
+  wildcard state s_S_TH0_RD_TICK_NPTn1     (S_TH0_RD_TICK_NPTn1);
+  wildcard state s_S_TH1_RD_TICK_NPTn1     (S_TH1_RD_TICK_NPTn1);
+  wildcard state s_S_TH2_RD_TICK_NPTn1     (S_TH2_RD_TICK_NPTn1);
+  wildcard state s_S_TH3_RD_TICK_NPTn1     (S_TH3_RD_TICK_NPTn1);
+                                           
+  wildcard state s_H_TH0_RD_TICK_NPTn0      (H_TH0_RD_TICK_NPTn0); 
+  wildcard state s_H_TH1_RD_TICK_NPTn0      (H_TH1_RD_TICK_NPTn0); 
+  wildcard state s_H_TH2_RD_TICK_NPTn0      (H_TH2_RD_TICK_NPTn0); 
+  wildcard state s_H_TH3_RD_TICK_NPTn0      (H_TH3_RD_TICK_NPTn0); 
+                                           
+  wildcard state s_H_TH0_RD_TICK_NPTn1     (H_TH0_RD_TICK_NPTn1);
+  wildcard state s_H_TH1_RD_TICK_NPTn1     (H_TH1_RD_TICK_NPTn1);
+  wildcard state s_H_TH2_RD_TICK_NPTn1     (H_TH2_RD_TICK_NPTn1);
+  wildcard state s_H_TH3_RD_TICK_NPTn1     (H_TH3_RD_TICK_NPTn1);
+
+  wildcard state s_U_TH0_RD_STICK_NPTn0      (U_TH0_RD_STICK_NPTn0);
+  wildcard state s_U_TH1_RD_STICK_NPTn0      (U_TH1_RD_STICK_NPTn0); 
+  wildcard state s_U_TH2_RD_STICK_NPTn0      (U_TH2_RD_STICK_NPTn0); 
+  wildcard state s_U_TH3_RD_STICK_NPTn0      (U_TH3_RD_STICK_NPTn0);
+
+  wildcard state s_U_TH0_RD_STICK_NPTn1      (U_TH0_RD_STICK_NPTn1);
+  wildcard state s_U_TH1_RD_STICK_NPTn1      (U_TH1_RD_STICK_NPTn1); 
+  wildcard state s_U_TH2_RD_STICK_NPTn1      (U_TH2_RD_STICK_NPTn1); 
+  wildcard state s_U_TH3_RD_STICK_NPTn1      (U_TH3_RD_STICK_NPTn1);
+
+  wildcard state s_S_TH0_RD_STICK_NPTn0      (S_TH0_RD_STICK_NPTn0); 
+  wildcard state s_S_TH1_RD_STICK_NPTn0      (S_TH1_RD_STICK_NPTn0); 
+  wildcard state s_S_TH2_RD_STICK_NPTn0      (S_TH2_RD_STICK_NPTn0); 
+  wildcard state s_S_TH3_RD_STICK_NPTn0      (S_TH3_RD_STICK_NPTn0); 
+                                           
+  wildcard state s_S_TH0_RD_STICK_NPTn1     (S_TH0_RD_STICK_NPTn1);
+  wildcard state s_S_TH1_RD_STICK_NPTn1     (S_TH1_RD_STICK_NPTn1);
+  wildcard state s_S_TH2_RD_STICK_NPTn1     (S_TH2_RD_STICK_NPTn1);
+  wildcard state s_S_TH3_RD_STICK_NPTn1     (S_TH3_RD_STICK_NPTn1);
+                                           
+  wildcard state s_H_TH0_RD_STICK_NPTn0      (H_TH0_RD_STICK_NPTn0); 
+  wildcard state s_H_TH1_RD_STICK_NPTn0      (H_TH1_RD_STICK_NPTn0); 
+  wildcard state s_H_TH2_RD_STICK_NPTn0      (H_TH2_RD_STICK_NPTn0); 
+  wildcard state s_H_TH3_RD_STICK_NPTn0      (H_TH3_RD_STICK_NPTn0); 
+                                           
+  wildcard state s_H_TH0_RD_STICK_NPTn1     (H_TH0_RD_STICK_NPTn1);
+  wildcard state s_H_TH1_RD_STICK_NPTn1     (H_TH1_RD_STICK_NPTn1);
+  wildcard state s_H_TH2_RD_STICK_NPTn1     (H_TH2_RD_STICK_NPTn1);
+  wildcard state s_H_TH3_RD_STICK_NPTn1     (H_TH3_RD_STICK_NPTn1);
+

@@ -1,0 +1,56 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_cpx_consecutive_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// packet[22:0] = {cpx_spc0_data_rdy_cx2, cpx_spc0_data_cx2[144:123]};
+
+wildcard trans consecutive_packets2( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets3( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets4( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets5( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets6( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets7( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} );
+wildcard trans consecutive_packets8( {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} ->
+                                     {1'b1, 1'b1, 21'bx} -> {1'b1, 1'b1, 21'bx} );
+
+//                                           vld   reqtype   miss  err   nc    thr   invway  f4b   at pf  data[127:123]
+wildcard trans atomics_1cycle_apart ( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'bx} ->
+                                      {1'b1, 1'b1, ST_ACK,   1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'b0} );
+
+//                                           vld   reqtype   miss  err   nc    thr   invway  f4b   at pf  data[127:123]
+wildcard trans atomics_2cycles_apart( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'bx} ->
+                                      {1'bx, 22'bx} ->
+                                      {1'b1, 1'b1, ST_ACK,   1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'b0} );
+
+//                                           vld   reqtype   miss  err   nc    thr   invway  f4b   at pf  data[127:123]
+wildcard trans atomics_3cycles_apart( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'bx} ->
+                                      {1'bx, 22'bx} -> {1'bx, 22'bx} ->
+                                      {1'b1, 1'b1, ST_ACK,   1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'b0} );
+
+//                                           vld   reqtype   miss  err   nc    thr   invway  f4b   at pf  data[127:123]
+wildcard trans atomics_4cycles_apart( {1'b1, 1'b1, LOAD_RET, 1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'bx} ->
+                                      {1'bx, 22'bx} -> {1'bx, 22'bx} -> {1'bx, 22'bx} ->
+                                      {1'b1, 1'b1, ST_ACK,   1'bx, 2'bx, 1'b1, 2'bx, 3'bxxx, 1'bx, 2'b10, 5'b0} );

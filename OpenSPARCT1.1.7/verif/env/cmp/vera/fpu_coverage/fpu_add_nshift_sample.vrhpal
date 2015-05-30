@@ -1,0 +1,96 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_add_nshift_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+// coverage_def FPU_ADD_NSHIFT_COV (bit [62:0] fpu_add_nshift_state)
+// {
+
+// state declarations
+  state s_FPU_NSHIFT_00  ( FPU_NSHIFT_00 );
+  state s_FPU_NSHIFT_01  ( FPU_NSHIFT_01 );
+  state s_FPU_NSHIFT_02  ( FPU_NSHIFT_02 );
+  state s_FPU_NSHIFT_03  ( FPU_NSHIFT_03 );
+  state s_FPU_NSHIFT_04  ( FPU_NSHIFT_04 );
+  state s_FPU_NSHIFT_05  ( FPU_NSHIFT_05 );
+  state s_FPU_NSHIFT_06  ( FPU_NSHIFT_06 );
+  state s_FPU_NSHIFT_07  ( FPU_NSHIFT_07 );
+  state s_FPU_NSHIFT_08  ( FPU_NSHIFT_08 );
+  state s_FPU_NSHIFT_09  ( FPU_NSHIFT_09 );
+  state s_FPU_NSHIFT_10  ( FPU_NSHIFT_10 );
+  state s_FPU_NSHIFT_11  ( FPU_NSHIFT_11 );
+  state s_FPU_NSHIFT_12  ( FPU_NSHIFT_12 );
+  state s_FPU_NSHIFT_13  ( FPU_NSHIFT_13 );
+  state s_FPU_NSHIFT_14  ( FPU_NSHIFT_14 );
+  state s_FPU_NSHIFT_15  ( FPU_NSHIFT_15 );
+  state s_FPU_NSHIFT_16  ( FPU_NSHIFT_16 );
+  state s_FPU_NSHIFT_17  ( FPU_NSHIFT_17 );
+  state s_FPU_NSHIFT_18  ( FPU_NSHIFT_18 );
+  state s_FPU_NSHIFT_19  ( FPU_NSHIFT_19 );
+  state s_FPU_NSHIFT_20  ( FPU_NSHIFT_20 );
+  state s_FPU_NSHIFT_21  ( FPU_NSHIFT_21 );
+  state s_FPU_NSHIFT_22  ( FPU_NSHIFT_22 );
+  state s_FPU_NSHIFT_23  ( FPU_NSHIFT_23 );
+  state s_FPU_NSHIFT_24  ( FPU_NSHIFT_24 );
+  state s_FPU_NSHIFT_25  ( FPU_NSHIFT_25 );
+  state s_FPU_NSHIFT_26  ( FPU_NSHIFT_26 );
+  state s_FPU_NSHIFT_27  ( FPU_NSHIFT_27 );
+  state s_FPU_NSHIFT_28  ( FPU_NSHIFT_28 );
+  state s_FPU_NSHIFT_29  ( FPU_NSHIFT_29 );
+  state s_FPU_NSHIFT_30  ( FPU_NSHIFT_30 );
+  state s_FPU_NSHIFT_31  ( FPU_NSHIFT_31 );
+  state s_FPU_NSHIFT_32  ( FPU_NSHIFT_32 );
+  state s_FPU_NSHIFT_33  ( FPU_NSHIFT_33 );
+  state s_FPU_NSHIFT_34  ( FPU_NSHIFT_34 );
+  state s_FPU_NSHIFT_35  ( FPU_NSHIFT_35 );
+  state s_FPU_NSHIFT_36  ( FPU_NSHIFT_36 );
+  state s_FPU_NSHIFT_37  ( FPU_NSHIFT_37 );
+  state s_FPU_NSHIFT_38  ( FPU_NSHIFT_38 );
+  state s_FPU_NSHIFT_39  ( FPU_NSHIFT_39 );
+  state s_FPU_NSHIFT_40  ( FPU_NSHIFT_40 );
+  state s_FPU_NSHIFT_41  ( FPU_NSHIFT_41 );
+  state s_FPU_NSHIFT_42  ( FPU_NSHIFT_42 );
+  state s_FPU_NSHIFT_43  ( FPU_NSHIFT_43 );
+  state s_FPU_NSHIFT_44  ( FPU_NSHIFT_44 );
+  state s_FPU_NSHIFT_45  ( FPU_NSHIFT_45 );
+  state s_FPU_NSHIFT_46  ( FPU_NSHIFT_46 );
+  state s_FPU_NSHIFT_47  ( FPU_NSHIFT_47 );
+  state s_FPU_NSHIFT_48  ( FPU_NSHIFT_48 );
+  state s_FPU_NSHIFT_49  ( FPU_NSHIFT_49 );
+  state s_FPU_NSHIFT_50  ( FPU_NSHIFT_50 );
+  state s_FPU_NSHIFT_51  ( FPU_NSHIFT_51 );
+  state s_FPU_NSHIFT_52  ( FPU_NSHIFT_52 );
+  state s_FPU_NSHIFT_53  ( FPU_NSHIFT_53 );
+  state s_FPU_NSHIFT_54  ( FPU_NSHIFT_54 );
+  state s_FPU_NSHIFT_55  ( FPU_NSHIFT_55 );
+  state s_FPU_NSHIFT_56  ( FPU_NSHIFT_56 );
+  state s_FPU_NSHIFT_57  ( FPU_NSHIFT_57 );
+  state s_FPU_NSHIFT_58  ( FPU_NSHIFT_58 );
+  state s_FPU_NSHIFT_59  ( FPU_NSHIFT_59 );
+  state s_FPU_NSHIFT_60  ( FPU_NSHIFT_60 );
+  state s_FPU_NSHIFT_61  ( FPU_NSHIFT_61 );
+  state s_FPU_NSHIFT_62  ( FPU_NSHIFT_62 );
+  state s_FPU_NSHIFT_63  ( FPU_NSHIFT_63 );
+// }

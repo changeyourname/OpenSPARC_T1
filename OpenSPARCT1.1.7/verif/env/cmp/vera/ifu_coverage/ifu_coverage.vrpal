@@ -1,0 +1,853 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ifu_cov_inc.pal";
+//***************************************************************************
+//
+// File:	ifu_coverage.vrpal
+// Description:
+// Top level IFU coverage class which instantiates the lower level
+// coverage objects and enables coverage when ifu_coverage switch
+// is on. This file is used to generate ifu_coverage.vr.
+//
+//***************************************************************************/
+
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "ifu_cov_defines.vrh"
+#include "ifu.if.vrh"
+#include "ifu_ports_binds.vrh"
+
+class pcxreq {
+  bit [1:0] thrid;
+  bit [39:0] addr;
+  bit [3:0] rtntyp;
+  integer pkts;
+  bit ifill_ret_for_err;
+   
+  task new (bit[1:0] thrid, bit[39:0] addr, bit[3:0] rtntyp, integer pkts, bit ifill_ret_for_err); 
+}
+
+MakeVeraList(pcxreq)
+
+task pcxreq::new (bit[1:0] thrid, bit[39:0] addr, bit[3:0] rtntyp, integer pkts, bit ifill_ret_for_err) {
+  this.thrid = thrid;
+  this.addr = addr;
+  this.rtntyp = rtntyp;
+  this.pkts = pkts;
+  this.ifill_ret_for_err = ifill_ret_for_err;
+}
+
+class ifu_coverage {
+
+. foreach $c (@CORE_STR) {
+  bit[3:0] C${c}_imss, C${c}_swcs, C${c}_ices;
+  bit[3:0] C${c}_swcd, C${c}_intd, C${c}_stb8;
+  bit[3:0] C${c}_stb9, C${c}_iced, C${c}_muld;
+  bit[3:0] C${c}_divd, C${c}_fpod, C${c}_swce;
+  bit[3:0] C${c}_trpm, C${c}_rfem, C${c}_flhw, C${c}_trpm_qld; 
+  bit[3:0] C${c}_ldmw, C${c}_mrbw, C${c}_nukw;
+  bit[3:0] C${c}_fstw, C${c}_dcw2, C${c}_stb7;
+  bit[3:0] C${c}_rfew, C${c}_annul_e, C${c}_thr_vld_d;
+  bit[3:0] C${c}_trpf, C${c}_trps, C${c}_trpd;
+  bit[3:0] C${c}_ic_s, C${c}_rb_d,C${c}_rb_w,C${c}_xover;
+  bit[3:0] C${c}_ints, C${c}_spuint, C${c}_hintp;
+  bit[3:0] C${c}_rerrint, C${c}_hwint, C${c}_sftint;
+  bit[3:0] C${c}_halt,C${c}_rstint,C${c}_nukeint,C${c}_resumint;
+  bit[3:0] C${c}_thr_s, C${c}_canthr, C${c}_rb_d_only;
+  bit[3:0] C${c}_thrrdy,C${c}_stb_retry,C${c}_retrop;
+  bit[3:0] C${c}_ldst_cmplt,C${c}_retr_wakeup, C${c}_rb_s_only, C${c}_tlbmiss;
+  bit[5:0] C${c}_inst_d, C${c}_thr_state[4];
+  bit C${c}_br, C${c}_fpbusy_e, C${c}_asi_int_d, C${c}_halt_inst;
+  bit C${c}_itlb_full, C${c}_itlb_miss, C${c}_imiss, C${c}_icerr;
+  bit C${c}_same_thr_2, C${c}_same_pc_2, C${c}_icache_full,C${c}_dmp,C${c}_tlb_wr;
+  bit C${c}_cpkpkt_vld,C${c}_cpkpkt_nc,C${c}_cpkpkt_l2ue,C${c}_anull_ba;
+  bit C${c}_cpkpkt_l2ce,C${c}_cpxpkt_first_pkt,C${c}_cpxpkt_second_pkt;
+  bit[1:0] C${c}_cpxpkt_thrid;
+  bit C${c}_icache_rd, C${c}_icache_wr, C${c}_dirmap_icache;
+  bit[8:0] C${c}_ttype_m;
+  bit [3:0] C${c}_icache_wrway;
+  bit C${c}_evict,C${c}_stack,C${c}_idexcl;
+  bit[6:0] C${c}_invidx, C${c}_icache_idx; 
+  bit [31:0] C${c}_inst_word_d;
+  bit [7:0] C${c}_ccr_d;
+  VeraList_pcxreq C${c}_pcxreq_list;
+
+  bit[11:0] ifu_succ_imiss_sample_c${c};
+  bit[ 8:0] ifu_ifill_sample_c${c};
+  bit[ 9:0] ifu_inv_sample_c${c};
+  bit[11:0] ifu_diff_thr_rb_sample_c${c};
+  bit[11:0] ifu_diff_thr_cmplt_sample_c${c};
+  bit[ 3:0] ifu_succ_itlbmiss_sample_c${c};
+  bit[9:0]  ifu_icache_dec_sample_c${c};
+  bit[13:0]  ifu_dirmap_icache_dec_sample_c${c};
+  bit       ifu_ooo_ifill_sample_c${c};
+  bit[21:0] ifu_tcc_ccr_sample_c${c};
+  bit[19:0] ifu_br_ccr_sample_c${c};
+.   for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+  bit [4:0] ifu_tlb_dmp_wr_sample_c${c}_t${t};
+  bit[19:0] ifu_simul_swout_sample_c${c}_t${t};
+  bit [9:0] ifu_br_dlyslt_rb_sample_c${c}_t${t};
+  bit [7:0] ifu_imiss_fill_xover_sample_c${c}_t${t};
+  bit [4:0] ifu_intr_sample_c${c}_t${t};
+  bit [8:0] ifu_spintr_sample_c${c}_t${t};
+  bit [8:0] ifu_stall_cmplt_sample_c${c}_t${t};
+  bit [12:0] ifu_stb_sample_c${c}_t${t};
+  bit [9:0] ifu_ttype_sample_c${c}_t${t};
+  bit [8:0] ifu_br_dlyslt_inst_sample_c${c}_t${t};
+  bit [8:0] ifu_d_w_rb_sample_c${c}_t${t};
+  bit [7:0] ifu_imiss_lop_sample_c${c}_t${t};
+  bit [7:0] ifu_stb_lop_sample_c${c}_t${t};
+  bit [7:0] ifu_tr_flsh_inst_sample_c${c}_t${t};
+  bit [13:0] ifu_tr_rb_sample_c${c}_t${t};
+.   }
+.}
+  event sample_evnt_trig;
+  bit ifu_cov_debug = 1'b0;
+
+
+  // ----------- start of new code ----------------
+  coverage_group ifu_coverage_group {
+
+    const_sample_reference	= 1;	// ref. to sample vars. is constant
+    sample_event			= sync (ALL, sample_evnt_trig);
+    cov_weight			= 0;	// default, unless diag_done is true,
+					// i.e. diag. passes
+
+. foreach $c (@CORE_STR) {
+.   for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+
+  sample ifu_tlb_dmp_wr_sample_c${c}_t${t} {
+#include "ifu_tlb_dmp_wr.vrh"
+}
+  sample ifu_simul_swout_sample_c${c}_t${t} {
+#include "ifu_simul_swout_sample.vrh"
+  }
+  sample ifu_br_dlyslt_rb_sample_c${c}_t${t} {
+#include "ifu_br_dlyslt_rb_sample.vrh"
+  }
+  sample ifu_imiss_fill_xover_sample_c${c}_t${t} {
+#include "ifu_imiss_fill_xover_sample.vrh"
+  }
+  sample ifu_intr_sample_c${c}_t${t} {
+#include "ifu_intr_sample.vrh"
+  }
+  sample ifu_spintr_sample_c${c}_t${t} {
+#include "ifu_spintr_sample.vrh"
+  }
+  sample ifu_stall_cmplt_sample_c${c}_t${t} {
+#include "ifu_stall_cmplt_sample.vrh"
+  }
+  sample ifu_stb_sample_c${c}_t${t} {
+#include "ifu_stb_sample.vrh"
+  }
+  sample ifu_ttype_sample_c${c}_t${t} {
+#include "ifu_ttype_sample.vrh"
+  }
+  sample ifu_br_dlyslt_inst_sample_c${c}_t${t} {
+#include "ifu_br_dlyslt_inst_sample.vrh"
+  }
+  sample ifu_d_w_rb_sample_c${c}_t${t} {
+#include "ifu_d_w_rb_sample.vrh"
+  }
+  sample ifu_imiss_lop_sample_c${c}_t${t} {
+#include "ifu_imiss_lop_sample.vrh"
+  }
+  sample ifu_stb_lop_sample_c${c}_t${t} {
+#include "ifu_stb_lop_sample.vrh"
+  }
+  sample ifu_tr_flsh_inst_sample_c${c}_t${t} {
+#include "ifu_tr_flsh_inst_sample.vrh"
+  }
+  sample ifu_tr_rb_sample_c${c}_t${t} {
+#include "ifu_tr_rb_sample.vrh"
+  }
+  sample ifu_thrfsm_sample_c${c}.\$thr${t}_state {
+#include "ifu_thrfsm_sample.vrh"
+  }
+  sample ifu_milfsm_sample_c${c}.\$mil${t}_state {
+#include "ifu_milfsm_sample.vrh"
+  }
+.   } # for $t
+
+  sample ifu_starv_stall_sample_c${c}.\$strv_stall_state {
+#include "ifu_strv_stall_sample.vrh"
+  }	
+  sample ifu_succ_imiss_sample_c${c} {
+#include "ifu_succ_imiss_sample.vrh"
+  }
+  sample ifu_ifill_sample_c${c} {
+#include "ifu_ifill_sample.vrh"
+  }
+  sample ifu_inv_sample_c${c} {
+#include "ifu_inv_sample.vrh"
+  }
+  sample ifu_icache_dec_sample_c${c} {
+#include "ifu_icache_dec_sample.vrh"
+  }
+  sample ifu_dirmap_icache_dec_sample_c${c} {
+#include "ifu_dirmap_icache_dec_sample.vrh"
+  }
+  sample ifu_tcc_ccr_sample_c${c} {
+#include "ifu_tcc_ccr_sample.vrh"
+  }
+  sample ifu_br_ccr_sample_c${c} {
+#include "ifu_br_ccr_sample.vrh"
+  }
+  sample ifu_ooo_ifill_sample_c${c} {
+#include "ifu_ooo_ifill_sample.vrh"
+  }
+  sample ifu_diff_thr_rb_sample_c${c} {
+#include "ifu_diff_thr_rb_sample.vrh"
+  }
+  sample ifu_diff_thr_cmplt_sample_c${c} {
+#include "ifu_diff_thr_cmplt_sample.vrh"
+  }
+  sample ifu_succ_itlbmiss_sample_c${c} {
+#include "ifu_succ_itlbmiss_sample.vrh"
+  }
+. } # for $c
+  } // coverage_group
+
+  task new();
+  task set_cov_cond_bits ();
+
+. foreach $c (@CORE_STR) {
+  task C${c}_decode_inst_d ();
+  task C${c}_set_swout_bits ();
+  task C${c}_set_stb_bits ();
+  task C${c}_set_cpxpkt_bits ();
+  task C${c}_ccxpkt_mon ();
+. }
+}
+
+/////////////////////////////////////////////////////////////////
+// Class creation 
+/////////////////////////////////////////////////////////////////
+
+task ifu_coverage::new() {
+
+  bit coverage_on;
+  integer j;
+
+  if (get_plus_arg (CHECK, "ifu_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+    if (get_plus_arg (CHECK, "ifu_cov_debug")) {
+      ifu_cov_debug = 1'b1;
+    }
+  } else {
+    coverage_on = 0;
+  }
+
+  if (coverage_on) {
+    set_cov_cond_bits ();
+.   foreach $c (@CORE_STR) {
+    C${c}_pcxreq_list = new ();
+
+    ifu_coverage_group	= new();
+    printf("\n\n        %d : Coverage turned on for IFU objects\n\n", get_time(LO));
+
+    fork {
+      @ (posedge ifu_coverage_ifc.cmp_diag_done); //change this to be based on all cores
+      ifu_coverage_group.set_cov_weight(1);
+      coverage_save_database(1);
+      printf("\n\n        %d : Coverage for IFU objects generated\n\n", get_time(LO));
+    } join none
+.   }
+  } // if coverage_on
+} // ifu_coverage::new()
+
+///////////////////////////////////////////////////////////////////////////
+// This task is a psuedo coverage object that combines a few conditions
+// so that the actual coverage objects' state space doesn't get too big
+//////////////////////////////////////////////////////////////////////////
+
+task ifu_coverage:: set_cov_cond_bits ()
+{
+  integer i;
+
+  fork {
+    while (1) {
+      @ (posedge ifu_coverage_ifc.clk);
+. foreach $c (@CORE_STR) {
+      //Keep decode before swout, becasue it is using it
+      C${c}_decode_inst_d ();
+      C${c}_set_swout_bits ();
+      C${c}_set_stb_bits ();
+      C${c}_set_cpxpkt_bits ();
+      C${c}_ccxpkt_mon ();
+
+      ifu_succ_imiss_sample_c${c}	= {
+				    C${c}_imiss,
+				    C${c}_icerr,
+				    C${c}_thr_s,
+				    C${c}_canthr,
+				    C${c}_same_thr_2,
+				    C${c}_same_pc_2
+				  };
+      ifu_ifill_sample_c${c}	= {
+			      C${c}_cpkpkt_vld,
+			      C${c}_cpxpkt_thrid,
+			      C${c}_cpxpkt_first_pkt,
+			      C${c}_cpxpkt_second_pkt,
+			      C${c}_cpkpkt_l2ce,
+			      C${c}_cpkpkt_l2ue,
+			      |C${c}_xover[3:0],
+			      C${c}_cpkpkt_nc
+			  };
+
+      ifu_icache_dec_sample_c${c} = {C${c}_icache_full,	
+				     C${c}_icache_rd,	
+				     C${c}_icache_wr,
+				     C${c}_icache_idx		
+                                    };
+
+      ifu_dirmap_icache_dec_sample_c${c} = {C${c}_dirmap_icache,	
+					     C${c}_icache_rd,	
+					     C${c}_icache_wr,
+					     C${c}_icache_idx,
+					     C${c}_icache_wrway		
+                                	    };
+
+      ifu_tcc_ccr_sample_c${c} = {C${c}_inst_word_d[31:30],
+ 				  C${c}_inst_word_d[24:19],
+				  C${c}_inst_word_d[28:25],
+                                  C${c}_inst_word_d[12:11],
+				  C${c}_ccr_d [7:0]
+                            	 };
+      ifu_br_ccr_sample_c${c} =  {C${c}_inst_word_d[31:30],
+ 				  C${c}_inst_word_d[24:22],
+				  C${c}_inst_word_d[28:25],
+				  C${c}_inst_word_d[29],
+                                  C${c}_inst_word_d[21:20],
+				  C${c}_ccr_d [7:0]
+                            	 };
+
+      ifu_inv_sample_c${c}	= {
+			    C${c}_idexcl,
+			    C${c}_evict,
+			    C${c}_stack,
+			    C${c}_invidx
+			  };
+      ifu_diff_thr_rb_sample_c${c}	= {
+				    C${c}_rb_s_only,
+				    C${c}_rb_d_only,
+				    C${c}_rb_w
+				  };
+      ifu_diff_thr_cmplt_sample_c${c}	= {
+					    C${c}_thrrdy,
+					    C${c}_stb_retry,
+					    C${c}_ldst_cmplt
+					  };
+      ifu_succ_itlbmiss_sample_c${c}	= {
+				    C${c}_itlb_full,
+				    C${c}_itlb_miss,
+				    C${c}_same_thr_2,
+				    C${c}_same_pc_2
+				  };
+
+.       for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+
+      ifu_tlb_dmp_wr_sample_c${c}_t${t}	= {
+						C${c}_thr_vld_d[${t}],
+						C${c}_anull_ba,
+						C${c}_dmp,
+						C${c}_tlb_wr,
+						C${c}_tlbmiss[${t}]
+					  };
+
+      ifu_simul_swout_sample_c${c}_t${t}	= {
+					     C${c}_imss[${t}],
+					     C${c}_swcs[${t}],
+					     C${c}_ices[${t}],
+   				             C${c}_swcd[${t}],
+					     C${c}_intd[${t}],
+					     C${c}_stb8[${t}],
+                                             C${c}_stb9[${t}],
+					     C${c}_iced[${t}],
+					     C${c}_muld[${t}],
+                                             C${c}_divd[${t}],
+					     C${c}_fpod[${t}],
+					     C${c}_swce[${t}],
+                                             C${c}_trpm[${t}],
+					     C${c}_rfew[${t}],
+					     C${c}_flhw[${t}],
+                                             C${c}_ldmw[${t}],
+					     C${c}_mrbw[${t}],
+					     C${c}_nukw[${t}],
+                                             C${c}_fstw[${t}],
+					     C${c}_dcw2[${t}]      
+					  };
+    ifu_imiss_lop_sample_c${c}_t${t} = {C${c}_imss[${t}], C${c}_swcd[${t}], C${c}_inst_d};
+
+
+    ifu_stb_sample_c${c}_t${t} = {C${c}_stb7[${t}], C${c}_stb8[${t}], C${c}_stb9[${t}], 
+		            C${c}_fpbusy_e, C${c}_asi_int_d,
+		            C${c}_imss[${t}], C${c}_ldmw[${t}],C${c}_inst_d} ;
+    
+    ifu_stb_lop_sample_c${c}_t${t} = {C${c}_stb8[${t}], C${c}_swcd[${t}], C${c}_inst_d};
+
+    ifu_br_dlyslt_inst_sample_c${c}_t${t} = {C${c}_thr_vld_d[${t}],C${c}_inst_d,
+                                       C${c}_annul_e[${t}],C${c}_stb8[${t}]};
+
+
+    ifu_br_dlyslt_rb_sample_c${c}_t${t} = {C${c}_br, C${c}_thr_vld_d[${t}],C${c}_stb8[${t}],C${c}_muld[${t}],
+			             C${c}_divd[${t}],C${c}_fpod[${t}],C${c}_iced[${t}],C${c}_fstw[${t}],
+                                     C${c}_rfew[${t}],C${c}_dcw2[${t}]};
+
+    ifu_tr_flsh_inst_sample_c${c}_t${t} = {C${c}_thr_vld_d[${t}],C${c}_inst_d,C${c}_flhw[${t}]};
+
+    ifu_tr_rb_sample_c${c}_t${t} 	    = {C${c}_trpf[${t}],C${c}_trps[${t}],C${c}_trpd[${t}],C${c}_ints[${t}],
+                                       C${c}_thr_vld_d[${t}],C${c}_br,C${c}_annul_e[${t}],C${c}_ic_s[${t}],
+                                       C${c}_stb8[${t}],C${c}_rb_d[${t}],C${c}_rb_w[${t}],C${c}_ldmw[${t}],
+                                       C${c}_flhw[${t}],C${c}_dcw2[${t}]};
+
+    
+    ifu_ttype_sample_c${c}_t${t} 	    = {C${c}_trpm_qld[${t}],C${c}_ttype_m};
+
+    ifu_intr_sample_c${c}_t${t} 	    = {C${c}_hwint[${t}],C${c}_sftint[${t}],C${c}_rerrint[${t}],
+				       C${c}_hintp[${t}],C${c}_spuint[${t}]};
+
+    ifu_spintr_sample_c${c}_t${t} 	    = {C${c}_rstint[${t}],C${c}_nukeint[${t}],
+				       C${c}_resumint[${t}],C${c}_halt[${t}],C${c}_thr_state[${t}]};
+
+    ifu_imiss_fill_xover_sample_c${c}_t${t} = {C${c}_xover[${t}],C${c}_swcd[${t}],C${c}_stb8[${t}],
+                                        C${c}_rb_d[${t}],C${c}_rb_w[${t}],C${c}_ldmw[${t}],
+			                C${c}_flhw[${t}],C${c}_dcw2[${t}]};
+
+    ifu_stall_cmplt_sample_c${c}_t${t} = {C${c}_imss[${t}],C${c}_thrrdy[${t}],C${c}_stb8[${t}],C${c}_stb9[${t}],
+				    C${c}_stb_retry[${t}],C${c}_retrop[${t}],C${c}_retr_wakeup[${t}],
+                                    C${c}_ldmw[${t}],C${c}_ldst_cmplt[${t}]};
+
+    ifu_d_w_rb_sample_c${c}_t${t} = {C${c}_thr_vld_d[${t}],C${c}_inst_d,C${c}_ldmw[${t}],C${c}_rb_w[${t}]};
+      
+.	} 
+.}
+      trigger (sample_evnt_trig);
+    }
+  }
+  join none
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Set the swout condition bits
+//////////////////////////////////////////////////////////////////////////
+
+.foreach $c (@CORE_STR) {
+task ifu_coverage:: C${c}_set_swout_bits ()
+{ 
+  integer i;
+
+  for (i = 0; i < 4; i++) {
+    C${c}_imss[i] = C${c}_ifu_thrid_bind.\$thr_f[i] & ~C${c}_ifu_swl_bind.\$itlb_fcl_imiss_s_l & C${c}_ifu_swl_bind.\$rdreq_s1 & ~C${c}_ifu_swl_bind.\$stall_s1;
+    C${c}_swcs[i] = C${c}_ifu_thrid_bind.\$inst_vld_s & C${c}_ifu_thrid_bind.\$thr_f[i] & C${c}_ifu_swl_bind.\$fcl_dtu_swc_s;
+    C${c}_ices[i] = C${c}_ifu_thrid_bind.\$inst_vld_s & C${c}_ifu_thrid_bind.\$thr_f[i] & (((C${c}_ifu_swl_bind.\$erd_erc_nirpe_s1 | C${c}_ifu_swl_bind.\$erd_erc_fetpe_s1) & C${c}_ifu_swl_bind.\$fcl_erb_ievld_s1) | C${c}_ifu_swl_bind.\$ictagerr_s1);
+    C${c}_intd[i] = C${c}_ifu_swl_bind.\$intr_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i];
+    C${c}_stb8[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$switch_store_d & ~C${c}_ifu_swl_bind.\$retract_store_d;
+    C${c}_stb9[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$retract_store_d;
+//    C${c}_iced[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$retract_iferr_d1 &C${c}_ifu_swl_bind.\$thr_match_de; 	
+    C${c}_iced[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$retract_iferr_d; 
+    C${c}_muld[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$dec_swl_mul_inst_d & C${c}_ifu_swl_bind.\$swl_dec_mulbusy_e;
+    C${c}_divd[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$dec_swl_div_inst_d & C${c}_ifu_swl_bind.\$swl_dec_divbusy_e;
+    C${c}_fpod[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$dec_swl_allfp_d & C${c}_ifu_swl_bind.\$swl_dec_fpbusy_e & C${c}_ifu_swl_bind.\$swl_dec_fp_enable_d;
+    C${c}_swcd[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_swl_bind.\$swc_d & ~(C${c}_divd[i] | C${c}_muld[i] | C${c}_fpod[i]); //keep retracted long ops a separate condition
+    C${c}_swce[i] = C${c}_ifu_thrid_bind.\$inst_vld_e & C${c}_ifu_thrid_bind.\$thr_e[i] & C${c}_ifu_swl_bind.\$swc_e;
+    C${c}_trpm_qld[i] = C${c}_ifu_thrid_bind.\$thr_m[i] & C${c}_ifu_swl_bind.\$ifu_tlu_ttype_vld_m;
+    C${c}_nukw[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & (C${c}_ifu_swl_bind.\$fcl_dtu_nuke_thr_w | C${c}_ifu_swl_bind.\$fcl_dtu_resum_thr_w); 
+    C${c}_trpm[i] = C${c}_ifu_thrid_bind.\$inst_vld_m & C${c}_ifu_thrid_bind.\$thr_m[i] & C${c}_ifu_swl_bind.\$trap_m & ~(C${c}_nukw[i] && C${c}_ifu_swl_bind.\$ifu_tlu_ttype_m == 'h08);//This is allowed as per aings
+    C${c}_rfem[i] = C${c}_ifu_thrid_bind.\$thr_m[i] & C${c}_ifu_swl_bind.\$irf_ce_m;
+    C${c}_rfew[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & C${c}_ifu_swl_bind.\$irf_ce_w;
+    C${c}_flhw[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & C${c}_ifu_swl_bind.\$tlu_ifu_flush_pipe_w;
+    C${c}_ldmw[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & C${c}_ifu_swl_bind.\$dtu_fcl_rollback_g; 
+    C${c}_mrbw[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & C${c}_ifu_swl_bind.\$mark4rb_w;
+    C${c}_fstw[i] = C${c}_ifu_thrid_bind.\$inst_vld_w & C${c}_ifu_thrid_bind.\$thr_w[i] & C${c}_ifu_swl_bind.\$ffu_ifu_fst_ce_w; 
+    C${c}_dcw2[i] = C${c}_ifu_thrid_bind.\$thr_w1[i] & C${c}_ifu_swl_bind.\$lsu_ifu_dc_parity_error_w2;
+    C${c}_annul_e[i] = C${c}_ifu_thrid_bind.\$thr_e[i] & C${c}_ifu_swl_bind.\$dtu_inst_anull_e & C${c}_ifu_thrid_bind.\$inst_vld_e;
+    C${c}_thr_vld_d[i] = C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_ifu_thrid_bind.\$inst_vld_d;
+    C${c}_trpf[i] = C${c}_ifu_thrid_bind.\$inst_vld_f & C${c}_ifu_thrid_bind.\$thr_f[i] & C${c}_ifu_swl_bind.\$pc_oor_f;
+    C${c}_trps[i] = C${c}_ifu_thrid_bind.\$inst_vld_s & C${c}_ifu_thrid_bind.\$thr_f[i] & (C${c}_ifu_itlb_bind.\$tlb_cam_miss_s1 | C${c}_ifu_swl_bind.\$inst_acc_exc_s1 | C${c}_ifu_itlb_bind.\$itlb_feterr_s1);
+    C${c}_trpd[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & (C${c}_ifu_swl_bind.\$privop_d | C${c}_ifu_swl_bind.\$hprivop_d | C${c}_ifu_swl_bind.\$ill_inst_d | C${c}_ifu_swl_bind.\$fpdis_trap_d);
+    C${c}_ints[i] = (C${c}_ifu_swl_bind.\$intr_vld_s[i] | C${c}_ifu_swl_bind.\$async_intr_vld_s) & C${c}_ifu_thrid_bind.\$thr_f[i];
+    C${c}_ic_s[i] = C${c}_imss[i] | C${c}_ices[i];
+    C${c}_rb_d[i] = C${c}_stb9[i] | C${c}_iced[i] | C${c}_muld[i] | C${c}_divd[i] | C${c}_fpod[i];
+    C${c}_retrop[i] = C${c}_muld[i] | C${c}_divd[i] | C${c}_fpod[i];
+    C${c}_rb_w[i] = C${c}_fstw[i] | C${c}_rfew[i] | C${c}_mrbw[i] | C${c}_nukw[i];
+    C${c}_spuint[i] = C${c}_ifu_intr_bind.\$spu_ifu_ttype_vld_w2 & (i == C${c}_ifu_intr_bind.\$spu_ifu_ttype_tid_w2);
+    C${c}_halt[i] = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_thrid_bind.\$thr_d[i] & C${c}_halt_inst;
+    C${c}_rstint[i] = C${c}_ifu_intr_bind.\$tlu_ifu_rstthr_i2[i] & C${c}_ifu_intr_bind.\$tlu_ifu_rstint_i2;
+    C${c}_nukeint[i] = C${c}_ifu_intr_bind.\$tlu_ifu_rstthr_i2[i] & C${c}_ifu_intr_bind.\$tlu_ifu_nukeint_i2;
+    C${c}_resumint[i] = C${c}_ifu_intr_bind.\$tlu_ifu_rstthr_i2[i] & C${c}_ifu_intr_bind.\$tlu_ifu_resumint_i2;
+    C${c}_xover[i] = C${c}_ifu_thrid_bind.\$inst_vld_s & C${c}_ifu_thrid_bind.\$thr_f[i] &
+		     C${c}_ifu_mil_bind.\$block_fetch_s1 & (C${c}_ifu_mil_bind.\$ifqop_i2[144] == 1'b1);
+
+    C${c}_tlbmiss[i] = C${c}_ifu_thrid_bind.\$thr_m[i] & C${c}_ifu_swl_bind.\$ifu_tlu_ttype_vld_m & 
+                       (C${c}_ifu_swl_bind.\$ifu_tlu_ttype_m == 'h64);
+    if (ifu_cov_debug) {
+      printf ("%d: Thread %1d:imss = %1b,swcs = %1b,ices = %1b,swcd = %1b,intd = %1b,stb8 = %1b,stb9 = %1b,iced = %1b,muld = %1b,divd = %1b,fpod = %1b,swce = %1b,trpm = %1b,rfew = %1b,flhw = %1b,ldmw = %1b,mrbw = %1b,nukw = %1b,fstw = %1b,dcw2 = %1b,trpf = %1b,trps = %1b,trpd = %1b,ints = %1b,thr_vld_d = %1b,br = %1b,annul_e = %1b,ic_s = %1b,rb_d = %1b,rb_w[i] = %1b\n", get_time(LO), i, C${c}_imss[i],C${c}_swcs[i],C${c}_ices[i],C${c}_swcd[i],C${c}_intd[i],C${c}_stb8[i],C${c}_stb9[i],C${c}_iced[i],C${c}_muld[i],C${c}_divd[i],C${c}_fpod[i],C${c}_swce[i],C${c}_trpm[i],C${c}_rfew[i],C${c}_flhw[i],C${c}_ldmw[i],C${c}_mrbw[i],C${c}_nukw[i],C${c}_fstw[i],C${c}_dcw2[i],C${c}_trpf[i],C${c}_trps[i],C${c}_trpd[i],C${c}_ints[i],C${c}_thr_vld_d[i],C${c}_br,C${c}_annul_e[i],C${c}_ic_s[i],C${c}_rb_d[i],C${c}_rb_w[i]);
+    }
+  }
+    C${c}_itlb_miss = C${c}_ifu_thrid_bind.\$inst_vld_s & C${c}_ifu_itlb_bind.\$tlb_cam_miss_s1;
+    C${c}_fpbusy_e = C${c}_ifu_swl_bind.\$swl_dec_fpbusy_e;
+    C${c}_asi_int_d = C${c}_ifu_stb_bind.\$asi_internal_d;
+    C${c}_ttype_m = C${c}_ifu_swl_bind.\$ifu_tlu_ttype_m;
+    C${c}_hwint = C${c}_ifu_intr_bind.\$tlu_ifu_hwint_i3;
+    C${c}_sftint = C${c}_ifu_intr_bind.\$tlu_ifu_sftint_vld;
+    C${c}_rerrint = C${c}_ifu_intr_bind.\$tlu_ifu_rerr_vld;
+    C${c}_hintp = C${c}_ifu_intr_bind.\$tlu_ifu_hintp_vld;
+    C${c}_itlb_full = &C${c}_ifu_itlb_bind.\$tlb_entry_vld[63:0];
+    C${c}_dmp = C${c}_ifu_itlb_bind.\$tlu_itlb_dmp_vld_g & C${c}_ifu_itlb_bind.\$ifu_tlu_tlb_done & |C${c}_ifu_itlb_bind.\$demap_hit[63:0];
+    C${c}_tlb_wr = C${c}_ifu_itlb_bind.\$tlu_itlb_wr_vld_g & C${c}_ifu_itlb_bind.\$ifu_tlu_tlb_done;
+    C${c}_icache_full = &C${c}_ifu_mil_bind.\$idcv_ary[511:0];
+    C${c}_imiss = C${c}_ifu_swl_bind.\$fcl_ifq_icmiss_s1;
+    C${c}_icerr = (((C${c}_ifu_swl_bind.\$erd_erc_nirpe_s1 | C${c}_ifu_swl_bind.\$erd_erc_fetpe_s1) & C${c}_ifu_swl_bind.\$fcl_erb_ievld_s1) | C${c}_ifu_swl_bind.\$ictagerr_s1);
+    
+    if (get_cycle (ifu_coverage_ifc.clk) > 2) {
+      C${c}_same_thr_2 = ((C${c}_ifu_thrid_bind.\$thr_f == C${c}_ifu_thrid_bind.\$thr_f.1) && 
+                          (C${c}_ifu_thrid_bind.\$thr_f != 'h0)) ? 1'b1 : 1'b0;
+      C${c}_same_pc_2 = (C${c}_ifu_itlb_bind.\$pc_s == C${c}_ifu_itlb_bind.\$pc_s.1) ? 1'b1 : 1'b0;   
+    }
+    if (ifu_cov_debug) {
+      printf ("%d: %d: same_thr_2 = %1b: same_pc_2 = %1b\n", get_time(LO), get_cycle(ifu_coverage_ifc.clk), C${c}_same_thr_2, C${c}_same_pc_2);
+    }
+
+    C${c}_thr_s = C${c}_ifu_thrid_bind.\$thr_f;
+    C${c}_canthr = C${c}_ifu_swl_bind.\$fcl_ifq_canthr;
+    C${c}_thrrdy = C${c}_ifu_swl_bind.\$ifq_dtu_thrrdy | C${c}_ifu_swl_bind.\$ifq_dtu_pred_rdy;
+    C${c}_stb_retry = C${c}_ifu_swl_bind.\$stb_retry;
+    C${c}_retr_wakeup = C${c}_ifu_swl_bind.\$retr_thr_wakeup;
+    C${c}_ldst_cmplt = C${c}_ifu_swl_bind.\$lsu_ifu_ldst_cmplt;
+.for ($t = 0; $t < $THREADS_PER_CORE; $t++) {
+    //Condition that some thread is running in the F/S-stage and there is ldmiss or dcw2 but no irferr or any other w-stage rb
+    C${c}_rb_s_only[${t}] = (C${c}_ldmw[${t}] | C${c}_dcw2[${t}]) & C${c}_ifu_thrid_bind.\$thr_f[${t}] & ~C${c}_ifu_thrid_bind.\$thr_d[${t}] & ~C${c}_rb_w[${t}];
+    //Condition that some thread is running in the D-stage and there is ldmiss or dcw2 but no irferr or any other w-stage rb
+    C${c}_rb_d_only[${t}] = C${c}_rb_d[${t}] & C${c}_ifu_thrid_bind.\$thr_d[${t}] & ~C${c}_ifu_thrid_bind.\$thr_f[${t}] & ~C${c}_rb_w[${t}];
+    C${c}_thr_state[${t}] = C${c}_ifu_swl_bind.\$thr${t}_state;
+
+    //Other misc signals are also here
+    C${c}_icache_rd = C${c}_ifu_mil_bind.\$icache_rd;
+    C${c}_icache_wr = C${c}_ifu_mil_bind.\$icache_wr;
+    C${c}_icache_idx = C${c}_ifu_mil_bind.\$icache_idx;
+    C${c}_dirmap_icache = C${c}_ifu_mil_bind.\$dirmap_icache;
+    C${c}_icache_wrway = C${c}_ifu_mil_bind.\$icache_wrway;
+.}
+}
+.}
+
+///////////////////////////////////////////////////////////////////////////
+// Decode long latency instructions
+//////////////////////////////////////////////////////////////////////////
+
+. foreach $c (@CORE_STR) {
+task ifu_coverage:: C${c}_decode_inst_d () 
+{
+  bit imm;
+  bit [5:0] op3;
+  bit [2:0] op2;
+  bit [4:0] rs1, rd, fcn;
+  bit [31:0] inst;
+
+  inst = C${c}_ifu_swl_bind.\$dtu_inst_d;
+  C${c}_inst_word_d = C${c}_ifu_swl_bind.\$dtu_inst_d;
+  C${c}_ccr_d = C${c}_ifu_swl_bind.\$ccr_d;
+  imm = inst[13];
+  op2 = inst[24:22];
+  op3 = inst[24:19];
+  rs1 = inst[18:14];
+  rd = inst[29:25];
+  fcn = inst[29:25];
+  C${c}_anull_ba = 1'b0;
+  C${c}_br = 1'b0;
+  C${c}_halt_inst = 1'b0;
+  C${c}_inst_d = Others;
+
+  case (inst[31:30]) {
+    'h0: case (op2) {
+           'h3:     C${c}_inst_d = BPR_INST;
+           'h1,'h2: {
+		      C${c}_inst_d = BPCC_BICC_INST;
+		      if ((inst[28:25] == 4'b1000) && (inst[29] == 1'b1)) {
+ 			C${c}_anull_ba = 1'b1;
+		      }
+		    }
+           'h5,'h6: C${c}_inst_d = FBFCC_FBPFCC_INST;
+         }
+    'h1: C${c}_inst_d = CALL_INST;
+    'h2: case (op3) {
+ 	   'h09, 'h0a, 'h0b, 'h1a, 'h1b, 'h24: C${c}_inst_d = MUL_INST;
+           'h0d, 'h0e, 'h0f, 'h1e, 'h1f, 'h2d: C${c}_inst_d = DIV_INST;
+           'h2a: C${c}_inst_d = RDPR_INST;
+           'h2b: C${c}_inst_d = FLUSHW_INST;
+	   'h28: case (rs1) {
+                   'h0: C${c}_inst_d = RDY_INST;
+	           'h2: C${c}_inst_d = RDCCR_INST;
+	           'h3: C${c}_inst_d = RDASI_INST;
+                   'h4: C${c}_inst_d = RDTICK_INST;
+ 	           'h5: C${c}_inst_d = RDPC_INST;
+                   'h6: C${c}_inst_d = RDFPRS_INST;
+	           'hf: if (rd == 'h0) {
+                          if (imm == 1'b1) {
+                            C${c}_inst_d = MEMBAR_INST;
+                          } else {
+                            C${c}_inst_d = STBAR_INST;
+                          }
+                        }
+		   'h7,'h8,'h9,'ha,'hb,'hc,'hd,'he,
+                   'h10,'h11,'h12,'h13,'h14,'h15,
+                   'h16,'h17,'h18,'h19,'h1a: C${c}_inst_d = RDASR_INST;
+                 }
+           'h30: case (rd) {
+                   'h0: C${c}_inst_d = WRY_INST;
+                   'h2: C${c}_inst_d = WRCCR_INST;
+                   'h3: C${c}_inst_d = WRASI_INST;
+                   'h6: C${c}_inst_d = WRFPRS_INST;
+                   'hf: if (rs1 == 'h0 && imm == 1'b1) C${c}_inst_d = SIR_INST;
+		   'h4,'h5,'h7,'h8,'h9,'ha,'hb,'hc,'hd,'he,
+		   'h10,'h11,'h12,'h13,'h14,'h15,'h16,'h17,
+		   'h18,'h19	: C${c}_inst_d = WRASR_INST;
+		   'h1a: {
+		      if (imm == 1'b1 && inst[0] == 1'b0) {//wrasr 26 to deactivate the thread: looking for immediate type only
+                        C${c}_inst_d = HALT_INST;
+                        C${c}_halt_inst = 1'b1;
+		      } else {
+			C${c}_inst_d = WRASR_INST;
+                      }
+                   }
+                 }
+           'h31: case (fcn) {
+                   'h0: C${c}_inst_d = SAVED_INST;
+                   'h1: C${c}_inst_d = RESTORED_INST;
+                 }
+           'h32: C${c}_inst_d = WRPR_INST;
+           'h34: C${c}_inst_d = FPOP1_INST;
+           'h35: C${c}_inst_d = FPOP2_INST;
+           'h38: C${c}_inst_d = JMPL_INST;
+           'h39: C${c}_inst_d = RETURN_INST;
+           'h3a: C${c}_inst_d = TCC_INST;
+           'h3b: C${c}_inst_d = FLUSH_INST;
+           'h3c: C${c}_inst_d = SAVE_INST;
+           'h3d: C${c}_inst_d = RESTORE_INST;
+           'h3e: case (fcn) {
+                   'h0: C${c}_inst_d = DONE_INST;
+                   'h1: C${c}_inst_d = RETRY_INST;
+                 }
+         }
+    'h3: case (op3) {
+           'h00, 'h01, 'h02, 'h03, 'h08, 'h09, 'h0a, 'h0b: C${c}_inst_d = LD_INST;
+           'h00, 'h11, 'h12, 'h13, 'h18, 'h19, 'h1a, 'h1b: C${c}_inst_d = LDASI_INST;
+           'h14, 'h15, 'h16, 'h17, 'h1e: C${c}_inst_d = STASI_INST;
+           'h0d, 'h1d: C${c}_inst_d = LDSTUB_INST;
+           'h0f, 'h1f: C${c}_inst_d = SWAP_INST;
+           'h20, 'h30, 'h23, 'h33, 'h21: C${c}_inst_d = LDFP_INST;
+           'h24, 'h34, 'h25, 'h27, 'h37: C${c}_inst_d = STFP_INST;
+	   'h04, 'h05, 'h06, 'h07, 'h0e: C${c}_inst_d = ST_INST;
+           'h3c, 'h3e: C${c}_inst_d = CAS_INST;
+           'h2d, 'h3d: C${c}_inst_d = PREF_INST;
+         }
+  }
+  if ((C${c}_inst_d == BPR_INST) || (C${c}_inst_d == BPCC_BICC_INST) || (C${c}_inst_d == JMPL_INST) || (C${c}_inst_d == CALL_INST)) {
+    C${c}_br = 1'b1;
+  }
+}
+.}
+
+///////////////////////////////////////////////////////////////////////////
+// Set the coverage conditions for store instructions
+//////////////////////////////////////////////////////////////////////////
+
+. foreach $c (@CORE_STR) {
+task ifu_coverage:: C${c}_set_stb_bits () 
+{
+  integer i;
+  bit [3:0] stbcnt;
+  bit pipe_st_1, pipe_st_2, pipe_st_3, pipe_st_4, stb7;
+
+  pipe_st_1 = C${c}_ifu_stb_bind.\$all_dst_ge1;
+  pipe_st_2 = C${c}_ifu_stb_bind.\$all_dst_ge2;
+  pipe_st_3 = C${c}_ifu_stb_bind.\$all_dst_ge3;
+  pipe_st_4 = C${c}_ifu_stb_bind.\$all_dst_eq4;
+  stbcnt = C${c}_ifu_stb_bind.\$stbcnt_d;
+
+  stb7 = C${c}_ifu_thrid_bind.\$inst_vld_d & C${c}_ifu_stb_bind.\$dec_swl_st_inst_d //Store in the D-stage
+         & ~C${c}_ifu_swl_bind.\$switch_store_d  & ~C${c}_ifu_swl_bind.\$retract_store_d &
+  ((stbcnt == 'h6 && pipe_st_1 == 'h0) || // 0 + 6
+   (stbcnt == 'h5 && pipe_st_1 == 'h1) 		|| // 1 + 5
+   (stbcnt == 'h4 && pipe_st_2 == 'h1) 		|| // 2 + 4
+   (stbcnt == 'h3 && pipe_st_3 == 'h1)	       	|| // 3 + 3
+   (stbcnt == 'h2 && pipe_st_4 == 'h1));	   // 4 + 2
+
+  for (i = 0; i < 4; i++) {
+    C${c}_stb7[i] = C${c}_ifu_thrid_bind.\$thr_d[i] & stb7;
+  }
+
+  if (ifu_cov_debug) {
+    if (C${c}_ifu_thrid_bind.\$inst_vld_d == 1'b1) {
+      printf ("%d: thr_d = %1h: stb7 = %1b: inst = %8b: store = %1b: pipe_st_1 = %1d: pipe_st_2 = %1d: pipe_st_3 = %1d:pipe_st_4 = %1d: stbcnt_d = %1h\n", get_time(LO),C${c}_ifu_thrid_bind.\$thr_d,C${c}_stb7,C${c}_inst_d,C${c}_ifu_stb_bind.\$dec_swl_st_inst_d,pipe_st_1,pipe_st_2,pipe_st_3,pipe_st_4,stbcnt);
+    }
+  }
+}
+.}
+
+///////////////////////////////////////////////////////////////////////////
+// Decode the cpx pkt
+//////////////////////////////////////////////////////////////////////////
+
+. foreach $c (@CORE_STR) {
+task ifu_coverage:: C${c}_set_cpxpkt_bits () 
+{
+  bit [1:0] thrid;
+
+  C${c}_cpkpkt_vld = 1'b0;
+  if (C${c}_ifu_mil_bind.\$ifqop_i2[144] == 1'b1 && C${c}_ifu_mil_bind.\$ifc_inv_ifqadv_i2 == 1'b1) {
+    C${c}_cpkpkt_vld = 1'b1;
+    C${c}_cpxpkt_thrid = C${c}_ifu_mil_bind.\$ifqop_i2[135:134];
+    C${c}_cpkpkt_nc = C${c}_ifu_mil_bind.\$ifqop_i2[136] | C${c}_ifu_mil_bind.\$ifqop_i2[130];
+    C${c}_cpkpkt_l2ue = C${c}_ifu_mil_bind.\$ifqop_i2[138];
+    C${c}_cpkpkt_l2ce = C${c}_ifu_mil_bind.\$ifqop_i2[137];
+    thrid = C${c}_cpxpkt_thrid;
+    C${c}_cpxpkt_first_pkt = (C${c}_ifu_mil_bind.\$ifqop_i2[129] == 1'b0) & (C${c}_ifu_mil_bind.\$ifqop_i2[143:140] == 'h1);
+    C${c}_cpxpkt_second_pkt = (C${c}_ifu_mil_bind.\$ifqop_i2[129] == 1'b1) & (C${c}_ifu_mil_bind.\$ifqop_i2[143:140] == 'h1);
+    C${c}_evict = C${c}_ifu_mil_bind.\$evpkt_i2;
+    C${c}_stack = C${c}_ifu_mil_bind.\$invall_i2;
+    C${c}_idexcl = C${c}_ifu_mil_bind.\$ldinv_i2;
+    if (C${c}_idexcl) {
+      C${c}_invidx = C${c}_ifu_mil_bind.\$ldinv_addr_i2;
+    } else {
+      C${c}_invidx = {C${c}_ifu_mil_bind.\$ifqop_i2[117:112],C${c}_ifu_mil_bind.\$ifqop_i2[122]};
+    }
+    if (ifu_cov_debug) {
+      printf ("%d: vld = 1: evict = %1b: stack = %1b: idexcl = %1b: idx = %2h: thrid = %1h: first_pkt = %1h: second_pkt = %1h: nc = %1h: l2ce = %1h: l2ue = %1h\n", get_time(LO), C${c}_evict,C${c}_stack,C${c}_idexcl,C${c}_invidx,thrid,C${c}_cpxpkt_first_pkt,C${c}_cpxpkt_second_pkt,C${c}_cpkpkt_nc,C${c}_cpkpkt_l2ce,C${c}_cpkpkt_l2ue);
+    }
+  }
+}
+.}
+
+///////////////////////////////////////////////////////////////////////////
+// Do the mil checking and detected ooo ifills
+//////////////////////////////////////////////////////////////////////////
+
+. foreach $c (@CORE_STR) {
+task ifu_coverage:: C${c}_ccxpkt_mon ()
+{
+
+  bit ackd = 1'b0;
+  integer size;
+  bit [39:0] pa;
+  bit [1:0] thr;
+  bit [3:0] rtntyp;
+  pcxreq req, newreq;
+  bit ifill_ret_for_err = 1'b0;
+  VeraListIterator_pcxreq pcxreq_itr;
+
+//  printf ("%d: lsu_ifu_pcxpkt_ack_d = %b\n", get_time(LO), C0_ifu_mil_bind.\$lsu_ifu_pcxpkt_ack_d);
+
+  //Add a new req to the req list if it is valid and has been acked by pcx
+  if (C0_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[51] == 1'b1 && C0_ifu_mil_bind.\$lsu_ifu_pcxpkt_ack_d == 1'b1) {
+    pa = C${c}_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[39:0];
+    thr = C${c}_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[41:40];
+    rtntyp = C${c}_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[50] ? ST_ACK : IFILL_RET;
+
+//    printf ("%d: Detected a new outgoing request. Addr = %h, thr = %h, rtntyp = %h\n", get_time(LO), pa, thr, rtntyp);
+
+    //If this outgoing request is not an error type (bit 50 set) or an ifill request 
+    //associated with an error traverse the list of existing reqs and check that no
+    //"vanilla" ifill request has the same address
+
+    if (ifill_ret_for_err == 1'b0 && rtntyp == IFILL_RET) { 
+//      printf ("The size of the pcxreq list is %d\n", C${c}_pcxreq_list.size());
+      pcxreq_itr = C${c}_pcxreq_list.start();
+      while (pcxreq_itr.neq (C${c}_pcxreq_list.finish ())) {
+        req = pcxreq_itr.data ();
+        if (req.addr == pa && req.rtntyp == IFILL_RET && req.ifill_ret_for_err == 1'b0) {
+	// The following condition is not a failure, especially when
+	// the accesses are to IO and are from different threads
+	// [Viranjit 2/12/2004, ref. Aings]
+//          printf ("  %d: ERROR: IFU sending an ifetch request for address %h and thread %h when a request for that address is already pending for some other thread.\n", get_time(LO),req.addr,req.thrid);
+//          repeat (5) @ (posedge ifu_coverage_ifc.clk);
+//          exit (0);
+        }
+        pcxreq_itr.next ();
+      }
+    }
+
+    //No multiple reqs for the same address, so add this new req
+    if (C${c}_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[50] == 1'b1) { //err pkt
+      newreq = new (thr,pa,ST_ACK,1,0);
+      ifill_ret_for_err = 1'b1;
+    } else if (C${c}_ifu_mil_bind.\$ifu_lsu_pcxpkt_e[39] == 1'b1) {//to uncacheable space
+      newreq = new (thr,pa,IFILL_RET,1,0);
+      ifill_ret_for_err = 1'b0;
+    } else {
+      if (ifill_ret_for_err == 1'b1) { //two pkt ifill to fix an error
+        newreq = new (thr,pa,IFILL_RET,2,1);
+        ifill_ret_for_err = 1'b0;
+      } else { //normal two pkt ifill; no error
+        newreq = new (thr,pa,IFILL_RET,2,0);
+      }
+    }
+
+//    printf ("%d : Adding a new node to the pcxreq list with address %h and thrid %h\n", get_time(LO), newreq.addr, newreq.thrid);
+    C${c}_pcxreq_list.push_back(newreq);
+  }
+
+  ifu_ooo_ifill_sample_c${c} = 1'b0;
+
+  //Delete reqs from the reqlist
+  if (C${c}_ifu_mil_bind.\$ifqop_i2[144] == 1'b1 && C${c}_ifu_mil_bind.\$ifc_inv_ifqadv_i2 == 1'b1) {
+    size = C${c}_pcxreq_list.size();
+    thr = C${c}_ifu_mil_bind.\$ifqop_i2[135:134];
+    if (size > 0) {
+      req = C${c}_pcxreq_list.front ();
+      if (thr == req.thrid) {
+        if (req.rtntyp == ST_ACK) {
+//          printf ("%d : Deleting an ST_ACK\n", get_time(LO));
+          C${c}_pcxreq_list.pop_front();
+        } else {
+          req.pkts = req.pkts - 1; 
+          if (req.pkts == 0) {
+//            printf ("%d : Deleting an IFILL_RET\n", get_time(LO));
+            C${c}_pcxreq_list.pop_front();
+          }
+        }
+      } else {
+        ifu_ooo_ifill_sample_c${c} = 1'b1;
+        pcxreq_itr = C${c}_pcxreq_list.start();
+        while (pcxreq_itr.neq (C${c}_pcxreq_list.finish ())) {
+          req = pcxreq_itr.data ();
+          if (req.thrid == thr) {
+	    if (req.rtntyp == ST_ACK) {
+//              printf ("%d : Deleting an out of order ST_ACK\n", get_time(LO));
+              pcxreq_itr = C${c}_pcxreq_list.erase(pcxreq_itr);	    
+	    } else {
+  	      req.pkts = req.pkts - 1; 
+              if (req.pkts == 0) {
+//                printf ("%d : Deleting an out of order IFILL_RET\n", get_time(LO));
+                pcxreq_itr = C${c}_pcxreq_list.erase(pcxreq_itr);
+                break;
+              }
+            }
+          }
+          pcxreq_itr.next ();
+        }
+      }
+    }
+  }
+}
+.}

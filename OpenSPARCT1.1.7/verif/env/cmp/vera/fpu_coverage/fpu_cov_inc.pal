@@ -1,0 +1,24 @@
+.##########################################################################
+.#
+.# File:	fpu_cov_inc.pal
+.#
+.# Description:
+.# -----------
+.#	Common Pal header file that uses a map of the sys(tem) being
+.#	simulated and decides on:
+.#		number of cores
+.#		instance path for each core (for fpu)
+.# $Id: fpu_cov_inc.pal,v 1.2 2002/12/14 03:30:17 sj138243.Eng Exp $
+.#
+.##########################################################################
+. $cores	= 1;		# default settings
+. $sys		= "CMP";	# default system being simulated
+.# END_INIT
+. $THREADS_PER_CORE	= 4;	# a frequently used constant
+.
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+
+// sys = $sys, cores = $cores
+.
+.	$FPU_COV_PATHS     	= "cmp_top.iop.fpu";
+

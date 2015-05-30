@@ -1,0 +1,226 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cpxpacket.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+#define DUMMY_RQ     5'h1f
+
+extern bit fail_flag, time_flag;
+extern  string     why;
+
+/*-------------------------------------------------------------------------------------------
+  class from ccx to sparc packet. 
+---------------------------------------------------------------------------------------------*/
+class CpxPacket {
+  //cpx packet field
+  bit                           valid;
+  bit [CPX_RQ_HI-CPX_RQ_LO:0]   rtntyp;
+  bit                           nc;
+  bit [CPX_TH_HI-CPX_TH_LO:0]   thread_id;
+  bit [CPX_IN_HI-CPX_IN_LO:0]   intp_src;
+  bit                           way_vld;
+  bit [CPX_WY_HI-CPX_WY_LO:0]   way;
+  bit [CPX_BF_HI-CPX_BF_LO:0]   bf_id;
+  //bit [CPX_SI_HI-CPX_SI_LO:0]   pa_10_6;
+  bit [5:0]                     pa_10_6;
+  bit [CPX_DA_HI-CPX_DA_LO:0]   data;
+  bit [63:0]                    addr;
+  bit [2:0]                     cpu_id;
+  bit [7:0]                     req;
+  bit                           atom;
+  bit [1:0]                     stq;
+  bit [2:0]                     size;
+  bit                           iinv ;
+  bit                           dinv ;
+
+  bit [2:0]                     sparc_id ;
+
+  //define public function or task
+  task                          new    (){}
+  function  bit [CPX_WIDTH-1:0] get_pkt();
+  task                          set_pkt(bit [CPX_WIDTH-1:0] cpx);
+  task                          set_fullpkt(bit [CPX_WIDTH-1:0] cpx);
+  task                          print();
+  task                          print_header();
+  task                          xlate2fill_ret(bit [PCX_WIDTH-1:0] pcx);
+}
+MakeVeraList(CpxPacket)
+/*-------------------------------------------------------------------------------------------
+  make expected packet
+---------------------------------------------------------------------------------------------*/
+task  CpxPacket::xlate2fill_ret (bit [PCX_WIDTH-1:0] pcx)
+{
+
+  valid = pcx [PCX_VLD];
+  atom  = 0;
+
+  case (pcx[PCX_RQ_HI:PCX_RQ_LO])
+  {
+    LOAD_RQ   : rtntyp  = LOAD_RET;
+    IMISS_RQ  : rtntyp  = IFILL_RET;
+    STORE_RQ  : rtntyp  = ST_ACK;
+    STQ_RQ,
+    SWAP_RQ   : {rtntyp = ST_ACK;atom = 1;}
+    STRST_RQ  : rtntyp  = STRST_ACK;
+    CAS1_RQ   : {rtntyp  = LOAD_RET;atom = 1;}
+    CAS2_RQ   : rtntyp  = ST_ACK;
+    SWAP_RQ   : {rtntyp = ST_ACK;atom = 1;}
+    STRLOAD_RQ: rtntyp  = STRLOAD_RET;
+    INT_RQ    : rtntyp  = INT_RET;
+    FWD_RQ    : rtntyp  = FWD_RQ_RET;
+    DUMMY_RQ  : rtntyp  = EVICT_REQ;
+    default   : {
+      fail_flag = 1;
+      sprintf(why, "unknown request type");
+    }
+  }
+  nc        = pcx[PCX_NC];
+  thread_id = pcx[PCX_TH_HI:PCX_TH_LO];
+  way_vld   = 1'b1;
+  way       = pcx[PCX_WY_HI:PCX_WY_LO];
+  bf_id     = pcx[PCX_BF_HI:PCX_BF_LO];
+  pa_10_6   = pcx[(PCX_AD_LO+11):(PCX_AD_LO+6)];
+  cpu_id    = pcx[PCX_CP_HI:PCX_CP_LO];
+  stq       = pcx[PCX_WY_HI:PCX_WY_LO];
+  size      = pcx[PCX_SZ_HI:PCX_SZ_LO];
+}
+
+task CpxPacket::set_pkt (bit [CPX_WIDTH-1:0] cpx)
+{
+  this.valid       = cpx [CPX_VLD] ;
+  this.rtntyp      = cpx [CPX_RQ_HI:CPX_RQ_LO] ;
+  this.nc          = cpx [CPX_NC] ;
+  this.thread_id   = cpx [CPX_TH_HI:CPX_TH_LO] ;
+  this.intp_src    = cpx [CPX_IN_HI:CPX_IN_LO] ;
+  this.way_vld     = cpx [CPX_WYVLD] ;
+  this.bf_id       = cpx [CPX_BF_HI:CPX_BF_LO] ;
+  this.way         = cpx [CPX_WY_HI:CPX_WY_LO] ;
+  this.data        = cpx [CPX_DA_HI:CPX_DA_LO] ;
+  this.pa_10_6     = cpx [CPX_SI_HI:CPX_SI_LO] ;
+  this.iinv        = cpx [CPX_IINV] ;
+  this.dinv        = cpx [CPX_DINV] ;
+}
+
+//-------------------------------------------------
+task CpxPacket::set_fullpkt (bit [CPX_WIDTH-1:0] cpx)
+{
+  this.valid       = cpx [CPX_VLD] ;
+  this.rtntyp      = cpx [CPX_RQ_HI:CPX_RQ_LO] ;
+  this.nc          = cpx [CPX_NC] ;
+  this.thread_id   = cpx [CPX_TH_HI:CPX_TH_LO] ;
+  this.intp_src    = cpx [CPX_IN_HI:CPX_IN_LO] ;
+  this.way_vld     = cpx [CPX_WYVLD] ;
+  this.bf_id       = cpx [CPX_BF_HI:CPX_BF_LO] ;
+  this.way         = cpx [CPX_WY_HI:CPX_WY_LO] ;
+  this.data        = cpx [CPX_DA_HI:CPX_DA_LO] ;
+  this.pa_10_6     = cpx [CPX_SI_HI:CPX_SI_LO] ;
+  this.iinv        = cpx [CPX_IINV] ;
+  this.dinv        = cpx [CPX_DINV] ;
+  this.atom        = cpx [129];
+}
+
+/*-------------------------------------------------------------------------------------------
+  make expected packet
+---------------------------------------------------------------------------------------------*/
+function bit [CPX_WIDTH-1:0] CpxPacket::get_pkt(){
+
+  get_pkt [CPX_VLD]              = valid;
+  get_pkt [CPX_ERR_HI:CPX_ERR_LO] = 0;
+  get_pkt [CPX_RQ_HI:CPX_RQ_LO]  = rtntyp;
+  get_pkt [CPX_NC]               = nc;
+  get_pkt [CPX_TH_HI:CPX_TH_LO]  = thread_id;
+  get_pkt [CPX_IN_HI:CPX_IN_LO]  = intp_src;
+  get_pkt [CPX_BF_HI:CPX_BF_LO]  = way_vld;
+  get_pkt [CPX_BF_LO+1]          = atom;
+  get_pkt [CPX_WYVLD]            = way;
+  get_pkt [CPX_WY_HI:CPX_WY_LO]  = bf_id;
+  get_pkt [CPX_DA_HI:CPX_DA_LO]  = data;
+  if(rtntyp == ST_ACK){
+    get_pkt [CPX_BF_HI+1:CPX_BF_HI] = stq;
+    get_pkt [117:112] = pa_10_6;
+  }
+  if(rtntyp == STRLOAD_RET)get_pkt [CPX_BF_HI:CPX_BF_LO+1] = size[2:1];
+  if(rtntyp == STRST_ACK)get_pkt [CPX_BF_HI:CPX_BF_HI]     = way[1];
+  if((rtntyp == IFILL_RET) & nc)get_pkt[CPX_P_LO]          = 1'b1;//set bit 130 for imiss ret
+  get_pkt[128] = 0;//clear always
+}
+/*-------------------------------------------------------------------------------------------
+  print cpx packet.
+---------------------------------------------------------------------------------------------*/
+task CpxPacket::print()
+{
+  static integer print_count = 0 ;
+
+  if ((print_count % 40) == 0)
+  {
+    print_header () ;
+  }
+
+  printf ("| CPX ") ;
+  printf ("| %10d ", get_time(LO)) ;
+  printf ("| %d   ", sparc_id) ;
+  printf ("| %b   ", valid) ;
+  case (rtntyp)
+  {
+    LOAD_RET     : printf ("| LOAD_RET    ") ;
+    IFILL_RET    : printf ("| IFILL_RET   ") ;
+    ST_ACK       : printf ("| ST_ACK      ") ;
+    STRST_ACK    : printf ("| STRST_ACK   ") ;
+    STRLOAD_RET  : printf ("| STRLOAD_RET ") ;
+    INT_RET      : printf ("| INT_RET     ") ;
+    FWD_RQ_RET   : printf ("| FWD_RQ_RET  ") ;
+    EVICT_REQ    : printf ("| EVICT_REQ   ") ;
+    default      : printf ("| INVALID     ") ;
+  }
+  printf ("| %b  ", nc) ;
+  printf ("| %d   ", thread_id) ;
+  printf ("| %2d  ", intp_src) ;
+  printf ("| %b   ", way_vld) ;
+  printf ("| %b   ", atom) ;
+  printf ("| %2b  ", way) ;
+  printf ("| %d   ", bf_id) ;
+  printf ("| %b   ", iinv) ;
+  printf ("| %b   ", dinv) ;
+  printf ("| %32x ", data) ;
+  printf ("|\n") ;
+
+  print_count++ ;
+}
+
+task CpxPacket::print_header ()
+{
+  printf ("| CPX ") ;
+  printf ("| Time       ") ;
+  printf ("| Spc ") ;
+  printf ("| Vld ") ;
+  printf ("| Type        ") ;
+  printf ("| NC ") ;
+  printf ("| Thr ") ;
+  printf ("| Int ") ;
+  printf ("| WVl ") ;
+  printf ("| Atm ") ;
+  printf ("| Way ") ;
+  printf ("| Buf ") ;
+  printf ("| IIn ") ;
+  printf ("| DIn ") ;
+  printf ("| Data                             ") ;
+  printf ("|\n") ;
+}

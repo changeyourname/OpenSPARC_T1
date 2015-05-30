@@ -1,0 +1,124 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_pcx_req_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// req_atom[39:0] = {spc7_pcx_req[3:0], ... , spc0_pcx_req[3:0],
+//                   spc7_pcx_atom, ... , spc0_pcx_atom}
+
+// coverage_def CCX_PCX_REQ_COV(bit [39:0] req_atom) {
+
+    // 1-packet requests
+
+    state allcores_bank0(40'h1111111100);
+    state allcores_bank1(40'h2222222200);
+    state allcores_bank2(40'h4444444400);
+    state allcores_bank3(40'h8888888800);
+
+    // 2-packet requests
+
+    state allcores_bank0_atom(40'h11111111ff);
+    state allcores_bank1_atom(40'h22222222ff);
+    state allcores_bank2_atom(40'h44444444ff);
+    state allcores_bank3_atom(40'h88888888ff);
+    
+/*    
+    wildcard state core0_bank0({32'hXXXXXXX1, 8'bxxxxxxx0});
+    wildcard state core0_bank1({32'hXXXXXXX2, 8'bxxxxxxx0});
+    wildcard state core0_bank2({32'hXXXXXXX4, 8'bxxxxxxx0});
+    wildcard state core0_bank3({32'hXXXXXXX8, 8'bxxxxxxx0});
+
+    wildcard state core1_bank0({32'hXXXXXX1X, 8'bxxxxxx0x});
+    wildcard state core1_bank1({32'hXXXXXX2X, 8'bxxxxxx0x});
+    wildcard state core1_bank2({32'hXXXXXX4X, 8'bxxxxxx0x});
+    wildcard state core1_bank3({32'hXXXXXX8X, 8'bxxxxxx0x});
+
+    wildcard state core2_bank0({32'hXXXXX1XX, 8'bxxxxx0xx});
+    wildcard state core2_bank1({32'hXXXXX2XX, 8'bxxxxx0xx});
+    wildcard state core2_bank2({32'hXXXXX4XX, 8'bxxxxx0xx});
+    wildcard state core2_bank3({32'hXXXXX8XX, 8'bxxxxx0xx});
+
+    wildcard state core3_bank0({32'hXXXX1XXX, 8'bxxxx0xxx});
+    wildcard state core3_bank1({32'hXXXX2XXX, 8'bxxxx0xxx});
+    wildcard state core3_bank2({32'hXXXX4XXX, 8'bxxxx0xxx});
+    wildcard state core3_bank3({32'hXXXX8XXX, 8'bxxxx0xxx});
+
+    wildcard state core4_bank0({32'hXXX1XXXX, 8'bxxx0xxxx});
+    wildcard state core4_bank1({32'hXXX2XXXX, 8'bxxx0xxxx});
+    wildcard state core4_bank2({32'hXXX4XXXX, 8'bxxx0xxxx});
+    wildcard state core4_bank3({32'hXXX8XXXX, 8'bxxx0xxxx});
+
+    wildcard state core5_bank0({32'hXX1XXXXX, 8'bxx0xxxxx});
+    wildcard state core5_bank1({32'hXX2XXXXX, 8'bxx0xxxxx});
+    wildcard state core5_bank2({32'hXX4XXXXX, 8'bxx0xxxxx});
+    wildcard state core5_bank3({32'hXX8XXXXX, 8'bxx0xxxxx});
+
+    wildcard state core6_bank0({32'hX1XXXXXX, 8'bx0xxxxxx});
+    wildcard state core6_bank1({32'hX2XXXXXX, 8'bx0xxxxxx});
+    wildcard state core6_bank2({32'hX4XXXXXX, 8'bx0xxxxxx});
+    wildcard state core6_bank3({32'hX8XXXXXX, 8'bx0xxxxxx});
+
+    wildcard state core7_bank0({32'h1XXXXXXX, 8'b0xxxxxxx});
+    wildcard state core7_bank1({32'h2XXXXXXX, 8'b0xxxxxxx});
+    wildcard state core7_bank2({32'h4XXXXXXX, 8'b0xxxxxxx});
+    wildcard state core7_bank3({32'h8XXXXXXX, 8'b0xxxxxxx});
+*/
+/*    
+    wildcard state core0_bank0_atom({32'hXXXXXXX1, 8'bxxxxxxx1});
+    wildcard state core0_bank1_atom({32'hXXXXXXX2, 8'bxxxxxxx1});
+    wildcard state core0_bank2_atom({32'hXXXXXXX4, 8'bxxxxxxx1});
+    wildcard state core0_bank3_atom({32'hXXXXXXX8, 8'bxxxxxxx1});
+
+    wildcard state core1_bank0_atom({32'hXXXXXX1X, 8'bxxxxxx1x});
+    wildcard state core1_bank1_atom({32'hXXXXXX2X, 8'bxxxxxx1x});
+    wildcard state core1_bank2_atom({32'hXXXXXX4X, 8'bxxxxxx1x});
+    wildcard state core1_bank3_atom({32'hXXXXXX8X, 8'bxxxxxx1x});
+
+    wildcard state core2_bank0_atom({32'hXXXXX1XX, 8'bxxxxx1xx});
+    wildcard state core2_bank1_atom({32'hXXXXX2XX, 8'bxxxxx1xx});
+    wildcard state core2_bank2_atom({32'hXXXXX4XX, 8'bxxxxx1xx});
+    wildcard state core2_bank3_atom({32'hXXXXX8XX, 8'bxxxxx1xx});
+
+    wildcard state core3_bank0_atom({32'hXXXX1XXX, 8'bxxxx1xxx});
+    wildcard state core3_bank1_atom({32'hXXXX2XXX, 8'bxxxx1xxx});
+    wildcard state core3_bank2_atom({32'hXXXX4XXX, 8'bxxxx1xxx});
+    wildcard state core3_bank3_atom({32'hXXXX8XXX, 8'bxxxx1xxx});
+
+    wildcard state core4_bank0_atom({32'hXXX1XXXX, 8'bxxx1xxxx});
+    wildcard state core4_bank1_atom({32'hXXX2XXXX, 8'bxxx1xxxx});
+    wildcard state core4_bank2_atom({32'hXXX4XXXX, 8'bxxx1xxxx});
+    wildcard state core4_bank3_atom({32'hXXX8XXXX, 8'bxxx1xxxx});
+
+    wildcard state core5_bank0_atom({32'hXX1XXXXX, 8'bxx1xxxxx});
+    wildcard state core5_bank1_atom({32'hXX2XXXXX, 8'bxx1xxxxx});
+    wildcard state core5_bank2_atom({32'hXX4XXXXX, 8'bxx1xxxxx});
+    wildcard state core5_bank3_atom({32'hXX8XXXXX, 8'bxx1xxxxx});
+
+    wildcard state core6_bank0_atom({32'hX1XXXXXX, 8'bx1xxxxxx});
+    wildcard state core6_bank1_atom({32'hX2XXXXXX, 8'bx1xxxxxx});
+    wildcard state core6_bank2_atom({32'hX4XXXXXX, 8'bx1xxxxxx});
+    wildcard state core6_bank3_atom({32'hX8XXXXXX, 8'bx1xxxxxx});
+
+    wildcard state core7_bank0_atom({32'h1XXXXXXX, 8'b1xxxxxxx});
+    wildcard state core7_bank1_atom({32'h2XXXXXXX, 8'b1xxxxxxx});
+    wildcard state core7_bank2_atom({32'h4XXXXXXX, 8'b1xxxxxxx});
+    wildcard state core7_bank3_atom({32'h8XXXXXXX, 8'b1xxxxxxx});
+*/
+// }

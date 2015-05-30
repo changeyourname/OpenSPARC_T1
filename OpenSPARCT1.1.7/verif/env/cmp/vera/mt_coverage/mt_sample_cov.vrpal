@@ -1,0 +1,723 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_sample_cov.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef __MT_SAMPLE_COV_
+#define __MT_SAMPLE_COV_
+
+// The original file is removed accidentally!
+//
+// 1. perhaps it will simplify the work to have the state coverage done with
+//    respect to each pipelin stage.
+// 2. the idea is to have instructions in the pipe divided into groups.
+// 3. the states are constructed as the combination of threads and groups.
+// 4. the state transitions are partitioned as legal and illegal accordingly.
+//
+// -- the groups are preprocessed in the mt_core_pipe.vr. most coding is done
+//    there for grouping instructions. the code here is general and flexible enough
+//    to regroup the instructions in the pipe.
+// -- mt_defines.vrh gives the enums of the combination so that the code is 
+//    more readable without sacrificing performance.
+//
+
+// Thu Feb  6 10:04:31 PST 2003
+// add MT FSM -- ifu coverage monitor has it
+// by we want to see its cross coverage with trap!!!
+//
+
+// Fri Feb 14 15:50:15 PST 2003
+// The bypass objects...
+
+
+// Mon Feb 24 12:12:49 PST 2003
+// now this is for the cross bar
+// what the coverage is trying to cover
+// how many packets are in the cross bar
+// what we generate is the forward and backward
+// flow....
+
+
+// Fri Apr 11 13:53:51 PDT 2003
+// now we want to convert the whole thing into 
+// the latest vera style
+// 
+// to minimize the changes, we
+// will do the following:
+//
+// (1) still maintain the global coverage obj declaration
+// (2) try to get code reuse as much as possible.
+// (3) move the cross coverage in...
+
+
+// Thu Jul 24 11:54:43 PDT 2003
+// two new monitors
+// for ifu
+// starve ....
+// for lsu
+// flush
+//
+
+#include <vera_defines.vrh>
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+
+
+coverage_group MT (
+  mt_cov_port      my_pt,
+  sample bit       mt_bug2770_sample,
+  sample bit [2:0] mt_branch_sample,
+  sample bit [2:0] mt_long_op_sample,
+  sample bit [3:0] mt_long_op_wakeup_sample,
+  sample bit [3:0] mt_mul_div_sample,
+  sample bit [4:0] mt_w1_arb_state_id_sample, 
+  sample bit [5:0] mt_w2_arb_state_id_sample, 
+  sample bit [2:0] mt_intr_sample,
+  sample bit [5:0] mt_pcx_buffer_sample,
+  sample bit [5:0] mt_cpx_buffer_sample,
+.for my $i (1, 2) {
+.  for my $bb ('e', 'ld', 'm', 'w') {
+  sample bit [2:0] mt_pipe_bypass_rs${i}_${bb}_sample,
+.  }
+.}
+  sample bit [2:0] mt_dfq_bypass_sample,
+  sample bit [2:0] mt_rb_stg_d_sample,
+  sample bit [2:0] mt_rb_stg_e_sample,
+  sample bit [2:0] mt_rb_stg_w_sample,
+
+  // this is to resolve the transition states involved in the coverage that make the cross
+  // meaningless!!! Mon Oct  6 09:54:00 PDT 2003
+
+  sample bit [2:0] mt_rbx_stg_w_sample,
+  sample bit [2:0] mt_rbx_stg_e_sample,
+  sample bit [2:0] mt_rbx_stg_d_sample,
+
+  sample bit [2:0] mt_delay_rb_stg_d_sample,
+  sample bit [2:0] mt_delay_rb_stg_e_sample,
+  sample bit [2:0] mt_delay_rb_stg_w_sample,
+
+
+.for my $i (0..3) {
+  sample bit [4:0] mt_fsm_sample_${i},
+.}
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'd2', 'd3');
+. foreach my $s (@pipe) {
+  sample bit [6:0] mt_inst_${s}_sample,
+. }
+
+   sample bit [2:0] mt_trap_w_sample,
+   sample bit [2:0] mt_trap_w1_sample,
+   sample bit [2:0] mt_trap_w2_sample,
+
+   sample bit [3:0] mt_starve_sample,
+   sample bit [1:0] mt_flush_sample,
+
+   event	smpl_event
+) 
+{
+  //const_sample_reference	= 1;
+  sample_event	= sync(ALL, smpl_event);
+
+  cov_weight = 0;
+
+  // Tue Apr  1 09:21:36 PST 2003
+  sample mt_bug2770_sample {
+    state ifu_lsu_ibuf_busy (1'b1);
+  }
+
+
+  // in the pipe make a branch obj
+  // this is for cross coverage with wait?
+  sample mt_branch_sample {
+    state br_th0 (3'b100);
+    state br_th1 (3'b101);
+    state br_th2 (3'b110);
+    state br_th3 (3'b111);
+  }
+
+  // this is just an extra!
+  // just for cross cover!
+  sample mt_long_op_sample {
+    state long_th0 (3'b100);
+    state long_th1 (3'b101);
+    state long_th2 (3'b110);
+    state long_th3 (3'b111);
+  }
+
+  // patch the last Mon Mar  3 15:31:28 PST 2003
+  // long op recover
+  // it's bit vector for each thread!
+  // signal:
+  // exu_ifu_longop_done_g[3:0]
+  // exu.ecl.writeback
+  // it got to be one-hot!
+  
+  sample mt_long_op_wakeup_sample {
+    state THREAD0 (4'b0001);
+    state THREAD1 (4'b0010);
+    state THREAD2 (4'b0100);
+    state THREAD3 (4'b1000);
+  }
+
+
+  // last few objs
+  // exu.ecl.mdqctl.new_div_vld  --> @ d stage!
+  // exu.ecl.mdqctl.new_mul_d -- @ d_stage
+  // obviously it's impossible for MUL DIV
+  // valid the same time!
+  
+  sample mt_mul_div_sample {
+    state MUL_0  (4'b1000);
+    state MUL_1  (4'b1001);
+    state MUL_2  (4'b1010);
+    state MUL_3  (4'b1011);
+  
+    state DIV_0  (4'b0100);
+    state DIV_1  (4'b0101);
+    state DIV_2  (4'b0110);
+    state DIV_3  (4'b0111);
+  
+  }
+
+
+  // reg select
+  // 4 bits g-- m state!
+  // all in exu.ecl.writeback
+  // restore_ready
+  // lsu_exu_dfill_vld_g;
+  // (valid_m | wrsr_valid_m) --- pipe select
+  // ecl_byp_sel_ecc_m;
+
+ // this is completely changed fix it today: Thu Jul 24 10:34:12 PDT 2003
+
+ // Mux between load and ALU for rd, thr, and wen
+ // assign ecl_byp_sel_load_m = ~(wb_m | wrsr_m | ecl_byp_sel_ecc_m) & ld_g2;
+ // assign ecl_byp_sel_pipe_m = (wb_m | wrsr_m) & ~ecl_byp_sel_ecc_m; 
+ // assign ecl_byp_sel_restore_m = ~(wb_m | wrsr_m | ld_g2 | ecl_byp_sel_ecc_m);
+ // assign      lsu_rest_wen_m = (dfill_vld_g2 & ecl_byp_sel_load_m) |
+
+
+  // ID ecl_irf_tid_m
+  // three sel inputs and one 2bit id input
+
+// Mon Sep 29 09:14:15 PDT 2003
+// the mux control has redundancy that they will never going
+// to be fully utilized....
+// Assume EXU has put enough DESIGN and validation 
+// effort.
+
+  sample mt_w1_arb_state_id_sample {
+. for $state (0..7) {
+.  for $id (0..3) {
+.   if ($state == 2 || $state == 4) {
+    state ecc_pipe_restore_ldfill_${state}_th$id ((5'h$state<<2) | 5'h$id);
+.   }
+.  }
+.}
+  }
+
+
+  // 4 bits changed!!! Thu Jul 24 10:53:54 PDT 2003
+// assign ecl_byp_sel_load_g = (ld_g2 & (wb_m | wrsr_m | ecl_byp_sel_ecc_m));
+// assign ecl_byp_sel_restore_g = restore_request & ((wb_m | wrsr_m | ecl_byp_sel_ecc_m) ^ ld_g2);
+// assign ecl_byp_sel_muldiv_g = ~(ecl_byp_sel_load_g | ecl_byp_sel_restore_g);
+// assign ecl_sel_mul_g = ~ecl_div_sel_div & ecl_byp_sel_muldiv_g;
+// assign ecl_sel_div_g = ecl_div_sel_div & ecl_byp_sel_muldiv_g;
+// assign wb_divcntl_ack_g = ecl_byp_sel_muldiv_g;
+
+
+
+  // id ecl_irf_tid_g
+
+  sample mt_w2_arb_state_id_sample {
+. for $state (0..15) {
+. for $id (0..3) {
+.  if ($state == 11 || $state == 12 || $state == 1 || $state == 2) {
+    state load_div_mul_restore_${state}_th${id} ((6'h${state}<<2) | 6'h${id});
+.  }
+. }
+.}
+  }
+
+  // now we want to add pure foreign interrupt
+  // 
+  // --> lsu_tlu_cpx_vld
+  // --> lsu_tlu_cpx_req[3:0] = 7
+  // --> lsu_tlu_cpx_
+  // assign  lsu_tlu_cpx_vld = cpx_spc_data_cx[`CPX_VLD] ;
+  
+  // assign  lsu_tlu_cpx_req[3:0] = cpx_spc_data_cx[`CPX_RQ_HI:`CPX_RQ_LO] ;
+  // assign  lsu_tlu_intpkt[17:0] = cpx_spc_data_b17t0_cx[17:0] ;
+  // --> [1:0] indicates the thread id.
+  
+  sample mt_intr_sample {
+    state INT_0 (3'b100);
+    state INT_1 (3'b101);
+    state INT_2 (3'b110);
+    state INT_3 (3'b111);
+  }
+
+
+  // we use the req and rdy signals to indicate the
+  // pending pkts inside the switch
+  // note rdy signal means the rdy to the destination
+  // we don't count the 0
+  // for now we dont differentiate the destination queues!
+
+  sample mt_pcx_buffer_sample { // just assume we have max 64 entries
+    m_state pcx      (1:63);  
+  }
+
+  sample mt_cpx_buffer_sample { // just assume we have max 64 entries
+    m_state cpx      (1:63);  
+  }
+
+
+
+  // Wed Feb 19 12:44:02 PST 2003
+  // new objs for the pipeline regsiter bypass
+  // bypass should go to E stage
+  
+  // rs1 bypass --> from ld, from ex
+  // rs2 bypass --> from ld, from ex
+
+  // obvously we can have multiple corss objs here!
+  // signal path:
+  // exu/bypass/ecl_byp_rs2_mux2_sel_ld
+  // exu/bypass/ecl_byp_rs1_mux2_sel_ld
+  //
+  // exu/bypass/ecl_byp_rs2_mux2_sel_e
+  // exu/bypass/ecl_byp_rs2_mux2_sel_e
+  //
+
+.for my $i (1, 2) {
+.  for my $bb ('e', 'ld', 'm', 'w') {
+  sample mt_pipe_bypass_rs${i}_${bb}_sample {
+.      for my $ii ('00', '01', '10', '11') {
+        state th${ii}_rs${i}_byp${bb}  (3'b1_${ii});
+.      }
+    }
+.  }
+.}
+
+
+
+  // Bypass objects according to the bug2351
+  // lsu/qctl2/dfq_byp_vld
+  // lsu/dfq_byp_vld
+  // lsu/qctl2/lsu_dfq_byp_tid
+  // these are signals indicating dfq bypass
+  // do we have other bypass?
+  // they match the using stage at D stage
+
+  sample mt_dfq_bypass_sample {
+. for my $thr_id ('00', '01', '10', '11')  {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+  }
+
+  // extra counts to make the cross meaningful
+  // Mon Oct  6 09:58:44 PDT 2003
+
+  sample mt_rbx_stg_d_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+  }
+
+  sample mt_rbx_stg_e_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+  }
+
+  sample mt_rbx_stg_w_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+  }
+
+
+
+
+  // the rollback objs
+  // for the rollback happening on speculative instruction for load hit
+  // it happens on W1 statge.
+  // Since we have decompsed the rollback into different objs,
+  // we dont have to do any corss coverage.
+  
+  sample mt_rb_stg_w_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+.   my @st = ('00', '01', '10', '11');
+.   for my $x (0..3) {
+.     for my $y (0..3) {
+.       my $idx = $st[$x]; my $idy = $st[$y];
+.         if ($x != $y) {
+             trans T_${idx}_${idy} ([3'b1/**/${idx}] -> [3'b1/**/${idy}]);
+.         }
+.     }
+.   }
+
+  }
+
+  // for the rollback happening for device contention, it happens on
+  // d statge
+
+  sample mt_rb_stg_e_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+.   my @st = ('00', '01', '10', '11');
+.   for my $x (0..3) {
+.     for my $y (0..3) {
+.       my $idx = $st[$x]; my $idy = $st[$y];
+.         if ($x != $y) {
+             trans T_${idx}_${idy} ([3'b1/**/${idx}] -> [3'b1/**/${idy}]);
+.         }
+.     }
+.   }
+
+  }
+
+
+  sample mt_rb_stg_d_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+.   my @st = ('00', '01', '10', '11');
+.   for my $x (0..3) {
+.     for my $y (0..3) {
+.       my $idx = $st[$x]; my $idy = $st[$y];
+.         if ($x != $y) {
+             trans T_${idx}_${idy} ([3'b1/**/${idx}] -> [3'b1/**/${idy}]);
+.         }
+.     }
+.   }
+  }
+
+
+  sample mt_delay_rb_stg_d_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+  }
+
+  sample mt_delay_rb_stg_e_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+  }
+
+  sample mt_delay_rb_stg_w_sample {
+. for my $thr_id ('00', '01', '10', '11') {
+    state th_${thr_id}    (3'b1_${thr_id});
+. }
+
+  }
+
+
+
+
+#define THRFSM_DEAD      5'b00000
+#define THRFSM_HALT      5'b00010
+#define THRFSM_RDY       5'b11001
+#define THRFSM_SPEC_RDY  5'b10011
+#define THRFSM_RUN       5'b00101
+#define THRFSM_SPEC_RUN  5'b00111
+#define THRFSM_WAIT      5'b00001
+
+// MT SWITCH FSM -- state transition is covered in IFU
+// here we only copy states!
+
+. for my $i (0..3) {
+  sample mt_fsm_sample_${i}  {
+    state s_DEAD      (THRFSM_DEAD);
+    state s_HALT      (THRFSM_HALT);
+    state s_RDY       (THRFSM_RDY);
+    state s_RUN       (THRFSM_RUN);
+    state s_WAIT      (THRFSM_WAIT);
+    state s_SPEC_RDY  (THRFSM_SPEC_RDY);
+    state s_SPEC_RUN  (THRFSM_SPEC_RUN);
+  }
+.}
+
+.  my @lst = ('nop', 'alu', 'ld', 'st', 'at', 'fp', 'br',
+.             'mbr', 'sav', 'rtr', 'rpr', 'wpr', 'prf', 'rst',
+.             'md', 'bld', 'bst', 'qld', 'asi', 'xxx', 'emp');
+.
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'd2', 'd3');
+
+
+. foreach my $s (@pipe) {
+  sample mt_inst_${s}_sample {
+.
+.  for my $thread_id (0..3) {
+.    for my $grp (@lst) {
+.      if ($grp eq 'emp') {
+.        if ($thread_id == 0) {
+           wildcard state Empty  (7'b/**/${grp}/**/xx);
+.        }
+.      } else {
+         state ${grp}_th${thread_id}  (7'b/**/${grp}/**/th${thread_id});
+.      }
+.    }
+.  }
+
+// no we can do the transition as the above code.
+// obviously branches will intrduce a thread switching
+// transition only covers the D -- we do cross for D2 and D3 though
+. if ($s eq 'd') {
+. for my $idA (0..3) {
+.   for my $grpA (@lst) {
+
+.     for my $idB (0..3) {
+.       for my $grpB (@lst) {
+
+.  if ($idA != $idB || ($grpA =~ /nop|alu|st|emp/ && $grpA !~ /bst/ && $grpA !~ /rst/)) {
+.    if ($grpA eq 'emp' || $grpB eq 'emp')  {     
+.      if ($grpA eq 'emp' && $grpB eq 'emp') {
+.         if ($idA == 0 && $idB == 0) {
+          trans Empty_Empty ([7'b/**/${grpA}/**/00:7'b/**/${grpA}/**/11] 
+                           ->[7'b/**/${grpB}/**/00:7'b/**/${grpB}/**/11]);
+.         }
+.      } elsif ($grpA eq 'emp' && $idA == 0) {
+         trans Empty__${grpB}_th${idB} (
+            [7'b/**/${grpA}/**/00:7'b/**/${grpA}/**/11]
+          -> 7'b/**/${grpB}/**/th${idB}
+         );
+.      } elsif ($grpB eq 'emp' && $idB == 0 && $grpA ne 'emp') {
+         trans ${grpA}_th${idA}_Empty (
+              7'b/**/${grpA}/**/th${idA}
+           -> [7'b/**/${grpB}/**/00:7'b/**/${grpB}/**/11]
+         );
+.      }
+.    } else {
+trans ${grpA}_th${idA}__${grpB}_th${idB}  (7'b/**/${grpA}/**/th${idA} -> 7'b/**/${grpB}/**/th${idB});
+.    }
+. }
+.       }
+.     }
+.   }
+. }
+. }
+}
+.}
+
+. my @tt_lst = (
+. 'POWERON_RESET_TT'                ,
+. 'WATCHDOG_RESET_TT'               ,
+. 'EXTERNAL_RESET_TT'               ,
+. 'SOFTWARE_RESET_TT'               ,
+. 'REDMODE_TT'                      ,
+. 'INSTRUCTION_ACCESS_EXCEPTION_TT' ,
+. 'IA_MMU_MISS_TT'                  ,
+. 'INSTRUCTION_ACCESS_ERROR_TT'     ,
+. 'ILLEGAL_TT'                      ,
+. 'PRIVILEGED_OPCODE_TT'            ,
+. 'UNIMPLEMENTED_LDD_TT'            ,
+. 'UNIMPLEMENTED_STD_TT'            ,
+. 'FP_DISABLED_TT'                  ,
+. 'FP_IEEE_754_TT'                  ,
+. 'FP_EXCP_OTHER_TT'                ,
+. 'TAG_OVERFLOW_TT'                 ,
+. 'CLEAN_WIN_TT'                    ,
+. 'DIV_ZERO_TT'                     ,
+. 'INT_PROC_ERROR_TT'               ,
+. 'DATA_ACCESS_EXCEPTION_TT'        ,
+. 'DA_MMU_MISS_TT'                  ,
+. 'DATA_ACCESS_ERROR_TT'            ,
+. 'DATA_PROT_TT'                    ,
+. 'MEM_NONALIGNED_TT'               ,
+. 'LDDF_MEM_NONALIGNED_TT'          ,
+. 'STDF_MEM_NONALIGNED_TT'          ,
+. 'PRIVILEGED_ACTION_TT'            ,
+. 'LDQF_MEM_NONALIGNED_TT'          ,
+. 'STQF_MEM_NONALIGNED_TT'          ,
+. 'ASYNC_DATA_ERROR_TT'             ,
+. 'INTERRUPT_LEVEL_1_TT'            ,
+. 'INTERRUPT_LEVEL_2_TT'            ,
+. 'INTERRUPT_LEVEL_3_TT'            ,
+. 'INTERRUPT_LEVEL_4_TT'            ,
+. 'INTERRUPT_LEVEL_5_TT'            ,
+. 'INTERRUPT_LEVEL_6_TT'            ,
+. 'INTERRUPT_LEVEL_7_TT'            ,
+. 'INTERRUPT_LEVEL_8_TT'            ,
+. 'INTERRUPT_LEVEL_9_TT'            ,
+. 'INTERRUPT_LEVEL_10_TT'           ,
+. 'INTERRUPT_LEVEL_11_TT'           ,
+. 'INTERRUPT_LEVEL_12_TT'           ,
+. 'INTERRUPT_LEVEL_13_TT'           ,
+. 'INTERRUPT_LEVEL_14_TT'           ,
+. 'INTERRUPT_LEVEL_15_TT'           ,
+. 'IMPL_DEP_XCPN_0_TT'              ,
+. 'PA_WATCHPOINT_TT'                ,
+. 'VA_WATCHPOINT_TT'                ,
+. 'IA_FAST_MMU_MISS_TT'             ,
+. 'DA_FAST_MMU_MISS_TT'             ,
+. 'FAST_DATA_PROT_TT'               ,
+. 'FAST_CORRECTABLE_ECC_ERROR_TT'   );
+
+// it apears it does not make a lot sense to have the
+// state transition. rather, we log the state coverage
+// when we do have a state filled!
+// we try to use cross here!!!!
+
+// the tough problem is that the trap pipe info is not
+// strictly following the PRM definition.
+// to weed out the trap, exception, interrupt all together
+// is just too much.
+// for now we just take thread ID only in the pipe!
+
+
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'd2', 'd3');
+. my @trap_pipe = ('w', 'w1', 'w2');
+.  for my $i (0..2) {
+.    my $p = $trap_pipe[$i];
+// 3'b1xx --> 1 means trap/exception/interrupt happens!
+   sample mt_trap_${p}_sample   {
+.#    for my $grpA (@tt_lst) {
+.      for my $id ('00', '01', '10', '11') {
+  //state $p/**/${grpA}/**/th${id}  (11'b/**/${grpA}/**/${id});
+  state $p/**/_th${id}  (3'b1/**/${id});
+.#      }
+.    }
+// Tue Jul 22 09:49:25 PDT 2003
+// came out of the review -- need to have a W-W transition
+// Note: it is not possible to consecutive traps for back-to-back
+// for the same thread.
+// we have hit 100%. we need to make cross to be legit....
+. if ($i == 1) {
+.   my @st = ('00', '01', '10', '11');
+.   for my $x (0..3) {
+.     for my $y (0..3) {
+.       my $idx = $st[$x]; my $idy = $st[$y];
+.         if ($x != $y) {
+//             trans W_${idx}_${idy} ([3'b1/**/${idx}] -> [3'b1/**/${idy}]);
+.         }
+.     }
+.   }
+. }
+
+}
+.}  
+
+
+// starve
+// Liuxi,
+
+// These are the signals to check for at the sparc level
+
+// lsu_ifu_stallreq
+// ffu_ifu_stallreq -> there is a problem with this now.  I think it may
+// never trigger
+// ifu.fcl.itlb_starv_alert
+// ifu.ifqctl.starv_alert
+
+sample mt_starve_sample {
+  wildcard state lsu_ifu_stallreq       (4'b1xxx);
+  wildcard state ffu_ifu_stallreq_never (4'bx1xx);
+  wildcard state itlb_starv_alert       (4'bxx1x);
+  wildcard state ifqctl_starv_alert     (4'bxxx1);
+}
+
+// lsu_tlu_early_flush_w - this is meant specifically to flush asi transactions.
+// ffu_lsu_kill_fst_w - this is to flush a floating pt store. Since it
+// is based on an ecc error in the frf.
+
+// Sanjay
+
+sample mt_flush_sample  {
+  wildcard state lsu_tlu_early_flush  (2'b1x);
+  wildcard state ffu_lsu_kill_fst_w   (2'bx1);
+}
+
+// now we do the cross-coverage...
+// (1) instr and trap have to be crossed
+// only cross d -> d2 and d -> d3 now!
+
+
+   cross mt_inst_w_trap_w_sample (mt_inst_w_sample, mt_trap_w_sample);
+   cross mt_inst_m_trap_w_sample (mt_inst_m_sample, mt_trap_w_sample);
+
+// we have it corssed already!!! This doe not make sense
+// any more
+
+   cross mt_rb_stg_d_e_sample (mt_rbx_stg_d_sample, mt_rbx_stg_e_sample);
+   cross mt_rb_stg_e_w_sample (mt_rbx_stg_e_sample, mt_rbx_stg_w_sample);
+   
+
+. for my $i (4) {
+.   my $st = $pipe[$i];
+ 
+       cross mt_trap_${st}_rb_stg_w_sample (mt_trap_${st}_sample, mt_rbx_stg_w_sample);
+       cross mt_trap_${st}_rb_stg_e_sample (mt_trap_${st}_sample, mt_rbx_stg_e_sample);
+       cross mt_trap_${st}_rb_stg_d_sample (mt_trap_${st}_sample, mt_rbx_stg_d_sample);
+
+
+       cross mt_trap_${st}_dfq_bypass_sample (mt_trap_${st}_sample, mt_dfq_bypass_sample);
+       cross mt_trap_${st}_long_op_sample (mt_trap_${st}_sample, mt_long_op_sample);
+       cross mt_trap_${st}_branch_sample (mt_trap_${st}_sample, mt_branch_sample);
+    
+. }
+
+// (3) mt fsm corss coverage
+.for my $i (0..2) {
+.  for my $j ($i+1..3) {
+  cross mt_fsm_fsm_sample_${i}_${j} (mt_fsm_sample_${i}, mt_fsm_sample_${j});
+. }
+.}
+
+// (4) if this thing is not synchronized we have to change.....
+// this has to be rbx!
+     cross mt_droll_wakeup_sample ( mt_rbx_stg_w_sample, mt_long_op_wakeup_sample);
+     cross mt_dfq_wakeup_sample ( mt_dfq_bypass_sample, mt_long_op_wakeup_sample);
+
+// this one should be considered as a typo!! Mon Feb  2 15:55:36 PST 2004
+     cross mt_spec_wakeup_sample (mt_rbx_stg_e_sample, mt_long_op_wakeup_sample);
+//     cross mt_brnch_wakeup_sample ( mt_branch_sample, mt_long_op_wakeup_sample);
+
+
+// (5) For traps we need to do trap trap....
+     // need to wait for W1 W2 traps!!!
+. for my $i (0..2) {
+.   for my $j (1..$i-1) {
+.     my ($p1, $p2) =  ($trap_pipe[$i], $trap_pipe[$j]);
+cross mt_trap_${p1}_trap_${p2}_sample (mt_trap_${p2}_sample, mt_trap_${p1}_sample);
+.   }
+. }
+
+
+//  cross intr and inst
+  cross mt_inst_intr_sample (mt_inst_m_sample, mt_intr_sample);
+
+
+}
+
+
+
+
+
+#endif

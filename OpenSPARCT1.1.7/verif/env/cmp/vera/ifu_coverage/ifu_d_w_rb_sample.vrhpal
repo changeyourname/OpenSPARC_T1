@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_d_w_rb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_d_w_rb_cov.vr
+// Description:
+// This coverage object covers conditions with the 8th store follwed by a
+// long latency operation causing two stall conditions. This is a vertical
+// object that covers stalls with different lop types. 
+//
+// State: 9'b: thr_vld_d,inst,ldmw,rbw
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_D_W_RB_COV (bit [8:0] cov_vector)
+// {
+
+.@insts = ("BPr","BPcc_Bicc","FBfcc_FBPfcc","Call","Mul", "Div","Rdpr","Flushw","Rdy","Rdccr","Rdasi","Rdtick","Rdpc","Rdfprs","Membar","Stbar","Rdasr","Wry","Wrccr","Wrasi","Wrfprs","Sir","Wrasr","Saved","Restored","Wrpr","Fpop1","Fpop2","Jmpl","Return","Tcc","Flush","Save","Restore","Done","Retry","Ld","Ldasi","Stasi","Ldstub","Swap","Ldfp","Stfp","Cas","Pref","Halt","St","Others");
+.foreach $inst (@insts) {
+.  $loplc = lc $inst;
+.  $lopuc = uc $inst;
+.  print "  state s_$loplc\_ldmiss\t\t($lopuc\_WITH_LDMISS);\n";
+.  print "  wildcard trans t_$loplc\_rbw\t\t(RBW_AFTER_$lopuc);\n";
+.}
+.
+// }

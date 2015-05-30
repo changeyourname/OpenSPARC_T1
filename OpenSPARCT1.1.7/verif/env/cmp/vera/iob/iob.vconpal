@@ -1,0 +1,157 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: iob.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////////////
+// iob interface in cmp_gclk domain.
+////////////////////////////////////////////////////////////////////////////////
+connect input iob_top_cmp.clk = "cmp_top.cmp_gclk"
+connect input iob_top_cmp.rst_l = "cmp_top.cmp_grst_l" iskew -1
+connect input iob_top_cmp.diag_done = "cmp_top.diag_done" iskew -1
+    
+// iob to cpu signals 
+connect inout iob_top_cmp.pcx_io_data_px2 = "cmp_top.iop.pcx_iob_data_px2" iskew -1 oskew 1
+connect inout iob_top_cmp.pcx_io_data_rdy_px2 = "cmp_top.iop.pcx_iob_data_rdy_px2" iskew -1 oskew 1
+connect input iob_top_cmp.io_pcx_stall_pq = "cmp_top.iop.iob_pcx_stall_pq" iskew -1
+connect input iob_top_cmp.io_cpx_data_ca = "cmp_top.iop.iob_cpx_data_ca" iskew -1
+connect input iob_top_cmp.io_cpx_req_cq = "cmp_top.iop.iob_cpx_req_cq" iskew -1
+connect inout iob_top_cmp.cpx_io_grant_ca = "cmp_top.iop.cpx_iob_grant_cx2" iskew -1 oskew 1
+  
+////////////////////////////////////////////////////////////////////////////////
+// iob interface in jbus_gclk domain.
+////////////////////////////////////////////////////////////////////////////////
+connect input iob_top_jbus.clk = "cmp_top.iop.jbus_gclk"
+connect input iob_top_jbus.rst_l = "cmp_top.iop.jbus_grst_l"
+connect input iob_top_jbus.diag_done = "cmp_top.diag_done" iskew -1
+    
+// tap interface
+//connect inout iob_top_jbus.tap_ucb_iob_vld = "cmp_top.iop.tap_iob_vld" iskew -1 oskew 1
+//connect inout iob_top_jbus.tap_ucb_iob_stall = "cmp_top.iop.tap_iob_stall" iskew -1 oskew 1
+//connect inout iob_top_jbus.tap_ucb_iob_data = "cmp_top.iop.tap_iob_data" iskew -1 oskew 1
+//connect input iob_top_jbus.iob_tap_ucb_vld = "cmp_top.iop.iob_tap_vld" iskew -1
+//connect input iob_top_jbus.iob_tap_ucb_stall = "cmp_top.iop.iob_tap_stall" iskew -1
+//connect input iob_top_jbus.iob_tap_ucb_data = "cmp_top.iop.iob_tap_data" iskew -1
+
+// ctu interface
+//connect inout iob_top_jbus.ctu_ucb_iob_vld = "cmp_top.iop.clsp_iob_vld" iskew -1 oskew 1
+//connect inout iob_top_jbus.ctu_ucb_iob_stall = "cmp_top.iop.clsp_iob_stall" iskew -1 oskew 1
+//connect inout iob_top_jbus.ctu_ucb_iob_data = "cmp_top.iop.clsp_iob_data" iskew -1 oskew 1
+//connect input iob_top_jbus.iob_ctu_ucb_vld = "cmp_top.iop.iob_clsp_vld" iskew -1
+//connect input iob_top_jbus.iob_ctu_ucb_stall = "cmp_top.iop.iob_clsp_stall" iskew -1
+//connect input iob_top_jbus.iob_ctu_ucb_data = "cmp_top.iop.iob_clsp_data" iskew -1
+
+// dram0 interface
+//connect inout iob_top_jbus.dram0_ucb_iob_vld = "cmp_top.iop.dram02_iob_vld" iskew -1 oskew 1
+//connect inout iob_top_jbus.dram0_ucb_iob_stall = "cmp_top.iop.dram02_iob_stall" iskew -1 oskew 1
+//connect inout iob_top_jbus.dram0_ucb_iob_data = "cmp_top.iop.dram02_iob_data" iskew -1 oskew 1
+//connect input iob_top_jbus.iob_dram0_ucb_vld = "cmp_top.iop.iob_dram02_vld" iskew -1
+//connect input iob_top_jbus.iob_dram0_ucb_stall = "cmp_top.iop.iob_dram02_stall" iskew -1
+//connect input iob_top_jbus.iob_dram0_ucb_data = "cmp_top.iop.iob_dram02_data" iskew -1
+
+// dram1 interface
+//connect inout iob_top_jbus.dram1_ucb_iob_vld = "cmp_top.iop.dram13_iob_vld" iskew -1 oskew 1
+//connect inout iob_top_jbus.dram1_ucb_iob_stall = "cmp_top.iop.dram13_iob_stall" iskew -1 oskew 1
+//connect inout iob_top_jbus.dram1_ucb_iob_data = "cmp_top.iop.dram13_iob_data" iskew -1 oskew 1
+//connect input iob_top_jbus.iob_dram1_ucb_vld = "cmp_top.iop.iob_dram13_vld" iskew -1
+//connect input iob_top_jbus.iob_dram1_ucb_stall = "cmp_top.iop.iob_dram13_stall" iskew -1
+//connect input iob_top_jbus.iob_dram1_ucb_data = "cmp_top.iop.iob_dram13_data" iskew -1
+
+// serial interface to boot rom
+connect input iob_top_jbus.jbi_iob_spi_vld = "cmp_top.iop.jbi_iob_spi_vld" iskew -1
+connect input iob_top_jbus.jbi_iob_spi_stall = "cmp_top.iop.jbi_iob_spi_stall" iskew -1
+connect input iob_top_jbus.jbi_iob_spi_data = "cmp_top.iop.jbi_iob_spi_data" iskew -1
+connect input iob_top_jbus.iob_jbi_spi_vld = "cmp_top.iop.iob_jbi_spi_vld" iskew -1
+connect input iob_top_jbus.iob_jbi_spi_stall = "cmp_top.iop.iob_jbi_spi_stall" iskew -1
+connect input iob_top_jbus.iob_jbi_spi_data = "cmp_top.iop.iob_jbi_spi_data" iskew -1
+
+// temperature trigger
+#ifdef GATE_SIM
+connect inout iob_top_jbus.iob_temp_trig = "cmp_top.iop.io_iob_temp_trig" iskew -1 oskew 1
+#else
+connect inout iob_top_jbus.iob_temp_trig = "cmp_top.iop.io_temp_trig" iskew -1 oskew 1
+#endif
+
+#ifndef GATE_SIM
+// iobbrige interrupt signals.
+#ifdef RTL_IOBDG
+connect input iob_top_jbus.intvecdisp_int_vld = "cmp_top.iop.iobdg.iobdg_ctrl.intvecdisp_int_vld" iskew -1
+connect input iob_top_jbus.intvecdisp_int_vec = "cmp_top.iop.iobdg.iobdg_ctrl.intvecdisp_int_vec" iskew -1
+connect input iob_top_jbus.intvecdisp_int_thr = "cmp_top.iop.iobdg.iobdg_ctrl.intvecdisp_int_thr" iskew -1
+connect input iob_top_jbus.intvecdisp_int_type = "cmp_top.iop.iobdg.iobdg_ctrl.intvecdisp_int_type" iskew -1
+connect input iob_top_jbus.creg_intctrl_wr = "cmp_top.iop.iobdg.iobdg_ctrl.creg_intctrl_wr" iskew -1
+connect input iob_top_jbus.int_srvcd_d1 = "cmp_top.iop.iobdg.iobdg_ctrl.int_srvcd_d1" iskew -1
+connect input iob_top_jbus.intctrl_addr_dec = "cmp_top.iop.iobdg.iobdg_ctrl.intctrl_addr_dec" iskew -1
+#endif
+
+// iob ucb signals
+// TAP
+
+// JBI
+connect input iob_top_jbus.iob_jbi_rd = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.rd_req_vld" iskew -1
+connect input iob_top_jbus.iob_jbi_wr = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.wr_req_vld" iskew -1
+connect input iob_top_jbus.iob_jbi_ifill = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.iob_jbi_thr_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.thr_id_in" iskew -1
+connect input iob_top_jbus.iob_jbi_buf_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.buf_id_in" iskew -1
+connect input iob_top_jbus.iob_jbi_addr = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.addr_in" iskew -1
+connect input iob_top_jbus.iob_jbi_data = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.data_in" iskew -1
+connect input iob_top_jbus.iob_jbi_req_ok = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.req_acpted" iskew -1
+connect input iob_top_jbus.jbi_iob_rd_ack = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.rd_ack_vld" iskew -1
+connect input iob_top_jbus.jbi_iob_rd_nak = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.rd_nack_vld" iskew -1
+connect input iob_top_jbus.jbi_iob_wr_ack = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.jbi_iob_ifill = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.jbi_iob_busy = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.jbi_iob_thr_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.thr_id_out" iskew -1
+connect input iob_top_jbus.jbi_iob_buf_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.buf_id_out" iskew -1
+connect input iob_top_jbus.jbi_iob_data = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.data_out" iskew -1
+connect input iob_top_jbus.jbi_iob_int = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.int_vld" iskew -1
+connect input iob_top_jbus.jbi_iob_itype = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.int_typ" iskew -1
+connect input iob_top_jbus.jbi_iob_ithr_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.int_thr_id" iskew -1
+connect input iob_top_jbus.jbi_iob_istat = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.int_stat" iskew -1
+connect input iob_top_jbus.jbi_iob_dev_id = "cmp_top.iop.jbi.u_ncio.u_ncio_ucbp.dev_id" iskew -1
+
+// CTU
+
+// DRAM0
+
+// DRAM1
+
+// SPI
+connect input iob_top_jbus.iob_spi_rd = "cmp_top.iop.jbi.u_ssi.u_ucb.rd_req_vld" iskew -1
+connect input iob_top_jbus.iob_spi_wr = "cmp_top.iop.jbi.u_ssi.u_ucb.wr_req_vld" iskew -1
+connect input iob_top_jbus.iob_spi_ifill = "cmp_top.iop.jbi.u_ssi.u_ucb.ifill_req_vld" iskew -1
+connect input iob_top_jbus.iob_spi_thr_id = "cmp_top.iop.jbi.u_ssi.u_ucb.thr_id_in" iskew -1
+connect input iob_top_jbus.iob_spi_buf_id = "cmp_top.iop.jbi.u_ssi.u_ucb.buf_id_in" iskew -1
+connect input iob_top_jbus.iob_spi_addr = "cmp_top.iop.jbi.u_ssi.u_ucb.addr_in" iskew -1
+connect input iob_top_jbus.iob_spi_data = "cmp_top.iop.jbi.u_ssi.u_ucb.data_in" iskew -1
+connect input iob_top_jbus.iob_spi_req_ok = "cmp_top.iop.jbi.u_ssi.u_ucb.req_acpted" iskew -1
+connect input iob_top_jbus.spi_iob_rd_ack = "cmp_top.iop.jbi.u_ssi.u_ucb.rd_ack_vld" iskew -1
+connect input iob_top_jbus.spi_iob_rd_nak = "cmp_top.iop.jbi.u_ssi.u_ucb.rd_nack_vld" iskew -1
+connect input iob_top_jbus.spi_iob_wr_ack = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.spi_iob_ifill = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.spi_iob_busy = "cmp_top.rst_l" iskew -1
+connect input iob_top_jbus.spi_iob_thr_id = "cmp_top.iop.jbi.u_ssi.u_ucb.thr_id_out" iskew -1
+connect input iob_top_jbus.spi_iob_buf_id = "cmp_top.iop.jbi.u_ssi.u_ucb.buf_id_out" iskew -1
+connect input iob_top_jbus.spi_iob_data = "cmp_top.iop.jbi.u_ssi.u_ucb.data_out" iskew -1
+connect input iob_top_jbus.spi_iob_int = "cmp_top.iop.jbi.u_ssi.u_ucb.int_vld" iskew -1
+connect input iob_top_jbus.spi_iob_itype = "cmp_top.iop.jbi.u_ssi.u_ucb.int_typ" iskew -1
+connect input iob_top_jbus.spi_iob_ithr_id = "cmp_top.iop.jbi.u_ssi.u_ucb.int_thr_id" iskew -1
+connect input iob_top_jbus.spi_iob_istat = "cmp_top.iop.jbi.u_ssi.u_ucb.int_stat" iskew -1
+connect input iob_top_jbus.spi_iob_dev_id = "cmp_top.iop.jbi.u_ssi.u_ucb.dev_id" iskew -1
+
+#endif

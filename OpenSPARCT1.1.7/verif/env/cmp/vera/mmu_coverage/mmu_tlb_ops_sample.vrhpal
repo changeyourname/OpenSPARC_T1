@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_tlb_ops_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+// State machine coverage for MMU Sync ASI Ops
+//
+// ***************************************************************************
+
+
+
+// coverage_def MMU_TLB_OPS_COV (bit [72:0] mmu_tlb_ops_state)
+// {
+  // state declarations
+
+wildcard	state s_TLB_ENTRY_VLD_FULL	 (TLB_ENTRY_VLD_FULL);
+wildcard	state s_TLB_ENTRY_VLD_EMPTY	 (TLB_ENTRY_VLD_EMPTY);
+wildcard	state s_DEMAP_BY_PAGE	 (DEMAP_BY_PAGE);
+wildcard	state s_DEMAP_BY_CTXT	 (DEMAP_BY_CTXT);
+wildcard	state s_TLU_TLB_DMP_ALL_G	 (TLU_TLB_DMP_ALL_G);
+wildcard	state s_MMU_INV_ALL_G	 (MMU_INV_ALL_G);
+wildcard        state s_MMU_DATA_ACCESS_RD_EN          (MMU_DATA_ACCESS_RD_EN );
+wildcard        state s_MMU_DATA_ACCESS_WR_EN          (MMU_DATA_ACCESS_WR_EN );
+wildcard        state s_MMU_DATA_IN_WR_EN              (MMU_DATA_IN_WR_EN     );
+
+
+  // transitions(combinations)
+
+  // bad states
+
+  // bad transitions
+
+// }

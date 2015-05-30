@@ -1,0 +1,62 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rd_q_full_n_req_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_rd_q_full_n_req_sample.vrh
+// Description:
+// Coverage object for the rd que full and rd req. 
+// This may be difficult to hit as when its full then all req id are in use.
+// and when all req_id are in use no new req from L2 will be issued.
+// When the next request is issued the fifo is already not full.
+// This may(?) be achievable for wr case as there are no req id limitations. 
+// Yes, this is acrhitecturally unachievable as a valid state and so converting 
+// states to bad_state.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rd_q_full_n_req_sample (bit [1:0] fsm_state)
+// {
+
+  // state declarations
+       state s_rd_q_full_n_req0  (2'b00);
+       bad_state s_rd_q_full_n_req1  (2'b01);
+       bad_state s_rd_q_full_n_req2  (2'b10);
+       bad_state s_rd_q_full_n_req3  (2'b11);
+
+       trans t_rd_q_full_n_req0_0  (2'b00 -> 2'b00);
+       bad_trans t_rd_q_full_n_req1_1  (2'b01 -> 2'b01);
+       bad_trans t_rd_q_full_n_req2_2  (2'b10 -> 2'b10);
+       bad_trans t_rd_q_full_n_req3_3  (2'b11 -> 2'b11);
+
+       bad_trans t_rd_q_full_n_req0_1  (2'b00 -> 2'b01);
+       bad_trans t_rd_q_full_n_req1_2  (2'b01 -> 2'b10);
+       bad_trans t_rd_q_full_n_req2_3  (2'b10 -> 2'b11);
+       bad_trans t_rd_q_full_n_req3_0  (2'b11 -> 2'b00);
+
+  // bad states
+  //bad_state s_not_rd_q_full_n_req_state (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_q_full_n_req_trans (not trans);
+
+//}
+

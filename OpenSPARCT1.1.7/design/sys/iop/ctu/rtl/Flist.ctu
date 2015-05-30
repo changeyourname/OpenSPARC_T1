@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: Flist.ctu
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
++incdir+.
++incdir+../include
++incdir+../../include
+ctu_clsp_clkgn_1div.v
+ctu_clsp_clkgn_syncp.v
+ctu_clsp_clkgn_shadreg.v
+ctu_clsp_clkgn_ddiv.v
+ctu_clsp_clkgn_fstlog.v
+ctu_clsp_clkgn_clksel.v
+ctu_clsp_clkgn_clksw.v
+ctu_clsp_clkgn_nstep_cnt.v
+ctu_clsp_clkgn_nstep.v
+ctu_clsp_clkgn_ssiclk.v
+ctu_clsp_clkgn.v
+ctu_clsp_dramgif.v
+ctu_clsp_jbusgif.v
+ctu_clsp_cmpgif.v
+ctu_clsp_creg.v
+ctu_clsp_clkctrl.v
+ctu_clsp_ctrl.v
+ctu_clsp_pllcnt.v
+ctu_clsp_synch_cljl.v
+ctu_clsp_synch_jlcl.v
+ctu_clsp_synch_jldl.v
+ctu_clsp_synch_dldg.v
+ctu_clsp.v
+ctu_dft_jtag_tap.v
+ctu_dft_jtag.v
+ctu_dft_bist.v
+ctu_dft_creg.v
+ctu_dft.v
+ctu_test_stub_scan.v
+ctu_revision.v
+ctu_mask_id.v
+ctu_jtag_id.v
+ctu.v
+../common/rtl/bw_clk_cl_ctu_jbus.v
+../common/rtl/bw_clk_cl_ctu_cmp.v
+../common/rtl/bw_ctu_clk_sync_mux.v
+../common/rtl/bw_clk_cl_ctu_2xcmp.v
+../common/rtl/bw_clk_cl_ctu_2xcmp_b.v
+../common/rtl/ctu_sync_header.v
+../common/rtl/bw_zzctu_sync.v
+../../analog/bw_rng/rtl/bw_rng.v
+../../analog/bw_pll/rtl/bw_pll.v
+../../analog/bw_tsr/rtl/bw_tsr.v
+-v ../common/rtl/ctu_lib.v

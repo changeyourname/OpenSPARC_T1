@@ -1,0 +1,56 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_refrsh_issued_all_cas_clr_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_refrsh_issued_all_cas_clr_sample.vrh
+// Description:
+// Coverage object for the rd que full and rd req. 
+// When refresh is issued intrenally (go_ref) then before it goes to the
+// bus all the active CAS should be cleared and no more ras should be 
+// issued. There is a monitor in dram_mon.v which monitors that.
+// This object makes sure that the monitor goes to all states.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_refrsh_issued_all_cas_clr_sample (bit [1:0] fsm_state)
+// {
+
+  // state declarations
+       state s_refrsh_issued_all_cas_clr0  (2'b00);
+       state s_refrsh_issued_all_cas_clr1  (2'b01);
+       state s_refrsh_issued_all_cas_clr2  (2'b10);
+
+       trans t_refrsh_issued_all_cas_clr0_0  (2'b00 -> 2'b00);
+       trans t_refrsh_issued_all_cas_clr1_1  (2'b01 -> 2'b01);
+
+       trans t_refrsh_issued_all_cas_clr0_1  (2'b00 -> 2'b01);
+       trans t_refrsh_issued_all_cas_clr1_2  (2'b01 -> 2'b10);
+       trans t_refrsh_issued_all_cas_clr2_0  (2'b10 -> 2'b00);
+
+  // bad states
+  bad_state s_not_refrsh_issued_all_cas_clr_state (not state);
+
+  // bad transitions
+  bad_trans t_not_refrsh_issued_all_cas_clr_trans (not trans);
+
+//}
+

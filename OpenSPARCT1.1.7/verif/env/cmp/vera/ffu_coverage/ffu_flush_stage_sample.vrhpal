@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_flush_stage_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// coverage_def FLUSH_STAGE_COV (bit[`FLUSH_STAGE_WIDTH-1:0] flush_stage_state) {
+//state declarations
+
+wildcard state	s_M_NEW_FPOP_D				(M_NEW_FPOP_D     );
+wildcard state	s_M_NEW_FST_W				(M_NEW_FST_W      );
+wildcard state	s_M_NEW_FST_M				(M_NEW_FST_M      );
+wildcard state	s_M_NEW_FPU_OP_W			(M_NEW_FPU_OP_W   );
+wildcard state	s_M_NEW_FPU_OP_M			(M_NEW_FPU_OP_M   );
+
+wildcard state	s_M_MATCH_MW2				(M_MATCH_MW2      );
+wildcard state	s_W_NEW_FPOP_D				(W_NEW_FPOP_D     );
+wildcard state	s_W_MATCH_WW2				(W_MATCH_WW2           );
+wildcard state	s_W_FLUSH_W				(W_FLUSH_W             );
+wildcard state	s_W_ECC_KILL_RS2_W			(W_ECC_KILL_RS2_W      );
+wildcard state	s_W_UNIMPL_OP_W				(W_UNIMPL_OP_W         );
+wildcard state	s_W_IFU_TLB_INST_INVLD_W		(W_IFU_TLB_INST_INVLD_W);
+wildcard state	s_W_LSU_FLUSH				(W_LSU_FLUSH           );
+
+// }
+

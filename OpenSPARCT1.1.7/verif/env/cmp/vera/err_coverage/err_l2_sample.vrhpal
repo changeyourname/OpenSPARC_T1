@@ -1,0 +1,42 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_l2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+    wildcard state MEU    (32'b1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx);
+    wildcard state MEC    (32'bx1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx);
+    // single L2 errors
+    wildcard state s_LDAC (32'b00xxxxxxxx10000000000000000xxxxx);
+    wildcard state s_LDAU (32'b00xxxxxxxx01000000000000000xxxxx);
+    wildcard state s_LDWC (32'b00xxxxxxxx00100000000000000xxxxx);
+    wildcard state s_LDWU (32'b00xxxxxxxx00010000000000000xxxxx);
+    wildcard state s_LDRC (32'b00xxxxxxxx00001000000000000xxxxx);
+    wildcard state s_LDRU (32'b00xxxxxxxx00000100000000000xxxxx);
+    wildcard state s_LDSC (32'b00xxxxxxxx00000010000000000xxxxx);
+    wildcard state s_LDSU (32'b00xxxxxxxx00000001000000000xxxxx);
+    wildcard state s_LTC  (32'b00xxxxxxxx00000000100000000xxxxx);
+    wildcard state s_LRU  (32'b00xxxxxxxx00000000010000000xxxxx);
+    wildcard state s_LVU  (32'b00xxxxxxxx00000000001000000xxxxx);
+    wildcard state s_DAC  (32'b00xxxxxxxx00000000000100000xxxxx);
+    wildcard state s_DAU  (32'b00xxxxxxxx00000000000010000xxxxx);
+    wildcard state s_DRC  (32'b00xxxxxxxx00000000000001000xxxxx);
+    wildcard state s_DRU  (32'b00xxxxxxxx00000000000000100xxxxx);
+    wildcard state s_DSC  (32'b00xxxxxxxx00000000000000010xxxxx);
+    wildcard state s_DSU  (32'b00xxxxxxxx00000000000000001xxxxx);
+

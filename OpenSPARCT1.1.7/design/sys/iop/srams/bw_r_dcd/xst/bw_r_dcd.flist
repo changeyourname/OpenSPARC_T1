@@ -1,0 +1,3 @@
+design/sys/iop/include/xst_defines.h
+design/sys/iop/srams/rtl/bw_r_dcd.v
+design/sys/iop/sparc/lsu/rtl/lsu_dc_parity_gen.v

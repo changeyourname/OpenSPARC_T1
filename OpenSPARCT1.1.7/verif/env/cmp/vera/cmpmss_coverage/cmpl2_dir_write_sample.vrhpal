@@ -1,0 +1,191 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_dir_write_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// dir_panel_icd_c4[2] = 1'bz, each panel now has 2*32 entries, each indexed by addr[8]
+//
+// wren_wrpanel_wrentry[21:0] = {ic_wr_en_c4, dir_panel_icd_c4[4:3], dir_panel_icd_c4[1:0], wr_ic_dir_entry[5:0],
+//                               dc_wr_en_c4, dir_panel_dcd_c4[4:3], dir_panel_dcd_c4[1:0], wr_dc_dir_entry[5:0]};
+
+
+    wildcard state idir_panel_00( {1'b1, 4'h0, 6'bx, 11'bx} );
+    wildcard state idir_panel_01( {1'b1, 4'h1, 6'bx, 11'bx} );
+    wildcard state idir_panel_02( {1'b1, 4'h2, 6'bx, 11'bx} );
+    wildcard state idir_panel_03( {1'b1, 4'h3, 6'bx, 11'bx} );
+    wildcard state idir_panel_04( {1'b1, 4'h4, 6'bx, 11'bx} );
+    wildcard state idir_panel_05( {1'b1, 4'h5, 6'bx, 11'bx} );
+    wildcard state idir_panel_06( {1'b1, 4'h6, 6'bx, 11'bx} );
+    wildcard state idir_panel_07( {1'b1, 4'h7, 6'bx, 11'bx} );
+    wildcard state idir_panel_08( {1'b1, 4'h8, 6'bx, 11'bx} );
+    wildcard state idir_panel_09( {1'b1, 4'h9, 6'bx, 11'bx} );
+    wildcard state idir_panel_10( {1'b1, 4'ha, 6'bx, 11'bx} );
+    wildcard state idir_panel_11( {1'b1, 4'hb, 6'bx, 11'bx} );
+    wildcard state idir_panel_12( {1'b1, 4'hc, 6'bx, 11'bx} );
+    wildcard state idir_panel_13( {1'b1, 4'hd, 6'bx, 11'bx} );
+    wildcard state idir_panel_14( {1'b1, 4'he, 6'bx, 11'bx} );
+    wildcard state idir_panel_15( {1'b1, 4'hf, 6'bx, 11'bx} );
+
+    wildcard state idir_entry_00( {1'b1, 4'bx, 6'h00, 11'bx} );
+    wildcard state idir_entry_01( {1'b1, 4'bx, 6'h01, 11'bx} );
+    wildcard state idir_entry_02( {1'b1, 4'bx, 6'h02, 11'bx} );
+    wildcard state idir_entry_03( {1'b1, 4'bx, 6'h03, 11'bx} );
+    wildcard state idir_entry_04( {1'b1, 4'bx, 6'h04, 11'bx} );
+    wildcard state idir_entry_05( {1'b1, 4'bx, 6'h05, 11'bx} );
+    wildcard state idir_entry_06( {1'b1, 4'bx, 6'h06, 11'bx} );
+    wildcard state idir_entry_07( {1'b1, 4'bx, 6'h07, 11'bx} );
+    wildcard state idir_entry_08( {1'b1, 4'bx, 6'h08, 11'bx} );
+    wildcard state idir_entry_09( {1'b1, 4'bx, 6'h09, 11'bx} );
+    wildcard state idir_entry_10( {1'b1, 4'bx, 6'h0a, 11'bx} );
+    wildcard state idir_entry_11( {1'b1, 4'bx, 6'h0b, 11'bx} );
+    wildcard state idir_entry_12( {1'b1, 4'bx, 6'h0c, 11'bx} );
+    wildcard state idir_entry_13( {1'b1, 4'bx, 6'h0d, 11'bx} );
+    wildcard state idir_entry_14( {1'b1, 4'bx, 6'h0e, 11'bx} );
+    wildcard state idir_entry_15( {1'b1, 4'bx, 6'h0f, 11'bx} );
+    wildcard state idir_entry_16( {1'b1, 4'bx, 6'h10, 11'bx} );
+    wildcard state idir_entry_17( {1'b1, 4'bx, 6'h11, 11'bx} );
+    wildcard state idir_entry_18( {1'b1, 4'bx, 6'h12, 11'bx} );
+    wildcard state idir_entry_19( {1'b1, 4'bx, 6'h13, 11'bx} );
+    wildcard state idir_entry_20( {1'b1, 4'bx, 6'h14, 11'bx} );
+    wildcard state idir_entry_21( {1'b1, 4'bx, 6'h15, 11'bx} );
+    wildcard state idir_entry_22( {1'b1, 4'bx, 6'h16, 11'bx} );
+    wildcard state idir_entry_23( {1'b1, 4'bx, 6'h17, 11'bx} );
+    wildcard state idir_entry_24( {1'b1, 4'bx, 6'h18, 11'bx} );
+    wildcard state idir_entry_25( {1'b1, 4'bx, 6'h19, 11'bx} );
+    wildcard state idir_entry_26( {1'b1, 4'bx, 6'h1a, 11'bx} );
+    wildcard state idir_entry_27( {1'b1, 4'bx, 6'h1b, 11'bx} );
+    wildcard state idir_entry_28( {1'b1, 4'bx, 6'h1c, 11'bx} );
+    wildcard state idir_entry_29( {1'b1, 4'bx, 6'h1d, 11'bx} );
+    wildcard state idir_entry_30( {1'b1, 4'bx, 6'h1e, 11'bx} );
+    wildcard state idir_entry_31( {1'b1, 4'bx, 6'h1f, 11'bx} );
+    wildcard state idir_entry_32( {1'b1, 4'bx, 6'h20, 11'bx} );
+    wildcard state idir_entry_33( {1'b1, 4'bx, 6'h21, 11'bx} );
+    wildcard state idir_entry_34( {1'b1, 4'bx, 6'h22, 11'bx} );
+    wildcard state idir_entry_35( {1'b1, 4'bx, 6'h23, 11'bx} );
+    wildcard state idir_entry_36( {1'b1, 4'bx, 6'h24, 11'bx} );
+    wildcard state idir_entry_37( {1'b1, 4'bx, 6'h25, 11'bx} );
+    wildcard state idir_entry_38( {1'b1, 4'bx, 6'h26, 11'bx} );
+    wildcard state idir_entry_39( {1'b1, 4'bx, 6'h27, 11'bx} );
+    wildcard state idir_entry_40( {1'b1, 4'bx, 6'h28, 11'bx} );
+    wildcard state idir_entry_41( {1'b1, 4'bx, 6'h29, 11'bx} );
+    wildcard state idir_entry_42( {1'b1, 4'bx, 6'h2a, 11'bx} );
+    wildcard state idir_entry_43( {1'b1, 4'bx, 6'h2b, 11'bx} );
+    wildcard state idir_entry_44( {1'b1, 4'bx, 6'h2c, 11'bx} );
+    wildcard state idir_entry_45( {1'b1, 4'bx, 6'h2d, 11'bx} );
+    wildcard state idir_entry_46( {1'b1, 4'bx, 6'h2e, 11'bx} );
+    wildcard state idir_entry_47( {1'b1, 4'bx, 6'h2f, 11'bx} );
+    wildcard state idir_entry_48( {1'b1, 4'bx, 6'h30, 11'bx} );
+    wildcard state idir_entry_49( {1'b1, 4'bx, 6'h31, 11'bx} );
+    wildcard state idir_entry_50( {1'b1, 4'bx, 6'h32, 11'bx} );
+    wildcard state idir_entry_51( {1'b1, 4'bx, 6'h33, 11'bx} );
+    wildcard state idir_entry_52( {1'b1, 4'bx, 6'h34, 11'bx} );
+    wildcard state idir_entry_53( {1'b1, 4'bx, 6'h35, 11'bx} );
+    wildcard state idir_entry_54( {1'b1, 4'bx, 6'h36, 11'bx} );
+    wildcard state idir_entry_55( {1'b1, 4'bx, 6'h37, 11'bx} );
+    wildcard state idir_entry_56( {1'b1, 4'bx, 6'h38, 11'bx} );
+    wildcard state idir_entry_57( {1'b1, 4'bx, 6'h39, 11'bx} );
+    wildcard state idir_entry_58( {1'b1, 4'bx, 6'h3a, 11'bx} );
+    wildcard state idir_entry_59( {1'b1, 4'bx, 6'h3b, 11'bx} );
+    wildcard state idir_entry_60( {1'b1, 4'bx, 6'h3c, 11'bx} );
+    wildcard state idir_entry_61( {1'b1, 4'bx, 6'h3d, 11'bx} );
+    wildcard state idir_entry_62( {1'b1, 4'bx, 6'h3e, 11'bx} );
+    wildcard state idir_entry_63( {1'b1, 4'bx, 6'h3f, 11'bx} );
+
+    wildcard state ddir_panel_00( {11'bx, 1'b1, 4'h0, 6'bx} );
+    wildcard state ddir_panel_01( {11'bx, 1'b1, 4'h1, 6'bx} );
+    wildcard state ddir_panel_02( {11'bx, 1'b1, 4'h2, 6'bx} );
+    wildcard state ddir_panel_03( {11'bx, 1'b1, 4'h3, 6'bx} );
+    wildcard state ddir_panel_04( {11'bx, 1'b1, 4'h4, 6'bx} );
+    wildcard state ddir_panel_05( {11'bx, 1'b1, 4'h5, 6'bx} );
+    wildcard state ddir_panel_06( {11'bx, 1'b1, 4'h6, 6'bx} );
+    wildcard state ddir_panel_07( {11'bx, 1'b1, 4'h7, 6'bx} );
+    wildcard state ddir_panel_08( {11'bx, 1'b1, 4'h8, 6'bx} );
+    wildcard state ddir_panel_09( {11'bx, 1'b1, 4'h9, 6'bx} );
+    wildcard state ddir_panel_10( {11'bx, 1'b1, 4'ha, 6'bx} );
+    wildcard state ddir_panel_11( {11'bx, 1'b1, 4'hb, 6'bx} );
+    wildcard state ddir_panel_12( {11'bx, 1'b1, 4'hc, 6'bx} );
+    wildcard state ddir_panel_13( {11'bx, 1'b1, 4'hd, 6'bx} );
+    wildcard state ddir_panel_14( {11'bx, 1'b1, 4'he, 6'bx} );
+    wildcard state ddir_panel_15( {11'bx, 1'b1, 4'hf, 6'bx} );
+
+    wildcard state ddir_entry_00( {11'bx, 1'b1, 4'bx, 6'h00} );
+    wildcard state ddir_entry_01( {11'bx, 1'b1, 4'bx, 6'h01} );
+    wildcard state ddir_entry_02( {11'bx, 1'b1, 4'bx, 6'h02} );
+    wildcard state ddir_entry_03( {11'bx, 1'b1, 4'bx, 6'h03} );
+    wildcard state ddir_entry_04( {11'bx, 1'b1, 4'bx, 6'h04} );
+    wildcard state ddir_entry_05( {11'bx, 1'b1, 4'bx, 6'h05} );
+    wildcard state ddir_entry_06( {11'bx, 1'b1, 4'bx, 6'h06} );
+    wildcard state ddir_entry_07( {11'bx, 1'b1, 4'bx, 6'h07} );
+    wildcard state ddir_entry_08( {11'bx, 1'b1, 4'bx, 6'h08} );
+    wildcard state ddir_entry_09( {11'bx, 1'b1, 4'bx, 6'h09} );
+    wildcard state ddir_entry_10( {11'bx, 1'b1, 4'bx, 6'h0a} );
+    wildcard state ddir_entry_11( {11'bx, 1'b1, 4'bx, 6'h0b} );
+    wildcard state ddir_entry_12( {11'bx, 1'b1, 4'bx, 6'h0c} );
+    wildcard state ddir_entry_13( {11'bx, 1'b1, 4'bx, 6'h0d} );
+    wildcard state ddir_entry_14( {11'bx, 1'b1, 4'bx, 6'h0e} );
+    wildcard state ddir_entry_15( {11'bx, 1'b1, 4'bx, 6'h0f} );
+    wildcard state ddir_entry_16( {11'bx, 1'b1, 4'bx, 6'h10} );
+    wildcard state ddir_entry_17( {11'bx, 1'b1, 4'bx, 6'h11} );
+    wildcard state ddir_entry_18( {11'bx, 1'b1, 4'bx, 6'h12} );
+    wildcard state ddir_entry_19( {11'bx, 1'b1, 4'bx, 6'h13} );
+    wildcard state ddir_entry_20( {11'bx, 1'b1, 4'bx, 6'h14} );
+    wildcard state ddir_entry_21( {11'bx, 1'b1, 4'bx, 6'h15} );
+    wildcard state ddir_entry_22( {11'bx, 1'b1, 4'bx, 6'h16} );
+    wildcard state ddir_entry_23( {11'bx, 1'b1, 4'bx, 6'h17} );
+    wildcard state ddir_entry_24( {11'bx, 1'b1, 4'bx, 6'h18} );
+    wildcard state ddir_entry_25( {11'bx, 1'b1, 4'bx, 6'h19} );
+    wildcard state ddir_entry_26( {11'bx, 1'b1, 4'bx, 6'h1a} );
+    wildcard state ddir_entry_27( {11'bx, 1'b1, 4'bx, 6'h1b} );
+    wildcard state ddir_entry_28( {11'bx, 1'b1, 4'bx, 6'h1c} );
+    wildcard state ddir_entry_29( {11'bx, 1'b1, 4'bx, 6'h1d} );
+    wildcard state ddir_entry_30( {11'bx, 1'b1, 4'bx, 6'h1e} );
+    wildcard state ddir_entry_31( {11'bx, 1'b1, 4'bx, 6'h1f} );
+    wildcard state ddir_entry_32( {11'bx, 1'b1, 4'bx, 6'h20} );
+    wildcard state ddir_entry_33( {11'bx, 1'b1, 4'bx, 6'h21} );
+    wildcard state ddir_entry_34( {11'bx, 1'b1, 4'bx, 6'h22} );
+    wildcard state ddir_entry_35( {11'bx, 1'b1, 4'bx, 6'h23} );
+    wildcard state ddir_entry_36( {11'bx, 1'b1, 4'bx, 6'h24} );
+    wildcard state ddir_entry_37( {11'bx, 1'b1, 4'bx, 6'h25} );
+    wildcard state ddir_entry_38( {11'bx, 1'b1, 4'bx, 6'h26} );
+    wildcard state ddir_entry_39( {11'bx, 1'b1, 4'bx, 6'h27} );
+    wildcard state ddir_entry_40( {11'bx, 1'b1, 4'bx, 6'h28} );
+    wildcard state ddir_entry_41( {11'bx, 1'b1, 4'bx, 6'h29} );
+    wildcard state ddir_entry_42( {11'bx, 1'b1, 4'bx, 6'h2a} );
+    wildcard state ddir_entry_43( {11'bx, 1'b1, 4'bx, 6'h2b} );
+    wildcard state ddir_entry_44( {11'bx, 1'b1, 4'bx, 6'h2c} );
+    wildcard state ddir_entry_45( {11'bx, 1'b1, 4'bx, 6'h2d} );
+    wildcard state ddir_entry_46( {11'bx, 1'b1, 4'bx, 6'h2e} );
+    wildcard state ddir_entry_47( {11'bx, 1'b1, 4'bx, 6'h2f} );
+    wildcard state ddir_entry_48( {11'bx, 1'b1, 4'bx, 6'h30} );
+    wildcard state ddir_entry_49( {11'bx, 1'b1, 4'bx, 6'h31} );
+    wildcard state ddir_entry_50( {11'bx, 1'b1, 4'bx, 6'h32} );
+    wildcard state ddir_entry_51( {11'bx, 1'b1, 4'bx, 6'h33} );
+    wildcard state ddir_entry_52( {11'bx, 1'b1, 4'bx, 6'h34} );
+    wildcard state ddir_entry_53( {11'bx, 1'b1, 4'bx, 6'h35} );
+    wildcard state ddir_entry_54( {11'bx, 1'b1, 4'bx, 6'h36} );
+    wildcard state ddir_entry_55( {11'bx, 1'b1, 4'bx, 6'h37} );
+    wildcard state ddir_entry_56( {11'bx, 1'b1, 4'bx, 6'h38} );
+    wildcard state ddir_entry_57( {11'bx, 1'b1, 4'bx, 6'h39} );
+    wildcard state ddir_entry_58( {11'bx, 1'b1, 4'bx, 6'h3a} );
+    wildcard state ddir_entry_59( {11'bx, 1'b1, 4'bx, 6'h3b} );
+    wildcard state ddir_entry_60( {11'bx, 1'b1, 4'bx, 6'h3c} );
+    wildcard state ddir_entry_61( {11'bx, 1'b1, 4'bx, 6'h3d} );
+    wildcard state ddir_entry_62( {11'bx, 1'b1, 4'bx, 6'h3e} );
+    wildcard state ddir_entry_63( {11'bx, 1'b1, 4'bx, 6'h3f} );
+

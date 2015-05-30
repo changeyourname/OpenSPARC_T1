@@ -1,0 +1,260 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_cmplt_ext.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "lsu.if.vrh"
+#include "lsu_ports_binds.vrh"
+
+//   0. stxa
+//   1. l2_fill
+//   2. intld bypass  ___ the above are non_late terms
+//   3. atm_st
+//   4. bsync_reset
+//   5. intrpt
+//   6. diag_wr
+//   7. ldxa_illva
+//   8. pref_tlbmiss
+//   9. pref_issue
+
+
+class CmpltCovPrep {
+  local cmplt_extended_port my_pt;
+  local bit [3:0] cmplt_last;
+  local bit       double_last;
+
+  local bit [3:0] stxa_sig;
+  local bit [3:0] l2_fill_sig;
+  local bit [3:0] intld_bypass_sig;
+
+  local bit [3:0] atm_st_early;
+  local bit [3:0] bsync_reset_early;
+  local bit [3:0] intrpt_early;
+  local bit [3:0] diag_wr_early;
+  local bit [3:0] ldxa_illva_early;
+  local bit [3:0] pref_tlbmiss_early;
+  local bit [3:0] pref_issue_early;
+
+  local bit [3:0] atm_st_sig;
+  local bit [3:0] bsync_reset_sig;
+  local bit [3:0] intrpt_sig;
+  local bit [3:0] diag_wr_sig;
+  local bit [3:0] ldxa_illva_sig;
+  local bit [3:0] pref_tlbmiss_sig;
+  local bit [3:0] pref_issue_sig;
+
+. for my $i (0..3) {
+  bit [3:0] T${i}_cmplt_sample;
+. }
+
+  bit  double_same_sample;
+  bit  tripple_same_sample;
+  bit  back2back_sample;
+  bit  double_back2back_sample;
+
+  event smpl_event;
+
+  task new (cmplt_extended_port pt);
+
+  local task Going();
+  local task CoverOn();
+
+}
+
+task
+CmpltCovPrep::new(cmplt_extended_port pt) {
+  my_pt = pt;
+  cmplt_last = 0;
+  double_last = 0;
+  double_same_sample = 0;
+  tripple_same_sample = 0;
+  back2back_sample = 0;
+  double_back2back_sample = 0;
+
+  stxa_sig=0;
+  l2_fill_sig=0;
+  intld_bypass_sig=0;
+
+  atm_st_early=0;
+  bsync_reset_early=0;
+  intrpt_early=0;
+  diag_wr_early=0;
+  ldxa_illva_early=0;
+  pref_tlbmiss_early=0;
+  pref_issue_early=0;
+
+  atm_st_sig=0;
+  bsync_reset_sig=0;
+  intrpt_sig=0;
+  diag_wr_sig=0;
+  ldxa_illva_sig=0;
+  pref_tlbmiss_sig=0;
+  pref_issue_sig=0;
+
+
+
+  CoverOn();
+}
+
+/*
+assamplen  lsu_ifu_ldst_cmplt[0] =
+    // * can be early or
+    ((stxa_internal_d2 & thread0_w3) | stxa_stall_wr_cmplt0_d1) |
+    // * late samplenal and critical.
+    // Can this be snapped earlier ?
+    //(((l2fill_vld_e & ~atomic_ld_squash_e & ~ignore_fill)) //Bug 3624
+    (((l2fill_vld_e & ~ignore_fill))  // 1st fill for ldd.
+      & ~l2fill_fpld_e & ~lsu_cpx_pkt_atm_st_cmplt &
+        ~(lsu_cpx_pkt_ld_err[1] & lsu_nceen_d1[0]) & dfill_thread0)  |
+    intld_byp_cmplt[0] |
+    // * early-or samplenals
+    ldst_cmplt_late_0_d1 ;
+
+assamplen  ldst_cmplt_late_0 =
+    (atm_st_cmplt0 & ~pend_atm_ld_ue[0]) |  // Bug 3624,4048
+    bsync0_reset    |
+    lsu_intrpt_cmplt[0]   |
+    diag_wr_cmplt0 |
+//    dc0_diagnstc_rd_w2 |
+    ldxa_illgl_va_cmplt_d1[0] |
+    pref_tlbmiss_cmplt_d2[0] |
+    lsu_pcx_pref_issue[0];
+*/
+
+task 
+CmpltCovPrep::CoverOn ()
+{          
+  integer done = 0;
+           
+  fork {   
+    while (!done) {
+      @(posedge lsu_cov_top.lsu_gclk);
+
+	atm_st_sig=atm_st_early;
+	bsync_reset_sig=bsync_reset_early;
+	intrpt_sig=intrpt_early;
+	diag_wr_sig=diag_wr_early;
+	ldxa_illva_sig=ldxa_illva_early;
+	pref_tlbmiss_sig=pref_tlbmiss_early;
+	pref_issue_sig=pref_issue_early;
+
+      stxa_sig       = ({4{my_pt.\$stxa_internal_d2}} & 
+                         {my_pt.\$thread3_w3, 
+                          my_pt.\$thread2_w3, 
+			  my_pt.\$thread1_w3, 
+			  my_pt.\$thread0_w3}) | 
+                         {my_pt.\$stxa_stall_wr_cmplt3_d1,
+                          my_pt.\$stxa_stall_wr_cmplt2_d1,
+                          my_pt.\$stxa_stall_wr_cmplt1_d1,
+                          my_pt.\$stxa_stall_wr_cmplt0_d1};
+      {
+        bit fill = (my_pt.\$l2fill_vld_e & ~my_pt.\$ignore_fill) & ~my_pt.\$l2fill_fpld_e & ~my_pt.\$lsu_cpx_pkt_atm_st_cmplt;
+        l2_fill_sig  = {4{fill}} & ~( {4{my_pt.\$lsu_cpx_pkt_ld_err}} & my_pt.\$lsu_nceen_d1) & 
+                       {my_pt.\$dfill_thread3, 
+		        my_pt.\$dfill_thread2, 
+                        my_pt.\$dfill_thread1, 
+                        my_pt.\$dfill_thread0};
+      }
+      intld_bypass_sig = {my_pt.\$intld_byp_cmplt};
+
+      atm_st_early       = {my_pt.\$atm_st_cmplt3, 
+			  my_pt.\$atm_st_cmplt2, 
+			  my_pt.\$atm_st_cmplt1, 
+			  my_pt.\$atm_st_cmplt0} & 
+                         ~{my_pt.\$pend_atm_ld_ue};
+      bsync_reset_early  = {my_pt.\$bsync3_reset, 
+                          my_pt.\$bsync2_reset, 
+			  my_pt.\$bsync1_reset, 
+		          my_pt.\$bsync0_reset};
+      intrpt_early       = {my_pt.\$lsu_intrpt_cmplt};
+      diag_wr_early      = {my_pt.\$diag_wr_cmplt3, 
+                          my_pt.\$diag_wr_cmplt2, 
+                          my_pt.\$diag_wr_cmplt1, 
+                          my_pt.\$diag_wr_cmplt0};
+      ldxa_illva_early   = {my_pt.\$ldxa_illgl_va_cmplt_d1};
+      pref_tlbmiss_early = {my_pt.\$pref_tlbmiss_cmplt_d2};
+      pref_issue_early   = {my_pt.\$lsu_pcx_pref_issue};
+      Going();
+      //trigger(ONE_SHOT, smpl_event);
+    }      
+  } {      
+    @ (posedge lsu_cov_top.cmp_diag_done);
+    done = 1;
+  } join none
+}          
+
+task
+CmpltCovPrep::Going ()
+{
+  bit [3:0] OR_all = stxa_sig | l2_fill_sig | intld_bypass_sig | atm_st_sig | bsync_reset_sig | 
+                  intrpt_sig | diag_wr_sig | ldxa_illva_sig | pref_tlbmiss_sig | pref_issue_sig;
+
+. for my $i (0..3) {
+  bit [9:0] test${i} = {stxa_sig[$i],
+                        l2_fill_sig[$i],
+                        intld_bypass_sig[$i],
+                        atm_st_sig[$i],
+                        bsync_reset_sig[$i],
+                        intrpt_sig[$i],
+                        diag_wr_sig[$i],
+                        ldxa_illva_sig[$i],
+                        pref_tlbmiss_sig[$i], 
+                        pref_issue_sig[$i]};
+. }
+. for my $i (0..3) {
+  T${i}_cmplt_sample = stxa_sig[$i]         ? 4'b0001 : 
+                       l2_fill_sig[$i]      ? 4'b0010 : 
+                       intld_bypass_sig[$i] ? 4'b0011 : 
+                       atm_st_sig[$i]       ? 4'b0100 :
+                       bsync_reset_sig[$i]  ? 4'b0101 :
+                       intrpt_sig[$i]       ? 4'b0110 :
+                       diag_wr_sig[$i]      ? 4'b0111 :
+                       ldxa_illva_sig[$i]   ? 4'b1000 :
+                       pref_tlbmiss_sig[$i] ? 4'b1001 :
+                       pref_issue_sig[$i]   ? 4'b1010 : 0;
+
+  if (test${i} != 0) {
+     if (test${i} ^ (~(test${i} - 1) & test${i})) error (" thread ${i} cmplt not one hot: %10b\n", 
+         test${i});
+  }
+. }
+
+  double_same_sample = 0;
+  tripple_same_sample = 0;
+  back2back_sample = 0;
+  double_back2back_sample = 0;
+
+
+  case (OR_all) {
+    4'b0011, 4'b0101, 4'b1001, 4'b1010, 4'b1100, 4'b0110: {
+      double_same_sample = 1;
+      if (double_last == 1) double_back2back_sample = 1;
+      double_last = 1;
+    }
+    4'b0111, 4'b1011, 4'b1101, 4'b1110: {
+      tripple_same_sample = 1;
+      double_same_sample = 1;
+    }
+  }
+  if (cmplt_last > 0 && OR_all > 0) back2back_sample = 1;
+  cmplt_last = OR_all;
+
+}
+
+

@@ -1,0 +1,45 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_trans_all_states_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for older store transition through all states
+wildcard trans s_OLDER_TRANS_ALL_0  ({8'b1xxxxxx1,8'b0xxxxxx0,8'b0xxxxxx0}->{8'b1xxxxxx1,8'b1xxxxxx0,8'b0xxxxxx0});
+wildcard trans s_OLDER_TRANS_ALL_0b ({8'b1xxxxxx1,8'b1xxxxxx0,8'b0xxxxxx0}->{8'b1xxxxxx1,8'b1xxxxxx0,8'b1xxxxxx0});
+
+wildcard trans s_OLDER_TRANS_ALL_1  ({8'bxxxxxx11,8'bxxxxxx00,8'bxxxxxx00}->{8'bxxxxxx11,8'bxxxxxx01,8'bxxxxxx00});
+wildcard trans s_OLDER_TRANS_ALL_1b ({8'bxxxxxx11,8'bxxxxxx01,8'bxxxxxx00}->{8'bxxxxxx11,8'bxxxxxx01,8'bxxxxxx01});
+
+wildcard trans s_OLDER_TRANS_ALL_2  ({8'bxxxxx11x,8'bxxxxx00x,8'bxxxxx00x}->{8'bxxxxx11x,8'bxxxxx01x,8'bxxxxx00x});
+wildcard trans s_OLDER_TRANS_ALL_2b ({8'bxxxxx11x,8'bxxxxx01x,8'bxxxxx00x}->{8'bxxxxx11x,8'bxxxxx01x,8'bxxxxx01x});
+
+wildcard trans s_OLDER_TRANS_ALL_3  ({8'bxxxx11xx,8'bxxxx00xx,8'bxxxx00xx}->{8'bxxxx11xx,8'bxxxx01xx,8'bxxxx00xx});
+wildcard trans s_OLDER_TRANS_ALL_3b ({8'bxxxx11xx,8'bxxxx01xx,8'bxxxx00xx}->{8'bxxxx11xx,8'bxxxx01xx,8'bxxxx01xx});
+
+wildcard trans s_OLDER_TRANS_ALL_4  ({8'bxxx11xxx,8'bxxx00xxx,8'bxxx00xxx}->{8'bxxx11xxx,8'bxxx01xxx,8'bxxx00xxx});
+wildcard trans s_OLDER_TRANS_ALL_4b ({8'bxxx11xxx,8'bxxx01xxx,8'bxxx00xxx}->{8'bxxx11xxx,8'bxxx01xxx,8'bxxx01xxx});
+
+wildcard trans s_OLDER_TRANS_ALL_5  ({8'bxx11xxxx,8'bxx00xxxx,8'bxx00xxxx}->{8'bxx11xxxx,8'bxx01xxxx,8'bxx00xxxx});
+wildcard trans s_OLDER_TRANS_ALL_5b ({8'bxx11xxxx,8'bxx01xxxx,8'bxx00xxxx}->{8'bxx11xxxx,8'bxx01xxxx,8'bxx01xxxx});
+
+wildcard trans s_OLDER_TRANS_ALL_6  ({8'bx11xxxxx,8'bx00xxxxx,8'bx00xxxxx}->{8'bx11xxxxx,8'bx01xxxxx,8'bx00xxxxx});
+wildcard trans s_OLDER_TRANS_ALL_6b ({8'bx11xxxxx,8'bx01xxxxx,8'bx00xxxxx}->{8'bx11xxxxx,8'bx01xxxxx,8'bx01xxxxx});
+
+wildcard trans s_OLDER_TRANS_ALL_7  ({8'b11xxxxxx,8'b00xxxxxx,8'b00xxxxxx}->{8'b11xxxxxx,8'b01xxxxxx,8'b00xxxxxx});
+wildcard trans s_OLDER_TRANS_ALL_7b ({8'b11xxxxxx,8'b01xxxxxx,8'b00xxxxxx}->{8'b11xxxxxx,8'b01xxxxxx,8'b01xxxxxx});
+

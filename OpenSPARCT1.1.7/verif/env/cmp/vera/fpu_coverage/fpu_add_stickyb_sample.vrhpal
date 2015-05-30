@@ -1,0 +1,68 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_add_stickyb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+
+// coverage_def FPU_ADD_STICKYB_COV (bit [56:0] FPU_ADD_STICKYB_state)
+// {
+
+// state declarations
+
+  state s_FPU_ADD_STICKYB0  ( FPU_ADD_STICKYB0 );
+  state s_FPU_ADD_STICKYB1  ( FPU_ADD_STICKYB1 );
+  state s_FPU_ADD_STICKYB2  ( FPU_ADD_STICKYB2 );
+  state s_FPU_ADD_STICKYB3  ( FPU_ADD_STICKYB3 );
+  state s_FPU_ADD_STICKYB4  ( FPU_ADD_STICKYB4 );
+  state s_FPU_ADD_STICKYB5  ( FPU_ADD_STICKYB5 );
+  state s_FPU_ADD_STICKYB6  ( FPU_ADD_STICKYB6 );
+  state s_FPU_ADD_STICKYB7  ( FPU_ADD_STICKYB7 );
+  state s_FPU_ADD_STICKYB8  ( FPU_ADD_STICKYB8 );
+  state s_FPU_ADD_STICKYB9  ( FPU_ADD_STICKYB9 );
+  state s_FPU_ADD_STICKYB10 ( FPU_ADD_STICKYB10);
+  state s_FPU_ADD_STICKYB11 ( FPU_ADD_STICKYB11);
+  state s_FPU_ADD_STICKYB12 ( FPU_ADD_STICKYB12);
+  state s_FPU_ADD_STICKYB13 ( FPU_ADD_STICKYB13);
+  state s_FPU_ADD_STICKYB14 ( FPU_ADD_STICKYB14);
+  state s_FPU_ADD_STICKYB15 ( FPU_ADD_STICKYB15);
+  state s_FPU_ADD_STICKYB16 ( FPU_ADD_STICKYB16);
+  state s_FPU_ADD_STICKYB17 ( FPU_ADD_STICKYB17);
+  state s_FPU_ADD_STICKYB18 ( FPU_ADD_STICKYB18);
+  state s_FPU_ADD_STICKYB19 ( FPU_ADD_STICKYB19);
+  state s_FPU_ADD_STICKYB20 ( FPU_ADD_STICKYB20);
+  state s_FPU_ADD_STICKYB21 ( FPU_ADD_STICKYB21);
+  state s_FPU_ADD_STICKYB22 ( FPU_ADD_STICKYB22);
+  state s_FPU_ADD_STICKYB23 ( FPU_ADD_STICKYB23);
+  state s_FPU_ADD_STICKYB24 ( FPU_ADD_STICKYB24);
+  state s_FPU_ADD_STICKYB25 ( FPU_ADD_STICKYB25);
+  state s_FPU_ADD_STICKYB26 ( FPU_ADD_STICKYB26);
+  state s_FPU_ADD_STICKYB27 ( FPU_ADD_STICKYB27);
+  state s_FPU_ADD_STICKYB28 ( FPU_ADD_STICKYB28);
+  state s_FPU_ADD_STICKYB29 ( FPU_ADD_STICKYB29);
+  state s_FPU_ADD_STICKYB30 ( FPU_ADD_STICKYB30);
+  state s_FPU_ADD_STICKYB31 ( FPU_ADD_STICKYB31);
+  state s_FPU_ADD_STICKYB32 ( FPU_ADD_STICKYB32);
+
+// }

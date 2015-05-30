@@ -1,0 +1,19 @@
+. $cores		= 1;
+. $sys			= "CMP";
+. $top			= "cmp_top";
+. $path_to_cmp 		= 'cmp_top.iop';
+. $path_to_tso_mon 	= 'cmp_top.monitor.tso_mon0';
+.# END_INIT
+.
+. if ( $sys eq "CMP1" ) { $cores = 2; }
+. if ( $sys eq "CMP2" ) { $cores = 2; }
+. if ( $sys eq "CMP8" ) { $cores = 8; }
+. if ( $sys eq "CIOP1") { $cores = 2; }
+. if ( $sys eq "CIOP2") { $cores = 2; }
+. if ( $sys eq "CIOP8") { $cores = 8; }
+// sys = $sys, cores = $cores
+.
+. for ( $i = 0; $i < $cores; $i++ ) {
+.	$CORE_STR[$i]	  = $i;
+.	$path_to_core[$i] = "${path_to_cmp}.sparc${i}";
+. }

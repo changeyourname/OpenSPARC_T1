@@ -1,0 +1,99 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: xbar_reg_stub.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        xbar_reg_stub.vrpal
+//  Description:        Class definition and methods for xbar regsiter map.
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include "iop_rtl.h"
+#include "iob.if.vrh"
+#include "iob_ports_binds.vrh"
+#include "pcx_cmd.vrh"
+#include "pcx_snoop.vrh"
+#include "reg_cmd.vrh"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class XBAR_REG_STUB 
+{
+  PCX_SNOOP     pcx_snoop;
+  string        name;
+  bit [63:0]    write_data[];
+  REG_CMD       reg_cmd ;
+
+  task           new(string name = "XBAR_REG_STUB", PCX_SNOOP pcx_snoop);
+  task           update_reg_write();
+  task           get_reg_data(bit [39:0] address,var bit [63:0] data);
+}
+
+///////////////////////////////////////////////////////////////////////
+// constructor
+///////////////////////////////////////////////////////////////////////
+task XBAR_REG_STUB::new(string name = "XBAR_REG_STUB", PCX_SNOOP pcx_snoop)
+{
+  this.name = name;
+  this.pcx_snoop = pcx_snoop;
+  reg_cmd = new();
+}
+
+////////////////////////////////////////////////////////////////////////
+// Update/store the data written to register
+////////////////////////////////////////////////////////////////////////
+task XBAR_REG_STUB::update_reg_write()
+{
+ PCX_CMD pcx_cmd ;
+
+ fork
+   while(1)
+   {
+     void = mailbox_get (WAIT, this.pcx_snoop.snoop_mbox, pcx_cmd, CHECK) ;
+    
+    if ((pcx_cmd.rqtyp == STORE_RQ) || (pcx_cmd.rqtyp == STQ_RQ)) 
+    {
+       write_data[pcx_cmd.address] = pcx_cmd.data;
+//       printf("%d : %s : Writing register %10H : data : %16H \n",
+//              get_time(LO),this.name, pcx_cmd.address, pcx_cmd.data);
+     }
+   }
+ join none
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Read the stored value in the register
+/////////////////////////////////////////////////////////////////////////
+task XBAR_REG_STUB::get_reg_data(bit [39:0] address,var bit [63:0] data)
+{
+  // printf("%d : %s : Reading register %10H \n",get_time(LO),this.name,address);
+
+  if (assoc_index (CHECK, this.write_data, address) == 1) 
+  { 
+    data = write_data[address] ;
+    // printf("%d : %s : Reading register %10H : data : %16H \n",get_time(LO),this.name,address,data);
+  }
+  else
+  {
+    error("%d : %s ERROR : The register %10H not written by XBAR. Exiting\n", get_time(LO), this.name, address);
+  }
+}

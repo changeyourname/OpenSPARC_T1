@@ -1,0 +1,185 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: pcx_cmd.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+/*
+//
+//  Module Name:        pcx_cmd.vrpal
+//  Description:        Class and Method definitions for direct RDMA
+//                      commands
+*/
+////////////////////////////////////////////////////////////////////////
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "iop_rtl.h"
+
+////////////////////////////////////////////////////////////////////////
+// class declaration
+////////////////////////////////////////////////////////////////////////
+class PCX_CMD
+{
+  packed big_endian
+  {
+    bit valid ;
+    bit [PCX_RQ_HI-PCX_RQ_LO:0] rqtyp ;
+    bit nc ;
+    bit [PCX_CP_HI-PCX_CP_LO:0] coreid ;
+    bit [PCX_TH_HI-PCX_TH_LO:0] threadid ;
+    bit [PCX_BF_HI-PCX_BF_LO:0] bufferid ;
+    bit [PCX_P_HI-PCX_P_LO:0] packetid ; 
+    bit [PCX_SZ_HI-PCX_SZ_LO:0] size ;
+    bit [PCX_AD_HI-PCX_AD_LO:0] address ;
+    bit [PCX_DA_HI-PCX_DA_LO:0] data ;
+    bit                         block;
+  }
+  bit [6:0] nodeid ;
+  bit [PCX_DA_HI-PCX_DA_LO:0] dataqw ;
+  static integer print_count = 0 ;
+ 
+  task new ((bit valid = 1'b1),
+            (bit [PCX_RQ_HI-PCX_RQ_LO:0] rqtyp = 'h0),
+            (bit nc = 1'b1),
+            (bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+            (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+            (bit [PCX_BF_HI-PCX_BF_LO:0] bufferid = 'h0),
+            (bit [PCX_P_HI-PCX_P_LO:0] packetid = 'h0), 
+            (bit [PCX_SZ_HI-PCX_SZ_LO:0] size = 'h0),
+            (bit [PCX_AD_HI-PCX_AD_LO:0] address = 40'h0),
+            (bit [PCX_DA_HI-PCX_DA_LO:0] data = 64'h0));
+  task print ((string name="MISC")) ;
+  task print_stall (bit stall, (string name="MISC")) ;
+  task print_header ((string name="MISC")) ;
+  function bit     compare(PCX_CMD new_pkt);
+}
+
+task PCX_CMD::print_header ((string name="MISC"))
+{
+  printf ("| PCX_CMD ") ;
+  printf ("|            ") ;
+  printf ("| Time       ") ;
+  printf ("| CId ") ;
+  printf ("| TId ") ;
+  printf ("| Vld ") ;
+  printf ("| Type         ") ;
+  printf ("| NC ") ;
+  printf ("| Sz ") ;
+  printf ("| Address    ") ;
+  printf ("| Data             ") ;
+  printf ("|\n") ;
+  this.print_count++ ;
+}
+
+////////////////////////////////////////////////////////////////////////
+// new
+////////////////////////////////////////////////////////////////////////
+task PCX_CMD::new ((bit valid = 1'b1),
+          (bit [PCX_RQ_HI-PCX_RQ_LO:0] rqtyp = 'h0),
+          (bit nc = 1'b1),
+          (bit [PCX_CP_HI-PCX_CP_LO:0] coreid = 'h0),
+          (bit [PCX_TH_HI-PCX_TH_LO:0] threadid = 'h0),
+          (bit [PCX_BF_HI-PCX_BF_LO:0] bufferid = 'h0),
+          (bit [PCX_P_HI-PCX_P_LO:0] packetid = 'h0), 
+          (bit [PCX_SZ_HI-PCX_SZ_LO:0] size = 'h0),
+          (bit [PCX_AD_HI-PCX_AD_LO:0] address = 40'h0),
+          (bit [PCX_DA_HI-PCX_DA_LO:0] data = 64'h0)) {
+  this.valid  = valid;
+  this.rqtyp  = rqtyp;
+  this.nc     = nc;
+  this.nodeid = 'h0 ;
+  this.coreid = coreid;
+  this.threadid = threadid;
+  this.bufferid = bufferid;
+  this.packetid = packetid;
+  this.size   = size;
+  this.address = address;
+  this.data   = data;
+  this.dataqw = 'h0 ;
+  this.block = 1'b0;
+}
+
+////////////////////////////////////////////////////////////////////////
+// print out the iob command to a file
+////////////////////////////////////////////////////////////////////////
+task PCX_CMD::print ((string name="MISC"))
+{
+  if ((print_count % 40) == 0)
+  {
+    print_header (name) ;
+  }
+
+  // print out command data
+
+  printf ("| PCX_CMD ") ;
+  printf ("| %10s ", name) ;
+  printf ("| %10d ", get_time (LO)) ;
+  printf ("| %1H   ", this.coreid) ;
+  printf ("| %1H   ", this.threadid) ;
+  printf ("| %1b   ", this.valid) ;
+  
+  case (this.rqtyp)
+  {
+    5'b00000  : printf ("| Load         ") ;
+    5'b00001  : printf ("| Store        ") ;
+    5'b00111  : printf ("| Store QWord  ") ;
+    default   : printf ("| Invalid      ") ;
+  }
+  
+  printf ("| %1b  ", this.nc) ;
+  printf ("| %1H  ", this.size) ;
+  printf ("| %10H ", this.address) ;
+  printf ("| %16H ", this.data) ;
+
+  printf ("|\n") ;
+  this.print_count++ ;
+}
+
+////////////////////////////////////////////////////////////////////////
+// print out the stall event
+////////////////////////////////////////////////////////////////////////
+task PCX_CMD::print_stall (bit stall, (string name="MISC"))
+{
+  printf ("| PCX_CMD ") ;
+  printf ("| %10s ", name) ;
+  printf ("| %10d ", get_time (LO)) ;
+  printf ("|    ") ;
+  printf ("|    ") ;
+  printf ("|    ") ;
+  printf ("|    ") ;
+  printf ("| Stall is %1b   ", stall) ;
+  printf ("|    ") ;
+  printf ("|    ") ;
+  printf ("|            ") ;
+  printf ("|                  ") ;
+  printf ("|\n") ;
+  this.print_count++ ;
+}
+
+function bit PCX_CMD::compare(PCX_CMD new_cmd) {
+  compare = ((this.valid == new_cmd.valid) &&
+      (this.rqtyp == new_cmd.rqtyp) &&
+      (this.nc == new_cmd.nc) && 
+      (this.coreid == new_cmd.coreid) && 
+      (this.threadid == new_cmd.threadid) && 
+      (this.bufferid == new_cmd.bufferid) && 
+      (this.packetid == new_cmd.packetid) && 
+      (this.size == new_cmd.size) &&
+      (this.address == new_cmd.address) &&
+      (this.data == new_cmd.data));
+}

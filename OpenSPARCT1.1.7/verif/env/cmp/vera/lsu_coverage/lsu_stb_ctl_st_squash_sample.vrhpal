@@ -1,0 +1,40 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_stb_ctl_st_squash_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// Check for store buffer store squashed
+
+state s_ST_SQUASHED_FLUSH_0 ({8'b00000001,2'b01});
+state s_ST_SQUASHED_FLUSH_1 ({8'b00000010,2'b01});
+state s_ST_SQUASHED_FLUSH_2 ({8'b00000100,2'b01});
+state s_ST_SQUASHED_FLUSH_3 ({8'b00001000,2'b01});
+state s_ST_SQUASHED_FLUSH_4 ({8'b00010000,2'b01});
+state s_ST_SQUASHED_FLUSH_5 ({8'b00100000,2'b01});
+state s_ST_SQUASHED_FLUSH_6 ({8'b01000000,2'b01});
+state s_ST_SQUASHED_FLUSH_7 ({8'b10000000,2'b01});
+
+state s_ST_SQUASHED_PERR_0 ({8'b00000001,2'b10});
+state s_ST_SQUASHED_PERR_1 ({8'b00000010,2'b10});
+state s_ST_SQUASHED_PERR_2 ({8'b00000100,2'b10});
+state s_ST_SQUASHED_PERR_3 ({8'b00001000,2'b10});
+state s_ST_SQUASHED_PERR_4 ({8'b00010000,2'b10});
+state s_ST_SQUASHED_PERR_5 ({8'b00100000,2'b10});
+state s_ST_SQUASHED_PERR_6 ({8'b01000000,2'b10});
+state s_ST_SQUASHED_PERR_7 ({8'b10000000,2'b10});
+

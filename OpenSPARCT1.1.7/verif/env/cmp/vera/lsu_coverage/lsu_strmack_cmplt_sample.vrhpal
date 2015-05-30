@@ -1,0 +1,37 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_strmack_cmplt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// lsu_strmack_cmplt_state = {lsu_spu_strm_ack_cmplt[1:0],
+//                            strmack_cmplt1_d1,
+//                            strmack_cmplt2_d1,
+//                            strmack_cmplt3_d1};
+
+wildcard state stream_ack_complete_1( {2'b01, 3'bx} );
+wildcard state stream_ack_complete_2( {2'b10, 3'bx} );
+wildcard bad_state stream_ack_complete_3( {2'b11, 3'bx} );
+
+state stream_ack_complete_001( {2'b01, 3'b001} );
+state stream_ack_complete_010( {2'b01, 3'b010} );
+state stream_ack_complete_011( {2'b10, 3'b011} );
+state stream_ack_complete_100( {2'b01, 3'b100} );
+state stream_ack_complete_101( {2'b10, 3'b101} );
+bad_state stream_ack_complete_110( {2'b10, 3'b110} );
+bad_state stream_ack_complete_111( {2'b11, 3'b111} );

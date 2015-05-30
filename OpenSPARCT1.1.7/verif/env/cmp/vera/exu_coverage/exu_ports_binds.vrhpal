@@ -1,0 +1,413 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "exu_cov_inc.pal";
+#ifndef __EXU_PORTS_BINDS_VRH__
+#define __EXU_PORTS_BINDS_VRH__
+
+// EXU coverage ports definition
+
+
+// TAG
+port exu_tag_port {
+	exu_tag_add_state;
+	exu_tag_sub_state;
+}
+
+// LOGIC
+port exu_logic_port {
+	exu_logic_state;
+} 
+
+// DIV FSM
+port exu_div_fsm_port {
+	exu_div_fsm_state;
+	exu_div_fsm_xx_state;
+}
+
+
+// GLOBAL SWAP
+port exu_swap_global_port {
+	exu_swap_global_state;
+}
+// LOCAL  SWAP
+port exu_swap_local_port {
+	exu_swap_local_state;
+}
+// INOUT  SWAP
+port exu_swap_inout_port {
+	exu_swap_odd_state;
+	exu_swap_even_state;
+}
+
+//WMG
+port exu_wmg_port {
+	exu_wmg_state;
+}
+
+//ECC
+port exu_ecc_port {
+	exu_ecc_ce_state;
+	exu_ecc_ue_state;
+}
+
+//BYPASS
+port exu_bypass_port {
+	exu_single_bypass_state;
+	exu_rcc_bypass_state_partial;
+	exu_rs1_bypass_state;
+	exu_rs2_bypass_state;
+	exu_rs3_bypass_state_partial;
+	exu_rs3h_bypass_state_partial;
+}
+
+
+port exu_cwp_swap_port {
+	exu_cwp_swap_st0_state;
+	exu_cwp_swap_st1_state;
+	exu_cwp_swap_st2_state;
+	exu_cwp_swap_st3_state;
+	exu_cwp_swap_combos_state;
+}
+
+port exu_wb_port {
+	exu_irf_dual_wb_state_partial;
+	exu_irf_mult_wb_state_partial;
+}
+
+port exu_irf_port {
+ 	exu_irf_case1_state;
+ 	exu_irf_case2_state;
+ 	exu_irf_case3_state;
+}
+	
+. sub coreBindings {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+
+//TAG
+bind exu_tag_port exu_tagged_ops_sample_C${c}_exu_tag_bind {
+	exu_tag_add_state	{
+	   				exu_cov_top.C${c}_exu_tagop,      
+	   				exu_cov_top.C${c}_exu_alu_sub,
+			   		exu_cov_top.C${c}_exu_tv,    
+					exu_cov_top.C${c}_exu_rs1_data_1,
+					exu_cov_top.C${c}_exu_rs1_data_0,
+					exu_cov_top.C${c}_exu_rs2_data_1, 
+					exu_cov_top.C${c}_exu_rs2_data_0
+				};
+	exu_tag_sub_state	{
+	   				exu_cov_top.C${c}_exu_tagop,      
+	   				exu_cov_top.C${c}_exu_alu_sub,
+			   		exu_cov_top.C${c}_exu_tv,    
+					exu_cov_top.C${c}_exu_rs1_data_1,
+					exu_cov_top.C${c}_exu_rs1_data_0,
+					exu_cov_top.C${c}_exu_rs2_data_1, 
+					exu_cov_top.C${c}_exu_rs2_data_0
+				};  
+}    
+
+//LOGIC
+bind exu_logic_port exu_logic_ops_sample_C${c}_exu_logic_bind {
+	exu_logic_state	{
+				exu_cov_top.C${c}_exu_isand,
+		 		exu_cov_top.C${c}_exu_isor,
+	 			exu_cov_top.C${c}_exu_isxor,
+	 			exu_cov_top.C${c}_exu_inv,
+				exu_cov_top.C${c}_exu_xcc_nz,
+				exu_cov_top.C${c}_exu_icc_nz,
+	 			exu_cov_top.C${c}_exu_setcc
+			};
+}
+
+//DIV FSM
+
+bind exu_div_fsm_port exu_div_ops_sample_C${c}_exu_div_fsm_bind {
+	exu_div_fsm_state	{	exu_cov_top.C${c}_exu_div_state
+				};
+	exu_div_fsm_xx_state	{	exu_cov_top.C${c}_exu_div_state,	
+					exu_cov_top.C${c}_exu_isdiv_e_vld,
+					exu_cov_top.C${c}_ifu_running_e,
+					exu_cov_top.C${c}_exu_isdiv_m_vld,
+					exu_cov_top.C${c}_ifu_tlu_inst_vld_m
+				};
+}
+
+// SWAP GLOBAL
+bind exu_swap_global_port exu_swap_global_sample_C${c}_exu_swap_global_bind {
+	exu_swap_global_state	{
+					exu_cov_top.C${c}_exu_swap_global,
+			 		exu_cov_top.C${c}_exu_global_tid,
+	    				exu_cov_top.C${c}_exu_old_agp,
+			    		exu_cov_top.C${c}_exu_new_agp
+				};
+
+}
+// SWAP LOCAL
+bind exu_swap_local_port exu_swap_local_sample_C${c}_exu_swap_local_bind {
+	exu_swap_local_state	{	exu_cov_top.C${c}_exu_swap_local,
+				 	exu_cov_top.C${c}_exu_cwpswap_tid,
+				   	exu_cov_top.C${c}_exu_old_lo_cwp,
+				   	exu_cov_top.C${c}_exu_new_lo_cwp
+				};
+}
+// SWAP INS/OUTS
+bind exu_swap_inout_port exu_swap_inout_sample_C${c}_exu_swap_inout_bind {
+	exu_swap_odd_state	{
+				    exu_cov_top.C${c}_exu_swap_odd,
+				    exu_cov_top.C${c}_exu_cwpswap_tid,
+				    exu_cov_top.C${c}_exu_old_lo_cwp,
+				    exu_cov_top.C${c}_exu_new_lo_cwp	
+				};
+	exu_swap_even_state	{
+				    exu_cov_top.C${c}_exu_swap_even,
+			    	    exu_cov_top.C${c}_exu_cwpswap_tid,
+				    exu_cov_top.C${c}_exu_old_e_cwp,
+			  	    exu_cov_top.C${c}_exu_new_e_cwp
+				};
+}
+
+//WMG
+bind exu_wmg_port exu_wmg_sample_C${c}_exu_wmg_bind {
+	exu_wmg_state		{
+					exu_cov_top.C${c}_exu_save,
+					exu_cov_top.C${c}_exu_restore,
+					exu_cov_top.C${c}_exu_flushw,
+					exu_cov_top.C${c}_exu_saved,
+					exu_cov_top.C${c}_exu_restored,
+					exu_cov_top.C${c}_exu_cwp,
+					exu_cov_top.C${c}_exu_otherwin,
+					exu_cov_top.C${c}_exu_cansave,
+					exu_cov_top.C${c}_exu_canrestore,
+					exu_cov_top.C${c}_exu_cleanwin,
+					exu_cov_top.C${c}_exu_spill,
+					exu_cov_top.C${c}_exu_fill,
+					exu_cov_top.C${c}_exu_clean_window
+				};
+}
+
+//ECC
+bind exu_ecc_port exu_ecc_sample_C${c}_exu_ecc_bind {
+	exu_ecc_ce_state	{
+				    exu_cov_top.C${c}_exu_detect_ce,
+				    exu_cov_top.C${c}_exu_detect_ue,
+				    exu_cov_top.C${c}_exu_rs1_ce,
+				    exu_cov_top.C${c}_exu_rs2_ce,
+				    exu_cov_top.C${c}_exu_rs3_ce,
+				    exu_cov_top.C${c}_exu_ce2ue
+				};
+	exu_ecc_ue_state	{
+				    exu_cov_top.C${c}_exu_detect_ce,
+				    exu_cov_top.C${c}_exu_detect_ue,
+				    exu_cov_top.C${c}_exu_rs1_ce,
+				    exu_cov_top.C${c}_exu_rs1_ue,
+				    exu_cov_top.C${c}_exu_rs2_ce,
+				    exu_cov_top.C${c}_exu_rs2_ue,
+				    exu_cov_top.C${c}_exu_rs3_ce,
+				    exu_cov_top.C${c}_exu_rs3_ue
+				};
+}
+//BYPASS
+bind exu_bypass_port exu_operand_bypass_sample_C${c}_exu_bypass_bind {
+	exu_single_bypass_state	{
+					exu_cov_top.C${c}_exu_rs1_byp,
+					exu_cov_top.C${c}_exu_rs1_mux1_sel_m,      
+					exu_cov_top.C${c}_exu_rs1_mux1_sel_w,     
+					exu_cov_top.C${c}_exu_rs1_mux1_sel_w2,
+
+					exu_cov_top.C${c}_exu_rs1_mux2_sel_e, 
+					exu_cov_top.C${c}_exu_rs1_mux2_sel_ld,
+					exu_cov_top.C${c}_exu_rs1_mux2_sel_usemux1,
+
+					exu_cov_top.C${c}_exu_rs2_byp,
+					exu_cov_top.C${c}_exu_rs2_mux1_sel_m,     
+					exu_cov_top.C${c}_exu_rs2_mux1_sel_w,     
+					exu_cov_top.C${c}_exu_rs2_mux1_sel_w2,
+
+					exu_cov_top.C${c}_exu_rs2_mux2_sel_e,     
+					exu_cov_top.C${c}_exu_rs2_mux2_sel_ld,
+					exu_cov_top.C${c}_exu_rs2_mux2_sel_usemux1,
+
+					exu_cov_top.C${c}_exu_rs3_byp,
+					exu_cov_top.C${c}_exu_rs3_mux1_sel_m,      
+					exu_cov_top.C${c}_exu_rs3_mux1_sel_w,     
+					exu_cov_top.C${c}_exu_rs3_mux1_sel_w2,
+
+					exu_cov_top.C${c}_exu_rs3_mux2_sel_e,     
+					exu_cov_top.C${c}_exu_rs3_mux2_sel_ld,
+					exu_cov_top.C${c}_exu_rs3_mux2_sel_usemux1,
+
+					exu_cov_top.C${c}_exu_rs3h_byp,
+				 	exu_cov_top.C${c}_exu_rs3h_mux1_sel_m,      
+				 	exu_cov_top.C${c}_exu_rs3h_mux1_sel_w,     
+				 	exu_cov_top.C${c}_exu_rs3h_mux1_sel_w2,
+
+				 	exu_cov_top.C${c}_exu_rs3h_mux2_sel_e,     
+				 	exu_cov_top.C${c}_exu_rs3h_mux2_sel_ld,
+					exu_cov_top.C${c}_exu_rs3h_mux2_sel_usemux1
+				};
+	exu_rcc_bypass_state_partial	{
+					exu_cov_top.C${c}_exu_valid_e, 
+					exu_cov_top.C${c}_exu_rs1_match_e, 
+					exu_cov_top.C${c}_exu_valid_m,    
+					exu_cov_top.C${c}_exu_rs1_match_m, 
+					exu_cov_top.C${c}_exu_bypass_w,
+					exu_cov_top.C${c}_exu_rs1_match_w,
+					exu_cov_top.C${c}_exu_ld_vld,
+					exu_cov_top.C${c}_exu_rs1_match_ld,
+			    		exu_cov_top.C${c}_exu_rs1_byp_g2,      
+					exu_cov_top.C${c}_exu_wen_w2,  
+					exu_cov_top.C${c}_exu_rs1_match_w2
+				};
+	exu_rs1_bypass_state	{
+					exu_cov_top.C${c}_exu_rs1_ifu_vld,
+					exu_cov_top.C${c}_exu_valid_e, 
+					exu_cov_top.C${c}_exu_rs1_match_e, 
+					exu_cov_top.C${c}_exu_valid_m,    
+					exu_cov_top.C${c}_exu_rs1_match_m, 
+					exu_cov_top.C${c}_exu_bypass_w,
+					exu_cov_top.C${c}_exu_rs1_match_w,
+					exu_cov_top.C${c}_exu_ld_vld,
+					exu_cov_top.C${c}_exu_rs1_match_ld,
+			    		exu_cov_top.C${c}_exu_rs1_byp_g2,      
+					exu_cov_top.C${c}_exu_wen_w2,  
+					exu_cov_top.C${c}_exu_rs1_match_w2
+				};
+	exu_rs2_bypass_state	{
+					exu_cov_top.C${c}_exu_rs2_ifu_vld,
+					exu_cov_top.C${c}_exu_valid_e, 
+					exu_cov_top.C${c}_exu_rs2_match_e, 
+					exu_cov_top.C${c}_exu_valid_m,    
+					exu_cov_top.C${c}_exu_rs2_match_m, 
+					exu_cov_top.C${c}_exu_bypass_w,
+					exu_cov_top.C${c}_exu_rs2_match_w,
+					exu_cov_top.C${c}_exu_ld_vld,
+					exu_cov_top.C${c}_exu_rs2_match_ld,
+			    		exu_cov_top.C${c}_exu_rs2_byp_g2,      
+					exu_cov_top.C${c}_exu_wen_w2,  
+					exu_cov_top.C${c}_exu_rs2_match_w2
+				};
+	exu_rs3_bypass_state_partial	{
+					exu_cov_top.C${c}_exu_valid_e, 
+					exu_cov_top.C${c}_exu_rs3_match_e, 
+					exu_cov_top.C${c}_exu_valid_m,    
+					exu_cov_top.C${c}_exu_rs3_match_m, 
+					exu_cov_top.C${c}_exu_bypass_w,
+					exu_cov_top.C${c}_exu_rs3_match_w,
+					exu_cov_top.C${c}_exu_ld_vld,
+					exu_cov_top.C${c}_exu_rs3_match_ld,
+			    		exu_cov_top.C${c}_exu_rs3_byp_g2,      
+					exu_cov_top.C${c}_exu_wen_w2,  
+					exu_cov_top.C${c}_exu_rs3_match_w2
+				};
+	exu_rs3h_bypass_state_partial	{
+					exu_cov_top.C${c}_exu_valid_e, 
+					exu_cov_top.C${c}_exu_rs3h_match_e, 
+					exu_cov_top.C${c}_exu_valid_m,    
+					exu_cov_top.C${c}_exu_rs3h_match_m, 
+					exu_cov_top.C${c}_exu_bypass_w,
+					exu_cov_top.C${c}_exu_rs3h_match_w,
+					exu_cov_top.C${c}_exu_ld_vld,
+					exu_cov_top.C${c}_exu_rs3h_match_ld,
+			    		exu_cov_top.C${c}_exu_rs3h_byp_g2,      
+					exu_cov_top.C${c}_exu_wen_w2,  
+					exu_cov_top.C${c}_exu_rs3h_match_w2
+				};
+}
+
+//CWP SWAP
+bind exu_cwp_swap_port exu_cwp_swap_sample_C${c}_exu_cwp_swap_bind {
+	exu_cwp_swap_st0_state 	{	exu_cov_top.C${c}_exu_swap_slot0_st
+				};
+	exu_cwp_swap_st1_state	{	exu_cov_top.C${c}_exu_swap_slot1_st
+				};
+	exu_cwp_swap_st2_state	{	exu_cov_top.C${c}_exu_swap_slot2_st
+				};
+	exu_cwp_swap_st3_state	{	exu_cov_top.C${c}_exu_swap_slot3_st
+				};
+
+	exu_cwp_swap_combos_state {	
+					exu_cov_top.C${c}_exu_swap_slot0_st,
+					exu_cov_top.C${c}_exu_swap_slot1_st,
+					exu_cov_top.C${c}_exu_swap_slot2_st,
+					exu_cov_top.C${c}_exu_swap_slot3_st,
+
+					exu_cov_top.C${c}_exu_save,
+					exu_cov_top.C${c}_exu_restore,
+					exu_cov_top.C${c}_exu_flushw,
+					exu_cov_top.C${c}_exu_cwp_wen
+				};
+}
+
+//WB
+bind exu_wb_port exu_wb_sample_C${c}_exu_wb_bind {
+	exu_irf_dual_wb_state_partial	{
+					exu_cov_top.C${c}_exu_alu_wb,
+					exu_cov_top.C${c}_exu_ecc_wb,
+					exu_cov_top.C${c}_exu_load_wb,
+					exu_cov_top.C${c}_exu_restore_wb
+				};
+	exu_irf_mult_wb_state_partial	{
+					exu_cov_top.C${c}_exu_alu_wb,
+					exu_cov_top.C${c}_exu_ecc_wb,
+					exu_cov_top.C${c}_exu_load_wb,
+					exu_cov_top.C${c}_exu_restore_wb
+				};
+}
+ //IRF
+bind exu_irf_port  exu_irf_sample_C${c}_exu_irf_bind {
+ 	exu_irf_case1_state	{
+ 					exu_cov_top.C${c}_exu_rd_tid_d, 
+ 					exu_cov_top.C${c}_exu_rd_ren1_d,
+ 					exu_cov_top.C${c}_exu_rd_ren2_d,
+ 					exu_cov_top.C${c}_exu_rd_ren3_d,
+ 					exu_cov_top.C${c}_exu_sw_tid_m,
+ 					exu_cov_top.C${c}_exu_sw_lcl_m
+ 				};
+ 	exu_irf_case2_state	{
+ 					exu_cov_top.C${c}_exu_rd_tid_d, 
+ 					exu_cov_top.C${c}_exu_rd_ren1_d,
+ 					exu_cov_top.C${c}_exu_rd_ren2_d,
+ 					exu_cov_top.C${c}_exu_rd_ren3_d,
+ 					exu_cov_top.C${c}_exu_sw_tid_w,
+ 					exu_cov_top.C${c}_exu_sw_lcl_w
+ 				};
+ 	exu_irf_case3_state	{
+ 					exu_cov_top.C${c}_exu_wr_tid_w, 
+ 					exu_cov_top.C${c}_exu_wr_wen_w, 
+ 					exu_cov_top.C${c}_exu_sw_tid_w, 
+ 					exu_cov_top.C${c}_exu_sw_lcl_w, 
+ 					exu_cov_top.C${c}_exu_kil_rt_w 
+				};
+}
+.
+. } # coreBindings
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+
+#endif
+

@@ -1,0 +1,698 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_simul_swout_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+. 
+. $dv_root = $ENV{DV_ROOT};
+.
+. #To change the number of conditions covered, remember to comment or uncomment the signals in the 
+. #coverage instance in ifu_coverage.vrpal
+. @cov_conds = ( "imss",  #0
+.		 "swcs",  #1
+.		 "ices",  #2
+.		 "swcd",  #3
+.		 "intd",  #4
+.		 "stb8",  #5
+.		 "stb9",  #6
+.		 "iced",  #7
+.		 "muld",  #8
+.		 "divd",  #9
+.		 "fpod",  #10
+.		 "swce",  #11
+.		 "trpm",  #12
+.		 "rfew",  #13
+.                "flhw",  #14
+.		 "ldmw",  #15
+.		 "mrbw",  #16
+.		 "nukw",  #17
+.		 "fstw",  #18
+.		 "dcw2"   #19
+.	       );
+.
+. @cov_states = ();
+. @bad_states = ();
+. $state_vec_len = 0;
+. %bitmap = ();
+. %prim_state_vec = ();
+. 
+. #####################################################################
+. # Disallowed conditions hashes
+. #####################################################################
+. 
+. @impos_states = (
+. 	         #imss
+. 		 {"swcs" => 0,
+. 		  "ices" => 0,
+. 		  "swce" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #swcs
+. 		 {"imss" => 0,
+.		  "swcd" => 0,
+.		  "muld" => 0,
+.		  "divd" => 0,
+.		  "fpod" => 0,
+. 		  "intd" => 0,
+. 		  "swce" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #ices
+. 		 {"imss" => 0,
+. 		  "swce" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #swcd
+. 		 {"intd" => 0,
+.		  "swcs" => 0,
+.		  "swce" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "muld" => 0, # muld,fopd,divd are conditions by themselves, no need to cover with swcd
+.		  "fpod" => 0,
+. 		  "divd" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #intd
+. 		 {"swcs" => 0,
+.		  "muld" => 0,
+.		  "divd" => 0,
+. 		  "fpod" => 0,
+.		  "swcd" => 0,
+.		  "stb8" => 0,
+.		  "stb9" => 0,
+.		  "swce" => 0,
+. 		  "fstw" => 0,
+.		  "mrbw" => 0,
+.		  "nukw" => 0,
+. 		 },
+. 		 #stb8
+. 		 {"intd" => 0,
+.		  "stb9" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "swce" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #stb9
+. 		 {"intd" => 0,
+.		  "stb8" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "swce" => 0,
+. 		  "ldmw" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0,
+. 		 },
+. 		 #iced
+. 		 {"swce" => 0,
+.		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0,
+.		  "ldmw" => 0,
+. 		 },
+. 		 #muld
+. 		 {"intd" => 0,
+.		  "swcs" => 0,
+.		  "stb8" => 0,
+. 		  "stb9" => 0,
+. 		  "divd" => 0,
+. 		  "fpod" => 0,
+. 		  "swce" => 0,
+.		  "swcd" => 0, #retracted mul is a long op, no need to cover together
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #divd
+. 		 {"intd" => 0,
+.		  "swcs" => 0,
+.		  "stb8" => 0,
+. 		  "stb9" => 0,
+. 		  "muld" => 0,
+. 		  "fpod" => 0,
+. 		  "swce" => 0,
+.		  "swcd" => 0, #retracted div is a long op, no need to cover together
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #fpod
+. 		 {"intd" => 0,
+.		  "swcs" => 0,
+.		  "stb8" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "swce" => 0,
+.		  "swcd" => 0, #retracted fpop is a long op, no need to cover together
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #swce
+. 		 {"imss" => 0,
+. 		  "swcs" => 0,
+. 		  "ices" => 0,
+. 		  "swcd" => 0,
+. 		  "intd" => 0,
+. 		  "stb8" => 0,
+. 		  "stb9" => 0,
+.                 "iced" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "fpod" => 0,
+. 		  "fstw" => 0,
+. 		  "nukw" => 0,
+. 		  "ldmw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #trpm
+. 		 {"fstw" => 0,
+. 		  "dcw2" => 0,
+. 		  "nukw" => 0,
+. 		  "ldmw" => 0,
+.		  "mrbw" => 0
+. 		 },
+. 		 #rfew
+. 		 {
+. 		  "dcw2" => 0,
+.		  "nukw" => 0
+. 		 },
+. 		 #flhw
+. 		 {"dcw2" => 0,
+.		  "ldmw" => 0,  #A load that flushed should not signal miss -- should be a bad state
+. 		 },
+. 		 #ldmw
+. 		 {"stb9" => 0,
+.		  "iced" => 0,
+.		  "swce" => 0,
+. 		  "trpm" => 0,
+. 		  "fstw" => 0,
+.		  "flhw" => 0,  #A load that flushed should not signal miss -- should be a bad state
+.		  "nukw" => 0,
+. 		  "dcw2" => 0,
+. 		 },
+. 		 #mrbw
+. 		 {"imss" => 0,
+.		  "swcs" => 0,
+.		  "ices" => 0,
+.		  "swcd" => 0,
+.		  "intd" => 0,
+.		  "stb8" => 0,
+.		  "stb9" => 0,
+.		  "iced" => 0,
+.		  "muld" => 0,
+.		  "divd" => 0,
+.		  "fpod" => 0,
+.		  "swce" => 0,
+. 		  "trpm" => 0,
+.		  "dcw2" => 0,
+. 		 }, 
+. 		 #nukw
+. 		 {"imss" => 0,
+. 		  "swcs" => 0,
+. 		  "ices" => 0,
+. 		  "intd" => 0,
+. 		  "swcd" => 0,
+. 	          "stb8" => 0,
+. 		  "stb9" => 0,
+.                 "iced" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "fpod" => 0,
+. 		  "swce" => 0,
+. 		  "trpm" => 0,
+.		  "rfew" => 0,
+. 		  "ldmw" => 0,
+.		  "fstw" => 0,
+. 		  "dcw2" => 0
+. 		 },
+. 		 #fstw
+. 		 {"imss" => 0,
+. 		  "swcs" => 0,
+. 		  "ices" => 0,
+. 		  "swcd" => 0,
+. 		  "intd" => 0,
+. 		  "stb8" => 0,
+. 		  "stb9" => 0,
+.                 "iced" => 0,
+. 		  "muld" => 0,
+. 		  "divd" => 0,
+. 		  "fpod" => 0,
+. 		  "swce" => 0,
+. 		  "trpm" => 0,
+. 		  "ldmw" => 0,
+.		  "nukw" => 0,
+. 		  "dcw2" => 0
+. 		 },
+. 		 #dcw2
+. 		 {"trpm" => 0,
+. 		  #"rfem" => 0,
+.                 "rfew" => 0,
+.                 "flhw" => 0,
+.                 "ldmw" => 0,
+.                 "mrbw" => 0,
+.                 "nukw" => 0,
+.                 "fstw" => 0
+. 		 }
+. 		);
+. 
+. #####################################################################
+. # Create all possible combinations of states within the allowed
+. # state space
+. #####################################################################
+. 
+. @cov_states = create_states (-1);
+.
+. #####################################################################
+. # Create all bad states
+. #####################################################################
+.
+. @bad_states = create_bad_states ();
+. 
+. #####################################################################
+. # Create the hash for bit positions of different coverage conditions
+. # from the vrpal file
+. #####################################################################
+. 
+. create_bit_pos_map ();
+. 
+. #####################################################################
+. # print the comments
+. #####################################################################
+. 
+. 
+. print  "// ***************************************************************************\n";
+. print  "//\n";
+. print  "// File:\tifu_simul_swout_cov.vr\n";
+. print  "// Description:\n";
+. print  "// This coverage object covers the stall conditions happening on a thread.\n";
+. print  "// The coverage object is generated from ifu_simul_swout_cov.vrpal, which\n";
+. print  "// does a combinatorial enumeration of all the conditions that happen\n";
+. print  "// simultaneously, N at a time.\n//\n";
+. print  "// State: 20'b:\n//\n//";
+. $j = 0;
+. foreach $signal (sort {$bitmap{$a} <=> $bitmap{$b}} keys %bitmap) {
+.   print  " $signal($bitmap{$signal}),";
+.   $j++;
+.   if ($j%4 == 0) {
+.     print  "\n//";
+.   }
+. }
+. print  "\n// ***************************************************************************\n\n";
+. print  "//#include <vera_defines.vrh>\n";
+. $len = $state_vec_len-1;
+. print  "\n// coverage_def IFU_SIMUL_SWOUT_COV (bit [$len:0] cov_vector)\n//{\n";
+. 
+. #####################################################################
+. # Set the coverage vector state bits
+. #####################################################################
+. 
+. foreach $state (@cov_states) {
+.   $state_vector = set_state_bits ($state);
+.   if (multiple_state_chk_ok ($state)) {
+.     print  "\tstate s_$state\t\t($state_vector);\n";
+.   }
+. }
+. 
+. print "\n";
+.
+. print "//Other special states. Remember these are hardcoded\n";
+. print "\tstate s_intd_nukw\t\t(20'b00001000000000000100);\n";
+. print "\twildcard bad_state s_iced_ices_trpm\t\t(20'bxx1xxxx1xxxx1xxxxxxx);\n";
+. print "\twildcard bad_state s_iced_imss_trpm\t\t(20'b1xxxxxx1xxxx1xxxxxxx);\n";
+. print "\twildcard bad_state s_iced_ices_flhw\t\t(20'bxx1xxxx1xxxxxx1xxxxx);\n";
+. print "\twildcard bad_state s_iced_imss_flhw\t\t(20'b1xxxxxx1xxxxxx1xxxxx);\n";
+. print "\twildcard bad_state s_iced_ices_rfew\t\t(20'bxx1xxxx1xxxxx1xxxxxx);\n";
+. print "\twildcard bad_state s_iced_imss_rfew\t\t(20'b1xxxxxx1xxxxx1xxxxxx);\n";
+. print "\twildcard bad_state s_iced_ices_dcw2\t\t(20'bxx1xxxx1xxxxxxxxxxx1);\n";
+. print "\twildcard bad_state s_iced_imss_dcw2\t\t(20'b1xxxxxx1xxxxxxxxxxx1);\n";
+. foreach $state (@bad_states) {
+.   $state_vector = set_bad_state_bits ($state);
+.   print "\twildcard bad_state s_$state\t\t($state_vector);\n";
+. }
+. print_imiss_trans ();
+. print_stb_trans ();
+. print_intd_trans ();
+. print_swcd_trans ();
+. print  "// }\n";
+. 
+. #####################################################################
+. # Subroutine for creating the states from the state space matrix
+. #####################################################################
+. 
+. sub create_states {
+.   my $i = $_[0];
+.   my @states = ();
+.   my @new_states = ();
+.   my $state;
+. 
+.   if ($i < $#cov_conds) {
+.     $i++;
+.     @states = create_states($i);
+.     foreach $state (@states) {
+.       if (state_allowed ($i, $state)) {
+. 	push (@new_states, $cov_conds[$i]."_".$state);
+.       }
+.     }
+.       push (@states, @new_states);
+.       push (@states, $cov_conds[$i]);
+.   }
+.   return (@states);
+. }
+. 
+. #####################################################################
+. # Subroutine for creating the bad states from the state space matrix
+. #####################################################################
+. 
+. sub create_bad_states {
+.   my $i,$j;
+.   my $state;
+.   my @bad_states;
+. 
+.   for ($i = 0; $i <= $#cov_conds; $i++) {
+.     for ($j = $i+1; $j <= $#cov_conds; $j++) {
+.       if (exists ($impos_states[$i]{$cov_conds[$j]})) {
+.	  #Do some corner casing here, these states are not illegal
+.	  #but are of no special interest so don't make them bad
+.         if (!(($i == 0) && ($j == 1)) &&   #imss and swcs 
+.             !(($i == 0) && ($j == 2)) &&   #imss and ices 
+.             !(($i == 14) && ($j == 15)) && #ldmw and flhw
+.	      !(($i == 1) && ($j == 3)) &&   #swcs and swcd
+.	      !(($i == 1) && ($j == 8)) &&   #swcs and muld
+.	      !(($i == 1) && ($j == 9)) &&   #swcs and divd
+.	      !(($i == 1) && ($j == 10)) &&  #swcs and fpod
+.	      !(($i == 4) && ($j == 17))     #intd and nukw
+.            ) { 
+. 	    $state = $cov_conds[$i]."_".$cov_conds[$j];
+.           push (@bad_states, $state);
+.	  }
+.       }
+.     }
+.   }
+.   return (@bad_states);
+. }
+. 
+. #####################################################################
+. # Skew other conditions wrt to miss
+. ##################################################################### 
+.
+. sub print_imiss_trans {
+. my $null_state;
+.
+. print "\n\t//Skewed events against imiss\n";
+. $null_state = set_intr_state_bits ("imss_fstw");
+. print "\twildcard trans t_imss_2_fstw ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{fstw});\n";
+.
+. $null_state = set_intr_state_bits ("imss_rfew");
+. print "\twildcard trans t_imss_0_rfew ($prim_state_vec{imss} -> $prim_state_vec{rfew});\n";
+. print "\twildcard trans t_imss_1_rfew ($prim_state_vec{imss} -> $null_state -> $prim_state_vec{rfew});\n";
+. print "\twildcard trans t_imss_2_rfew ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{rfew});\n";
+.
+. $null_state = set_intr_state_bits ("imss_ldmw");
+. print "\twildcard trans t_imss_0_ldmw ($prim_state_vec{imss} -> $prim_state_vec{ldmw});\n";
+.# print "\twildcard bad_trans t_imss_1_ldmw ($prim_state_vec{imss} -> $null_state -> $prim_state_vec{ldmw});\n";
+. print "\twildcard trans t_imss_2_ldmw ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{ldmw});\n";
+.
+. $null_state = set_intr_state_bits ("imss_mrbw");
+. print "\twildcard trans t_imss_0_mrbw ($prim_state_vec{imss} -> $prim_state_vec{mrbw});\n";
+. print "\twildcard trans t_imss_1_mrbw ($prim_state_vec{imss} -> $null_state -> $prim_state_vec{mrbw});\n";
+. print "\twildcard trans t_imss_2_mrbw ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{mrbw});\n";
+.
+. $null_state = set_intr_state_bits ("imss_dcw2");
+. print "\twildcard trans t_imss_0_dcw2 ($prim_state_vec{imss} -> $prim_state_vec{dcw2});\n";
+. print "\twildcard trans t_imss_1_dcw2 ($prim_state_vec{imss} -> $null_state -> $prim_state_vec{dcw2});\n";
+. print "\twildcard trans t_imss_3_dcw2 ($prim_state_vec{imss} -> $null_state\[.3.\] -> $prim_state_vec{dcw2});\n";
+.
+. $null_state = set_intr_state_bits ("imss_nukw");
+. print "\twildcard trans t_imss_2_nukw ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{nukw});\n";
+.
+. $null_state = set_intr_state_bits ("imss_flhw");
+. print "\twildcard trans t_imss_0_flhw ($prim_state_vec{imss} -> $prim_state_vec{flhw});\n";
+. print "\twildcard trans t_imss_1_flhw ($prim_state_vec{imss} -> $null_state -> $prim_state_vec{flhw});\n";
+. print "\twildcard trans t_imss_2_flhw ($prim_state_vec{imss} -> $null_state\[.2.\] -> $prim_state_vec{flhw});\n\n";
+. }
+.
+. #####################################################################
+. # Skew other conditions wrt to stb8, stb9
+. ##################################################################### 
+.
+. sub print_stb_trans {
+. my $null_state;
+. my $state;
+.
+. print "\n\t//Skewed events against stb8, stb9\n";
+. $null_state = set_intr_state_bits ("stb8_rfew");
+. print "\twildcard trans t_stb8_0_rfew ($prim_state_vec{stb8} -> $prim_state_vec{rfew});\n";
+. print "\twildcard trans t_stb8_1_rfew ($prim_state_vec{stb8} -> $null_state -> $prim_state_vec{rfew});\n";
+. print "\twildcard trans t_stb8_2_rfew ($prim_state_vec{stb8} -> $null_state\[.2.\] -> $prim_state_vec{rfew});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_fstw");
+. print "\twildcard trans t_stb8_2_fstw ($prim_state_vec{stb8} -> $null_state\[.2.\] -> $prim_state_vec{fstw});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_muld");
+. print "\twildcard trans t_stb8_0_muld ($prim_state_vec{stb8} -> $prim_state_vec{muld});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_divd");
+. print "\twildcard trans t_stb8_0_divd ($prim_state_vec{stb8} -> $prim_state_vec{divd});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_fpod");
+. print "\twildcard trans t_stb8_0_fpod ($prim_state_vec{stb8} -> $prim_state_vec{fpod});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_intd");
+. print "\twildcard trans t_stb8_0_intd ($prim_state_vec{stb8} -> $prim_state_vec{intd});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_iced");
+. print "\twildcard trans t_stb8_0_iced ($prim_state_vec{stb8} -> $prim_state_vec{iced});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_mrbw");
+. print "\twildcard trans t_stb8_1_mrbw ($prim_state_vec{stb8} -> $null_state -> $prim_state_vec{mrbw});\n";
+. 
+. $null_state = set_intr_state_bits ("stb8_flhw");
+. print "\twildcard trans t_stb8_0_flhw ($prim_state_vec{stb8} -> $prim_state_vec{flhw});\n";
+. print "\twildcard trans t_stb8_1_flhw ($prim_state_vec{stb8} -> $null_state -> $prim_state_vec{flhw});\n";
+. print "\twildcard trans t_stb8_2_flhw ($prim_state_vec{stb8} -> $null_state\[.2.\] -> $prim_state_vec{flhw});\n";
+. 
+. $null_state = set_intr_state_bits ("stb8_dcw2");
+. print "\n\t//8th store is marked for rollback from the W-stage\n";
+. print "\twildcard trans t_stb8_0_dcw2 ($prim_state_vec{stb8} -> $prim_state_vec{dcw2});\n";
+. print "\twildcard trans t_stb8_1_dcw2 ($prim_state_vec{stb8} -> $null_state -> $prim_state_vec{dcw2});\n";
+. print "\twildcard trans t_stb8_2_dcw2 ($prim_state_vec{stb8} -> $null_state\[.2.\] -> $prim_state_vec{dcw2});\n";
+. 
+. $state = set_state_bits ("stb8_dcw2");
+. $null_state = set_intr_state_bits ("stb8_mrbw");
+. print "\n\t//8th store is in the pipe when the preceding instruction is marked for rollback from the W-stage\n";
+. print "\twildcard trans t_stb8_dcw2_1_mrbw ($state -> $null_state -> $prim_state_vec{mrbw});\n";
+.
+. $null_state = set_intr_state_bits ("stb8_nukw");
+. print "\n\twildcard trans t_stb8_2_nukw ($prim_state_vec{stb8} -> $null_state\[.2.\] -> $prim_state_vec{nukw});\n";
+. print "\n\twildcard trans t_stb8_3_nukw ($prim_state_vec{stb8} -> $null_state\[.3.\] -> $prim_state_vec{nukw});\n";
+. 
+. }
+. 
+. #####################################################################
+. # Skew other conditions wrt to intd
+. ##################################################################### 
+.
+. sub print_intd_trans {
+. my $null_state;
+. my $state;
+.
+. $null_state = set_intr_state_bits ("intd_flhw");
+. print "\n\twildcard trans t_intd_n_flhw ($prim_state_vec{intd} -> $null_state\[.0:3.\] -> $prim_state_vec{flhw});\n";
+. print "\n\twildcard trans t_flhw_n_intd ($prim_state_vec{flhw} -> $null_state\[.0:3.\] -> $prim_state_vec{intd});\n";
+. $null_state = set_intr_state_bits ("intd_rfew");
+. print "\n\twildcard trans t_intd_1_rfew ($prim_state_vec{intd} -> $null_state\[.1.\] -> $prim_state_vec{rfew});\n";
+. print "\n\twildcard trans t_intd_2_rfew ($prim_state_vec{intd} -> $null_state\[.2.\] -> $prim_state_vec{rfew});\n";
+. }
+.
+. #####################################################################
+. # Skew other conditions wrt to swcd
+. ##################################################################### 
+.
+. sub print_swcd_trans {
+. my $null_state;
+. my $state;
+.
+. $null_state = set_intr_state_bits ("swcd_rfew");
+. print "\n\twildcard trans t_swcd_2_rfew ($prim_state_vec{swcd} -> $null_state\[.2.\] -> $prim_state_vec{rfew});\n";
+.
+.
+. }
+.
+. #####################################################################
+. # Subroutine to check if a state is allowed
+. #####################################################################
+. 
+. sub state_allowed {
+.   my $cond_num = $_[0];
+.   my $state = $_[1];
+.   my (@elems, $elem);
+. 
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     if (exists ($impos_states[$cond_num]{$elem})) {
+.       return 0;
+.     }
+.   }
+.   return 1;
+. }
+.
+.
+. #####################################################################
+. # Checks for special disallowed states
+. #####################################################################
+. 
+. sub multiple_state_chk_ok {
+.   my $state = $_[0];
+. 
+.   ##iced, (imss | ices) cannot happen with (trpm|dcw2)
+.   if (($state =~ /iced/) &&  
+.       (($state =~ /ices/) || ($state =~ /imss/)) &&
+.	(($state =~ /trpm/) || ($state =~ /dcw2/) || ($state =~ /flhw/) || ($state =~ /rfew/))) { 
+.     return 0;
+.   }
+.   return 1;
+. }
+. 
+. #####################################################################
+. # Subroutine to set the state bits in the coverage vector
+. #####################################################################
+. 
+. sub set_state_bits {
+.   my $state = $_[0];
+.   my (@elems, $elem, @state_vector, @bitpos, $bit, $state_vector_str);
+. 
+.   @state_vector = (0) x $state_vec_len;
+. 
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     $state_vector[$bitmap{$elem}] = 1;
+.   }
+. 
+.   $state_vector_str = "$state_vec_len\'b";
+.   for ($i = 0; $i < $state_vec_len; $i++) {
+.     $state_vector_str = $state_vector_str.$state_vector[$i];
+.   }
+.
+.   if ($#elems == 0) {
+.     $prim_state_vec{$elems[0]} = $state_vector_str;
+.   }
+.
+.   return $state_vector_str;
+. }
+.
+. #####################################################################
+. # Subroutine to set the bad state bits in the coverage vector
+. #####################################################################
+. 
+. sub set_bad_state_bits {
+.   my $state = $_[0];
+.   my (@elems, $elem, @state_vector, @bitpos, $bit, $state_vector_str);
+. 
+.   @state_vector = (x) x $state_vec_len;
+. 
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     $state_vector[$bitmap{$elem}] = 1;
+.   }
+. 
+.   $state_vector_str = "$state_vec_len\'b";
+.   for ($i = 0; $i < $state_vec_len; $i++) {
+.     $state_vector_str = $state_vector_str.$state_vector[$i];
+.   }
+.   return $state_vector_str;
+. }
+. 
+. #####################################################################
+. # Subroutine to set the intermediate state bits
+. #####################################################################
+. 
+. sub set_intr_state_bits {
+.   my $state = $_[0];
+.   my (@elems, $elem, @state_vector, @bitpos, $bit, $state_vector_str);
+. 
+.   @state_vector = (x) x $state_vec_len;
+. 
+.   @elems = split ("_", $state);
+.   foreach $elem (@elems) {
+.     $state_vector[$bitmap{$elem}] = 0;
+.   }
+. 
+.   $state_vector_str = "$state_vec_len\'b";
+.   for ($i = 0; $i < $state_vec_len; $i++) {
+.     $state_vector_str = $state_vector_str.$state_vector[$i];
+.   }
+.   return $state_vector_str;
+. } 
+.
+. #####################################################################
+. # Subroutine that open ifu_coverage.vrpal file and gets the bit 
+. # positions for the relevant coverage condition from the declaration
+. # of the newcov function. The data structure returned is a hash of
+. # arrays keyed by the coverage condition and the value being the bit
+. # positions
+. #####################################################################
+. 
+. sub create_bit_pos_map {
+. 
+.   my (@lines, $line, @words, $counter, $signal);
+.  
+.   open (FILE, "$dv_root/verif/env/cmp/vera/ifu_coverage/ifu_coverage.vrpal");
+.   @lines = <FILE>;
+.   $counter = 0; $parse_lines = 0;
+.   foreach $line (@lines) {
+.     $_ = $line;
+.     if ($parse_lines == 0) {
+.       if (/ifu_simul_swout_sample_c\$\{c\}_t\$\{t\}\s+=\s+\{/) {
+. 	$parse_lines = 1;
+.       }
+.     } else {
+.  	if (/^\s*\}\s*\;/) {last;}
+.       if (/^\s*\/\//) {next;}
+.       chop $line;
+.       @words = split (/,\s*/, $line);
+.       foreach $signal (@words) {
+.          $signal =~ s/C\$\{c\}_//;    #Remove the leading C${c}
+.          $signal =~ s/\[\$\{t\}\]//;  #Remove the trailing ${t}
+.          $signal =~ s/,//;
+.          $signal =~ s/^\s*//;
+.	   $signal =~ s/\s*$//;
+.#          print "$signal $counter\n";
+.          $bitmap{$signal} = $counter;
+.#          print "$bitmap{$signal}\n";
+.          $counter = $counter + 1;
+.       }
+.     }
+.   }
+.   close (FILE);
+. 
+.   $state_vec_len = $counter;
+.   if ($#cov_conds != $state_vec_len-1) {
+.     die "ERROR: The the number of coverage conditions does not match the signals in ifu_coverage.vrpal.\n";
+.   }
+. }

@@ -1,0 +1,370 @@
+
+1.0) How do I connect the t1_fpga system to the network
+
+   The default IP address and the network configuration may not be appropriate
+   to the network to which the t1_fpga system is to be connected.
+
+   There are two ways of changing the IP address and the network configuration of 
+   the t1_fpga system.
+
+   1) Permanently change the IP address and the network configuration in the ramdisk image.
+   
+       Modify the following files in the ramdisk image appropriately
+
+       /etc/inet/hosts
+       /etc/inet/netmasks
+       /etc/defaultdomain
+       /etc/defaultrouter
+       /etc/hostname.snet0
+       /etc/nodename
+
+   2) Temporarily change the IP address and the network configuration after booting 
+      the t1_fpga system with the default IP address and the network configuration.
+
+       Disconnect the t1_fpga system from the network (from the ethernet switch)
+       but keep the ethernet cable connected to the t1_fpga system.
+
+       After booting the system to console prompt, login as root.
+       Verify that all the services are online by using the command "svcs".
+
+       Example network configuration:
+       -----------------------------
+
+	 new_ip_address:         192.10.10.100
+	 new_broadcast_address:  192.10.10.255
+	 new_gateway_address:    192.10.10.1
+	 new_netmask:            255.255.255.0
+	 new_domainname:         acme_company.com
+
+       # ifconfig snet0 down
+       # route -f
+       # ifconfig snet0 inet <new_ip_address> broadcast <new_broadcast_address> netmask <new_netmask>
+       # domainname   <new_domainname>
+       # ifconfig snet0 up
+       # route add default -gateway <new_gateway_address>
+
+       Connect the ethernet cable to the network (ethernet switch)
+
+1.1) What are the different boot options at OBP prompt
+
+   a) boot -mverbose
+
+      boots to multi-user-server mode and prints various OS services as they are started.
+
+   b) boot -m milestone=none
+
+      This is the fastest way to boot to login prompt and enable networking or run commands.
+
+      boots to maintenance mode. The SMF services including network are not enabled. The root 
+      filesystem is mounted in read-only mode. The following mount command can be used to remount
+      the root file system in read/write mode.
+
+      mount -F ufs -o remount /
+
+      Network service can be started without booting to multi-user prompt from maintenance mode.
+
+      # ifconfig snet0 plumb
+      # ifconfig snet0 inet <ip_address> broadcast <broadcast_addr> netmask <netmask> ether <mac_addr>
+      # ifconfig snet0 up
+      # route -f 
+      # route add default -gateway <router_ip_address>
+
+      Example network configuration values:
+
+      ip_address:          192.10.10.100
+      broadcast_address:   192.10.10.255
+      netmask:             255.255.255.0
+      route_ip_address:    192.10.10.1
+
+
+
+1.2) How do I disable the physical network interface
+
+   remove or rename the file  /etc/hostname.snet0  in the ramdisk image.
+
+
+1.3) Are all the services online when console login prompt is reached ?
+
+   No. OpenSolaris could still be starting services. Use "svcs" command
+   to see the status of different services. For example, telnet service
+   may not yet have been enabled and could be in transition.
+
+
+1.4) What network services are enabled by default.
+
+   Only telnet service is enabled. telnet into the t1_fpga system is allowed. Login as root.
+   Remote systems must be referred with IP addresses unless added to the /etc/inet/hosts file.
+
+   "ftp" command can be run in the t1_fpga system and file transfers can be done between the
+   fpga system and any remote system.
+
+
+1.5) Can I use hostnames for other systems instead of IP addresses ?
+
+    hostnames and their IP addresses can be added to /etc/hosts.
+
+1.6) How do I modify the ramdisk image
+
+   On a Solaris/OpenSolaris system, login to an account with root privileges.
+   Make sure that ramdisk file has write permissions so that root can modify the file.
+
+   # mkdir <ramdisk_mnt_dir>
+   # lofiadm -a <ramdisk_image_pathname> /dev/lofi/1 
+   # mount /dev/lofi/1 <ramdisk_mnt_dir>
+   # cd <ramdisk_mnt_dir>
+   #
+   # make changes. be careful not to modify the host system files.
+   #
+   # cd /
+   # umount <ramdisk_mnt_dir> 
+   # lofiadm -d <ramdisk_image_pathname>
+
+
+1.7) How do I add new commands to the ramdisk image
+
+   Mount the ramdisk image and copy the files to the appropriate directory. Since the ramdisk image
+   doesn't have all the libraries and files that come with OpenSolaris distribution, you may have to 
+   add any missing dependent files. You can use "ldd" command to find the library dependencies of the
+   new command.
+
+
+
+1.8) How do I change OpenSPARC T1 DRAM size and/or OpenSolaris ramdisk size
+
+   Files and the macros to be modified:
+   -----------------------------------
+
+   softsim/t1_fpga/src/xilinx/include/xilinx_t1_system_config.h
+
+      - T1_FPGA_TOTAL_MEMSIZE
+
+   niagara/design/sys/edk/ccx-firmware/src/mbfw_config.h
+
+      - T1_DRAM_SIZE
+      - T1_RAM_DISK_SIZE
+
+
+   Any change to OpenSPARC T1 dram size or ramdisk size must satisfy the
+   following two constraints.
+
+   T1_FPGA_TOTAL_MEMSIZE == T1_DRAM_SIZE
+   fpga_board_dram_size = microblaze_memory_size + T1_DRAM_SIZE + T1_RAM_DISK_SIZE + OpenSPARC_T1_prom_size
+
+   Generate new PROM files following the instructions in softsim/README.t1_fpga
+
+
+1.9) How do I change OpenSPARC T1 clock frequency as reported to the Operating System
+
+   Files and the macros to be modified:
+   -----------------------------------
+
+   softsim/t1_fpga/src/xilinx/include/xilinx_t1_system_config.h
+
+      - T1_FPGA_STICK_FREQ
+
+   Generate new PROM files following the instructions in softsim/README.t1_fpga
+
+
+
+2.0) The t1_fpga system doesn't seem to keep track of time correctly.
+
+   OpenSolaris keeps track of time using the OpenSPARC T1 tick register. OpenSolaris has
+   optimized the conversion of tick register values to nanoseconds and it makes an assumption
+   that the OpenSPARC T1 frequently is atleast 62.5 MHz. The machine description in the
+   PROM file specifies the OpenSPARC T1 frequency as 1GHz because of which 1 second in
+   the t1_fpga system is actually (1GHz / (real OpenSPARC T1 frequency)) seconds.
+
+   See question 7.0 also
+
+2.1) There seems to be packet loss when I ping the system or try to transfer files between
+   the t1_fpga system and a remote machine.
+
+   This is a known issue and the problem was noticed when both the following conditions are true.
+
+     1) xemaclite ethernet controller is used
+     2) the t1_fpga system is connected to a busy network.
+
+   The problem wasn't noticed under the following two conditions
+
+     1) xemac ethernet controller is used
+
+     2) xemaclite ethernet controller is used but the t1_fpga_system is connected to a private
+	network with a small number of systems.
+
+
+
+3.0) What other documentation is available on OpenSolaris/Solaris
+
+     http://opensolaris.org
+     http://docs.sun.com
+
+
+
+4.0) What messages appear on the console during OpenSolaris boot
+
+------------------------------------------------------------------------------
+
+MBFW_INFO: Uncompressing ram_disk .....
+MBFW_INFO: Uncompressed ram_disk 
+MBFW_INFO: Initializing OpenSPARC T1 DRAM from 0x80100000 to 0x8AF00000 
+MBFW_INFO: Initialized OpenSPARC T1 DRAM 
+MBFW_INFO: XIntc interrupt controller initialized. 
+MBFW_INFO: Setting Temac operating speed to 100 Mbit/sec
+MBFW_INFO: Ethernet controller initialization completed. 
+MBFW_INFO: Network controller initialized. 
+MBFW_INFO: Microblaze firmware initialization completed. 
+
+MBFW_INFO: Powering on OpenSPARC T1 
+``Alive and well ...
+Strand start set = 0xf
+Total physical mem = 0xac00000
+Scrubbing the rest of memory
+Number of strands = 0x4
+membase = 0x0
+memsize = 0x1000000
+physmem = 0xac00000
+ done
+returned status 0x0
+setup everything else
+Setting remaining details
+Start heart beat for control domain
+
+WARNING: Unable to connect to Domain Service providers
+
+WARNING: Unable to get LDOM Variable Updates
+
+WARNING: Unable to update LDOM Variable
+
+
+Sun Fire T1000, No Keyboard
+Copyright 2007 Sun Microsystems, Inc.  All rights reserved.
+OpenBoot 4.x.build_122***PROTOTYPE BUILD***, 156 MB memory available, Serial #66711024.
+[greddy obp #0]
+Ethernet address 0:e0:81:5f:2c:ab, Host ID: 83f9edf0.
+
+
+
+{0} ok boot -mverbose
+Boot device: /virtual-devices/disk@0  File and args: -mverbose
+SunOS Release 5.11 Version snv_77 64-bit
+Copyright 1983-2007 Sun Microsystems, Inc.  All rights reserved.
+Use is subject to license terms.
+WARNING: Time-of-day chip unresponsive; dead batteries?
+WARNING: Time of Day clock error: reason [Stalled]. --  Stopped tracking Time Of Day clock.
+[ network/loopback:default starting (loopback network interface) ]
+[ network/physical:default starting (physical network interfaces) ]
+[ milestone/name-services:default starting (name services milestone) ]
+[ system/identity:node starting (system identity (nodename)) ]
+Hostname: t1-fpga-00
+[ system/metainit:default starting (SVM initialization) ]
+[ system/filesystem/root:default starting (root file system mount) ]
+[ system/boot-archive:default starting (check boot archive content) ]
+[ system/scheduler:default starting (default scheduling class configuration) ]
+[ system/filesystem/usr:default starting (read/write root file systems mounts) ]
+[ system/device/local:default starting (Standard Solaris device configuration.) ]
+[ system/keymap:default starting (keyboard defaults) ]
+[ system/filesystem/minimal:default starting (minimal file system mounts) ]
+[ milestone/devices:default starting (device configuration milestone) ]
+[ system/manifest-import:default starting (service manifest import) ]
+[ system/sysevent:default starting (system event notification) ]
+[ system/identity:domain starting (system identity (domainname)) ]
+[ system/name-service-cache:default starting (name service cache) ]
+[ system/cryptosvc:default starting (cryptographic services) ]
+[ network/ipsec/ipsecalgs:default starting (IPsec algorithm initialization) ]
+[ network/ipsec/policy:default starting (IPsec policy initialization) ]
+[ milestone/network:default starting (Network milestone) ]
+[ milestone/single-user:default starting (single-user milestone) ]
+[ network/initial:default starting (initial network services) ]
+[ network/routing-setup:default starting (Initial routing-related configuration.) ]
+[ milestone/sysconfig:default starting (Basic system configuration milestone) ]
+[ system/filesystem/local:default starting (local file system mounts) ]
+[ system/utmp:default starting (utmpx monitoring) ]
+[ network/service:default starting (layered network services) ]
+[ system/system-log:default starting (system log) ]
+[ network/inetd:default starting (inetd) ]
+[ system/console-login:default starting (Console login) ]
+t1-fpga-00 console login: root
+Apr 29 16:05:09 t1-fpga-00 login: ROOT LOGIN /dev/console
+Sun Microsystems Inc.   SunOS 5.11      snv_77  October 2007
+#
+# svcs
+STATE          STIME    FMRI
+legacy_run     16:06:12 lrc:/etc/rc2_d/S20sysetup
+legacy_run     16:06:13 lrc:/etc/rc2_d/S40llc2
+legacy_run     16:06:15 lrc:/etc/rc2_d/S42ncakmod
+legacy_run     16:06:17 lrc:/etc/rc2_d/S73cachefs_daemon
+legacy_run     16:06:25 lrc:/etc/rc2_d/S89PRESERVE
+legacy_run     16:06:26 lrc:/etc/rc2_d/S94ncalogd
+legacy_run     16:06:27 lrc:/etc/rc2_d/S98deallocate
+legacy_run     16:06:31 lrc:/etc/rc3_d/S16boot_server
+online         16:03:13 svc:/system/svc/restarter:default
+online         16:03:31 svc:/network/loopback:default
+online         16:04:09 svc:/milestone/name-services:default
+online         16:04:11 svc:/network/physical:default
+online         16:04:19 svc:/system/identity:node
+online         16:04:22 svc:/system/metainit:default
+online         16:04:30 svc:/system/filesystem/root:default
+online         16:04:35 svc:/system/scheduler:default
+online         16:04:35 svc:/system/boot-archive:default
+online         16:04:40 svc:/system/filesystem/usr:default
+online         16:04:47 svc:/system/device/local:default
+online         16:04:48 svc:/system/keymap:default
+online         16:04:51 svc:/milestone/devices:default
+online         16:04:52 svc:/system/filesystem/minimal:default
+online         16:05:11 svc:/system/cryptosvc:default
+online         16:05:12 svc:/system/identity:domain
+online         16:05:13 svc:/system/name-service-cache:default
+online         16:05:14 svc:/system/sysevent:default
+online         16:05:18 svc:/system/manifest-import:default
+online         16:05:18 svc:/network/ipsec/ipsecalgs:default
+online         16:05:21 svc:/network/ipsec/policy:default
+online         16:05:22 svc:/milestone/network:default
+online         16:05:30 svc:/milestone/single-user:default
+online         16:05:35 svc:/milestone/sysconfig:default
+online         16:05:37 svc:/network/initial:default
+online         16:05:44 svc:/system/utmp:default
+online         16:05:46 svc:/system/filesystem/local:default
+online         16:05:54 svc:/system/console-login:default
+online         16:05:57 svc:/network/service:default
+online         16:06:02 svc:/network/routing-setup:default
+online         16:06:05 svc:/network/inetd:default
+online         16:06:05 svc:/system/system-log:default
+online         16:06:18 svc:/network/telnet:default
+online         16:06:28 svc:/milestone/multi-user:default
+online         16:06:33 svc:/milestone/multi-user-server:default
+#
+
+------------------------------------------------------------------------------
+
+
+5.0) How do I enable networking if "ramdisk.snv-b77-nd.no-boot-time-network.gz"
+     is used for booting OpenSolaris
+
+    # ifconfig snet0 plumb
+    # ifconfig snet0 inet <ip_addr> broadcast <broadcast_addr> netmask <netmask> ether <mac_addr>
+    # ifconfig snet0 up
+    # route -f 
+    # route add default -gateway <router_ip_addr>
+
+6.0) What is the difference between "ramdisk.snv-b77-nd.no-boot-time-network.gz" and 
+     "ramdisk.snv-b77-nd.gz"
+     
+    In "ramdisk.snv-b77-nd.no-boot-time-network.gz", the file /etc/hostname.snet0
+    is renamed to /etc/disable.hostname.snet0 . Therefore network is not enabled during
+    the boot process.
+
+    For booting Opensolaris on the dual-core system, it is advised to use the ramdisk image
+    "ramdisk.snv-b77-nd.no-boot-time-network.gz". Occasionally the dual-core system hangs
+    if networking is enabled. Single core system works fine.
+
+7.0) Why is the CPU clock frequency as reported to the Operating System set to 1GHz
+
+    There are instances in the OS where a response is expected in Y amount of time.
+    If the response is not received in Y amount of time, a timeout occurs. Since the
+    memory subsystem in the OpenSPARC T1 fpga system is slow, OS timeout happens. This
+    can result in a panic or unexpected behavior. This behavior is more pronounced in
+    the dual-core system.
+
+    The real CPU clock frequency is 50MHz. The net effect of specifying a 1GHz clock frequency
+    is that, the time in the fpga system is 20 times slower than the wall clock time. The
+    effective timeout is now 20 * Y.

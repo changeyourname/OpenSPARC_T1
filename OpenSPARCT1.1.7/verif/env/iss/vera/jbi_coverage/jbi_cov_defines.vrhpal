@@ -1,0 +1,102 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_cov_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef JBI_COV_DEFINES
+#define JBI_COV_DEFINES
+// ***************************************************************************
+//
+// File:	jbi_cov_defines.vrh
+// Description: The defines for JBI coverage objects
+//
+// ***************************************************************************
+
+//#include "jbi_rtl.vrh"
+
+
+////////////////////////////////////////////////////////////////////
+// Defines for jbi_rqpopfsm_sample.vrh
+////////////////////////////////////////////////////////////////////
+
+#define POP_IDLE	8'b00000001
+#define POP_HDR0	8'b00000010
+#define POP_HDR1	8'b00000100
+#define POP_WRI_D	8'b00001000
+#define POP_WRM_D0	8'b00010000
+#define POP_WRM_D1	8'b00100000
+#define POP_RD_WAIT0	8'b01000000
+#define POP_RD_WAIT1	8'b10000000
+
+
+#define JBI_PKTOUT_CTLR_STATE_IDLE        3'b000
+#define JBI_PKTOUT_CTLR_STATE_RD64_1      3'b001
+#define JBI_PKTOUT_CTLR_STATE_RD64_2      3'b010
+#define JBI_PKTOUT_CTLR_STATE_RD64_3      3'b011
+#define JBI_PKTOUT_CTLR_STATE_NCWR_1      3'b100
+
+#define JBI_J_PACK_OUT_GEN_STATE_IDLE        2'h0
+#define JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL2  2'h1
+#define JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL3  2'h2
+#define JBI_J_PACK_OUT_GEN_STATE_DOK_FATAL4  2'h3
+
+#define JBI_NCRD_TIMER_STATE_UNUSED          2'b00
+#define JBI_NCRD_TIMER_STATE_COUNT_0         2'b01
+#define JBI_NCRD_TIMER_STATE_COUNT_1         2'b10
+#define JBI_NCRD_TIMER_STATE_OVERFLOW        2'b11
+
+#define JBI_SCT_OUTQ_STATE_IDLE            { 2'b00, 4'b0000 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D01   { 2'b01, 4'b0000 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D02   { 2'b01, 4'b0001 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D03   { 2'b01, 4'b0010 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D04   { 2'b01, 4'b0011 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D05   { 2'b01, 4'b0100 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D06   { 2'b01, 4'b0101 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D07   { 2'b01, 4'b0110 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D08   { 2'b01, 4'b0111 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D09   { 2'b01, 4'b1000 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D10   { 2'b01, 4'b1001 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D11   { 2'b01, 4'b1010 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D12   { 2'b01, 4'b1011 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D13   { 2'b01, 4'b1100 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D14   { 2'b01, 4'b1101 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D15   { 2'b01, 4'b1110 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD16_D16   { 2'b01, 4'b1111 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D01   { 2'b10, 4'b0000 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D02   { 2'b10, 4'b0001 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D03   { 2'b10, 4'b0010 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D04   { 2'b10, 4'b0011 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D05   { 2'b10, 4'b0100 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D06   { 2'b10, 4'b0101 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D07   { 2'b10, 4'b0110 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D08   { 2'b10, 4'b0111 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D09   { 2'b10, 4'b1000 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D10   { 2'b10, 4'b1001 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D11   { 2'b10, 4'b1010 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D12   { 2'b10, 4'b1011 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D13   { 2'b10, 4'b1100 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D14   { 2'b10, 4'b1101 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D15   { 2'b10, 4'b1110 }
+#define JBI_SCT_OUTQ_STATE_JBUS_RD64_D16   { 2'b10, 4'b1111 }
+
+#define JBI_SCT_RDQ_STATE_W0   2'b00
+#define JBI_SCT_RDQ_STATE_W1   2'b01
+#define JBI_SCT_RDQ_STATE_W2   2'b10
+#define JBI_SCT_RDQ_STATE_W3   2'b11
+
+#endif /*JBI_COV_DEFINES*/

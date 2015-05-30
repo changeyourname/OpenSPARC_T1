@@ -1,0 +1,41 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_mul_inc_exp_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//    Floating Point Valid bit coverage. 
+//
+//***********************************************************************
+
+
+
+// coverage_def FPU_MUL_INC_EXP_COV (bit [5:0] fpu_valid_state)
+// {
+
+
+// state declarations
+  state s_FPU_MUL_EXP0       ( FPU_MUL_EXP0    );
+  state s_FPU_MUL_EXP1       ( FPU_MUL_EXP1    );
+  state s_FPU_MUL_EXP2       ( FPU_MUL_EXP2    );
+  state s_FPU_MUL_EXP3       ( FPU_MUL_EXP3    );
+  state s_FPU_MUL_EXP4       ( FPU_MUL_EXP4    );
+  state s_FPU_MUL_EXP5       ( FPU_MUL_EXP5    );
+
+// }

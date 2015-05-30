@@ -1,0 +1,14 @@
+
+setmode -bs
+setCable -p usb21 -b 12000000
+
+addDevice -p 1 -part xccace
+
+addDevice -p 2 -file ../../implementation/download.bit
+addDevice -p 3 -file ../../implementation/download.bit
+addDevice -p 4 -file ../../implementation/download.bit
+addDevice -p 5 -file ../../implementation/download.bit
+
+program -p 2 3 4 5
+
+quit

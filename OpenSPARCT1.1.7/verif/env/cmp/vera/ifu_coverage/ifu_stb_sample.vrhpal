@@ -1,0 +1,120 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_stb_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_stb_cov.vr
+// Description:
+// This coverage object covers stores of difeerent types in the 7th,8th and
+// the 9th slots with imisses and ldmisses.
+//
+// State: 13'b: stb7,stb8,stb9,fpbusy,internal_asi,imiss,ldmiss,st_inst(6)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_STB_COV (bit [12:0] cov_vector)
+// {
+  wildcard state s_stb7_int_st          	(STB7_INT_ST);
+  wildcard state s_stb7_stasi_int               (STB7_STASI_INT);
+  wildcard state s_stb7_stasi_ext               (STB7_STASI_EXT);
+  wildcard state s_stb7_stfp_busy               (STB7_STFP_BUSY);
+  wildcard state s_stb7_stfp                    (STB7_STFP);
+  wildcard state s_stb7_ldstub                  (STB7_LDSTUB);
+  wildcard state s_stb7_swap                    (STB7_SWAP);
+  wildcard state s_stb7_cas             	(STB7_CAS);
+  wildcard state s_stb7_int_st_imiss    	(STB7_INT_ST_IMISS);
+  wildcard state s_stb7_stasi_int_imiss 	(STB7_STASI_INT_IMISS);
+  wildcard state s_stb7_stasi_ext_imiss 	(STB7_STASI_EXT_IMISS);
+  wildcard state s_stb7_stfp_busy_imiss 	(STB7_STFP_BUSY_IMISS);
+  wildcard state s_stb7_stfp_imiss      	(STB7_STFP_IMISS);
+  wildcard state s_stb7_ldstub_imiss    	(STB7_LDSTUB_IMISS);
+  wildcard state s_stb7_swap_imiss      	(STB7_SWAP_IMISS);
+  wildcard state s_stb7_cas_imiss       	(STB7_CAS_IMISS);
+  
+  wildcard state s_stb8_int_st          	(STB8_INT_ST);
+  wildcard state s_stb8_stasi_int       	(STB8_STASI_INT);
+  wildcard state s_stb8_stasi_ext       	(STB8_STASI_EXT);
+  wildcard state s_stb8_stfp_busy       	(STB8_STFP_BUSY);
+  wildcard state s_stb8_stfp            	(STB8_STFP);
+  wildcard state s_stb8_ldstub          	(STB8_LDSTUB);
+  wildcard state s_stb8_swap            	(STB8_SWAP);
+  wildcard state s_stb8_cas             	(STB8_CAS);
+  wildcard state s_stb8_int_st_imiss    	(STB8_INT_ST_IMISS);
+  wildcard state s_stb8_stasi_int_imiss 	(STB8_STASI_INT_IMISS);
+  wildcard state s_stb8_stasi_ext_imiss 	(STB8_STASI_EXT_IMISS);
+  wildcard state s_stb8_stfp_busy_imiss 	(STB8_STFP_BUSY_IMISS);
+  wildcard state s_stb8_stfp_imiss      	(STB8_STFP_IMISS);
+  wildcard state s_stb8_ldstub_imiss    	(STB8_LDSTUB_IMISS);
+  wildcard state s_stb8_swap_imiss      	(STB8_SWAP_IMISS);
+  wildcard state s_stb8_cas_imiss       	(STB8_CAS_IMISS);
+  wildcard state s_stb8_int_st_ldmiss    	(STB8_INT_ST_LDMISS);
+  wildcard state s_stb8_stasi_int_ldmiss 	(STB8_STASI_INT_LDMISS);
+  wildcard state s_stb8_stasi_ext_ldmiss 	(STB8_STASI_EXT_LDMISS);
+  wildcard state s_stb8_stfp_busy_ldmiss 	(STB8_STFP_BUSY_LDMISS);
+  wildcard state s_stb8_stfp_ldmiss      	(STB8_STFP_LDMISS);
+  wildcard state s_stb8_ldstub_ldmiss    	(STB8_LDSTUB_LDMISS);
+  wildcard state s_stb8_swap_ldmiss      	(STB8_SWAP_LDMISS);
+  wildcard state s_stb8_cas_ldmiss       	(STB8_CAS_LDMISS);
+  wildcard state s_stb8_int_st_imiss_ldmiss    	(STB8_INT_ST_IMISS_LDMISS);
+  wildcard state s_stb8_stasi_int_imiss_ldmiss 	(STB8_STASI_INT_IMISS_LDMISS);
+  wildcard state s_stb8_stasi_ext_imiss_ldmiss 	(STB8_STASI_EXT_IMISS_LDMISS);
+  wildcard state s_stb8_stfp_busy_imiss_ldmiss 	(STB8_STFP_BUSY_IMISS_LDMISS);
+  wildcard state s_stb8_stfp_imiss_ldmiss      	(STB8_STFP_IMISS_LDMISS);
+  wildcard state s_stb8_ldstub_imiss_ldmiss    	(STB8_LDSTUB_IMISS_LDMISS);
+  wildcard state s_stb8_swap_imiss_ldmiss      	(STB8_SWAP_IMISS_LDMISS);
+  wildcard state s_stb8_cas_imiss_ldmiss       	(STB8_CAS_IMISS_LDMISS);
+
+  wildcard state s_stb9_int_st          	(STB9_INT_ST);
+  wildcard state s_stb9_stasi_int       	(STB9_STASI_INT);
+  wildcard state s_stb9_stasi_ext       	(STB9_STASI_EXT);
+  wildcard state s_stb9_stfp_busy       	(STB9_STFP_BUSY);
+  wildcard state s_stb9_stfp            	(STB9_STFP);
+  wildcard state s_stb9_ldstub          	(STB9_LDSTUB);
+  wildcard state s_stb9_swap            	(STB9_SWAP);
+  wildcard state s_stb9_cas             	(STB9_CAS);
+  wildcard state s_stb9_int_st_imiss    	(STB9_INT_ST_IMISS);
+  wildcard state s_stb9_stasi_int_imiss 	(STB9_STASI_INT_IMISS);
+  wildcard state s_stb9_stasi_ext_imiss 	(STB9_STASI_EXT_IMISS);
+  wildcard state s_stb9_stfp_busy_imiss 	(STB9_STFP_BUSY_IMISS);
+  wildcard state s_stb9_stfp_imiss      	(STB9_STFP_IMISS);
+  wildcard state s_stb9_ldstub_imiss    	(STB9_LDSTUB_IMISS);
+  wildcard state s_stb9_swap_imiss      	(STB9_SWAP_IMISS);
+  wildcard state s_stb9_cas_imiss       	(STB9_CAS_IMISS);
+
+// Illegal states: maked bad in ifu_simul_swout
+
+//  wildcard state s_stb9_int_st_ldmiss    	(STB9_INT_ST_LDMISS);
+//  wildcard state s_stb9_stasi_int_ldmiss 	(STB9_STASI_INT_LDMISS);
+//  wildcard state s_stb9_stasi_ext_ldmiss 	(STB9_STASI_EXT_LDMISS);
+//  wildcard state s_stb9_stfp_busy_ldmiss 	(STB9_STFP_BUSY_LDMISS);
+//  wildcard state s_stb9_stfp_ldmiss      	(STB9_STFP_LDMISS);
+//  wildcard state s_stb9_ldstub_ldmiss    	(STB9_LDSTUB_LDMISS);
+//  wildcard state s_stb9_swap_ldmiss      	(STB9_SWAP_LDMISS);
+//  wildcard state s_stb9_cas_ldmiss       	(STB9_CAS_LDMISS);
+//  wildcard state s_stb9_int_st_imiss_ldmiss    	(STB9_INT_ST_IMISS_LDMISS);
+//  wildcard state s_stb9_stasi_int_imiss_ldmiss 	(STB9_STASI_INT_IMISS_LDMISS);
+//  wildcard state s_stb9_stasi_ext_imiss_ldmiss 	(STB9_STASI_EXT_IMISS_LDMISS);
+//  wildcard state s_stb9_stfp_busy_imiss_ldmiss 	(STB9_STFP_BUSY_IMISS_LDMISS);
+//  wildcard state s_stb9_stfp_imiss_ldmiss      	(STB9_STFP_IMISS_LDMISS);
+//  wildcard state s_stb9_ldstub_imiss_ldmiss    	(STB9_LDSTUB_IMISS_LDMISS);
+//  wildcard state s_stb9_swap_imiss_ldmiss      	(STB9_SWAP_IMISS_LDMISS);
+//  wildcard state s_stb9_cas_imiss_ldmiss       	(STB9_CAS_IMISS_LDMISS);
+// }	

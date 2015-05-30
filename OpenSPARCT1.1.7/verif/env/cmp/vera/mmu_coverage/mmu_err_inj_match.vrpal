@@ -1,0 +1,158 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_err_inj_match.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+////////////////////////////////////////////////////////////////////////
+//
+//  Module Name:        mmu_err_inj_match.vr
+//  Description:        Tasks for comparing TTE written with that looked up from TLB
+//                      when there's an error condition
+//
+////////////////////////////////////////////////////////////////////////
+
+#inc "mmu_cov_inc.pal";
+
+#ifndef MMU_ERR_INJ_MATCH__
+#define MMU_ERR_INJ_MATCH__
+
+#include <vera_defines.vrh>
+#include "mmu_ports_binds.vrh"
+#include "mmu.if.vrh"
+#include "mmu_cov_tasks.vrh"
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Class definitions
+////////////////////////////
+
+class MMU_ERR_INJ_MATCH
+{
+    string name;
+    bit err_inj_addr_match;
+
+    err_inj_addr_match_port err_inj_addr_match_bind;
+    
+    task new(string name, err_inj_addr_match_port err_inj_addr_match_bind);
+    task find_err_inj_addr_match(integer window_size);
+    
+}
+
+//------------------------------------------------------------------------------------------
+
+////////////////////////////
+// Definitions of methods of class MMU_TLB_ADDR_MATCH
+////////////////////////////
+task MMU_ERR_INJ_MATCH:: new (string name, err_inj_addr_match_port err_inj_addr_match_bind)
+{
+    this.name = name;
+    this.err_inj_addr_match_bind = err_inj_addr_match_bind;
+}
+//------------------------------------------------------------------------------------------
+
+task MMU_ERR_INJ_MATCH:: find_err_inj_addr_match(integer window_size)
+{
+
+    shadow integer count = 0;
+    bit found_err = 1'b0;
+    
+    shadow bit [58:0] err_tte_wr_tag;
+
+    shadow bit found_tte_wr = 1'b0;
+
+    fork{
+	while(1) {
+	    @ ( posedge this.err_inj_addr_match_bind.\$clk );
+//	    if(this.err_inj_addr_match_bind.\$tlb_bypass != 1'b1){
+		if(this.name == "DMMU"){
+		    if(this.err_inj_addr_match_bind.\$ifu_lsu_error_inj[1] || 
+			   this.err_inj_addr_match_bind.\$ifu_lsu_error_inj[0])
+		    {
+			found_err = 1'b1;
+		    }
+//                printf("%d: Found err is 1\n",get_time(LO));
+	        }else{
+		    if(this.err_inj_addr_match_bind.\$ifu_lsu_error_inj[2] || 
+			   this.err_inj_addr_match_bind.\$ifu_lsu_error_inj[3])
+		    {
+			found_err = 1'b1;
+		    }
+//                printf("%d: Found err is 1\n",get_time(LO));
+	        }
+
+		if(this.err_inj_addr_match_bind.\$tlb_wr_vld){
+                     printf("%d: Found tlb_wr_vld found_err is %b\n",
+                         get_time(LO),found_err);
+                }
+	    if(found_err){
+		if(this.err_inj_addr_match_bind.\$tlb_wr_vld){
+                     err_tte_wr_tag = this.err_inj_addr_match_bind.\$tlb_wr_tte_tag;
+                     found_tte_wr = 1'b1;
+		     found_err = 1'b0;
+		     printf("%d: Found err inj on tte wr.. err_tte_wr_tag %h\n",get_time(LO),err_tte_wr_tag);
+		     fork{
+                         while(count <= window_size){
+			     @ ( posedge this.err_inj_addr_match_bind.\$clk );
+			     count = count + 1;
+			     if(count >= window_size){
+			         found_tte_wr = 1'b0;
+			         break;
+			     }
+			    this.err_inj_addr_match = 
+				compare_addr(err_tte_wr_tag, this.err_inj_addr_match_bind.\$tlb_cam_data);
+			    printf("%d: lloking for match after err entry %h cam data %h match %b\n", 
+			        get_time(LO), err_tte_wr_tag, this.err_inj_addr_match_bind.\$tlb_cam_data,this.err_inj_addr_match);
+
+			    if(this.err_inj_addr_match_bind.\$tlb_cam_data_vld){
+			        printf("%d: tlb_cam_data_vld after err %b\n",
+				    get_time(LO), this.err_inj_addr_match_bind.\$tlb_cam_data_vld);
+			    }
+
+                            if(this.err_inj_addr_match) {
+			        printf("%d: Found a match after err inj cam_data %h\n", 
+				    get_time(LO), this.err_inj_addr_match_bind.\$tlb_cam_data);
+				break;
+			    }
+                         } // while(1)
+		     }join none
+	         }
+	    }
+//	    } // tlb bypass = 0
+	} // while 1
+    }join none 
+}
+
+
+//------------------------------------------------------------------------------------------
+////////////////////////////
+// Main program
+////////////////////////////
+
+//. foreach $c (@CORE_STR) {
+//   
+//     MMU_ERR_INJ_MATCH C${c}_itlb_inj_match;
+//     MMU_ERR_INJ_MATCH C${c}_dtlb_inj_match;
+//
+//     C${c}_itlb_inj_match = new("IMMU",C${c}_itlb_err_inj_addr_match_bind);
+//     C${c}_dtlb_inj_match = new("DMMU",C${c}_dtlb_err_inj_addr_match_bind);
+//
+//     C${c}_itlb_inj_match.find_err_inj_addr_match();
+//     C${c}_dtlb_inj_match.find_err_inj_addr_match();
+//. }
+#endif

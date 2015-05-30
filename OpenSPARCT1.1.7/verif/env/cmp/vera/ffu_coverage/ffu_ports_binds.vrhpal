@@ -1,0 +1,249 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ffu_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ffu_cov_inc.pal";
+#ifndef __FFU_PORTS_BINDS_VRH__
+#define __FFU_PORTS_BINDS_VRH__
+
+// FFU coverage ports definition
+
+// FFU_LSU_FSM
+port ffu_lsu_fsm_port {
+ lsu_fsm_state;
+}
+
+//  FFU_MOVE_ABS_NEG
+port ffu_mov_abs_neg_port {
+	mov_abs_neg_state;
+}
+// FFU_VIS_ADD_SUB
+port ffu_vis_add_sub_port {
+	vis_add_sub_state;
+	// --> added ffu_visop;
+}
+
+// FFU_VIS_LOGIC
+port ffu_vis_log_port {
+	vis_log_state;
+}
+// FFU_RND
+port ffu_rnd_port {
+	rnd_state;
+}
+// IEEE_754_TRAP
+port ffu_ieee_754_trap_port {
+	ieee_754_trap_en_state;
+	ieee_754_trap_DIS_state;
+	ieee_754_trap_ful_state;
+}
+
+// flush stages
+port ffu_flush_stage_port {
+	flush_stage_state;
+}
+
+// block store
+port ffu_block_store_port {
+	blkst_stall_state;
+	blkst_ce_state_partial;
+	blkst_ue_state;
+}    
+
+// ECC
+port ffu_ecc_port {
+	ecc_ce_state_partial;
+	ecc_ue_state_partial;
+}   
+
+
+
+	
+. sub coreBindings {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+bind ffu_lsu_fsm_port ffu_lsu_sample_C${c}_ffu_lsu_fsm_bind {
+    lsu_fsm_state      {
+                        ffu_cov_top.C${c}_ffu_lsu_fpop2_ready_w3,
+                        ffu_cov_top.C${c}_ffu_lsu_fpop1_ready_w2,
+			ffu_cov_top.C${c}_ffu_lsu_fpop_rq_vld
+			};
+}
+// FFU_MOVE_ABS_NEG
+bind ffu_mov_abs_neg_port ffu_mov_abs_neg_sample_C${c}_ffu_mov_abs_neg_bind {
+	mov_abs_neg_state	{
+				 ffu_cov_top.C${c}_ffu_move_w,
+				 ffu_cov_top.C${c}_ffu_abs_w,
+				 ffu_cov_top.C${c}_ffu_neg_w,
+
+				 ffu_cov_top.C${c}_ffu_rs2,
+				 ffu_cov_top.C${c}_ffu_rd,
+				 ffu_cov_top.C${c}_ffu_src_sgl,
+				 ffu_cov_top.C${c}_ffu_dst_sgl,
+				 ffu_cov_top.C${c}_ffu_unimple_op_w
+				};
+}
+// FFU_VIS_ADD_SUB
+bind ffu_vis_add_sub_port ffu_vis_math_sample_C${c}_ffu_vis_add_sub_bind {
+	vis_add_sub_state	{
+				 ffu_cov_top.C${c}_ffu_visop,
+				 ffu_cov_top.C${c}_ffu_vis_sel_add,
+				 ffu_cov_top.C${c}_ffu_vis_subtract,
+
+				 ffu_cov_top.C${c}_ffu_rs1,
+				 ffu_cov_top.C${c}_ffu_rs2,
+				 ffu_cov_top.C${c}_ffu_rd,
+
+				 ffu_cov_top.C${c}_ffu_src_sgl,
+				 ffu_cov_top.C${c}_ffu_dst_sgl
+				};
+
+}	
+// FFU_VIS_LOG
+bind ffu_vis_log_port ffu_vis_logic_sample_C${c}_ffu_vis_log_bind {
+	vis_log_state	{
+			 ffu_cov_top.C${c}_ffu_visop,
+			 ffu_cov_top.C${c}_ffu_vis_sel_log,
+
+			 ffu_cov_top.C${c}_ffu_rs1,
+			 ffu_cov_top.C${c}_ffu_rs2,
+			 ffu_cov_top.C${c}_ffu_rd,
+
+			 ffu_cov_top.C${c}_ffu_src_sgl,
+			 ffu_cov_top.C${c}_ffu_dst_sgl
+			};
+}	
+// FFU_RND
+bind ffu_rnd_port ffu_rnd_sample_C${c}_ffu_rnd_bind {
+	rnd_state	{
+			 ffu_cov_top.C${c}_ffu_is_fpop_d,
+			 ffu_cov_top.C${c}_ffu_gsr_im,
+
+			 ffu_cov_top.C${c}_ffu_gsr_rnd,
+
+			 ffu_cov_top.C${c}_ffu_fsr_rnd
+			};
+}
+// IEEE_754_TRAP
+bind ffu_ieee_754_trap_port ffu_ieee_754_trap_sample_C${c}_ffu_ieee_754_trap_bind {
+	ieee_754_trap_en_state	{
+				 ffu_cov_top.C${c}_is_fpu_result,
+				 ffu_cov_top.C${c}_ffu_fsr_tem,
+				 ffu_cov_top.C${c}_ffu_fsr_cexc
+				};
+	ieee_754_trap_DIS_state	{
+				 ffu_cov_top.C${c}_is_fpu_result,
+				 ffu_cov_top.C${c}_ffu_fsr_tem,
+				 ffu_cov_top.C${c}_ffu_fsr_cexc,
+				 ffu_cov_top.C${c}_ffu_fsr_aexc
+				};
+	ieee_754_trap_ful_state	{
+				 ffu_cov_top.C${c}_is_fpu_result,
+				 ffu_cov_top.C${c}_fpu_exc,
+				 ffu_cov_top.C${c}_ffu_fsr_tem,
+				 ffu_cov_top.C${c}_ffu_fsr_cexc
+				};
+}
+// FFU_FLUSH_STAGE
+bind ffu_flush_stage_port ffu_flush_stage_sample_C${c}_ffu_flush_stage_bind {
+	flush_stage_state	{
+				 ffu_cov_top.C${c}_ffu_any_op_e,
+				 ffu_cov_top.C${c}_ffu_any_op_m,
+				 ffu_cov_top.C${c}_ffu_any_op_w,
+
+				 ffu_cov_top.C${c}_ffu_kill_m,
+				 ffu_cov_top.C${c}_ffu_kill_w,
+
+				 ffu_cov_top.C${c}_ffu_thr_match_ww2,
+				 ffu_cov_top.C${c}_ffu_flush_w2,
+
+				 ffu_cov_top.C${c}_ffu_ifu_tlu_flush_w,
+				 ffu_cov_top.C${c}_ffu_ecc_kill_rs2_w2,
+				 ffu_cov_top.C${c}_ffu_unimple_op_w,
+				 ffu_cov_top.C${c}_ffu_ifu_tlu_inst_vld_w,
+				 ffu_cov_top.C${c}_ffu_lsu_ffu_flush_pipe_w,
+
+				 ffu_cov_top.C${c}_ffu_fst_w,
+				 ffu_cov_top.C${c}_ffu_fst_m,
+				 ffu_cov_top.C${c}_ffu_fpu_op_w,
+				 ffu_cov_top.C${c}_ffu_fpu_op_m
+				};
+}
+
+// FFU_BLOCK_STORE
+bind ffu_block_store_port ffu_block_store_sample_C${c}_ffu_block_store_bind {
+	blkst_stall_state	{
+				 ffu_cov_top.C${c}_ffu_ifu_stall_req
+				};
+	blkst_ce_state_partial  {
+				// see ffu_coverage.vrpal for rest of state definition
+				 ffu_cov_top.C${c}_ffu_bst_op,
+				 ffu_cov_top.C${c}_ffu_bst_cnt
+				};
+	blkst_ue_state		{
+				 ffu_cov_top.C${c}_ffu_bst_nceen,
+				 ffu_cov_top.C${c}_ffu_ue,
+				 ffu_cov_top.C${c}_ffu_bst_op,
+
+				 ffu_cov_top.C${c}_ffu_bst_cnt
+				};
+}    
+
+// FFU_ECC
+bind ffu_ecc_port ffu_ecc_sample_C${c}_ffu_ecc_bind {
+	ecc_ce_state_partial	{
+				// see ffu_coverage.vrpal for rest of state definition
+				 ffu_cov_top.C${c}_ffu_ren_rs1,
+				 ffu_cov_top.C${c}_ffu_ecc_rs2,
+				 ffu_cov_top.C${c}_ffu_combo_ce_rs2,
+				 ffu_cov_top.C${c}_ffu_ecc_rd
+				};
+	ecc_ue_state_partial	{
+				// see ffu_coverage.vrpal for rest of state definition
+				 ffu_cov_top.C${c}_ffu_ue,
+
+				 ffu_cov_top.C${c}_ffu_nceen,
+
+				 ffu_cov_top.C${c}_ffu_ren_rs1,
+
+				 ffu_cov_top.C${c}_ffu_ecc_rs2,
+				 ffu_cov_top.C${c}_ffu_combo_ce_rs2,
+				 ffu_cov_top.C${c}_ffu_combo_ue_rs2,
+
+				 ffu_cov_top.C${c}_ffu_ecc_rd
+				};
+
+}   
+
+
+
+
+.
+. } # coreBindings
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+
+#endif
+

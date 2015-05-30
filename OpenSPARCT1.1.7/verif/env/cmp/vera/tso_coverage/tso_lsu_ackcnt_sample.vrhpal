@@ -1,0 +1,48 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_lsu_ackcnt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// Number of outstanding RMO stores without an ACK.
+// Up to 8 pending RMO stores are allowed without an ACK.
+// NOT MORE!!!
+//***********************************************************************
+
+// good states
+//------------
+  state s_is0 		(is0_4b);
+  state s_is1 		(is1_4b);
+  state s_is2 		(is2_4b);
+  state s_is3 		(is3_4b);
+  state s_is4 		(is4_4b);
+  state s_is5 		(is5_4b);
+  state s_is6 		(is6_4b);
+  state s_is7 		(is7_4b);
+  state s_is8 		(is8_4b);
+
+// bad  states
+//------------
+  bad_state s_is9	(is9_4b);
+  bad_state s_is10	(is10_4b);
+  bad_state s_is11	(is11_4b);
+  bad_state s_is12	(is12_4b);
+  bad_state s_is13	(is13_4b);
+  bad_state s_is14	(is14_4b);
+  bad_state s_is15	(is15_4b);
+

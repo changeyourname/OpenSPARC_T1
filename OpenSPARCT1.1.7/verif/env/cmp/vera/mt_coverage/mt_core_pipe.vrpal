@@ -1,0 +1,772 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt_core_pipe.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// This is pipe processing class for coverage information
+// the idea is to pipe the whole thing and then generate 
+// the coverage. since we can only get the instruction from
+// the s stage, we dely the pipe by one cycle to get everything
+// aligned!
+
+// i wish the coverage can be extended in this class by i think i will stay on the safe side.
+#include "mt_defines.vrh"
+#include "mt.if.vrh"
+#include "mt_ports_binds.vrh"
+#include "mt_sample_cov.vrh"
+#include "mt_trap_cov.vrh"
+#include "mt_md_reg.vrh"
+#include "mt_xbar.vrh"
+#include "mt_intr_cov.vrh"
+
+// Wed Feb  5 12:58:12 PST 2003
+// expand to all stages!!!
+
+// Tue Feb 11 10:24:23 PST 2003
+// We add the rollback objs
+// the thing is i have not seen any rollback happing
+// in the waveform yet.
+
+// Since we have decomposed the rollbacks here, it seems we dont
+// have to get any cross coverage for this.
+
+
+//#define LIUXI_DEBUG
+// Fri Apr 11 15:38:52 PDT 2003
+// completly change to the new format
+
+class CorePipe {
+   
+  local bit [31:0] instr_pipe[8]; // we assume 6 stage pipe? can be changed later
+  local bit [3:0]  thrd_pipe[8];   // thread num as well as the instructions!
+
+  local bit [48:0] pc_pipe [8];  // for delay slot rollback
+  local bit [7:0]  stage_vld;     // valid bits for each stage coming in from RTL -- delay by 1!
+
+
+  local bit [1:0] thr_id_w;
+  local bit [1:0] thr_id_d;
+  local bit [1:0] thr_id_e;
+
+
+  local bit [2:0] is_br;
+  local bit [2:0] is_long;
+
+  local bit [2:0] dfq_bypass_sample;
+/*
+  local bit [2:0] spec_rollback_sample;
+  local bit [2:0] device_rollback_sample;
+  these are changed to sparc.ifu.fcl.rb_stg_[d/e/w]
+*/
+
+  local bit [2:0] rb_stg_d_sample;
+  local bit [2:0] rb_stg_e_sample;
+  local bit [2:0] rb_stg_w_sample;
+
+  local bit [3:0] starve_sample;
+  local bit [1:0] flush_sample;
+
+  local event smpl_event;
+
+.for my $i (1, 2) {
+.  for my $bb ('e', 'ld', 'm', 'w') {
+  local bit [2:0] pipe_byp_rs${i}_${bb};
+. }
+.}
+
+  local mt_cov_port my_pt;
+
+  // these are lagacy signals
+  local MD_RegWrite mul_div_reg_cov;
+  local Xbr xbr_cov;  
+  local TrapCov trap_cov;
+  local Intr intr_cov;
+  
+//   Mon Apr 21 10:33:01 PDT 2003
+//   Per Aings and Viranjit's inputs
+//   we will do it with D1 D2 and D3
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'w1', 'w2', 'd2', 'd3');
+. foreach my $ss (@pipe) {
+  local bit [6:0]  inst_sample_${ss};
+. }
+
+  local bit [6:0]  inst_sample_d1;
+
+  local bit [48:0] delay_pc[4];
+  local bit [7:0]  delay_stage[4];
+
+  local bit [2:0]  delay_rb_d_sample;
+  local bit [2:0]  delay_rb_e_sample;
+  local bit [2:0]  delay_rb_w_sample;
+
+//#inc "mt_sample_cov.vrhpal"
+
+  local MT mt_cov;
+  local integer dummy;
+
+  local task Going ();
+  local function bit [1:0]  EncodeThread (bit [3:0] thrd);
+  local task InstrDecode (bit [31:0] instr, var string INSTR, var string GROUP);
+  local task LsuInstrDecode (bit [5:0] op3, var string INSTR, var string GROUP);
+  local task AluInstrDecode (bit [5:0] op2, bit i, var string INSTR, var string GROUP);
+  local task BranchInstrDecode (bit [2:0] op2, var string INSTR, var string GROUP);
+  
+  local task GetCov();
+  local function bit [4:0] Group(string GROUP);
+
+  local task CoverOn();
+
+  local task DelaySlotSet(bit [48:0] pc, bit [1:0] thrd);
+  local task DelaySlotTest(bit [48:0] pc, bit [1:0] thrd, integer stage); 
+
+
+  task new(mt_cov_port my_pt);
+
+    
+}
+
+task CorePipe::new(mt_cov_port pt) {
+  integer i;
+  my_pt = pt;
+
+  for (i=0; i<4; i++) {
+    delay_stage[i] = 0;
+  }
+
+  fork {
+     mul_div_reg_cov = new (pt);
+     xbr_cov = new (pt);  
+     trap_cov = new (pt);
+     intr_cov = new (pt);
+  } join none
+
+  repeat (2) @ (posedge my_pt.\$cmp_clk);
+  
+  mt_cov = new (
+    my_pt,
+    my_pt.\$ifu_lsu_ibuf_busy,  //   bug2770,
+    is_br,                      //   branch,
+    is_long,                    //   long_op,
+    my_pt.\$exu_ifu_longop_done_g,      // long_op_wakeup,
+    mul_div_reg_cov.mul_div_sample,     // mul_div,
+    mul_div_reg_cov.w1_arb_state_id,    // w1_arb_state_id,
+    mul_div_reg_cov.w2_arb_state_id,    // w2_arb_state_id,
+    intr_cov.intr_sample,               // intr,
+    xbr_cov.pcx_sample,         // pcx_buffer,
+    xbr_cov.cpx_sample,         // cpx_buffer,
+.for my $i (1, 2) {
+.  for my $bb ('e', 'ld', 'm', 'w') { 
+     pipe_byp_rs${i}_${bb},      
+. }
+.}
+    dfq_bypass_sample,
+    rb_stg_d_sample,          
+    rb_stg_e_sample,          
+    rb_stg_w_sample,          
+
+    rb_stg_d_sample,
+    rb_stg_e_sample,
+    rb_stg_w_sample,          
+
+    delay_rb_d_sample,
+    delay_rb_e_sample,
+    delay_rb_w_sample,          
+
+. for my $i (0..3) {
+    pt.\$fsm_state${i},           
+. }
+. my @pipe = ('s', 'd', 'e', 'm', 'w', 'd2', 'd3');
+. foreach my $s (@pipe) {
+    inst_sample_${s},
+. }
+
+    trap_cov.trap_sample_w,
+    trap_cov.trap_sample_w1,
+    trap_cov.trap_sample_w2,
+    starve_sample,
+    flush_sample,
+
+    smpl_event
+    );
+#ifdef LIUXI_DEBUG
+    printf("MT coverage is set on here: %d\n", get_time(LO));
+#endif
+    CoverOn();
+}
+
+task CorePipe::CoverOn()
+{
+  integer done = 0;
+  
+  repeat (2) @ (posedge my_pt.\$cmp_clk);
+  // since we are relying on SAS to check errors
+  // it make sense to have diag covereg even though
+  // they might fail with BAD_TRAP
+  // but we make it conform to gloabl scheme.
+  // Tue Apr 15 12:31:20 PDT 2003
+  // not working yet....
+  if (get_plus_arg( CHECK, "mt_coverage_lyang")) {
+    mt_cov.set_cov_weight(1);
+    coverage_save_database(1);
+  }
+  fork {
+    Going();
+    while (!done) {
+      //@ (posedge my_pt.\$cmp_clk);
+      // Sat Jul 12 17:51:59 PDT 2003
+      // there is a race betweem clk and trigger. Stupid vera.
+      {
+        Going();
+        // for rollback
+        thr_id_d = EncodeThread(thrd_pipe[2]);
+        thr_id_e = EncodeThread(thrd_pipe[3]);
+        thr_id_w = EncodeThread(thrd_pipe[5]);
+        
+        dfq_bypass_sample = {my_pt.\$byp_dfq, my_pt.\$byp_dfq_thrid};
+
+        rb_stg_d_sample = {my_pt.\$rb_stg_d, thr_id_d};
+        rb_stg_e_sample = {my_pt.\$rb_stg_e, thr_id_e};
+        rb_stg_w_sample = {my_pt.\$rb_stg_w, thr_id_w};
+
+        if (my_pt.\$rb_stg_d === 1'b1) DelaySlotTest(pc_pipe[2], thr_id_d, 2);
+        else  delay_rb_d_sample = 0;
+
+        if (my_pt.\$rb_stg_e === 1'b1) DelaySlotTest(pc_pipe[3], thr_id_e, 3);
+        else  delay_rb_e_sample = 0;
+
+        if (my_pt.\$rb_stg_w === 1'b1) DelaySlotTest(pc_pipe[5], thr_id_w, 5);
+        else  delay_rb_w_sample = 0;
+
+.for my $i (1, 2) {
+.  for my $bb ('e', 'ld', 'm', 'w') {
+     pipe_byp_rs${i}_${bb} = {my_pt.\$byp_rs${i}_${bb}, thr_id_d};
+. }
+.}
+
+        starve_sample = {my_pt.\$lsu_ifu_stallreq,
+			 my_pt.\$ffu_ifu_stallreq_never,
+			 my_pt.\$itlb_starv_alert,
+ 			 my_pt.\$ifqctl_starv_alert};
+
+        flush_sample = {my_pt.\$lsu_tlu_early_flush, my_pt.\$ffu_lsu_kill_fst_w};
+
+	sync(ALL, mul_div_reg_cov.smpl_event,
+                  xbr_cov.smpl_event,
+                  trap_cov.smpl_event,
+                  intr_cov.smpl_event);
+
+        trigger(ONE_SHOT, smpl_event);
+
+      }      
+    }        
+  } {        
+    @(posedge my_pt.\$cmp_diag_done ); 
+    done = 1;        
+    mt_cov.set_cov_weight(1);
+    coverage_save_database(1);
+  } join none
+}
+
+
+
+// Thu Jul 17 09:53:17 PDT 2003
+// from the review the rollback with branch should be
+// delay slot rollback i.e. the rollback happens for
+// a instruction in the delay slot.
+// the obj needs do:
+// (1) trigger a instruction by a branch! record the ID
+// (2) the next valid instruction in the pipe with the same ID 
+//     is the instruction in delay slot? No we have to know PC.
+// ... we should have 4 active threads to record what happens
+// in 4 threads.
+
+
+task CorePipe::DelaySlotSet(bit[48:0] pc, bit [1:0] id)
+{
+
+// started at S stage
+   delay_pc[id] = pc;
+   delay_stage[id] = 1;
+
+}
+
+task CorePipe::DelaySlotTest(bit[48:0] pc, bit[1:0] id, integer stage)
+{
+
+    if (delay_stage[id] == 0) return;
+
+    if (stage == 1) {
+        if (pc + 4 != delay_pc[id] && delay_stage[id] == 1) {
+          delay_stage[id] = 0;
+        } else if (delay_stage[id] == 6) {
+          delay_stage[id] = 0;
+        } else {
+          delay_stage[id] = delay_stage[id] + 1;
+        }
+          return;
+    }
+
+    delay_stage[id] = 0;
+    if (pc + 4 != delay_pc[id]) return;
+    
+
+    case (stage) {
+      2: { // d
+         delay_rb_e_sample = {1'b1, id};
+      }
+      3: { // e
+         delay_rb_d_sample = {1'b1, id};
+      }
+      4: { // m no rollback here nothing should happen
+      }
+      5: { // w
+         delay_rb_w_sample = {1'b1, id};
+      }
+    }
+    return;
+}
+
+
+task CorePipe::Going () 
+{
+  integer i;
+
+  instr_pipe[0] = 0;
+
+  for (i=7; i>0; i--) {
+    instr_pipe[i] = instr_pipe[i-1];
+    stage_vld[i] = stage_vld[i-1];
+    thrd_pipe[i] = thrd_pipe[i-1];
+ }
+/*
+  stage_vld[0] = my_pt.\$vld_f;
+  stage_vld[1] = my_pt.\$vld_s;
+  stage_vld[2] = my_pt.\$vld_d;
+  stage_vld[3] = my_pt.\$vld_e;
+  stage_vld[4] = my_pt.\$vld_m;
+  stage_vld[5] = my_pt.\$vld_w;
+*/
+
+  stage_vld[0] = 0;
+  stage_vld[1] = my_pt.\$vld_f;
+  stage_vld[2] = my_pt.\$vld_d;
+  stage_vld[3] = my_pt.\$vld_e;
+  stage_vld[4] = my_pt.\$vld_m;
+  stage_vld[5] = my_pt.\$vld_w;
+
+
+  if (stage_vld[1] !== 1'b1) 
+     instr_pipe[1] = 0;   
+  else 
+     instr_pipe[1] = my_pt.\$instr_s;
+/*
+  thrd_pipe[0] = my_pt.\$thr_f;
+  //thrd_pipe[1] = my_pt.\$thr_s;
+  thrd_pipe[2] = my_pt.\$thr_d;
+  thrd_pipe[3] = my_pt.\$thr_e;
+  thrd_pipe[4] = my_pt.\$thr_m;
+  thrd_pipe[5] = my_pt.\$thr_w;
+*/
+
+  thrd_pipe[0] = 4'b1;
+  thrd_pipe[1] = my_pt.\$thr_s;
+  thrd_pipe[2] = my_pt.\$thr_d;
+  thrd_pipe[3] = my_pt.\$thr_e;
+  thrd_pipe[4] = my_pt.\$thr_m;
+  thrd_pipe[5] = my_pt.\$thr_w;
+
+  pc_pipe[0] = 0;
+  pc_pipe[1] = my_pt.\$pc_s;
+  pc_pipe[2] = my_pt.\$pc_d;
+  pc_pipe[3] = my_pt.\$pc_e;
+  pc_pipe[4] = my_pt.\$pc_m;
+  pc_pipe[5] = my_pt.\$pc_w;
+
+
+#ifdef LIUXI_DEBUG
+  if (stage_vld[1] === 1'b1) 
+    printf("LIUXI<< time %d inst_s: 0x%8h inst_d: 0x%8h thr_id: %b vld: %b\n", 
+            get_time(LO), instr_pipe[1], instr_pipe[2], thrd_pipe[1], stage_vld[1]);
+#endif
+
+  GetCov();
+
+// this is extra one to get d2 and d3
+  inst_sample_d3 = inst_sample_d2;
+  inst_sample_d2 = inst_sample_d1;
+  inst_sample_d1 = inst_sample_d;
+
+}
+
+
+
+
+task CorePipe::GetCov()
+{
+  
+. for my $i (1..7) {
+.   my $s = $pipe[$i-1];
+
+. if ($i==1) {
+  is_br = 0;
+  is_long = 0;
+. }
+    if (stage_vld[$i] !== 1) {
+      inst_sample_${s} = 7'b/**/emp/**/00;
+    } else {
+      bit [1:0] thrd = EncodeThread(thrd_pipe[$i]);
+      bit [4:0] instr = nop;
+      string INSTR, GROUP;
+      InstrDecode(instr_pipe[$i], INSTR, GROUP);
+      inst_sample_${s} = {Group(GROUP), thrd};
+#ifdef LIUXI_DEBUG
+.     if ($i==1) {
+
+      if (GROUP=="NOP") {
+        printf("LIUXI %h --> %b  thrd  %b\n", 
+           instr_pipe[$i], inst_sample_${s}, thrd_pipe[$i]);
+      } 
+
+. }
+#endif
+
+. if ($i == 1) {
+  if (GROUP == "BRANCH") {
+     is_br = {1'b1, thrd};
+
+     // this is for delay slot stuff
+
+     DelaySlotSet(pc_pipe[1], thrd);
+  } else {
+    DelaySlotTest(pc_pipe[1], thrd, 1);
+  }
+
+  if (GROUP == "FP" 
+   || GROUP == "AT" 
+   || GROUP == "DIV"
+   || GROUP == "MUL"
+   || GROUP == "SAVE"
+   || GROUP == "LOAD"
+   || GROUP == "RESTORE"
+   || GROUP == "RETRY"
+   || GROUP == "ASI"
+   || GROUP == "RDPR" ) is_long = {1'b1, thrd};
+
+//        MUL, DIV, LOAD, SAVE, RESTORE, RETURN, DONE, RETRY, RDSR.
+
+. }
+    }
+. }
+}
+
+function bit [4:0] CorePipe::Group(string GROUP)
+{
+  bit [4:0] instr=0;
+  case (GROUP) {
+    "ALU": instr = 5'b/**/alu;
+    "LD":  instr = 5'b/**/ld;
+    "ST":  instr = 5'b/**/st;
+    "AT":  instr = 5'b/**/at;
+    "BRANCH": instr = 5'b/**/br;
+    "ILLEGAL": instr = 5'b/**/xxx;
+    "DONTKNOW": instr = 5'b/**/xxx;
+    "NOP":      instr = 5'b/**/nop;
+    "REGSET":   instr = 5'b/**/alu;
+    "REGRD":   instr = 5'b/**/alu;
+    "FP":      instr = 5'b/**/fp;
+    "DIV":     instr = 5'b/**/md;
+    "MUL":     instr = 5'b/**/md;
+    "RESTORE": instr = 5'b/**/rtr;
+    "SAVE":    instr = 5'b/**/sav;
+    "BLD":     instr = 5'b/**/bld;
+    "BST":     instr = 5'b/**/bst;
+    "PREF":    instr = 5'b/**/prf;
+    "FLUSH", "MEMBAR":  instr = 5'b/**/mbr; 
+    "RDPR":    instr = 5'b/**/rpr;
+    "WRPR":    instr = 5'b/**/wpr;
+    "SIR":     instr = 5'b/**/rst;
+    "WRYSPL":  instr = 5'b/**/wpr;
+    "ASI":     instr = 5'b/**/asi;
+    "QLD":     instr = 5'b/**/qld;
+
+/*
+#define qld     10001
+#define asi     11110
+*/
+//      "PREF":    instr = prf;
+    default: error("LIUXI Can't do ths any more! %s\n", GROUP);
+  }
+
+  Group = instr;
+
+}
+
+// we need to understand the instructions
+// these are virtually copied from sparc_pipe_flow.v
+task CorePipe::InstrDecode (bit [31:0] instr, var string INSTR, var string GROUP) 
+{
+
+  if (instr[31:30] == 2'b11 && 
+      (instr[24:19] == 6'b01_0011 ||
+       instr[24:19] == 6'b11_0011 ))  {
+    // ldda for qld
+    // we can only get imm for the qld
+    if (instr[13] == 1'b0) {
+      case (instr[12:5]) {
+        13'h22, 
+        13'h23, 
+        13'h24, 
+        13'h26,
+        13'h27,
+        13'h2a,
+        13'h2b,
+        13'h2c,
+        13'h2e,
+        13'he2,
+        13'he3,
+        13'hea,
+        13'heb:
+        {
+         INSTR = "QLD";
+         GROUP = "QLD";
+         return;
+        }
+        13'hf0, 13'hf1, 13'hf8, 13'hf9: {
+         INSTR = "BLD";
+         GROUP = "BLD";
+         return;
+        }
+      }
+      
+    }
+  }
+
+  if (instr[31:30] == 2'b11 && 
+      (instr[24:19] == 6'b11_0111 || 
+       instr[24:19] == 6'b01_0111 ))  {
+    if (instr[13] == 1'b0) {
+      case (instr[12:5]) {
+        13'hf0, 13'hf1, 13'hf8, 13'hf9: {
+         INSTR = "BST";
+         GROUP = "BST";
+         return;
+        }
+      }
+    }
+  }
+
+  if (instr[31:30] == 2'b11) {
+    case (instr[24:19]) {
+      6'b01_1001,  // ldsba
+      6'b01_1010,  // ldsha
+      6'b01_1000,  // ldswa
+      6'b01_0001,  // lduba
+      6'b01_0010,  // lduha
+      6'b01_0000,  // lduwa
+      6'b01_1011,  // ldxa
+      6'b01_0011,  // ldda
+      6'b11_0000,  // ldfa
+      6'b11_0011,  // lddfa
+      6'b11_0010,  // ldqfa
+      6'b11_1101,  // prefetcha
+      6'b11_0100,  // stfa
+      6'b11_0111,  // stdfa
+      6'b11_0110,  // stqfa
+      6'b01_0101,  // stba
+      6'b01_0110,  // stha
+      6'b01_0100,  // stwa
+      6'b01_1110,  // stxa
+      6'b01_0111:  // stda
+      {
+         INSTR = "LDSTA";
+         GROUP = "ASI";
+         return;
+      }
+    }
+  }
+
+
+  if (instr === 32'h00) {
+    INSTR = "ILLEGAL";
+    GROUP = "ILLEGAL";
+    return;
+  }
+
+  if (instr === 32'h01000000 ) {
+    INSTR = "NOP";
+    GROUP = "NOP";
+    return;
+  }
+
+  case (instr[31:30]) {
+    2'b00 : BranchInstrDecode(instr[24:22], INSTR, GROUP);
+    2'b01 : { INSTR = "call"; GROUP = "BRANCH"; }
+    2'b10 : AluInstrDecode(instr[24:19], instr[13], INSTR, GROUP);
+    2'b11 : LsuInstrDecode(instr[24:19], INSTR, GROUP);
+    default: { INSTR = "xxx"; GROUP = "ILLEGAL"; }
+     //error ("InstrDecode: Garbage in the core pipe, instr stage is valid!\n");
+  }
+
+}
+
+
+task CorePipe::BranchInstrDecode (bit [2:0] op2, var string INSTR, var string GROUP) 
+{
+
+    GROUP = "BRANCH";
+    case(op2) {
+       3'b000 : { INSTR = "iltrp";  GROUP = "ILLEGAL"; }
+       3'b001 : INSTR = "BPcc";
+       3'b010 : INSTR = "Bicc";
+       3'b011 : INSTR = "BPr";
+       3'b100 : { INSTR = "sethi";  GROUP = "REGSET"; }
+       3'b101 : INSTR = "FBPfcc";
+       3'b110 : INSTR = "FBfcc";
+       3'b111 : { INSTR = "unkn";   GROUP = "ILLEGAL"; }
+       default: error("op2:Garbage in the core pipe, instr stage is valid!\n");
+    }
+
+}
+
+task CorePipe::AluInstrDecode (bit [5:0] op3, bit i, var string INSTR, var string GROUP) 
+{
+    GROUP = "ALU";
+
+    case(op3) {
+       6'b000000 : INSTR = "add";
+       6'b000001 : INSTR = "and";
+       6'b000010 : INSTR = "or";
+       6'b000011 : INSTR = "xor";
+       6'b000100 : INSTR = "sub";
+       6'b000101 : INSTR = "andn";
+       6'b000110 : INSTR = "orn";
+       6'b000111 : INSTR = "xnor";
+       6'b001000 : INSTR = "addc";
+       6'b001001 : { INSTR = "mulx"; GROUP = "MUL"; }
+       6'b001010 : { INSTR = "umul"; GROUP = "MUL"; }
+       6'b001011 : { INSTR = "smul"; GROUP = "MUL"; }
+       6'b001100 : INSTR = "subc";
+       6'b001101 : { INSTR = "udivx"; GROUP = "DIV"; }
+       6'b001110 : { INSTR = "udiv"; GROUP = "DIV"; }
+       6'b001111 : { INSTR = "sdiv"; GROUP = "DIV"; }
+       6'b010000 : INSTR = "addcc";
+       6'b010001 : INSTR = "andcc";
+       6'b010010 : INSTR = "orcc";
+       6'b010011 : INSTR = "xorcc";
+       6'b010100 : INSTR = "subcc";
+       6'b010101 : INSTR = "andncc";
+       6'b010110 : INSTR = "orncc";
+       6'b010111 : INSTR = "xnorcc";
+       6'b011000 : INSTR = "addccc";
+       6'b011001 : { INSTR = "unkn"; GROUP = "ILLEGAL"; }
+       6'b011010 : { INSTR = "umulcc"; GROUP = "MUL"; }
+       6'b011011 : { INSTR = "smulcc"; GROUP = "MUL"; }
+       6'b011100 : INSTR = "subccc";
+       6'b011101 : { INSTR = "unkn"; GROUP = "ILLEGAL"; }
+       6'b011110 : { INSTR = "udivcc"; GROUP = "DIV"; }
+       6'b011111 : { INSTR = "sdivcc"; GROUP = "DIV"; }
+       6'b100000 : INSTR = "taddcc";
+       6'b100001 : INSTR = "tsubcc";
+       6'b100010 : INSTR = "tadctv";
+       6'b100011 : INSTR = "tsbctv";
+       6'b100100 : { INSTR = "mulscc"; GROUP = "MUL"; }
+       6'b100101 : INSTR = "sll";
+       6'b100110 : INSTR = "srl";
+       6'b100111 : INSTR = "sra";
+       6'b101000 : { 
+          INSTR = (i==1'b1) ? "membar":"rdpr";
+	  GROUP = (i==1'b1) ? "MEMBAR":"RDPR";
+       }
+       6'b101001 : { INSTR = "unkn"; GROUP = "ILLEGAL"; }
+       6'b101010 : { INSTR = "rdpr"; GROUP = "RDPR"; }
+       6'b101011 : INSTR = "flushw";
+       6'b101100 : INSTR = "movcc";
+       6'b101101 : { INSTR = "sdivx"; GROUP = "DIV"; }
+       6'b101110 : INSTR = "popc";
+       6'b101111 : INSTR = "movr";
+       6'b110000 : { INSTR = "wryspl"; GROUP = "ALU"; 
+	INSTR = (i==1'b1) ? "sir":"wryspl";
+	GROUP = (i==1'b1) ? "SIR":"WRYSPL";
+       }
+       6'b110001 : { INSTR = "savspl"; GROUP = "DONTKNOW"; }
+       6'b110010 : { INSTR = "wrpr";   GROUP = "WRPR"; }
+       6'b110011 : { INSTR = "unkn"; GROUP = "ILLEGAL"; }
+       6'b110100 : { INSTR = "fpop1"; GROUP = "FP"; }
+       6'b110101 : { INSTR = "fpop2"; GROUP = "FP"; }
+       6'b110110 : { INSTR = "impdep"; GROUP = "ALU"; }
+       6'b110111 : { INSTR = "impdep"; GROUP = "ALU"; }
+       6'b111000 : { INSTR = "jmpl"; GROUP = "BRANCH"; }
+       6'b111001 : { INSTR = "return"; GROUP = "BRANCH"; }
+       6'b111010 : { INSTR = "spl";   GROUP = "ALU"; }
+       6'b111011 : { INSTR = "flush"; GROUP = "FLUSH"; }
+       6'b111100 : { INSTR = "save"; GROUP = "SAVE"; }
+       6'b111101 : { INSTR = "restore"; GROUP = "RESTORE"; }
+       6'b111110 : { INSTR = "done"; GROUP = "BRANCH"; }
+       6'b111111 : { INSTR = "unknown"; GROUP = "ILLEGAL"; }
+       default: error("op3: Garbage in the instr pipe\n");
+    }
+}
+
+task CorePipe::LsuInstrDecode (bit [5:0] op3, var string INSTR, var string GROUP) 
+{
+
+
+   case (op3[5:0]) {
+	6'b101101: { INSTR = "pref";   GROUP = "PREF"; return;}
+        6'b111101: { INSTR = "prefa";  GROUP = "PREF"; return;}
+        6'b111100: { INSTR = "casa";   GROUP = "AT";   return;}
+        6'b111110: { INSTR = "casxa";  GROUP = "AT";   return;}
+        6'b001101: { INSTR = "ldstub"; GROUP = "AT";   return;}
+        6'b011101: { INSTR = "ldstuba";GROUP = "AT";   return;}
+        6'b001111: { INSTR = "swap";   GROUP = "AT";   return;}
+        6'b011111: { INSTR = "swapa";  GROUP = "AT";   return;}
+   }
+
+   case(op3[3:0]) {
+      4'b0000 : { INSTR = "lduw";  GROUP = "LD"; return;}
+      4'b0001 : { INSTR = "ldub"; GROUP = "LD"; return;}
+      4'b0010 : { INSTR = "lduh"; GROUP = "LD"; return;}
+      4'b0011 : { INSTR = "ldd"; GROUP = "LD"; return;}
+      4'b0100 : { INSTR = "stw"; GROUP = "ST"; return;}
+      4'b0101 : { INSTR = "stb"; GROUP = "ST"; return;}
+      4'b0110 : { INSTR = "sth"; GROUP = "ST"; return;}
+      4'b0111 : { INSTR = "std"; GROUP = "ST"; return;}
+      4'b1000 : { INSTR = "ldsw"; GROUP = "LD"; return;}
+      4'b1001 : { INSTR = "ldsb"; GROUP = "LD"; return;}
+      4'b1010 : { INSTR = "ldsh"; GROUP = "LD"; return;}
+      4'b1011 : { INSTR = "ldx"; GROUP = "LD"; return;}
+      4'b1100 : { INSTR = "err"; GROUP = "ILLEGAL"; return;}
+      4'b1101 : { INSTR = "ldstub"; GROUP = "AT"; return;}
+      4'b1110 : { INSTR = "stx"; GROUP = "ST"; return;}
+      4'b1111 : { INSTR = "swap";   GROUP = "AT"; return;}
+      default: error("op3: garbage in the instr pipe!\n");
+   }
+}
+
+function bit [1:0] CorePipe::EncodeThread (bit [3:0] thrd)
+{
+    case(thrd) {
+        4'b0001 :  EncodeThread = 2'b00;
+        4'b0010 :  EncodeThread = 2'b01;
+        4'b0100 :  EncodeThread = 2'b10;
+        4'b1000 :  EncodeThread = 2'b11;
+        // default: error("thrd: Thread pointer not one-hot!\n");
+        default: EncodeThread = 2'bxx;
+    }
+}
+

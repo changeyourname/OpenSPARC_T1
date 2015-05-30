@@ -1,0 +1,70 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rd_sync_schmoo_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_rd_sync_schmoo_sample.vrh
+// Description:
+// Coverage object to schmoo sync pulse around rd req.
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rd_sync_schmoo_sample (bit [1:0] rd_sync)
+// {
+
+  // state declarations
+       state s_rd_sync0  (2'b00);
+       state s_rd_sync1  (2'b01);
+       state s_rd_sync2  (2'b10);
+       state s_rd_sync3  (2'b11);
+
+       trans t_rd_sync0_1  (2'b00 -> 2'b01);
+       trans t_rd_sync1_0  (2'b01 -> 2'b00);
+       trans t_rd_sync1_2  (2'b01 -> 2'b10);
+       trans t_rd_sync2_1  (2'b10 -> 2'b01);
+       trans t_rd_sync2_0  (2'b10 -> 2'b00);
+       trans t_rd_sync0_2  (2'b00 -> 2'b10);
+       trans t_rd_sync0_3  (2'b00 -> 2'b11);
+       trans t_rd_sync3_0  (2'b11 -> 2'b00);
+
+       trans t_rd_sync_seq_rd_sync1 (2'b01 -> 2'b00[.1.] -> 2'b10);
+       trans t_rd_sync_seq_rd_sync2 (2'b01 -> 2'b00[.2.] -> 2'b10);
+       trans t_rd_sync_seq_rd_sync3 (2'b01 -> 2'b00[.3.] -> 2'b10);
+       trans t_rd_sync_seq_rd_sync4 (2'b01 -> 2'b00[.4.] -> 2'b10);
+       trans t_rd_sync_seq_rd_sync5 (2'b01 -> 2'b00[.5.] -> 2'b10);
+       trans t_rd_sync_seq_sync_rd1 (2'b10 -> 2'b00[.1.] -> 2'b01);
+       trans t_rd_sync_seq_sync_rd2 (2'b10 -> 2'b00[.2.] -> 2'b01);
+       trans t_rd_sync_seq_sync_rd3 (2'b10 -> 2'b00[.3.] -> 2'b01);
+       trans t_rd_sync_seq_sync_rd4 (2'b10 -> 2'b00[.4.] -> 2'b01);
+       trans t_rd_sync_seq_sync_rd5 (2'b10 -> 2'b00[.5.] -> 2'b01);
+
+  // bad states
+  //bad_state s_not_rd_sync0 (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_sync0 (not trans);
+  bad_trans t_rd_bad_sync1_3  (2'b01 -> 2'b11);
+  bad_trans t_rd_bad_sync2_3  (2'b10 -> 2'b11);
+  bad_trans t_rd_bad_sync3_1  (2'b11 -> 2'b01);
+  bad_trans t_rd_bad_sync3_2  (2'b11 -> 2'b10);
+
+//}
+

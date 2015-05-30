@@ -1,0 +1,71 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_st_intl_extl_sync_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for the accurance of synchronous 
+// traps reported by other sparc core units (ifu, exu, lsu, ffu), and
+// different types of internal (tlu) traps at same time on same thread
+//***************************************************************************
+
+
+// coverage_def TLU_INTL_EXTL_COV (bit [14:0] tlu_intl_extl_st)
+// {
+
+  /////////
+  // States
+  wildcard state s_IFU_LCL_ISIDE_TRAPS		(IFU_LCL_ISIDE_TRAPS);
+  wildcard state s_LSU_LCL_DSIDE_TRAPS	        (LSU_LCL_DSIDE_TRAPS);
+  wildcard state s_IFU_LCL_DSIDE_TRAPS		(IFU_LCL_DSIDE_TRAPS);
+  wildcard state s_EXU_LCL_ISIDE_TRAPS	        (EXU_LCL_ISIDE_TRAPS);
+
+
+  wildcard state s_PIC_WRAP_LSU_DEFR_TRAP	(PIC_WRAP_LSU_DEFR_TRAP);
+
+  wildcard state s_SWINT_VLD_IFU_SYNC_TRAP	(SWINT_VLD_IFU_SYNC_TRAP);
+  wildcard state s_HINTP_VLD_IFU_SYNC_TRAP	(HINTP_VLD_IFU_SYNC_TRAP);
+  wildcard state s_HWINT_VLD_IFU_SYNC_TRAP	(HWINT_VLD_IFU_SYNC_TRAP);
+  wildcard state s_NUKE_INT_IFU_SYNC_TRAP	(NUKE_INT_IFU_SYNC_TRAP);
+  wildcard state s_PIC_WRAP_IFU_SYNC_TRAP	(PIC_WRAP_IFU_SYNC_TRAP);
+  wildcard state s_SWINT_VLD_EXU_SYNC_TRAP	(SWINT_VLD_EXU_SYNC_TRAP);
+  wildcard state s_HINTP_VLD_EXU_SYNC_TRAP	(HINTP_VLD_EXU_SYNC_TRAP);
+  wildcard state s_HWINT_VLD_EXU_SYNC_TRAP	(HWINT_VLD_EXU_SYNC_TRAP);
+  wildcard state s_NUKE_INT_EXU_SYNC_TRAP	(NUKE_INT_EXU_SYNC_TRAP);
+  wildcard state s_PIC_WRAP_EXU_SYNC_TRAP	(PIC_WRAP_EXU_SYNC_TRAP);
+  wildcard state s_SWINT_VLD_LSU_SYNC_TRAP	(SWINT_VLD_LSU_SYNC_TRAP);
+  wildcard state s_HINTP_VLD_LSU_SYNC_TRAP	(HINTP_VLD_LSU_SYNC_TRAP);
+  wildcard state s_HWINT_VLD_LSU_SYNC_TRAP	(HWINT_VLD_LSU_SYNC_TRAP);
+  wildcard state s_NUKE_INT_LSU_SYNC_TRAP	(NUKE_INT_LSU_SYNC_TRAP);
+  wildcard state s_PIC_WRAP_LSU_SYNC_TRAP	(PIC_WRAP_LSU_SYNC_TRAP);
+  
+  wildcard state s_EXU_LCL_DSIDE_TRAPS	        (EXU_LCL_DSIDE_TRAPS);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_TLZ_LSU_DEFR_TRAP		(TLZ_LSU_DEFR_TRAP);
+  wildcard bad_state s_LSU_LCL_ISIDE_TRAPS	        (LSU_LCL_ISIDE_TRAPS);
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

@@ -1,0 +1,93 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_data_acc_case_3_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_data_acc_case_3_COV_VRH
+#define INC__TMP_spu_data_acc_case_3_COV_VRH
+
+#define DATA_ACC_CASE_3_UNALIGNED_ST_1_STATE 5'b01001
+#define DATA_ACC_CASE_3_UNALIGNED_ST_2_STATE 5'b01010
+#define DATA_ACC_CASE_3_UNALIGNED_ST_3_STATE 5'b01011
+#define DATA_ACC_CASE_3_UNALIGNED_ST_4_STATE 5'b01100
+#define DATA_ACC_CASE_3_UNALIGNED_ST_5_STATE 5'b01101
+#define DATA_ACC_CASE_3_UNALIGNED_ST_6_STATE 5'b01110
+#define DATA_ACC_CASE_3_UNALIGNED_ST_7_STATE 5'b01111
+#define DATA_ACC_CASE_3_UNALIGNED_LD_1_STATE 5'b10001
+#define DATA_ACC_CASE_3_UNALIGNED_LD_2_STATE 5'b10010
+#define DATA_ACC_CASE_3_UNALIGNED_LD_3_STATE 5'b10011
+#define DATA_ACC_CASE_3_UNALIGNED_LD_4_STATE 5'b10100
+#define DATA_ACC_CASE_3_UNALIGNED_LD_5_STATE 5'b10101
+#define DATA_ACC_CASE_3_UNALIGNED_LD_6_STATE 5'b10110
+#define DATA_ACC_CASE_3_UNALIGNED_LD_7_STATE 5'b10111
+
+/* TODO:
+ * + The logic in the SPU is incomplete. Need to add more signals later.
+ * + This only detects unaligned accesses, also need to check the size.
+ *   Is this info available in the spu, or only in the lsu?
+ * + Check the timing of the sigs.
+ */
+
+/*
+ * Order of the signals in data_acc_case_3_state:
+ * data_acc_case_3_sample_state[4:0], which is:
+ * this.data_acc_case_3_sample_state = {this.ldxaFlushed, this.stxaFlushed, this.covPort.$exu_lsu_ldst_va_e.2[2:0]};
+ *
+ */
+
+/*
+ * spu_data_acc_case_3_cov
+ *
+ * This coverage object checks for one of four data access exception cases in
+ * the SPU. Here is the case, taken from the spu_testplan.tex
+ * file:
+ *
+ *  Case 3: Accessing SPU ASI with integer load/store alternate which is
+ *  not 8 bytes in size or doesn't have an 8 byte aligned address. So
+ *  only ldxa/stxa are allowed.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample ldstxa_sample_monitor_C${c}.data_acc_case_3_sample_state {
+  // Declare states to be covered 
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_1_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_1_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_2_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_2_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_3_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_3_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_4_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_4_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_5_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_5_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_6_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_6_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_ST_7_STATE (DATA_ACC_CASE_3_UNALIGNED_ST_7_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_1_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_1_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_2_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_2_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_3_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_3_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_4_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_4_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_5_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_5_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_6_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_6_STATE);
+  state s_DATA_ACC_CASE_3_UNALIGNED_LD_7_STATE (DATA_ACC_CASE_3_UNALIGNED_LD_7_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

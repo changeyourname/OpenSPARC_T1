@@ -1,0 +1,53 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_tr_flsh_inst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_tr_flsh_inst_cov.vr
+// Description:
+// This coverage object covers all instruction types in all pipe stages when
+// the flush occurs.
+// 
+// State: 8'b: thr_vld_d,inst_d,flhw
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_TR_FLSH_INST_COV (bit [7:0] cov_vector)
+// {
+.@inst = ("BPr","BPcc_Bicc","FBfcc_FBPfcc","Call","Mul", "Div","Rdpr","Flushw","Rdy","Rdccr","Rdasi","Rdtick","Rdpc","Rdfprs","Membar","Stbar","Rdasr","Wry","Wrccr","Wrasi","Wrfprs","Sir","Wrasr","Saved","Restored","Wrpr","Fpop1","Fpop2","Jmpl","Return","Tcc","Flush","Save","Restore","Done","Retry","Ld","Ldasi","Stasi","Ldstub","Swap","Ldfp","Stfp","Cas","Pref","Halt","St");
+
+  //Flush when the instruction enters the pipe
+.foreach $inst (@inst) {
+.   $instlc = lc $inst;
+.   $instuc = uc $inst;
+.   $state = $instuc_."flhw";
+.   print "  state s_$instlc\_flhw\t\t ($instuc\_D_FLUSH_W);\n";
+.}
+  //Flush when the instruction is in E,M,W stages
+.foreach $inst (@inst) {
+.   $instlc = lc $inst;
+.   $instuc = uc $inst;
+.   print "  wildcard trans t_$instlc\_0_flhw\t\t ($instuc\_D -> FLUSH_W);\n";
+.   print "  wildcard trans t_$instlc\_1_flhw\t\t ($instuc\_D -> NULL_STATE_FLUSH_W -> FLUSH_W);\n";
+.   print "  wildcard trans t_$instlc\_2_flhw\t\t ($instuc\_D -> NULL_STATE_FLUSH_W[.2.] -> FLUSH_W);\n";
+.
+.}
+// }	

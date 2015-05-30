@@ -1,0 +1,59 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_tlbcam_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// tlb cam
+//***********************************************************************
+
+  state			s_TLBCAM_ST00	( 10'b1100000_0_00 );
+  state			s_TLBCAM_ST01	( 10'b1100000_0_01 );
+  state			s_TLBCAM_ST02	( 10'b1100000_0_10 );
+  wildcard state	s_TLBCAM_ST03	( 10'b1100000_x_11 );
+  wildcard state	s_TLBCAM_ST04	( 10'b1100000_1_xx );
+
+  state			s_TLBCAM_ST05	( 10'b1010000_0_00 );
+  state			s_TLBCAM_ST06	( 10'b1010000_0_01 );
+  state			s_TLBCAM_ST07	( 10'b1010000_0_10 );
+  wildcard state	s_TLBCAM_ST08	( 10'b1010000_x_11 );
+  wildcard state	s_TLBCAM_ST09	( 10'b1010000_1_xx );
+
+  state			s_TLBCAM_ST10	( 10'b1111000_0_00 );
+  state			s_TLBCAM_ST11	( 10'b1111000_0_01 );
+  state			s_TLBCAM_ST12	( 10'b1111000_0_10 );
+  wildcard state	s_TLBCAM_ST13	( 10'b1111000_x_11 );
+  wildcard state	s_TLBCAM_ST14	( 10'b1111000_1_xx );
+
+  state			s_TLBCAM_ST15	( 10'b1110100_0_00 );
+  state			s_TLBCAM_ST16	( 10'b1110100_0_01 );
+  state			s_TLBCAM_ST17	( 10'b1110100_0_10 );
+  wildcard state	s_TLBCAM_ST18	( 10'b1110100_x_11 );
+  wildcard state	s_TLBCAM_ST19	( 10'b1110100_1_xx );
+
+  state			s_TLBCAM_ST20	( 10'b1110010_0_00 );
+  state			s_TLBCAM_ST21	( 10'b1110010_0_01 );
+  state			s_TLBCAM_ST22	( 10'b1110010_0_10 );
+  wildcard state	s_TLBCAM_ST23	( 10'b1110010_x_11 );
+  wildcard state	s_TLBCAM_ST24	( 10'b1110010_1_xx );
+
+  state			s_TLBCAM_ST25	( 10'b1000001_0_00 );
+  state			s_TLBCAM_ST26	( 10'b1000001_0_01 );
+  state			s_TLBCAM_ST27	( 10'b1000001_0_10 );
+  wildcard state	s_TLBCAM_ST28	( 10'b1000001_x_11 );
+  wildcard state	s_TLBCAM_ST29	( 10'b1000001_1_xx );

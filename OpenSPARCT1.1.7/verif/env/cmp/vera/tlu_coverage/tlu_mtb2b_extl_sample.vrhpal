@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tlu_mtb2b_extl_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***************************************************************************
+//
+// State machine coverage for back-to-back synchronous traps reported by other
+// sparc core units (ifu, exu, lsu, ffu, spu) on different threads, and
+// multiple simultanous asynchronous (ffpu, spill, cwp_cmplt) events repoted
+// by other sparc core units.
+//***************************************************************************
+
+
+// coverage_def TLU_MTB2B_EXTL_COV (bit [12:0] tlu_mtb2b_extl_st)
+// {
+
+  /////////
+  // States
+  
+  wildcard state s_SYNC_IFU_IFU_TRAP			(SYNC_IFU_IFU_TRAP);
+  wildcard state s_SYNC_IFU_EXU_TRAP			(SYNC_IFU_EXU_TRAP);
+  wildcard state s_SYNC_IFU_LSU_TRAP			(SYNC_IFU_LSU_TRAP);
+  wildcard state s_SYNC_IFU_FFU_TRAP			(SYNC_IFU_FFU_TRAP);
+  wildcard state s_SYNC_IFU_SPU_TRAP			(SYNC_IFU_SPU_TRAP);
+  wildcard state s_SYNC_EXU_IFU_TRAP			(SYNC_EXU_IFU_TRAP);
+  wildcard state s_SYNC_EXU_EXU_TRAP			(SYNC_EXU_EXU_TRAP);
+  wildcard state s_SYNC_EXU_LSU_TRAP			(SYNC_EXU_LSU_TRAP);
+  wildcard state s_SYNC_EXU_FFU_TRAP			(SYNC_EXU_FFU_TRAP);
+  wildcard state s_SYNC_EXU_SPU_TRAP			(SYNC_EXU_SPU_TRAP);
+  wildcard state s_SYNC_LSU_IFU_TRAP			(SYNC_LSU_IFU_TRAP);
+  wildcard state s_SYNC_LSU_EXU_TRAP			(SYNC_LSU_EXU_TRAP);
+  wildcard state s_SYNC_LSU_LSU_TRAP			(SYNC_LSU_LSU_TRAP);
+  wildcard state s_SYNC_LSU_FFU_TRAP			(SYNC_LSU_FFU_TRAP);
+  wildcard state s_SYNC_LSU_SPU_TRAP			(SYNC_LSU_SPU_TRAP);
+  wildcard state s_SYNC_FFU_IFU_TRAP			(SYNC_FFU_IFU_TRAP);
+  wildcard state s_SYNC_FFU_EXU_TRAP			(SYNC_FFU_EXU_TRAP);
+  wildcard state s_SYNC_FFU_LSU_TRAP			(SYNC_FFU_LSU_TRAP);
+  wildcard state s_SYNC_FFU_SPU_TRAP			(SYNC_FFU_SPU_TRAP);
+  wildcard state s_SYNC_SPU_IFU_TRAP			(SYNC_SPU_IFU_TRAP);
+  wildcard state s_SYNC_SPU_EXU_TRAP			(SYNC_SPU_EXU_TRAP);
+  wildcard state s_SYNC_SPU_LSU_TRAP			(SYNC_SPU_LSU_TRAP);
+  wildcard state s_SYNC_SPU_FFU_TRAP			(SYNC_SPU_FFU_TRAP);
+  wildcard state s_ASYNC_FP_SPILL_TRAPS			(ASYNC_FP_SPILL_TRAPS);
+  wildcard state s_ASYNC_FP_TRAP_CWP_CMPLT		(ASYNC_FP_TRAP_CWP_CMPLT);
+
+  wildcard state s_ASYNC_FP_LSU_TRAPS			(ASYNC_FP_LSU_TRAPS);
+  wildcard state s_ASYNC_SPILL_LSU_TRAPS		(ASYNC_SPILL_LSU_TRAPS);
+  wildcard state s_ASYNC_LSU_TRAP_CWP_CMPLT		(ASYNC_LSU_TRAP_CWP_CMPLT);
+  wildcard state s_ASYNC_FP_SPILL_LSU_TRAPS		(ASYNC_FP_SPILL_LSU_TRAPS);
+  wildcard state s_ASYNC_FP_LSU_TRAPS_CWP_CMPLT		(ASYNC_FP_LSU_TRAPS_CWP_CMPLT);
+
+  //////////////
+  // Transitions
+
+  /////////////
+  // Bad States
+  wildcard bad_state s_ASYNC_SPILL_TRAP_CWP_CMPLT		(ASYNC_SPILL_TRAP_CWP_CMPLT);
+  wildcard bad_state s_ASYNC_FP_SPILL_TRAPS_CWP_CMPLT	(ASYNC_FP_SPILL_TRAPS_CWP_CMPLT);
+  wildcard bad_state s_ASYNC_SPILL_LSU_TRAPS_CWP_CMPLT	(ASYNC_SPILL_LSU_TRAPS_CWP_CMPLT);
+  wildcard bad_state s_ASYNC_FP_SPILL_LSU_TRAPS_CWP_CMPLT	(ASYNC_FP_SPILL_LSU_TRAPS_CWP_CMPLT);
+
+
+  ///////////////////
+  // Bad Transitions 
+
+// }

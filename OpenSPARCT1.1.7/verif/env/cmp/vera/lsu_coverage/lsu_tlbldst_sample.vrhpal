@@ -1,0 +1,65 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_tlbldst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+//
+//	State machine for Load in lsu_dctl.v
+//
+//***********************************************************************
+
+
+// coverage_def LSU_TLBLDSTXA_COV (bit [1:0] tlb_ldstxa_state, bit [1:0] thrid, integer my_thrid)
+// {
+  // state declarations
+
+  state s_IDLE    (IDLE);
+  state s_REQ     (REQ);
+  state s_GRANT   (GRANT);
+  bad_state s_not_LDSTATE (not state) if( thrid == my_thrid );
+
+  // no-change transitions 
+  trans t_s_IDLE_to_s_IDLE ( IDLE -> IDLE );
+  trans t_s_REQ_to_s_REQ ( REQ -> REQ );
+  trans t_s_GRANT_to_s_GRANT ( GRANT -> GRANT );
+ 
+  // state-change transitions 
+  trans t_s_IDLE_to_s_REQ 	( IDLE -> REQ );
+  trans t_s_REQ_to_s_GRANT 	( REQ -> GRANT );
+  trans t_s_GRANT_to_s_IDLE 	( GRANT -> IDLE);
+  trans t_s_REQ_to_s_IDLE 	( REQ -> IDLE );
+
+  // normal ld/st FSM transitions
+  trans t_TLB_LDST_STATE_0 (
+  	IDLE  ->			
+	REQ [.1:64.] ->
+        GRANT [.1:64.] ->
+	IDLE		
+  );
+
+  // normal ld/st FSM transitions
+  trans t_TLB_LDST_STATE_1 (
+  	IDLE  ->			
+	REQ [.1:64.] ->	
+	IDLE		
+  );
+
+  // bad transitions 
+  bad_trans t_not_LDSTATE (not trans) if( thrid == my_thrid );
+// }

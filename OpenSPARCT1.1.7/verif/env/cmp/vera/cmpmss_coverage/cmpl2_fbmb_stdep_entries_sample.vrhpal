@@ -1,0 +1,158 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpl2_fbmb_stdep_entries_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+// entries[12:0] = {fbf_st_or_dep_rdy_c4, fill_complete_c4[7:0], fbf_enc_dep_mbid_c4[3:0]}
+
+state fb_0_mb_0 ( {1'b1, 8'b00000001, 4'h0} );
+state fb_0_mb_1 ( {1'b1, 8'b00000001, 4'h1} );
+state fb_0_mb_2 ( {1'b1, 8'b00000001, 4'h2} );
+state fb_0_mb_3 ( {1'b1, 8'b00000001, 4'h3} );
+state fb_0_mb_4 ( {1'b1, 8'b00000001, 4'h4} );
+state fb_0_mb_5 ( {1'b1, 8'b00000001, 4'h5} );
+state fb_0_mb_6 ( {1'b1, 8'b00000001, 4'h6} );
+state fb_0_mb_7 ( {1'b1, 8'b00000001, 4'h7} );
+state fb_0_mb_8 ( {1'b1, 8'b00000001, 4'h8} );
+state fb_0_mb_9 ( {1'b1, 8'b00000001, 4'h9} );
+state fb_0_mb_a ( {1'b1, 8'b00000001, 4'ha} );
+state fb_0_mb_b ( {1'b1, 8'b00000001, 4'hb} );
+state fb_0_mb_c ( {1'b1, 8'b00000001, 4'hc} );
+state fb_0_mb_d ( {1'b1, 8'b00000001, 4'hd} );
+state fb_0_mb_e ( {1'b1, 8'b00000001, 4'he} );
+bad_state fb_0_mb_f ( {1'b1, 8'b00000001, 4'hf} );
+
+state fb_1_mb_0 ( {1'b1, 8'b00000010, 4'h0} );
+state fb_1_mb_1 ( {1'b1, 8'b00000010, 4'h1} );
+state fb_1_mb_2 ( {1'b1, 8'b00000010, 4'h2} );
+state fb_1_mb_3 ( {1'b1, 8'b00000010, 4'h3} );
+state fb_1_mb_4 ( {1'b1, 8'b00000010, 4'h4} );
+state fb_1_mb_5 ( {1'b1, 8'b00000010, 4'h5} );
+state fb_1_mb_6 ( {1'b1, 8'b00000010, 4'h6} );
+state fb_1_mb_7 ( {1'b1, 8'b00000010, 4'h7} );
+state fb_1_mb_8 ( {1'b1, 8'b00000010, 4'h8} );
+state fb_1_mb_9 ( {1'b1, 8'b00000010, 4'h9} );
+state fb_1_mb_a ( {1'b1, 8'b00000010, 4'ha} );
+state fb_1_mb_b ( {1'b1, 8'b00000010, 4'hb} );
+state fb_1_mb_c ( {1'b1, 8'b00000010, 4'hc} );
+state fb_1_mb_d ( {1'b1, 8'b00000010, 4'hd} );
+state fb_1_mb_e ( {1'b1, 8'b00000010, 4'he} );
+bad_state fb_1_mb_f ( {1'b1, 8'b00000010, 4'hf} );
+
+state fb_2_mb_0 ( {1'b1, 8'b00000100, 4'h0} );
+state fb_2_mb_1 ( {1'b1, 8'b00000100, 4'h1} );
+state fb_2_mb_2 ( {1'b1, 8'b00000100, 4'h2} );
+state fb_2_mb_3 ( {1'b1, 8'b00000100, 4'h3} );
+state fb_2_mb_4 ( {1'b1, 8'b00000100, 4'h4} );
+state fb_2_mb_5 ( {1'b1, 8'b00000100, 4'h5} );
+state fb_2_mb_6 ( {1'b1, 8'b00000100, 4'h6} );
+state fb_2_mb_7 ( {1'b1, 8'b00000100, 4'h7} );
+state fb_2_mb_8 ( {1'b1, 8'b00000100, 4'h8} );
+state fb_2_mb_9 ( {1'b1, 8'b00000100, 4'h9} );
+state fb_2_mb_a ( {1'b1, 8'b00000100, 4'ha} );
+state fb_2_mb_b ( {1'b1, 8'b00000100, 4'hb} );
+state fb_2_mb_c ( {1'b1, 8'b00000100, 4'hc} );
+state fb_2_mb_d ( {1'b1, 8'b00000100, 4'hd} );
+state fb_2_mb_e ( {1'b1, 8'b00000100, 4'he} );
+bad_state fb_2_mb_f ( {1'b1, 8'b00000100, 4'hf} );
+
+state fb_3_mb_0 ( {1'b1, 8'b00001000, 4'h0} );
+state fb_3_mb_1 ( {1'b1, 8'b00001000, 4'h1} );
+state fb_3_mb_2 ( {1'b1, 8'b00001000, 4'h2} );
+state fb_3_mb_3 ( {1'b1, 8'b00001000, 4'h3} );
+state fb_3_mb_4 ( {1'b1, 8'b00001000, 4'h4} );
+state fb_3_mb_5 ( {1'b1, 8'b00001000, 4'h5} );
+state fb_3_mb_6 ( {1'b1, 8'b00001000, 4'h6} );
+state fb_3_mb_7 ( {1'b1, 8'b00001000, 4'h7} );
+state fb_3_mb_8 ( {1'b1, 8'b00001000, 4'h8} );
+state fb_3_mb_9 ( {1'b1, 8'b00001000, 4'h9} );
+state fb_3_mb_a ( {1'b1, 8'b00001000, 4'ha} );
+state fb_3_mb_b ( {1'b1, 8'b00001000, 4'hb} );
+state fb_3_mb_c ( {1'b1, 8'b00001000, 4'hc} );
+state fb_3_mb_d ( {1'b1, 8'b00001000, 4'hd} );
+state fb_3_mb_e ( {1'b1, 8'b00001000, 4'he} );
+bad_state fb_3_mb_f ( {1'b1, 8'b00001000, 4'hf} );
+
+state fb_4_mb_0 ( {1'b1, 8'b00010000, 4'h0} );
+state fb_4_mb_1 ( {1'b1, 8'b00010000, 4'h1} );
+state fb_4_mb_2 ( {1'b1, 8'b00010000, 4'h2} );
+state fb_4_mb_3 ( {1'b1, 8'b00010000, 4'h3} );
+state fb_4_mb_4 ( {1'b1, 8'b00010000, 4'h4} );
+state fb_4_mb_5 ( {1'b1, 8'b00010000, 4'h5} );
+state fb_4_mb_6 ( {1'b1, 8'b00010000, 4'h6} );
+state fb_4_mb_7 ( {1'b1, 8'b00010000, 4'h7} );
+state fb_4_mb_8 ( {1'b1, 8'b00010000, 4'h8} );
+state fb_4_mb_9 ( {1'b1, 8'b00010000, 4'h9} );
+state fb_4_mb_a ( {1'b1, 8'b00010000, 4'ha} );
+state fb_4_mb_b ( {1'b1, 8'b00010000, 4'hb} );
+state fb_4_mb_c ( {1'b1, 8'b00010000, 4'hc} );
+state fb_4_mb_d ( {1'b1, 8'b00010000, 4'hd} );
+state fb_4_mb_e ( {1'b1, 8'b00010000, 4'he} );
+bad_state fb_4_mb_f ( {1'b1, 8'b00010000, 4'hf} );
+
+state fb_5_mb_0 ( {1'b1, 8'b00100000, 4'h0} );
+state fb_5_mb_1 ( {1'b1, 8'b00100000, 4'h1} );
+state fb_5_mb_2 ( {1'b1, 8'b00100000, 4'h2} );
+state fb_5_mb_3 ( {1'b1, 8'b00100000, 4'h3} );
+state fb_5_mb_4 ( {1'b1, 8'b00100000, 4'h4} );
+state fb_5_mb_5 ( {1'b1, 8'b00100000, 4'h5} );
+state fb_5_mb_6 ( {1'b1, 8'b00100000, 4'h6} );
+state fb_5_mb_7 ( {1'b1, 8'b00100000, 4'h7} );
+state fb_5_mb_8 ( {1'b1, 8'b00100000, 4'h8} );
+state fb_5_mb_9 ( {1'b1, 8'b00100000, 4'h9} );
+state fb_5_mb_a ( {1'b1, 8'b00100000, 4'ha} );
+state fb_5_mb_b ( {1'b1, 8'b00100000, 4'hb} );
+state fb_5_mb_c ( {1'b1, 8'b00100000, 4'hc} );
+state fb_5_mb_d ( {1'b1, 8'b00100000, 4'hd} );
+state fb_5_mb_e ( {1'b1, 8'b00100000, 4'he} );
+bad_state fb_5_mb_f ( {1'b1, 8'b00100000, 4'hf} );
+
+state fb_6_mb_0 ( {1'b1, 8'b01000000, 4'h0} );
+state fb_6_mb_1 ( {1'b1, 8'b01000000, 4'h1} );
+state fb_6_mb_2 ( {1'b1, 8'b01000000, 4'h2} );
+state fb_6_mb_3 ( {1'b1, 8'b01000000, 4'h3} );
+state fb_6_mb_4 ( {1'b1, 8'b01000000, 4'h4} );
+state fb_6_mb_5 ( {1'b1, 8'b01000000, 4'h5} );
+state fb_6_mb_6 ( {1'b1, 8'b01000000, 4'h6} );
+state fb_6_mb_7 ( {1'b1, 8'b01000000, 4'h7} );
+state fb_6_mb_8 ( {1'b1, 8'b01000000, 4'h8} );
+state fb_6_mb_9 ( {1'b1, 8'b01000000, 4'h9} );
+state fb_6_mb_a ( {1'b1, 8'b01000000, 4'ha} );
+state fb_6_mb_b ( {1'b1, 8'b01000000, 4'hb} );
+state fb_6_mb_c ( {1'b1, 8'b01000000, 4'hc} );
+state fb_6_mb_d ( {1'b1, 8'b01000000, 4'hd} );
+state fb_6_mb_e ( {1'b1, 8'b01000000, 4'he} );
+bad_state fb_6_mb_f ( {1'b1, 8'b01000000, 4'hf} );
+
+state fb_7_mb_0 ( {1'b1, 8'b10000000, 4'h0} );
+state fb_7_mb_1 ( {1'b1, 8'b10000000, 4'h1} );
+state fb_7_mb_2 ( {1'b1, 8'b10000000, 4'h2} );
+state fb_7_mb_3 ( {1'b1, 8'b10000000, 4'h3} );
+state fb_7_mb_4 ( {1'b1, 8'b10000000, 4'h4} );
+state fb_7_mb_5 ( {1'b1, 8'b10000000, 4'h5} );
+state fb_7_mb_6 ( {1'b1, 8'b10000000, 4'h6} );
+state fb_7_mb_7 ( {1'b1, 8'b10000000, 4'h7} );
+state fb_7_mb_8 ( {1'b1, 8'b10000000, 4'h8} );
+state fb_7_mb_9 ( {1'b1, 8'b10000000, 4'h9} );
+state fb_7_mb_a ( {1'b1, 8'b10000000, 4'ha} );
+state fb_7_mb_b ( {1'b1, 8'b10000000, 4'hb} );
+state fb_7_mb_c ( {1'b1, 8'b10000000, 4'hc} );
+state fb_7_mb_d ( {1'b1, 8'b10000000, 4'hd} );
+state fb_7_mb_e ( {1'b1, 8'b10000000, 4'he} );
+bad_state fb_7_mb_f ( {1'b1, 8'b10000000, 4'hf} );

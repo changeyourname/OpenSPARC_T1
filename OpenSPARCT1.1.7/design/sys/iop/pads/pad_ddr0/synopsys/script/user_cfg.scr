@@ -1,0 +1,137 @@
+# ========== Copyright Header Begin ==========================================
+# 
+# OpenSPARC T1 Processor File: user_cfg.scr
+# Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+# 
+# The above named program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public
+# License version 2 as published by the Free Software Foundation.
+# 
+# The above named program is distributed in the hope that it will be 
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public
+# License along with this work; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# ========== Copyright Header End ============================================
+
+source -echo -verbose $dv_root/design/sys/synopsys/script/project_io_cfg.scr
+
+set rtl_files {\
+lib/u1/u1.behV \
+lib/m1/m1.behV \
+design/sys/iop/common/rtl/swrvr_clib.v \
+design/sys/iop/analog/bw_clk/rtl/bw_clk_cclk_scanlasr_2x.v \
+design/sys/iop/analog/bw_iodll/rtl/bw_iodll_code_adjust.v \
+design/sys/iop/analog/bw_iodll/rtl/bw_iodll.v \
+design/sys/iop/analog/bw_iodll/rtl/bw_ioslave_dl.v \
+design/sys/iop/common/rtl/cluster_header_dup.v \
+design/sys/iop/common/rtl/synchronizer_asr_dup.v \
+design/sys/iop/common/rtl/synchronizer_asr.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_dq_pscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_impctl_avgcnt.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_impctl_clnew.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_impctl_clsm.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_impctl_smachine_new.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_jp_bs_baseblk.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_bscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_dq_bscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_odt_oebscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_jp_sstl_oebscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_sstl_bscan.v \
+design/sys/iop/pads/pad_common/rtl/bw_io_sstl_dq_bscan.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_clk_cl_ddr_ddr.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_4sig_clk.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_4sig_clk_x2.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_async.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x2_async.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x2.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x4.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_6sig_x4.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_impctl_pulldown.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_impctl_pullup.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_mclk_txrx.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pad_txrx.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pad_txrx_zctl.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_pvt_enable.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_a.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_b.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_rptr_vddcom.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_bot.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_sig_top.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_testmux.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_logic_high.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_logic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_ddr_vref_rptr.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_clkgen.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_ddr_dnrcn.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_ddr_uprcn.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_sclk.v \
+design/sys/iop/pads/pad_ddr_common/rtl/bw_io_impctl_upclk.v \
+design/sys/iop/pads/pad_ddr_common/rtl/ddr_ch.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_async_edgelogic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_async_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_clk_edgelogic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_clk_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_ctl_edgelogic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_ctl_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_dq_edgelogic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_dq_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_dqs_edgelogic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_dqs_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_mclk_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_pad_logic.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_sstl_dq_pad.v \
+design/sys/iop/pads/pad_ddr_common/rtl/dram_sstl_pad.v \
+
+design/sys/iop/pads/pad_ddr0/rtl/pad_ddr0.v \
+} 
+
+set mix_files {}
+set top_module pad_ddr0
+
+set include_paths {\
+design/sys/iop/include \
+}
+
+set black_box_libs {}
+set black_box_designs {}
+set mem_libs {}
+set dont_touch_modules {}
+set compile_effort   "medium"
+
+set compile_flatten_all 1
+
+set compile_no_new_cells_at_top_level false
+
+set default_clk rclk
+set default_clk_freq  1200
+set default_setup_skew  0.1
+set default_hold_skew  0.1
+set default_clk_transition  0.04
+set clk_list {                        \
+                {rclk   1200.0   0.100   0.100   0.040}        \
+}
+
+set ideal_net_list {}
+set false_path_list {}
+set enforce_input_fanout_one     0
+set allow_outport_drive_innodes  1
+set skip_scan            0
+set add_lockup_latch     false
+set chain_count          1
+set scanin_port_list     {}
+set scanout_port_list    {}
+set scanenable_port      global_shift_enable
+set has_test_stub        1
+set scanenable_pin       test_stub_no_bist/se
+set long_chain_so_0_net  long_chain_so_0
+set short_chain_so_0_net short_chain_so_0
+set so_0_net             so_0
+set insert_extra_lockup_latch 0
+set extra_lockup_latch_clk_list {}

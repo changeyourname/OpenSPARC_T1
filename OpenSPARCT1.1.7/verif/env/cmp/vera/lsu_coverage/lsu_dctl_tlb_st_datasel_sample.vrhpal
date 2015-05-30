@@ -1,0 +1,33 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_tlb_st_datasel_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// bus sharing between tlu and mmu
+//***********************************************************************
+
+  state s_TLB_ST_DATASEL_ST0 ( 5'b1000_0 );
+  state s_TLB_ST_DATASEL_ST1 ( 5'b0100_0 );
+  state s_TLB_ST_DATASEL_ST2 ( 5'b0010_0 );
+  state s_TLB_ST_DATASEL_ST3 ( 5'b0001_0 );
+
+  state s_TLB_ST_DATASEL_ST4 ( 5'b1000_1 );
+  state s_TLB_ST_DATASEL_ST5 ( 5'b0100_1 );
+  state s_TLB_ST_DATASEL_ST6 ( 5'b0010_1 );
+  state s_TLB_ST_DATASEL_ST7 ( 5'b0001_1 );

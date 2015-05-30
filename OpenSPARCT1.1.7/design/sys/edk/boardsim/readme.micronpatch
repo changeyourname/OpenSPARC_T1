@@ -1,0 +1,46 @@
+
+==============================================
+Patch Instructions for Micron DDR Memory Model
+==============================================
+
+1. Download the Micron DDR memory model from
+   http://download.micron.com/downloads/models/verilog/sdram/ddr/256meg/256Mb_ddr.zip
+
+2. Due to the difference in addressing modes in the Xilinx microblaze memory management
+   unit and the DDR memory model, the read_mem and write_mem task calls in the  ddr.v
+   should be changed. The micronddr_patch file performs these necessary modifications
+   on ddr.v and ddr_parameters.vh. To run the patch :
+   
+   a) Copy the ddr.v and ddr_paramteres.vh to the current boardsim directory.
+   b) Add execute permission to micronddr_patch and run the script.
+   
+      chmod +x micronddr_patch
+	  ./micronddr_patch
+
+
+===============================================
+Patch Instructions for Micron DDR2 Memory Model
+===============================================
+
+1. Download the Micron DDR2 memory model from
+   http://download.micron.com/downloads/models/verilog/sdram/ddr2/512Mb_ddr2.zip
+
+2. Run the ddr2 patch script to set up the memories to pre-load data.
+   
+   a) Copy the ddr2.v, ddr2_dimm.v, and ddr2_parameters.vh files to the
+      current boardsim/dram_data directory.
+   b) Add execute permission to micronddr_patch and run the script.
+   
+      chmod +x micronddr2_patch
+	  ./micronddr2_patch
+
+    Changes made by the micronddr2_patch script:
+     1.  Change ddr2_parameters.vh to add a parameter for the memory 
+         initialization file.
+     2.  Change ddr2.v to add a readmemh command to load data into the memory.
+     3.  Change ddr2_dimm.v to add parameter to the ddr2 instances for the
+	 different file names.
+
+
+For further details, please refer to Micron online documentation and OpenSPARCT1_DVGuide.
+http://www.micron.com/products/partdetail?part=MT46V16M16P-5B

@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: exu_single_bypass_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+
+
+								 	  
+		     
+
+
+// coverage_def EXU_SINGLE_BYPASS_COV (bit[`EXU_SINGLE_BYPASS_WIDTH-1:0] exu_single_bypass_state) {
+  //state declarations
+
+
+wildcard state s_EXU_BYP_RS1_E  		(EXU_BYP_RS1_E  );
+wildcard state s_EXU_BYP_RS1_M  		(EXU_BYP_RS1_M  );
+wildcard state s_EXU_BYP_RS1_W  		(EXU_BYP_RS1_W  );
+wildcard state s_EXU_BYP_RS1_W2 		(EXU_BYP_RS1_W2 );
+wildcard state s_EXU_BYP_RS1_LD 		(EXU_BYP_RS1_LD );
+
+wildcard state s_EXU_BYP_RS2_E  		(EXU_BYP_RS2_E  );
+wildcard state s_EXU_BYP_RS2_M  		(EXU_BYP_RS2_M  );
+wildcard state s_EXU_BYP_RS2_W  		(EXU_BYP_RS2_W  );
+wildcard state s_EXU_BYP_RS2_W2 		(EXU_BYP_RS2_W2 );
+wildcard state s_EXU_BYP_RS2_LD 		(EXU_BYP_RS2_LD );
+
+wildcard state s_EXU_BYP_RS3_E  		(EXU_BYP_RS3_E  );
+wildcard state s_EXU_BYP_RS3_M  		(EXU_BYP_RS3_M  );
+wildcard state s_EXU_BYP_RS3_W  		(EXU_BYP_RS3_W  );
+wildcard state s_EXU_BYP_RS3_W2 		(EXU_BYP_RS3_W2 );
+wildcard state s_EXU_BYP_RS3_LD 		(EXU_BYP_RS3_LD );
+
+wildcard state s_EXU_BYP_RS3H_E  		(EXU_BYP_RS3H_E  );
+wildcard state s_EXU_BYP_RS3H_M  		(EXU_BYP_RS3H_M  );
+wildcard state s_EXU_BYP_RS3H_W  		(EXU_BYP_RS3H_W  );
+wildcard state s_EXU_BYP_RS3H_W2 		(EXU_BYP_RS3H_W2 );
+wildcard state s_EXU_BYP_RS3H_LD 		(EXU_BYP_RS3H_LD );
+
+// }
+

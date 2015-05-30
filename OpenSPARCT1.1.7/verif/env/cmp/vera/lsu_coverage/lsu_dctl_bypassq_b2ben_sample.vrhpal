@@ -1,0 +1,49 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_bypassq_b2ben_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// bypass queues - b2b enabling
+//***********************************************************************
+
+  #define B2BEN_ST0           4'b1000
+  #define B2BEN_ST1           4'b0100
+  #define B2BEN_ST2           4'b0010
+  #define B2BEN_ST3           4'b0001
+
+  state s_BYPASSQ_B2BEN_ST00 (B2BEN_ST0);
+  state s_BYPASSQ_B2BEN_ST01 (B2BEN_ST1);
+  state s_BYPASSQ_B2BEN_ST02 (B2BEN_ST2);
+  state s_BYPASSQ_B2BEN_ST03 (B2BEN_ST3);
+
+  trans t_BYPASSQ_B2BEN_ST04 (B2BEN_ST0 -> B2BEN_ST1);
+  trans t_BYPASSQ_B2BEN_ST05 (B2BEN_ST0 -> B2BEN_ST2);
+  trans t_BYPASSQ_B2BEN_ST06 (B2BEN_ST0 -> B2BEN_ST3);
+
+  trans t_BYPASSQ_B2BEN_ST07 (B2BEN_ST1 -> B2BEN_ST0);
+  trans t_BYPASSQ_B2BEN_ST08 (B2BEN_ST1 -> B2BEN_ST2);
+  trans t_BYPASSQ_B2BEN_ST09 (B2BEN_ST1 -> B2BEN_ST3);
+
+  trans t_BYPASSQ_B2BEN_ST10 (B2BEN_ST2 -> B2BEN_ST0);
+  trans t_BYPASSQ_B2BEN_ST11 (B2BEN_ST2 -> B2BEN_ST1);
+  trans t_BYPASSQ_B2BEN_ST12 (B2BEN_ST2 -> B2BEN_ST3);
+
+  trans t_BYPASSQ_B2BEN_ST13 (B2BEN_ST3 -> B2BEN_ST0);
+  trans t_BYPASSQ_B2BEN_ST14 (B2BEN_ST3 -> B2BEN_ST1);
+  trans t_BYPASSQ_B2BEN_ST15 (B2BEN_ST3 -> B2BEN_ST2);

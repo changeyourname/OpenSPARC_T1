@@ -1,0 +1,231 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "spu_cov_inc.pal";
+// $cores
+
+////////////////////////////////////////////////////////////////////////////////
+// spu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+connect input spu_intf.cmp_clk = "cmp_top.iop.sparc0.rclk" iskew -1 
+connect input spu_intf.cmp_diag_done = "cmp_top.diag_done" iskew -1 
+connect input spu_intf.cmp_grst_l = "cmp_top.iop.sparc0.spc_grst_l" iskew -1 
+
+. sub connectInstance {
+.	my ( $sparcPath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.       my $spuCtlPath = $sparcPath.".spu.spu_ctl";
+.       my $spuTopPath = $sparcPath.".spu";
+.
+#ifndef GATE_SIM
+connect input spu_intf.C${c}_mared_idle_state = "${spuCtlPath}.spu_mared.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_mared_rdm_state = "${spuCtlPath}.spu_mared.cur_rdm_state" iskew -1 
+connect input spu_intf.C${c}_mared_rdn_state = "${spuCtlPath}.spu_mared.cur_rdn_state" iskew -1 
+connect input spu_intf.C${c}_mared_cmpsub_state = "${spuCtlPath}.spu_mared.cur_cmpsub_state" iskew -1 
+connect input spu_intf.C${c}_mared_wr0tox_state = "${spuCtlPath}.spu_mared.cur_wr0tox_state" iskew -1 
+connect input spu_intf.C${c}_mared_wrmtox_state = "${spuCtlPath}.spu_mared.cur_wrmtox_state" iskew -1 
+connect input spu_intf.C${c}_mared_wrstox_state = "${spuCtlPath}.spu_mared.cur_wrstox_state" iskew -1 
+connect input spu_intf.C${c}_mared_saveptrs_state = "${spuCtlPath}.spu_mared.cur_saveptrs_state" iskew -1 
+connect input spu_intf.C${c}_mared_submn_state = "${spuCtlPath}.spu_mared.cur_submn_state" iskew -1 
+connect input spu_intf.C${c}_mared_rdmdly_state = "${spuCtlPath}.spu_mared.cur_rdmdly_state" iskew -1 
+connect input spu_intf.C${c}_mared_dly_saveptrs_state = "${spuCtlPath}.spu_mared.dly_saveptrs_state" iskew -1 
+connect input spu_intf.C${c}_mared_twodly_saveptrs_state = "${spuCtlPath}.spu_mared.twodly_saveptrs_state" iskew -1 
+connect input spu_intf.C${c}_mared_red_done_dly1_state = "${spuCtlPath}.spu_mared.spu_mared_red_done_dly1" iskew -1 
+connect input spu_intf.C${c}_mared_red_done_dly2_state = "${spuCtlPath}.spu_mared.spu_mared_red_done_dly2" iskew -1 
+
+connect input spu_intf.C${c}_mamul_idle_state = "${spuCtlPath}.spu_mamul.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_mamul_tr2iloopa_frm_idle_dly = "${spuCtlPath}.spu_mamul.tr2iloopa_frm_idle_dly" iskew -1 
+connect input spu_intf.C${c}_mamul_iloopa_state = "${spuCtlPath}.spu_mamul.cur_iloopa_state" iskew -1 
+connect input spu_intf.C${c}_mamul_iloopb_state = "${spuCtlPath}.spu_mamul.cur_iloopb_state" iskew -1 
+connect input spu_intf.C${c}_mamul_iloopn_state = "${spuCtlPath}.spu_mamul.cur_iloopn_state" iskew -1 
+connect input spu_intf.C${c}_mamul_jloopa_state = "${spuCtlPath}.spu_mamul.cur_jloopa_state" iskew -1 
+connect input spu_intf.C${c}_mamul_jloopb_state = "${spuCtlPath}.spu_mamul.cur_jloopb_state" iskew -1 
+connect input spu_intf.C${c}_mamul_jloopm_state = "${spuCtlPath}.spu_mamul.cur_jloopm_state" iskew -1 
+connect input spu_intf.C${c}_mamul_jloopn_state = "${spuCtlPath}.spu_mamul.cur_jloopn_state" iskew -1 
+connect input spu_intf.C${c}_mamul_mwrite_state = "${spuCtlPath}.spu_mamul.cur_mwrite_state" iskew -1 
+connect input spu_intf.C${c}_mamul_nprime_state = "${spuCtlPath}.spu_mamul.cur_nprime_state" iskew -1 
+connect input spu_intf.C${c}_mamul_accumshft_state = "${spuCtlPath}.spu_mamul.cur_accumshft_state" iskew -1 
+connect input spu_intf.C${c}_mamul_tr2jloopa_frm_accumshft_dly = "${spuCtlPath}.spu_mamul.tr2jloopa_frm_accumshft_dly" iskew -1 
+connect input spu_intf.C${c}_mamul_result_c1_state = "${spuCtlPath}.spu_mamul.mul_result_c1" iskew -1 
+connect input spu_intf.C${c}_mamul_result_c2_state = "${spuCtlPath}.spu_mamul.mul_result_c2" iskew -1 
+connect input spu_intf.C${c}_mamul_result_c3_state = "${spuCtlPath}.spu_mamul.mul_result_c3" iskew -1 
+connect input spu_intf.C${c}_mamul_result_c4_state = "${spuCtlPath}.spu_mamul.mul_result_c4" iskew -1 
+connect input spu_intf.C${c}_mamul_result_c5_state = "${spuCtlPath}.spu_mamul.mul_result_c5" iskew -1 
+connect input spu_intf.C${c}_mamul_tr2mwrite_frm_accumshft_state = "${spuCtlPath}.spu_mamul.tr2mwrite_frm_accumshft" iskew -1 
+
+connect input spu_intf.C${c}_maaeqb_idle_state = "${spuCtlPath}.spu_maaeqb.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_idle_dly_state = "${spuCtlPath}.spu_maaeqb.tr2iloopa1_frm_idle_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_iloopa_state = "${spuCtlPath}.spu_maaeqb.cur_iloopa_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_iloopa1_state = "${spuCtlPath}.spu_maaeqb.cur_iloopa1_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_iloopn_state = "${spuCtlPath}.spu_maaeqb.cur_iloopn_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_ijloopa_state = "${spuCtlPath}.spu_maaeqb.cur_ijloopa_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_jloopa_state = "${spuCtlPath}.spu_maaeqb.cur_jloopa_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_jloopm_state = "${spuCtlPath}.spu_maaeqb.cur_jloopm_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_jloopn_state = "${spuCtlPath}.spu_maaeqb.cur_jloopn_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_mwrite_state = "${spuCtlPath}.spu_maaeqb.cur_mwrite_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_nprime_state = "${spuCtlPath}.spu_maaeqb.cur_nprime_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_accumshft_state = "${spuCtlPath}.spu_maaeqb.cur_accumshft_state" iskew -1 
+connect input spu_intf.C${c}_maaeqb_tr2jloopa_frm_accumshft_dly_state = "${spuCtlPath}.spu_maaeqb.tr2jloopa_frm_accumshft_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_tr2iloopa1_frm_accumshft_dly_state = "${spuCtlPath}.spu_maaeqb.tr2iloopa1_frm_accumshft_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_iloopa_dly_state = "${spuCtlPath}.spu_maaeqb.tr2jloopm_frm_iloopa_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_iloopa1_dly_state = "${spuCtlPath}.spu_maaeqb.cur_iloopa1_state_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_ijloopa_dly_state = "${spuCtlPath}.spu_maaeqb.tr2jloopm_frm_ijloopa_dly" iskew -1 
+connect input spu_intf.C${c}_maaeqb_result_c1_state = "${spuCtlPath}.spu_maaeqb.mul_result_c1" iskew -1 
+connect input spu_intf.C${c}_maaeqb_result_c2_state = "${spuCtlPath}.spu_maaeqb.mul_result_c2" iskew -1 
+connect input spu_intf.C${c}_maaeqb_result_c3_state = "${spuCtlPath}.spu_maaeqb.mul_result_c3" iskew -1 
+connect input spu_intf.C${c}_maaeqb_result_c4_state = "${spuCtlPath}.spu_maaeqb.mul_result_c4" iskew -1 
+connect input spu_intf.C${c}_maaeqb_result_c5_state = "${spuCtlPath}.spu_maaeqb.mul_result_c5" iskew -1 
+connect input spu_intf.C${c}_maaeqb_tr2mwrite_frm_accumshft_state = "${spuCtlPath}.spu_maaeqb.tr2mwrite_frm_accumshft" iskew -1 
+
+connect input spu_intf.C${c}_maexp_idle_state = "${spuCtlPath}.spu_maexp.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_maexp_rde_state = "${spuCtlPath}.spu_maexp.cur_rde_state" iskew -1 
+connect input spu_intf.C${c}_maexp_gotomulred1_state = "${spuCtlPath}.spu_maexp.cur_gotomulred1_state" iskew -1 
+connect input spu_intf.C${c}_maexp_gotomulred2_state = "${spuCtlPath}.spu_maexp.cur_gotomulred2_state" iskew -1 
+connect input spu_intf.C${c}_maexp_echk_state = "${spuCtlPath}.spu_maexp.cur_echk_state" iskew -1 
+connect input spu_intf.C${c}_maexp_esmax_state = "${spuCtlPath}.spu_maexp.cur_esmax_state" iskew -1 
+
+connect input spu_intf.C${c}_mald_idle_state = "${spuCtlPath}.spu_mald.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_mald_ldreq_state = "${spuCtlPath}.spu_mald.cur_ldreq_state" iskew -1 
+connect input spu_intf.C${c}_mald_wait4ln_state = "${spuCtlPath}.spu_mald.cur_wait4ln_state" iskew -1 
+connect input spu_intf.C${c}_mald_mamemwr_state = "${spuCtlPath}.spu_mald.cur_mamemwr_state" iskew -1 
+connect input spu_intf.C${c}_mald_chk4mpa1maddr0_state = "${spuCtlPath}.spu_mald.cur_chk4mpa1maddr0_state" iskew -1 
+connect input spu_intf.C${c}_mald_memwen_dly_state = "${spuCtlPath}.spu_mald.mald_memwen_dly" iskew -1 
+
+connect input spu_intf.C${c}_mast_idle_state = "${spuCtlPath}.spu_mast.cur_idle_state" iskew -1 
+connect input spu_intf.C${c}_mast_rdmem_state = "${spuCtlPath}.spu_mast.cur_rdmem_state" iskew -1 
+connect input spu_intf.C${c}_mast_wait4stdrain_state = "${spuCtlPath}.spu_mast.cur_wait4stdrain_state" iskew -1 
+connect input spu_intf.C${c}_mast_laststreq_state = "${spuCtlPath}.spu_mast.cur_laststreq_state" iskew -1 
+connect input spu_intf.C${c}_mast_dly_tr2rdmem_frm_idle_state = "${spuCtlPath}.spu_mast.dly_tr2rdmem_frm_idle" iskew -1 
+
+connect input spu_intf.C${c}_spu_mul_req_vld = "${spuTopPath}.spu_mul_req_vld" iskew -1 
+connect input spu_intf.C${c}_mul_spu_ack = "${spuTopPath}.mul_spu_ack" iskew -1
+
+connect input spu_intf.C${c}_spu_ifu_ttype_vld_w2 = "${spuTopPath}.spu_ifu_ttype_vld_w2" iskew -1
+connect input spu_intf.C${c}_spu_ifu_ttype_tid_w2 = "${spuTopPath}.spu_ifu_ttype_tid_w2" iskew -1
+connect input spu_intf.C${c}_spu_ifu_ttype_w2 = "${spuTopPath}.spu_ifu_ttype_w2" iskew -1
+connect input spu_intf.C${c}_spu_ifu_unc_err_w1	= "${spuTopPath}.spu_ifu_unc_err_w1" iskew -1
+connect input spu_intf.C${c}_spu_ifu_mamem_err_w1 = "${spuTopPath}.spu_ifu_mamem_err_w1" iskew -1
+connect input spu_intf.C${c}_ifu_spu_trap_ack = "${spuTopPath}.ifu_spu_trap_ack" iskew -1
+connect input spu_intf.C${c}_ifu_spu_nceen = "${spuTopPath}.ifu_spu_nceen" iskew -1
+
+connect input spu_intf.C${c}_spu_mald_ldreq = "${spuCtlPath}.spu_mald_ldreq" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_streq = "${spuCtlPath}.spu_mactl_streq" iskew -1
+
+connect input spu_intf.C${c}_reset = "${spuCtlPath}.spu_mactl.spu_mactl_ctl_reset" iskew -1
+connect input spu_intf.C${c}_spu_lsu_load_req = "${spuCtlPath}.spu_wen.spu_lsu_load_req" iskew -1
+connect input spu_intf.C${c}_lsu_spu_ldst_ack = "${spuTopPath}.lsu_spu_ldst_ack" iskew -1
+connect input spu_intf.C${c}_spu_wen_mald_ack = "${spuCtlPath}.spu_wen_mald_ack" iskew -1
+connect input spu_intf.C${c}_spu_wen_mast_ack = "${spuCtlPath}.spu_wen_mast_ack" iskew -1
+
+connect input spu_intf.C${c}_spu_lsu_ldxa_data_vld_w2 = "${spuTopPath}.spu_lsu_ldxa_data_vld_w2" iskew -1
+
+connect input spu_intf.C${c}_spu_tlu_rsrv_illgl_m = "${spuTopPath}.spu_tlu_rsrv_illgl_m" iskew -1
+
+connect input spu_intf.C${c}_lsu_spu_early_flush_g = "${spuTopPath}.lsu_spu_early_flush_g" iskew -1
+connect input spu_intf.C${c}_tlu_spu_flush_w = "${spuTopPath}.tlu_spu_flush_w" iskew -1
+connect input spu_intf.C${c}_ifu_spu_flush_w = "${spuTopPath}.ifu_spu_flush_w" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_flush_g2 = "${spuCtlPath}.spu_mactl.spu_mactl_flush_g2" iskew -1
+connect input spu_intf.C${c}_spu_mactl_asi40_alt_st_vld_g2 = "${spuCtlPath}.spu_mactl.spu_mactl_asi40_alt_st_vld_g2" iskew -1
+connect input spu_intf.C${c}_spu_mactl_masync_va_vld_g2 = "${spuCtlPath}.spu_mactl.spu_mactl_masync_va_vld_g2" iskew -1
+#endif
+
+connect input spu_intf.C${c}_spu_lsu_ldxa_illgl_va_w2 = "${spuTopPath}.spu_lsu_ldxa_illgl_va_w2" iskew -1
+
+connect input spu_intf.C${c}_exu_mul_input_vld = "${sparcPath}.exu_mul_input_vld" iskew -1
+connect input spu_intf.C${c}_mul_exu_ack = "${sparcPath}.mul_exu_ack" iskew -1
+
+connect input spu_intf.C${c}_mamul_cur_idle_state = "${spuCtlPath}.spu_mamul.cur_idle_state" iskew -1
+connect input spu_intf.C${c}_maaeqb_cur_idle_state = "${spuCtlPath}.spu_maaeqb.cur_idle_state" iskew -1
+
+connect input spu_intf.C${c}_mared_done_set = "${spuCtlPath}.spu_mactl.spu_mared_done_set" iskew -1
+connect input spu_intf.C${c}_m_gt_n_q = "${spuCtlPath}.spu_mared.m_gt_n_q" iskew -1
+connect input spu_intf.C${c}_m_lt_n_q = "${spuCtlPath}.spu_mared.m_lt_n_q" iskew -1
+
+connect input spu_intf.C${c}_maaddr_len_cntr = "${spuCtlPath}.spu_maaddr_len_cntr" iskew -1
+connect input spu_intf.C${c}_maaddr_memindx = "{${spuCtlPath}.spu_maaddr_memindx, ${spuCtlPath}.spu_maaddr.spu_maaddr_memindx_0}" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_mactl_wen = "${spuCtlPath}.spu_mactl.spu_mactl_mactl_wen" iskew -1
+connect input spu_intf.C${c}_spu_mactl_mactl_reg = "${spuCtlPath}.spu_mactl.spu_mactl_mactl_reg[8:0]" iskew -1
+
+connect input spu_intf.C${c}_maexp_cur_idle_state = "${spuCtlPath}.spu_maexp.cur_idle_state" iskew -1
+connect input spu_intf.C${c}_mald_cur_idle_state = "${spuCtlPath}.spu_mald.cur_idle_state" iskew -1
+connect input spu_intf.C${c}_mared_cur_idle_state = "${spuCtlPath}.spu_mared.cur_idle_state" iskew -1
+connect input spu_intf.C${c}_mast_cur_idle_state = "${spuCtlPath}.spu_mast.cur_idle_state" iskew -1
+connect input spu_intf.C${c}_mactl_spu_mactl_mpa_wen = "${spuCtlPath}.spu_mactl.spu_mactl_mpa_wen" iskew -1
+connect input spu_intf.C${c}_mactl_spu_mactl_maaddr_wen = "${spuCtlPath}.spu_mactl.spu_mactl_maaddr_wen" iskew -1
+connect input spu_intf.C${c}_mactl_spu_mactl_manp_wen = "${spuCtlPath}.spu_mactl.spu_mactl_manp_wen" iskew -1
+
+connect input spu_intf.C${c}_mactl_cur_state_00 = "${spuCtlPath}.spu_mactl.cur_state_00" iskew -1
+connect input spu_intf.C${c}_mactl_cur_state_01 = "${spuCtlPath}.spu_mactl.cur_state_01" iskew -1
+connect input spu_intf.C${c}_mactl_cur_state_10 = "${spuCtlPath}.spu_mactl.cur_state_10" iskew -1
+connect input spu_intf.C${c}_mactl_cur_state_11 = "${spuCtlPath}.spu_mactl.cur_state_11" iskew -1
+connect input spu_intf.C${c}_mactl_stxa_2ctl_reg = "${spuCtlPath}.spu_mactl.stxa_2ctl_reg" iskew -1
+connect input spu_intf.C${c}_mactl_ma_op_complete_mask = "${spuCtlPath}.spu_mactl.ma_op_complete_mask" iskew -1
+connect input spu_intf.C${c}_mactl_waiting_4stb_tobecome_empty = "${spuCtlPath}.spu_mactl.waiting_4stb_tobecome_empty" iskew -1
+connect input spu_intf.C${c}_mactl_wait_4stb_tobecome_empty = "${spuCtlPath}.spu_mactl.wait_4stb_tobecome_empty" iskew -1
+connect input spu_intf.C${c}_mactl_wait4_trap_ack_set = "${spuCtlPath}.spu_mactl.wait4_trap_ack_set" iskew -1
+connect input spu_intf.C${c}_mactl_state_reset = "${spuCtlPath}.spu_mactl.state_reset" iskew -1
+connect input spu_intf.C${c}_mactl_spu_mactl_done = "${spuCtlPath}.spu_mactl.spu_mactl_done" iskew -1
+connect input spu_intf.C${c}_wen_ma_stack_cntr_q = "${spuCtlPath}.spu_wen.ma_stack_cntr_q" iskew -1
+
+connect input spu_intf.C${c}_all_flush = "${spuCtlPath}.spu_mactl.all_flush" iskew -1
+connect input spu_intf.C${c}_lsu_spu_asi_state_e = "${spuTopPath}.lsu_spu_asi_state_e" iskew -1
+connect input spu_intf.C${c}_ifu_spu_inst_vld_w = "${spuTopPath}.ifu_spu_inst_vld_w" iskew -1
+connect input spu_intf.C${c}_ifu_lsu_ld_inst_e = "${spuCtlPath}.spu_mactl.ifu_lsu_ld_inst_e" iskew -1
+connect input spu_intf.C${c}_ifu_lsu_st_inst_e = "${spuCtlPath}.spu_mactl.ifu_lsu_st_inst_e" iskew -1
+connect input spu_intf.C${c}_ifu_lsu_alt_space_e = "${spuCtlPath}.spu_mactl.ifu_lsu_alt_space_e" iskew -1
+connect input spu_intf.C${c}_ifu_tlu_thrid_e = "${spuCtlPath}.spu_mactl.ifu_tlu_thrid_e" iskew -1
+connect input spu_intf.C${c}_exu_lsu_ldst_va_e = "${spuTopPath}.exu_lsu_ldst_va_e" iskew -1
+connect input spu_intf.C${c}_exu_lsu_rs3_data_e = "${spuTopPath}.exu_lsu_rs3_data_e" iskew -1
+connect input spu_intf.C${c}_spu_lsu_ldxa_data_w2 = "${spuTopPath}.spu_lsu_ldxa_data_w2" iskew -1
+connect input spu_intf.C${c}_spu_lsu_ldxa_tid_w2 = "${spuTopPath}.spu_lsu_ldxa_tid_w2" iskew -1
+connect input spu_intf.C${c}_spu_lsu_stxa_ack = "${spuTopPath}.spu_lsu_stxa_ack" iskew -1
+connect input spu_intf.C${c}_spu_lsu_stxa_ack_tid = "${spuTopPath}.spu_lsu_stxa_ack_tid" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_perr_set = "${spuCtlPath}.spu_mactl.spu_mactl_perr_set" iskew -1
+connect input spu_intf.C${c}_spu_lsu_unc_error_w2 = "${spuTopPath}.spu_lsu_unc_error_w2" iskew -1
+connect input spu_intf.C${c}_spu_ifu_mamem_err_w2 = "${spuTopPath}.spu_ifu_mamem_err_w1" iskew -1
+
+connect input spu_intf.C${c}_spu_mared_idle = "${spuCtlPath}.spu_mared.cur_idle_state" iskew -1
+
+connect input spu_intf.C${c}_spu_maexp_idle = "${spuCtlPath}.spu_maexp.cur_idle_state" iskew -1
+
+connect input spu_intf.C${c}_spu_mamul_idle = "${spuCtlPath}.spu_mamul.cur_idle_state" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_ma_kill_op = "${spuCtlPath}.spu_mactl.spu_mactl_ma_kill_op" iskew -1
+
+connect input spu_intf.C${c}_spu_mactl_stxa_force_abort = "${spuCtlPath}.spu_mactl.spu_mactl_stxa_force_abort" iskew -1
+connect input spu_intf.C${c}_spu_mactl_perr_set = "${spuCtlPath}.spu_mactl.spu_mactl_perr_set" iskew -1
+connect input spu_intf.C${c}_spu_wen_ma_unc_err = "${spuCtlPath}.spu_mactl.spu_wen_ma_unc_err" iskew -1
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $SPU_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }

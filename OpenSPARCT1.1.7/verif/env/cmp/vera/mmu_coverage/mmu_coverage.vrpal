@@ -1,0 +1,253 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mmu_coverage.vrpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mmu_cov_inc.pal";
+/***************************************************************************
+ *
+ * File:	mmu_coverage.vr
+ * Description:
+ * -----------
+ *	Top level MMU coverage class.
+ *	Contains the new() task which instantiates all the MMU coverage
+ *	objects using "newcov", as well as calls the REPORT method within
+ *	them when the diag. is complete.
+ *
+ * \$Id: mmu_coverage.vrpal,v 1.5 2003/02/11 08:13:50 skrish Exp $
+ *
+ ***************************************************************************/
+
+#include <vera_defines.vrh>
+#include "mmu.if.vrh"
+#include "mmu_ports_binds.vrh"
+#include "mmu_tlb_addr_match.vrh"
+#include "mmu_tlb_addr_match.vrh"
+#include "mmu_err_inj_match.vrh"
+#include "mmu_defines.vrh"
+
+
+class mmu_coverage {
+
+. foreach $c (@CORE_STR) {
+
+    MMU_TLB_ADDR_MATCH mmu_itlb_addr_match_sample_C${c};
+    MMU_TLB_ADDR_MATCH mmu_dtlb_addr_match_sample_C${c};
+
+
+     MMU_ERR_INJ_MATCH mmu_itlb_inj_match_sample_C${c};
+     MMU_ERR_INJ_MATCH mmu_dtlb_inj_match_sample_C${c};
+
+
+
+.}
+
+    coverage_group mmu_coverage_group {
+
+	const_sample_reference	= 1;	// sampled objects are not re-assigned
+	sample_event		= @(posedge mmu_coverage_ifc.clk);
+	cov_weight		= 0;	// default until diag_done is true
+					// i.e. the diag. passes
+
+. foreach $c (@CORE_STR) {
+    sample mmu_sync_asi_bind_sample_C${c}.\$mmu_sync_asi_state {
+#inc "mmu_sync_asi_sample.vrhpal";
+    }
+    sample mmu_tlb_ops_bind_sample_C${c}.\$mmu_itlb_ops_state {
+#inc "mmu_tlb_ops_sample.vrhpal";
+    }
+    sample mmu_tlb_ops_bind_sample_C${c}.\$mmu_dtlb_ops_state {
+#inc "mmu_tlb_ops_sample.vrhpal";
+    }
+    sample mmu_faults_bind_sample_C${c}.\$mmu_faults_state {
+#inc "mmu_faults_sample.vrhpal";
+#inc "mmu_simul_traps_sample.vrhpal";
+    }
+    sample dmmu_pid_bind_sample_C${c}.\$dmmu_pid_state {
+#inc "dmmu_pid_sample.vrhpal";
+    }
+    sample immu_pid_bind_sample_C${c}.\$immu_pid_state {
+#inc "immu_pid_sample.vrhpal";
+    }
+    sample mmu_tte_attributes_bind_sample_C${c}.\$dmmu_tte_attributes_state {
+#inc "mmu_tte_attributes_sample.vrhpal";
+    }
+    sample mmu_itlb_addr_match_sample_C${c}.addr_match {
+#inc "mmu_tlb_wr_fl_rd_sample.vrhpal";
+    }
+    sample mmu_dtlb_addr_match_sample_C${c}.addr_match {
+#inc "mmu_tlb_wr_fl_rd_sample.vrhpal";
+    }
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    sample mmu_itlb_bypass_bind_sample_C${c}.\$immu_tlb_bypass_state_${t} {
+#inc "mmu_tlb_bypass_sample.vrhpal";
+    }
+. }
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    sample mmu_dtlb_bypass_bind_sample_C${c}.\$dmmu_tlb_bypass_state_${t} {
+#inc "mmu_tlb_bypass_sample.vrhpal";
+    }
+. }
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+    sample mmu_asi_accesses_bind_sample_C${c}.\$mmu_asi_accesses_state_T${t} {
+#inc "mmu_asi_accesses_sample.vrhpal";
+    }
+. }
+    sample mmu_err_inj_bind_sample_C${c}.\$mmu_err_inj_state {
+#inc "mmu_err_inj_sample.vrhpal";
+    }
+    sample mmu_itlb_inj_match_sample_C${c}.err_inj_addr_match {
+#inc "mmu_err_inj_addr_match_sample.vrhpal";
+    }
+    sample mmu_dtlb_inj_match_sample_C${c}.err_inj_addr_match {
+#inc "mmu_err_inj_addr_match_sample.vrhpal";
+    }
+    sample mmu_atomics_bind_sample_C${c}.\$mmu_atomics_state {
+#inc "mmu_atomics_sample.vrhpal";
+    }
+    sample mmu_normal_ops_bind_sample_C${c}.\$mmu_normal_ops_state {
+#inc "mmu_normal_ops_sample.vrhpal";
+    }
+
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+
+    sample mmu_pstate_bind_sample_C${c}.\$pstate_state_${t} {
+#inc "mmu_pstate_sample.vrhpal";
+    }
+    sample mmu_trap_level_bind_sample_C${c}.\$trap_level_state_${t} {
+#inc "mmu_trap_level_sample.vrhpal";
+    }
+
+.}
+
+    sample mmu_dsfsr_fields_bind_sample_C${c}.\$mmu_dsfsr_state {
+#inc "mmu_sfsr_fields_sample.vrhpal";
+    }
+    sample mmu_isfsr_fields_bind_sample_C${c}.\$mmu_isfsr_state {
+#inc "mmu_sfsr_fields_sample.vrhpal";
+    }
+
+    sample mmu_mra_rd_wr_cntn_sample_C${c}.\$mra_rd_wr_cntn_state {
+#inc "mmu_mra_rd_wr_cntn.vrhpal";
+    }
+
+////////////////////
+// 2D enumerated coverage items
+////////////////////
+
+
+sample mmu_slow_asi_and_traps_bind_sample_C${c}.\$mmu_iside_slow_asi_and_traps_state {
+#inc "mmu_slow_asi_and_faults_sample.vrhpal";
+}
+
+sample mmu_slow_asi_and_traps_bind_sample_C${c}.\$mmu_dside_slow_asi_and_traps_state {
+#inc "mmu_slow_asi_and_faults_sample.vrhpal";
+}
+
+///////////////////
+// cross coverage items
+///////////////////
+.for($t=0;$t<$THREADS_PER_CORE;$t++){
+//Table 6-4
+
+    cross mmu_atm_asi_access_table_sample_C${c}_T${t} (	mmu_asi_accesses_bind_sample_C${c}.\$mmu_asi_accesses_state_T${t},
+						mmu_atomics_bind_sample_C${c}.\$mmu_atomics_state);
+
+    cross mmu_asi_access_table_sample_C${c}_T${t} (	mmu_asi_accesses_bind_sample_C${c}.\$mmu_asi_accesses_state_T${t},
+						mmu_normal_ops_bind_sample_C${c}.\$mmu_normal_ops_state);
+
+//Table 6-7
+    cross mmu_asi_data_access_table_sample_C${c}_T${t} (	mmu_pstate_bind_sample_C${c}.\$pstate_state_${t},
+						mmu_trap_level_bind_sample_C${c}.\$trap_level_state_${t},
+						mmu_asi_accesses_bind_sample_C${c}.\$mmu_asi_accesses_state_T${t} );
+
+    cross mmu_atm_data_access_table_sample_C${c}_T${t} (	mmu_pstate_bind_sample_C${c}.\$pstate_state_${t},
+						mmu_trap_level_bind_sample_C${c}.\$trap_level_state_${t},
+						mmu_atomics_bind_sample_C${c}.\$mmu_atomics_state);                                              
+    cross mmu_data_access_table_sample_C${c}_T${t} (mmu_pstate_bind_sample_C${c}.\$pstate_state_${t},
+                                                mmu_trap_level_bind_sample_C${c}.\$trap_level_state_${t},
+						mmu_normal_ops_bind_sample_C${c}.\$mmu_normal_ops_state);
+.} # foreach thr
+
+
+. } # foreach c
+
+    } // coverage_group
+
+  task new();
+} //class 
+
+//-----------------------------------------------------------------------------------------------
+task mmu_coverage :: new() {
+
+  bit coverage_on;
+
+
+. foreach $c (@CORE_STR) {
+
+
+     mmu_itlb_inj_match_sample_C${c} = new("IMMU",mmu_itlb_err_inj_addr_match_bind_sample_C${c});
+     mmu_dtlb_inj_match_sample_C${c} = new("DMMU",mmu_dtlb_err_inj_addr_match_bind_sample_C${c});
+
+
+      mmu_itlb_addr_match_sample_C${c} = new ("IMMU", mmu_itlb_addr_match_bind_sample_C${c});
+      mmu_dtlb_addr_match_sample_C${c} = new ("DMMU", mmu_dtlb_addr_match_bind_sample_C${c});
+
+.}
+
+  if (get_plus_arg (CHECK, "mmu_coverage") ||
+    get_plus_arg (CHECK, "coverage_on")) {
+    coverage_on = 1;
+    printf("%d: From get_plus_arg mmu_coverage selected all right \n",
+           get_time(LO));
+  } else {
+    coverage_on = 0;
+    printf("%d: From get_plus_arg mmu_coverage NOT selected all right \n",
+           get_time(LO));
+  }
+
+// The following are always turned on
+
+  if (coverage_on) {
+
+    mmu_coverage_group	= new();
+    
+. foreach $c (@CORE_STR) {
+
+     mmu_itlb_inj_match_sample_C${c}.find_err_inj_addr_match(400000);
+     mmu_dtlb_inj_match_sample_C${c}.find_err_inj_addr_match(400000);
+
+      mmu_itlb_addr_match_sample_C${c}.find_addr_match(40);
+      mmu_itlb_addr_match_sample_C${c}.check_depth();
+      mmu_dtlb_addr_match_sample_C${c}.find_addr_match(40);
+
+
+.}
+
+    printf("\n\n        %d : Coverage turned on for MMU objects!\n\n", get_time(LO));
+
+    fork {
+      printf("\n\n        %d : Coverage turned on fro inside fork\n", get_time(LO));
+      @ (posedge mmu_coverage_ifc.cmp_diag_done); //change this to be based on all cores
+      mmu_coverage_group.set_cov_weight(1);	// since diag. passed
+      coverage_save_database(1);
+      printf("\n\n        %d : Coverage for MMU objects generated!\n\n", get_time(LO));
+
+    } join none
+  } // if
+} // mmu_coverage::new()

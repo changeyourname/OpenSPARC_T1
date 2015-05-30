@@ -1,0 +1,586 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmp_tasks.vr
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include <ListMacros.vrh>
+#include "sys_rtl.h"
+#include "iop_rtl.h"
+#include "cmp_top.if.vrh"
+#include "cmp_ports_binds.vrh"
+#include "dram.vrh"
+#include "vera_event.vrh"
+#include "pcxpacket.vrh"
+#include "pcx_record.vrh"
+#include "cpx_record.vrh"
+#define  DUMMY_RQ   5'h1f
+#define  BSC_RQ     15
+
+ExternVeraList(integer)
+ExternVeraList(string)
+
+extern  bit        fail_flag, time_flag, asm_err_en;
+extern  string     why;
+extern  bit        reset;
+extern  bit [63:0] mainMem[];
+extern  bit [63:0] data_section;
+extern  VeraList_string  str_list ;
+extern  VeraList_vera_event vera_tasks[];
+extern  VeraListIterator_vera_event event_it;
+extern  bit [31:0] thread_status;
+extern  bit thread_start;
+extern  VeraList_PcxPacket  soft_list;
+extern  VeraList_PcxPacket  io_list;
+extern  bit [1:0] Qsel[8];
+extern  bit [63:0]           d_data;
+
+extern hdl_task start_thr(bit [2:0] cpu, bit [1:0] thread, bit [63:0] pc) ;
+// extern hdl_task i_dump(bit [3:0] cpu_id) ;
+// extern hdl_task d_dump(bit [3:0] cpu_id) ;
+extern hdl_task action(bit[1023:0] path, bit[255:0] val, bit[7:0] msb, bit[7:0] lsb, bit[7:0] type) ;
+
+extern task parse_err_cmd (VeraList_string  str_list); 
+
+/*---------------------------------------------------------------
+  read mem.image and store them into mainMem.
+----------------------------------------------------------------*/
+//task loadMainMemToVera(string mem_data, bit sht)
+//{
+//    integer    fdi;
+//    string     line, val;
+//    bit [63:0] addr;
+//    bit [63:0] data;
+//    printf ("loadMainMemToVera  from %s\n", mem_data);
+//    fdi = fopen (mem_data, "r");
+//    if (fdi == 0) error ("Can't open input file\n");
+//    while (1) {
+//        line = freadstr (fdi, SILENT);
+//        if (line == null) break;
+//        if(line.match("^\s*$"))continue;
+//        if(line.match("@(\w+)")){
+//           val         = line.backref(0);
+//           if(sht)addr = val.atohex() >> 3;
+//           else   addr = val.atohex();
+//           continue;
+//        }
+//        while(line.match("\s*(\w+)")){
+//          val           = line.backref(0);
+//          data          = val.atohex();
+//          mainMem[addr] = data;
+//          // printf ("Loading %x into %x\n", data, addr) ;
+//          line = line.postmatch();
+//          if(sht)addr++;
+//          else addr    += 8;
+//        }
+//    }
+//    fclose (fdi);
+//}
+/*---------------------------------------------------------------
+ read io space only.
+----------------------------------------------------------------*/
+//task io_loadMainMemToVera(string mem_data)
+//{
+//    integer    fdi;
+//    string     line, val;
+//    bit        iob;
+//    bit [63:0] addr;
+//    bit [63:0] data;
+//    printf ("loadMainMemToVera  from %s\n", mem_data);
+//    fdi = fopen (mem_data, "r");
+//    if (fdi == 0) error ("Can't open input file\n");
+//    while (1) {
+//        line = freadstr (fdi, SILENT);
+//        if (line == null) break;
+//        if(line.match("^\s*$"))continue;
+//        if(line.match("@(\w+)")){
+//           val         = line.backref(0);
+//           addr = val.atohex() >> 3;
+//           iob  = addr[36];
+//           continue;
+//        }
+//        if(iob == 0)continue;
+//        while(line.match("\s*(\w+)")){
+//          val           = line.backref(0);
+//          data          = val.atohex();
+//          mainMem[addr] = data;
+//          line = line.postmatch();
+//          addr++;
+//        }
+//    }
+//    fclose (fdi);
+//}
+/*---------------------------------------------------------------
+  parse string.
+----------------------------------------------------------------*/
+task extract(string str){
+  // printf("START ");
+  while(str.match("\s*(64'h)*(\w+)")) 
+  {
+    //    printf("Extract :%s: \n", str.backref(1));
+    str_list.push_back(str.backref(1));
+    str = str.postmatch();
+    if(str.match("^\(\s*\"")){
+      str = str.postmatch();
+      str.match("\"");
+      str_list.push_back(str.prematch());
+      str = str.postmatch();
+    }
+  }//printf("end\n ");
+}
+/*---------------------------------------------------------------
+  generate sync routine.
+----------------------------------------------------------------*/
+task gen_sync()
+{
+  vera_event  evnt;
+  string      str;
+  bit    [63:0] pc, spc;
+  pc = 0;
+  
+  while(str_list.size()){
+    str = str_list.front();str_list.pop_front();
+    case(str){
+      "trig_pc_d" : {
+        str              = str_list.front();str_list.pop_front();
+        spc              = str.atohex();
+        str              = str_list.front();str_list.pop_front();
+        pc               = str.atohex();
+       }
+      "printf" : {
+        if(!assoc_index(CHECK, vera_tasks, pc))vera_tasks[pc] = new;
+        evnt             = new;
+        evnt.routine     = str;
+        evnt.kind        = spc;
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+        }
+        evnt.data        = str;
+        vera_tasks[pc].push_back(evnt);
+        
+      }
+      "dump_mem" : {
+        if(!assoc_index(CHECK, vera_tasks, pc))vera_tasks[pc] = new;
+        evnt             = new;
+        evnt.routine     = str;
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.data      = str;
+        }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.thread_id = str.atohex();
+        }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.val       = str.atohex();
+        }
+        evnt.type        = 0;
+        vera_tasks[pc].push_back(evnt);
+      }
+      "force",
+       "dump": {
+        if(!assoc_index(CHECK, vera_tasks, pc))vera_tasks[pc] = new;
+        evnt             = new;
+        evnt.routine     = str;
+        evnt.kind        = spc;
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.data      = str;
+         }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.val       = str.atohex();
+        }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.msb      = str;
+         }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.lsb       = str.atohex();
+        }
+        vera_tasks[pc].push_back(evnt);
+      }
+      "io_expect"  : {
+        if(!assoc_index(CHECK, vera_tasks, pc))vera_tasks[pc] = new;
+        evnt             = new;
+        evnt.routine     = str;
+        evnt.kind        = spc;
+        if(str_list.size()){//request type
+          str            = str_list.front();str_list.pop_front();
+          evnt.type      = str.atohex();
+         }
+        if(str_list.size()){//nc bit
+          str            = str_list.front();str_list.pop_front();
+          evnt.ivector    = str.atohex();
+        }
+        if(str_list.size()){//cpu_id
+          str            = str_list.front();str_list.pop_front();
+          evnt.cpu_id    = str.atohex();
+        }
+        if(str_list.size()){//thread_id
+          str            = str_list.front();str_list.pop_front();
+          evnt.thread_id = str.atohex();
+        }
+        if(str_list.size()){//way
+          str            = str_list.front();str_list.pop_front();
+          evnt.msb       = str.atohex();
+        }
+        if(str_list.size()){//size
+          str            = str_list.front();str_list.pop_front();
+          evnt.lsb      = str.atohex();
+        }
+        if(str_list.size()){//address
+          str            = str_list.front();str_list.pop_front();
+          evnt.val       = str.atohex();
+        }
+        if(str_list.size()){//data
+          str            = str_list.front();str_list.pop_front();
+          evnt.data      = str;
+        }
+        vera_tasks[pc].push_back(evnt);
+      }
+      "error"   : {
+        if (asm_err_en) {
+          parse_err_cmd (str_list);//set up the error data structures
+        }
+      }
+      default      : {
+        if(!assoc_index(CHECK, vera_tasks, pc))vera_tasks[pc] = new;
+        evnt             = new;
+        evnt.routine     = str;
+        evnt.kind        = spc;
+        
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.thread_id = str.atohex() & 5'b11111;// str.atoi() 
+          evnt.cpu_id    = (evnt.thread_id >> 2) & 3'b111;
+        }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.type      = str.atohex();
+        }
+        if(str_list.size()){
+          str            = str_list.front();str_list.pop_front();
+          evnt.ivector   = str.atohex();
+        }
+        if(evnt.thread_id <= 31)vera_tasks[pc].push_back(evnt);
+      }
+    }
+  }
+}
+/*---------------------------------------------------------------
+  generate sync routine.
+----------------------------------------------------------------*/
+task get_symbol(string lvl, string name)
+{
+  string      str;
+  bit  [63:0] pc;
+  pc = 0;
+  
+  while(str_list.size() > 0){
+    str = str_list.front();str_list.pop_front();
+    if(lvl.match("")){
+      if(str.match(name) == 0)continue;
+    }
+    else if(str.match(lvl)){
+      str = str_list.front();str_list.pop_front();
+      if(str.match(name) == 0)continue;
+    }
+    else continue;
+    str          = str_list.front();str_list.pop_front();//virtual
+    str          = str_list.front();str_list.pop_front();//phyical
+    data_section = str.atohex();
+  }
+}
+/*---------------------------------------------------------------
+  read diag.ev file and build up sync routine.
+----------------------------------------------------------------*/
+task read_vera_tasks(string  file,
+                     integer kind,
+                     string  lvl,
+                     string  name)
+{
+  integer    fp;
+  string     line, called, triger;
+
+  fp = fopen(file, "r");
+  while(1){
+    line    = freadstr(fp, SILENT);
+    if(line == null)break;
+    if(line.match("printhex"))continue;
+    if(line.match("printdec"))continue;
+    if(line.match("^\s*$"))continue;
+    extract(line);
+    if(kind)get_symbol(lvl, name);
+    else gen_sync();
+  }
+  fclose(fp);
+}
+/*---------------------------------------------------------------
+  read mem.image and store them into mainMem.
+  interrupt type :
+0) send anytime it hit that locaion.
+1). one shot.
+2). broadcast.
+fwd layout
+fwd(r/!w, address, data)
+  ----------------------------------------------------------------*/
+task trig_pc_d(bit [2:0] cpu, bit [63:0] pc){
+  integer i ;
+  integer    how;
+  PcxPacket  pcx;
+  vera_event evnt;
+  pc[63:48] = {16{pc[47]}};
+  
+  if(assoc_index(CHECK, vera_tasks, pc)){
+    event_it = vera_tasks[pc].start();
+    repeat(vera_tasks[pc].size()){
+      evnt = event_it.data();
+      if(evnt.sent){
+        event_it.next();
+        continue;
+      }
+      case(evnt.routine){
+        "intp" : {
+          how = evnt.kind == 2 ? 8 : 1;
+          for(i = 0; i < how; i++){
+            pcx             = new;
+            pcx.valid       = 1;
+            pcx.rqtyp       = INT_RQ;
+            pcx.nc          = 0;
+            pcx.cpu_id      = evnt.kind == 1 ? evnt.cpu_id : i;
+            pcx.rep_l1_way  = 2'b00;
+            pcx.data        = 0;
+            pcx.data[17:16] = evnt.type;
+            pcx.data[12:8]  = evnt.thread_id;
+            pcx.data[5:0]   = evnt.ivector;
+            pcx.addr        = 0;
+            soft_list.push_back(pcx);
+          }
+          if(evnt.kind == 1)thread_status[evnt.thread_id] = 1'b1;
+        }
+        "flush"  : {
+          if(thread_status[evnt.thread_id] )continue;
+           for(i = 0; i < 8; i++){
+              pcx             = new;
+              pcx.valid       = 1;
+              pcx.rqtyp       = 5'b01001;//INT_RQ;
+              pcx.nc          = 1;
+              pcx.cpu_id      = evnt.kind == 1 ? evnt.cpu_id : i;
+              pcx.rep_l1_way  = 2'b00;
+              pcx.data        = 0;
+              pcx.data[17:16] = evnt.type;
+              pcx.data[12:8]  = evnt.thread_id;
+              pcx.data[5:0]   = evnt.ivector;
+              pcx.addr        = 0;
+              soft_list.push_back(pcx);
+           }
+           thread_status[evnt.thread_id] = 1'b1;
+        }
+        // "dump_i" : i_dump(evnt.thread_id);
+        // "dump_d" : d_dump(evnt.thread_id);
+        "evict"  : {
+          pcx             = new;
+          pcx.valid       = 1;
+          pcx.rqtyp       = DUMMY_RQ;
+          pcx.nc          = 1;
+          pcx.rep_l1_way  = evnt.type;
+          pcx.addr        = evnt.thread_id;
+          pcx.bf_id       = 1;
+          soft_list.push_back(pcx);
+        }
+        "store"  : {
+          pcx             = new;
+          pcx.valid       = 1;
+          pcx.rqtyp       = DUMMY_RQ;
+          pcx.nc          = 0;
+          pcx.rep_l1_way  = evnt.type;
+          pcx.addr        = evnt.thread_id;
+          pcx.bf_id       = 0;
+          soft_list.push_back(pcx);
+        }
+        "printf" : {
+          printf("%0d : info -> %s\n", get_time(LO), evnt.data);
+        }
+        "force"  : {
+          action(evnt.data, evnt.val, evnt.msb, evnt.lsb, 0);
+          printf("%0d : Info -> force %s = %x\n", get_time(LO), evnt.data, evnt.val);
+        }
+        "dump"   : {
+          action(evnt.data, evnt.val, evnt.msb, evnt.lsb, 1);
+          printf("%0d : Info -> dump %s = %x\n", get_time(LO), evnt.data, evnt.val);
+        }
+        "io_expect" : {
+          pcx             = new;
+          pcx.valid       = 1;
+          pcx.rqtyp       = evnt.type;
+          pcx.nc          = evnt.ivector;//nc
+          pcx.cpu_id      = evnt.cpu_id;
+          pcx.thread_id   = evnt.thread_id;
+          pcx.bf_id       = 0;
+          pcx.rep_l1_way  = evnt.msb;
+          pcx.size        = evnt.lsb;
+          pcx.addr        = evnt.val;
+          pcx.data        = evnt.data.atohex();
+          pcx.time_out    = 0;
+          io_list.push_back(pcx);
+          printf("%0d : Info -> sending io_expect -> %x\n", get_time(LO), pcx.get_pkt());
+        }
+        "dump_mem"  :  {
+          if(evnt.type == 0)dump_mem(evnt.data, evnt.thread_id, evnt.val);
+          evnt.type  = 1;
+        }
+        "fwd" : {
+          pcx             = new;
+          pcx.valid       = 1;
+          pcx.rqtyp       = FWD_RQ;
+          pcx.nc          = evnt.thread_id;
+          pcx.cpu_id      = 0;
+          pcx.rep_l1_way  = 2'b00;
+          pcx.data        = evnt.ivector;
+          pcx.addr        = evnt.type;
+          soft_list.push_back(pcx);
+        }
+      }
+      evnt.sent = 1'b1;
+      event_it.next();
+    }
+  }
+}
+/*-------------------------------------------------------------------------------------------
+  dump memory contents on the specified file.
+---------------------------------------------------------------------------------------------*/
+task dump_mem(string filename, bit [63:0] addr, integer num)
+{
+  integer fp, w_num;
+  addr >>= 3;
+  fp     = fopen (filename, "w");
+  w_num  = 0;
+  fprintf(fp, "=============================\n");
+  fprintf(fp, "   ADDRESS       :  DATA\n");
+  fprintf(fp, "=============================\n");
+  while(w_num < num){
+    fprintf(fp, "%x : %x\n", (addr << 3), mainMem[addr]);
+    addr++;
+    w_num += 8;
+  }
+  fclose(fp);
+}
+/*-------------------------------------------------------------------------------------------
+  
+---------------------------------------------------------------------------------------------*/
+task cal_qsel(bit [7:0] sel)
+{
+  integer i;
+  
+  for(i = 0;i < 8;i++){
+    if(sel & 1'b1){
+      Qsel[i]--;
+      if(Qsel[i] == 2'b11){ 
+        fail_flag = 1;
+        printf("Error: iop received extra Grant signal from ccx(%d)\n", i);
+        why = "thanks, I got a bonus Grant signal";
+      }
+    }
+    sel >>= 1;
+  }
+}
+
+/*-------------------------------------------------------------------------------------------
+make payload for store instruction
+---------------------------------------------------------------------------------------------*/
+//function bit [2:0] store_size(bit [4:0] rqtype, bit [63:0] addr)
+//{
+//  Range range;
+//  integer succ;
+//  case(rqtype){
+//    STORE_RQ : store_size = random() & 2'b11;
+//    STRST_RQ : {
+//      case(addr[2:0]){
+//        0 : store_size = random() & 3'b111;
+//        1 : {
+//            range = new(1, 8);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        2 : {
+//            range = new(1, 7);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        3 : {
+//            range = new(1, 6);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        4 : {
+//            range = new(1, 5);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        5 : {
+//            range = new(1, 4);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        6 : {
+//            range = new(1, 3);
+//            succ  = range.randomize();
+//            store_size = range.range;
+//        }
+//        7 : store_size = 1;
+//      }
+//    }
+//    SWAP_RQ  : store_size = random() & 1'b1 ? 2 : 0;
+//    CAS1_RQ  : store_size = random() & 1'b1 ? 2 : 3;
+//    STQ_RQ   : store_size = 3;
+//    default  : store_size = 0;
+//  }
+//}
+
+
+/*-------------------------------------------------------------------------------------------
+ wait number of cycles.
+---------------------------------------------------------------------------------------------*/
+task wait_cycle(integer num)
+{
+  repeat(num) @(posedge cmp_top.cmp_gclk);
+}
+
+
+/*-------------------------------------------------------------------------------------------
+make payload for store instruction
+---------------------------------------------------------------------------------------------*/
+function bit [4:0] convertAtoH(string cmd)
+{
+  case(cmd){
+    "STORE_RQ"   : convertAtoH = STORE_RQ;
+    "LOAD_RQ"    : convertAtoH = LOAD_RQ;
+    "IMISS_RQ"   : convertAtoH = IMISS_RQ;
+    "STRLOAD_RQ" : convertAtoH = STRLOAD_RQ;
+    "STRST_RQ"   : convertAtoH = STRST_RQ;
+    "STQ_RQ"     : convertAtoH = STQ_RQ;
+    "SWAP_RQ"    : convertAtoH = SWAP_RQ;
+    "CAS1_RQ"    : convertAtoH = CAS1_RQ;
+    "CAS2_RQ"    : convertAtoH = CAS2_RQ;
+    "INT_RQ"     : convertAtoH = INT_RQ;
+    "BSC_RQ"     : convertAtoH = BSC_RQ;
+  }
+}

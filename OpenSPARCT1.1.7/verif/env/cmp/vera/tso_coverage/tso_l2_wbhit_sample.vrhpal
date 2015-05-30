@@ -1,0 +1,67 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_l2_wbhit_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// This is an L2 coverage object to detect hits in the Write back buffer
+// It monitors these signals: 
+// inst_vld_c2 - valid instruction in C2 of L2
+// tagctl_hit_c2 - L2 hit in C2
+// wbctl_hit_unqual_c2 - wb buffer hit in C2
+// the state names below are self-explanatory.
+//***********************************************************************
+
+// states
+//-------
+  state s_TSO_L2_NOINST 		(TSO_L2_NOINST);
+  state s_TSO_L2_NOHITS 		(TSO_L2_NOHITS);
+  state s_TSO_L2_HITS 			(TSO_L2_HITS);
+  state s_TSO_L2_WBHITS 		(TSO_L2_WBHITS);
+
+// transitions 
+//------------
+  trans t_s_NOINST_NOHITS 		(TSO_L2_NOINST 	-> TSO_L2_NOHITS);
+  trans t_s_NOINST_HITS 		(TSO_L2_NOINST 	-> TSO_L2_HITS);
+  trans t_s_NOINST_WBHITS 		(TSO_L2_NOINST 	-> TSO_L2_WBHITS);
+  trans t_s_NOINST_NOINST 		(TSO_L2_NOINST 	-> TSO_L2_NOINST);
+
+  trans t_s_NOHITS_NOHITS 		(TSO_L2_NOHITS 	-> TSO_L2_NOHITS);
+  trans t_s_NOHITS_HITS 		(TSO_L2_NOHITS 	-> TSO_L2_HITS);
+  trans t_s_NOHITS_WBHITS 		(TSO_L2_NOHITS 	-> TSO_L2_WBHITS);
+  trans t_s_NOHITS_NOINST 		(TSO_L2_NOHITS 	-> TSO_L2_NOINST);
+
+  trans t_s_HITS_NOHITS 		(TSO_L2_HITS 	-> TSO_L2_NOHITS);
+  trans t_s_HITS_HITS 			(TSO_L2_HITS 	-> TSO_L2_HITS);
+  trans t_s_HITS_WBHITS 		(TSO_L2_HITS 	-> TSO_L2_WBHITS);
+  trans t_s_HITS_NOINST 		(TSO_L2_HITS 	-> TSO_L2_NOINST);
+
+  trans t_s_WBHITS_NOHITS 		(TSO_L2_WBHITS 	-> TSO_L2_NOHITS);
+  trans t_s_WBHITS_HITS 		(TSO_L2_WBHITS 	-> TSO_L2_HITS);
+  trans t_s_WBHITS_WBHITS 		(TSO_L2_WBHITS 	-> TSO_L2_WBHITS);
+  trans t_s_WBHITS_NOINST 		(TSO_L2_WBHITS 	-> TSO_L2_NOINST);
+
+  trans t_s_WBHITS_IDLE_WBHITS 		(TSO_L2_WBHITS 	-> TSO_L2_NOINST ->TSO_L2_WBHITS);
+  trans t_s_WBHITS_IDLE_HITS   		(TSO_L2_WBHITS 	-> TSO_L2_NOINST ->TSO_L2_HITS);
+
+  trans t_s_HITS_IDLE_WBHITS   		(TSO_L2_HITS 	-> TSO_L2_NOINST ->TSO_L2_WBHITS);
+  trans t_s_HITS_IDLE_HITS  		(TSO_L2_HITS 	-> TSO_L2_NOINST ->TSO_L2_HITS);
+
+// bad states
+//-----------
+  bad_state s_TSO_L2_BOTHHITS 		(TSO_L2_BOTHHITS);

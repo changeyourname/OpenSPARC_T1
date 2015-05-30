@@ -1,0 +1,82 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: err_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "err_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// err coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+
+// global signals
+connect input err_coverage_ifc.clk = "cmp_top.cmp_gclk" iskew -1 
+connect input err_coverage_ifc.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+// DRAM Error signals
+connect input err_coverage_ifc.DRAM0_Err_Stat = "cmp_top.iop.dram02.dramctl0.dram_l2if.l2if_err_sts_reg" iskew -1
+connect input err_coverage_ifc.DRAM1_Err_Stat = "cmp_top.iop.dram13.dramctl0.dram_l2if.l2if_err_sts_reg" iskew -1
+connect input err_coverage_ifc.DRAM2_Err_Stat = "cmp_top.iop.dram02.dramctl1.dram_l2if.l2if_err_sts_reg" iskew -1
+connect input err_coverage_ifc.DRAM3_Err_Stat = "cmp_top.iop.dram13.dramctl1.dram_l2if.l2if_err_sts_reg" iskew -1
+
+// L2 Error signals
+connect input err_coverage_ifc.L2_Bank0_Err_Stat = "cmp_top.iop.sctag0.csr.csr_l2_errstate_reg[63:32]" iskew -1
+connect input err_coverage_ifc.L2_Bank1_Err_Stat = "cmp_top.iop.sctag1.csr.csr_l2_errstate_reg[63:32]" iskew -1
+connect input err_coverage_ifc.L2_Bank2_Err_Stat = "cmp_top.iop.sctag2.csr.csr_l2_errstate_reg[63:32]" iskew -1
+connect input err_coverage_ifc.L2_Bank3_Err_Stat = "cmp_top.iop.sctag3.csr.csr_l2_errstate_reg[63:32]" iskew -1
+
+// Sparc Error signals
+. sub connectInstance {
+.  my ( $instancePath, $coreNum )  = @_;
+.  my $c        = $coreNum;
+.
+connect input err_coverage_ifc.C${c}_meu  = "${instancePath}.ifu.errctl.meu" iskew -1
+connect input err_coverage_ifc.C${c}_mec  = "${instancePath}.ifu.errctl.mec" iskew -1
+connect input err_coverage_ifc.C${c}_imdu = "${instancePath}.ifu.errctl.imdu" iskew -1
+connect input err_coverage_ifc.C${c}_imtu = "${instancePath}.ifu.errctl.imt" iskew -1
+connect input err_coverage_ifc.C${c}_dmdu = "${instancePath}.ifu.errctl.dmdu" iskew -1
+connect input err_coverage_ifc.C${c}_dmtu = "${instancePath}.ifu.errctl.dmt" iskew -1
+connect input err_coverage_ifc.C${c}_idc  = "${instancePath}.ifu.errctl.idc" iskew -1
+connect input err_coverage_ifc.C${c}_itc  = "${instancePath}.ifu.errctl.itc" iskew -1
+connect input err_coverage_ifc.C${c}_ddc  = "${instancePath}.ifu.errctl.ddc" iskew -1
+connect input err_coverage_ifc.C${c}_dtc  = "${instancePath}.ifu.errctl.dtc" iskew -1
+connect input err_coverage_ifc.C${c}_irc  = "${instancePath}.ifu.errctl.irc" iskew -1
+connect input err_coverage_ifc.C${c}_iru  = "${instancePath}.ifu.errctl.iru" iskew -1
+connect input err_coverage_ifc.C${c}_frc  = "${instancePath}.ifu.errctl.frc" iskew -1
+connect input err_coverage_ifc.C${c}_fru  = "${instancePath}.ifu.errctl.fru" iskew -1
+connect input err_coverage_ifc.C${c}_ldau = "${instancePath}.ifu.errctl.ldau" iskew -1
+connect input err_coverage_ifc.C${c}_ncu  = "${instancePath}.ifu.errctl.ncu" iskew -1
+connect input err_coverage_ifc.C${c}_dmsu = "${instancePath}.ifu.errctl.dmsu" iskew -1
+connect input err_coverage_ifc.C${c}_mau  = "${instancePath}.ifu.errctl.mau" iskew -1
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+.   my $inst = $ERR_COV_PATHS[$core];
+.   if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.  }
+.  &connectInstance( $inst, $core );
+. }
+
+`endif // ifdef GATE_SIM

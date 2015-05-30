@@ -1,0 +1,54 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_line_cov.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:        dram_wr_data_mem_sample.vrh
+// Description:
+// Coverage object for the write memory. Here trying to hit
+// all the address for mem write. 
+// Also the cases when more than 1 enables are active(low) are invalid
+//
+// ***************************************************************************
+
+
+// coverage_def dram_wr_data_mem_sample (bit [7:0] en_n_addr)
+// {
+
+  // state declarations
+     wildcard state s_line_cov0             (9'bxxxxxxxx0);
+     wildcard state s_line_cov1             (9'bxxxxxxxx1);
+     wildcard state s_line_cov2             (9'bxxxxxxx0x);
+     wildcard state s_line_cov3             (9'bxxxxxxx1x);
+     wildcard state s_line_cov4             (9'bxxxxxx0xx);
+     wildcard state s_line_cov5             (9'bxxxxxx1xx);
+     wildcard state s_line_cov6             (9'bxxxxx0xxx);
+     wildcard state s_line_cov7             (9'bxxxxx1xxx);
+     wildcard state s_line_cov8             (9'bxx0xxxxxx);
+     wildcard state s_line_cov9             (9'bxx1xxxxxx);
+
+  // bad states
+  //bad_state s_not_addr_n_en (not state);
+
+  // bad transitions
+  //bad_trans t_not_rd_q_full_n_req_trans (not trans);
+
+//}
+

@@ -1,0 +1,53 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: coreccx_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "coreccx_cov_inc.pal"
+
+connect input coreccx_cov.clk = "cmp_top.iop.ccx.rclk" iskew -1
+connect input coreccx_cov.diag_done = "cmp_top.diag_done" iskew -1
+
+// CORECCX_PCX_RETRY_REQ_COV
+connect input coreccx_cov.spc0_pcx_req = "$CCX_PATH.spc0_pcx_req_pq[3:0]" iskew -1
+connect input coreccx_cov.spc0_pcx_atom = "$CCX_PATH.spc0_pcx_atom_pq" iskew -1
+connect input coreccx_cov.pcx_spc0_grant = "$CCX_PATH.pcx_spc0_grant_px[3:0]" iskew -1
+connect input coreccx_cov.coreccx_pcx_retry_req_cov = "cmp_top.coreccx_pcx_retry_req_cov" iskew -1
+connect output coreccx_cov.coreccx_pcx_retry_req = "cmp_top.coreccx_pcx_retry_req_cov" oskew 1
+
+// CORECCX_CPX_CONSECUTIVE_COV
+connect input coreccx_cov.cpx_spc0_data_rdy_cx2 = "$CCX_PATH.cpx_spc0_data_rdy_cx2" iskew -1
+connect input coreccx_cov.cpx_spc0_data_cx2 = "$CCX_PATH.cpx_spc0_data_cx2" iskew -1
+
+.for($b=0; $b<$BANKS; $b++) {
+
+// CORECCX_PCX_FIELDS_COV
+connect input coreccx_cov.pcx_sctag${b}_data_rdy = "$SCTAG_PATH[$b].iqctl.pcx_sctag_data_rdy_px2" iskew -1
+connect input coreccx_cov.pcx_sctag${b}_data = "$SCTAG_PATH[$b].pcx_sctag_data_px2" iskew -1
+
+// CORECCX_CPX_FIELDS_COV
+connect input coreccx_cov.sctag${b}_cpx_data = "$SCTAG_PATH[$b].sctag_cpx_data_ca" iskew -1
+
+// CORECCX_L2ADDR_COV
+connect input coreccx_cov.arbctl_inst_vld_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_vld_c2" iskew -1
+connect input coreccx_cov.arbctl_inst_diag_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inst_diag_c2" iskew -1
+connect input coreccx_cov.arbctl_inval_inst_c2_${b} = "$SCTAG_PATH[$b].arbctl.arbctl_inval_inst_c2" iskew -1
+connect input coreccx_cov.decdp_inst_int_c2_${b} = "$SCTAG_PATH[$b].arbctl.decdp_inst_int_c2" iskew -1
+connect input coreccx_cov.arbdp_addr_c2_${b} = "$SCTAG_PATH[$b].arbaddrdp.arbdp_addr_c2" iskew -1
+
+.}

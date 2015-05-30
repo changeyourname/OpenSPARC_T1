@@ -1,0 +1,81 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: fpu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "fpu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// fpu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+`else
+
+// global signals
+connect input fpu_cov_top.cmp_clk = "cmp_top.cmp_gclk" iskew -1 
+connect input fpu_cov_top.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+.for ( $i = 1; $i <= 6; $i++ ) {
+connect input fpu_cov_top.a${i}stg_fadd = "${FPU_COV_PATHS}.fpu_add.fpu_add_ctl.a${i}stg_fadd" iskew -1
+.}
+
+.for ( $i = 1; $i <= 6; $i++ ) {
+connect input fpu_cov_top.m${i}stg_fmul = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_ctl.m${i}stg_fmul" iskew -1
+.}
+
+.for ( $i = 1; $i <= 8; $i++ ) {
+connect input fpu_cov_top.d${i}stg_fdiv = "${FPU_COV_PATHS}.fpu_div.fpu_div_ctl.d${i}stg_fdiv" iskew -1
+.}
+
+connect input fpu_cov_top.a2stg_shr_cnt = "${FPU_COV_PATHS}.fpu_add.fpu_add_frac_dp.a2stg_shr_cnt" iskew -1
+connect input fpu_cov_top.a4stg_shl_cnt = "${FPU_COV_PATHS}.fpu_add.fpu_add_frac_dp.a4stg_shl_cnt" iskew -1
+
+connect input fpu_cov_top.inq_rdptr     = "${FPU_COV_PATHS}.fpu_in.fpu_in_ctl.inq_rdptr" iskew -1
+connect input fpu_cov_top.inq_wrptr     = "${FPU_COV_PATHS}.fpu_in.fpu_in_ctl.inq_wrptr" iskew -1
+
+connect input fpu_cov_top.inq_div_rdptr     = "${FPU_COV_PATHS}.fpu_in.fpu_in_ctl.inq_div_rdptr" iskew -1
+connect input fpu_cov_top.inq_div_wrptr     = "${FPU_COV_PATHS}.fpu_in.fpu_in_ctl.inq_div_wrptr" iskew -1
+
+connect input fpu_cov_top.m4stg_shl     = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_frac_dp.m4stg_shl" iskew -1
+connect input fpu_cov_top.m4stg_shr     = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_frac_dp.m4stg_shr" iskew -1
+
+connect input fpu_cov_top.a2stg_shr      = "${FPU_COV_PATHS}.fpu_add.fpu_add_frac_dp.a2stg_shr"      iskew -1
+connect input fpu_cov_top.a2stg_shr_tmp4 = "${FPU_COV_PATHS}.fpu_add.fpu_add_frac_dp.a2stg_shr_tmp4" iskew -1
+
+connect input fpu_cov_top.div_frac_add_in1 = "${FPU_COV_PATHS}.fpu_div.fpu_div_frac_dp.div_frac_add_in1" iskew -1
+connect input fpu_cov_top.d6stg_frac_0     = "${FPU_COV_PATHS}.fpu_div.fpu_div_frac_dp.d6stg_frac_0" iskew -1
+connect input fpu_cov_top.d6stg_frac_29    = "${FPU_COV_PATHS}.fpu_div.fpu_div_frac_dp.d6stg_frac_29" iskew -1
+connect input fpu_cov_top.div_shl_cnt      = "${FPU_COV_PATHS}.fpu_div.fpu_div_frac_dp.div_shl_cnt" iskew -1
+
+connect input fpu_cov_top.add_exc_out     = "${FPU_COV_PATHS}.fpu_out.add_exc_out" iskew -1
+connect input fpu_cov_top.mul_exc_out     = "${FPU_COV_PATHS}.fpu_out.mul_exc_out" iskew -1
+connect input fpu_cov_top.div_exc_out     = "${FPU_COV_PATHS}.fpu_out.div_exc_out" iskew -1
+
+connect input fpu_cov_top.a4stg_rndadd_cout  = "${FPU_COV_PATHS}.fpu_add.fpu_add_exp_dp.a4stg_rndadd_cout"  iskew -1
+connect input fpu_cov_top.add_exp_out_expinc = "${FPU_COV_PATHS}.fpu_add.fpu_add_exp_dp.add_exp_out_expinc" iskew -1
+connect input fpu_cov_top.add_exp_out_exp    = "${FPU_COV_PATHS}.fpu_add.fpu_add_exp_dp.add_exp_out_exp"    iskew -1
+connect input fpu_cov_top.add_exp_out_exp1   = "${FPU_COV_PATHS}.fpu_add.fpu_add_exp_dp.add_exp_out_exp1"   iskew -1
+connect input fpu_cov_top.add_exp_out_expadd = "${FPU_COV_PATHS}.fpu_add.fpu_add_exp_dp.add_exp_out_expadd" iskew -1
+
+connect input fpu_cov_top.m5stg_fracadd_cout    = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_exp_dp.m5stg_fracadd_cout" iskew -1
+connect input fpu_cov_top.mul_exp_out_exp_plus1 = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_exp_dp.mul_exp_out_exp_plus1" iskew -1
+connect input fpu_cov_top.m4stg_inc_exp_54      = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_exp_dp.m4stg_inc_exp_54"   iskew -1
+connect input fpu_cov_top.m4stg_inc_exp_55      = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_exp_dp.m4stg_inc_exp_55"   iskew -1
+connect input fpu_cov_top.m4stg_inc_exp_105     = "${FPU_COV_PATHS}.fpu_mul.fpu_mul_exp_dp.m4stg_inc_exp_105"  iskew -1
+
+`endif

@@ -1,0 +1,64 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: jbi_mout_sct_rdq.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	jbi_mout_sct0rdq.vrhpal
+// Description: Coverage object for the jbi_mout jbi_sct0rdq state machine.
+//
+// ***************************************************************************
+
+// Group:      jbi_mout
+// FSM:        sct[3-0]rdq
+// Interfaces:
+//    Acronym	RTL signal w/ scope							Interface
+//    -------   -------------------------------------------------------------------	---------
+//    state	"${JBUS_COV_PATH}.jbi.u_mout.sct[3-0]_out_queues.sctrdq.state[1:0]"	jbi_jbuscov_ifc
+
+
+
+  // State declarations.
+  state s_W0	(JBI_SCT_RDQ_STATE_W0);
+  state s_W1	(JBI_SCT_RDQ_STATE_W1);
+  state s_W2	(JBI_SCT_RDQ_STATE_W2);
+  state s_W3	(JBI_SCT_RDQ_STATE_W3);
+
+
+  // Transitions.
+  trans t_s_W0_s_W0		(JBI_SCT_RDQ_STATE_W0   -> JBI_SCT_RDQ_STATE_W0);
+  trans t_s_W0_s_W1		(JBI_SCT_RDQ_STATE_W0   -> JBI_SCT_RDQ_STATE_W1);
+
+  trans t_s_W1_s_W1		(JBI_SCT_RDQ_STATE_W1   -> JBI_SCT_RDQ_STATE_W1);
+  trans t_s_W1_s_W2		(JBI_SCT_RDQ_STATE_W1   -> JBI_SCT_RDQ_STATE_W2);
+//  trans t_s_W1_s_W0		(JBI_SCT_RDQ_STATE_W1   -> JBI_SCT_RDQ_STATE_W0);
+
+  trans t_s_W2_s_W2		(JBI_SCT_RDQ_STATE_W2   -> JBI_SCT_RDQ_STATE_W2);
+  trans t_s_W2_s_W3		(JBI_SCT_RDQ_STATE_W2   -> JBI_SCT_RDQ_STATE_W3);
+//  trans t_s_W2_s_W0		(JBI_SCT_RDQ_STATE_W2   -> JBI_SCT_RDQ_STATE_W0);
+
+  trans t_s_W3_s_W3		(JBI_SCT_RDQ_STATE_W3   -> JBI_SCT_RDQ_STATE_W3);
+  trans t_s_W3_s_W0		(JBI_SCT_RDQ_STATE_W3   -> JBI_SCT_RDQ_STATE_W0);
+
+
+  // Bad states.
+  bad_state s_not_SCT_RDQ_STATE (not state);
+
+  // Bad transitions. 
+  //bad_trans t_not_SCT_RDQ_TRANS (not trans);

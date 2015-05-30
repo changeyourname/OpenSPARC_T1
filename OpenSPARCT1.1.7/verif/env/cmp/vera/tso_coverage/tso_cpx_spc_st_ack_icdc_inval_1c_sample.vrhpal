@@ -1,0 +1,33 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_cpx_spc_st_ack_icdc_inval_1c_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// ICDC invalidation coverage object for store_ack
+// We cannot have simultaneos ICDC inv for a st_ack
+// checking for some b2b transitions
+// pretty self-explanatory.
+//***********************************************************************
+state s_TSO_DC_INV    (TSO_DC_INV);
+state s_TSO_IC_INV    (TSO_IC_INV);
+
+trans t_TSO_B2B_DC_INV   (TSO_DC_INV -> TSO_DC_INV);
+trans t_TSO_B2B_IC_INV   (TSO_IC_INV -> TSO_IC_INV);
+trans t_TSO_DCIC_INV     (TSO_DC_INV -> TSO_IC_INV);
+trans t_TSO_ICDC_INV     (TSO_IC_INV -> TSO_DC_INV);

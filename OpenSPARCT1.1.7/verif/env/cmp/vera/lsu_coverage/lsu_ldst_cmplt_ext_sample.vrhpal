@@ -1,0 +1,86 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_ldst_cmplt_ext_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// this is re-coding cmplt according to SajayP's wishes
+//
+// completes has 10 terms 
+// (old obj has 13 terms! the extra are err, l2_err, fp -- they are not in 
+//  cmplt in current RTL)
+//   0. stxa
+//   1. l2_fill
+//   2. intld bypass  ___ the above are non_late terms
+//   3. atm_st
+//   4. bsync_reset
+//   5. intrpt
+//   6. diag_wr
+//   7. ldxa_illva
+//   8. pref_tlbmiss
+//   9. pref_issue
+
+//   Here lists the real RTL as of today ( Fri Nov 14 09:58:17 PST 2003 ):
+//   lsu_ifu_ldst_cmplt[0] =
+//   // * can be early or
+//    ((stxa_internal_d2 & thread0_w3) | stxa_stall_wr_cmplt0_d1) |
+//    // * late signal and critical.
+//    // Can this be snapped earlier ?
+//    //(((l2fill_vld_e & ~atomic_ld_squash_e & ~ignore_fill)) //Bug 3624
+//    (((l2fill_vld_e & ~ignore_fill))  // 1st fill for ldd.
+//      & ~l2fill_fpld_e & ~lsu_cpx_pkt_atm_st_cmplt &
+//        ~(lsu_cpx_pkt_ld_err[1] & lsu_nceen_d1[0]) & dfill_thread0)  |
+//    intld_byp_cmplt[0] |
+//    // * early-or signals
+//    ldst_cmplt_late_0_d1 ;
+
+// assign  ldst_cmplt_late_0 =
+//    (atm_st_cmplt0 & ~pend_atm_ld_ue[0]) |  // Bug 3624,4048
+//    bsync0_reset    |
+//    lsu_intrpt_cmplt[0]   |
+//    diag_wr_cmplt0 |
+// //    dc0_diagnstc_rd_w2 |
+//    ldxa_illgl_va_cmplt_d1[0] |
+//    pref_tlbmiss_cmplt_d2[0] |
+//    lsu_pcx_pref_issue[0];
+
+// The coverage will be coded as follows
+// (a) 4 objs -- each for one threads to colloect statistics for the above 10
+//     terms.
+// (b) 6 cross objs to cover 2 events aligned in the same cycle
+//     == here we only care about cmplt happens and don't differentiate 
+//        individual term.
+// (c) 4 cross objs to cover 3 events aligned in the same cycle
+// (d) 1 cross obj  to cover 4 events aligned in the same cycle
+// (e) 6 cross objs to cover 2 events happening bac-to-back cycles
+//
+// Final statistic result for (a-e) should each collapse into one VERA objs.
+
+
+
+     state stxa         (4'b0001);
+     state l2_fill      (4'b0010);
+     state intld_bypass (4'b0011);
+     state atm_st       (4'b0100);
+     state bsync_reset  (4'b0101);
+     state intrpt       (4'b0110);
+     state diag_wr      (4'b0111);
+     state ldxa_illva   (4'b1000);
+     state pref_tlbmiss (4'b1001);
+     state pref_issue   (4'b1010);
+
+

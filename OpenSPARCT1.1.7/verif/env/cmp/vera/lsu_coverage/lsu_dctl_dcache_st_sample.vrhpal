@@ -1,0 +1,57 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_dcache_st_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// selective writes to dcache on stores
+//***********************************************************************
+
+  wildcard state s_DCACHE_ST_ST00 (35'b1_1_1000000000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST01 (35'b1_1_0100000000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST02 (35'b1_1_0010000000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST03 (35'b1_1_0001000000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST04 (35'b1_1_0000100000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST05 (35'b1_1_0000010000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST06 (35'b1_1_0000001000000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST07 (35'b1_1_0000000100000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST08 (35'b1_1_0000000010000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST09 (35'b1_1_0000000001000000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST10 (35'b1_1_0000000000100000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST11 (35'b1_1_0000000000010000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST12 (35'b1_1_0000000000001000_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST13 (35'b1_1_0000000000000100_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST14 (35'b1_1_0000000000000010_X_XXXXXXXXXXXXXXXX);
+  wildcard state s_DCACHE_ST_ST15 (35'b1_1_0000000000000001_X_XXXXXXXXXXXXXXXX);
+
+  wildcard state s_DCACHE_ST_ST16 (35'b0_X_XXXXXXXXXXXXXXXX_1_1000000000000000);
+  wildcard state s_DCACHE_ST_ST17 (35'b0_X_XXXXXXXXXXXXXXXX_1_0100000000000000);
+  wildcard state s_DCACHE_ST_ST18 (35'b0_X_XXXXXXXXXXXXXXXX_1_0010000000000000);
+  wildcard state s_DCACHE_ST_ST19 (35'b0_X_XXXXXXXXXXXXXXXX_1_0001000000000000);
+  wildcard state s_DCACHE_ST_ST20 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000100000000000);
+  wildcard state s_DCACHE_ST_ST21 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000010000000000);
+  wildcard state s_DCACHE_ST_ST22 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000001000000000);
+  wildcard state s_DCACHE_ST_ST23 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000100000000);
+  wildcard state s_DCACHE_ST_ST24 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000010000000);
+  wildcard state s_DCACHE_ST_ST25 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000001000000);
+  wildcard state s_DCACHE_ST_ST26 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000100000);
+  wildcard state s_DCACHE_ST_ST27 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000010000);
+  wildcard state s_DCACHE_ST_ST28 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000001000);
+  wildcard state s_DCACHE_ST_ST29 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000000100);
+  wildcard state s_DCACHE_ST_ST30 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000000010);
+  wildcard state s_DCACHE_ST_ST31 (35'b0_X_XXXXXXXXXXXXXXXX_1_0000000000000001);

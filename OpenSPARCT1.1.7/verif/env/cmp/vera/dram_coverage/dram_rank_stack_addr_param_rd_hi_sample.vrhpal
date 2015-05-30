@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rank_stack_addr_param_rd_hi_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_rank_stack_addr_param_rd_hi_sample.vrh
+// Description:
+// Coverage object for Address parameters and oob err.
+// These 32 bits are 4 set of address etc info.
+// These are _rd_adr_info_hi,_wr_adr_info_hi,_rd_adr_info_lo,_wr_adr_info_lo
+// Each set contains  :
+// {addr_err, stack_adr, rank_adr, bank_adr[2:0], eight_bank_mode, two_channel_mode}
+// Currently i am trying to cross all the conditions.
+// But the bank_adr[2] vld when eight_bank_mode is 0 may be an error? Current rtl
+// doesnt indicate. so check back!
+// bit 8 indicates lo address sel or high ( 1= low, 0 = high)
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rank_stack_addr_param_rd_hi_sample (bit [8:0] addr_etc_info)
+// {
+
+  // state declarations
+     //m_state s_addr_r_s_bank_pa_err_etc_rd_hi_all    (9'h000:9'h0ff);
+     m_state s_addr_r_s_bank_pa_err_etc_rd_hi_all    (9'h000:9'h00f, 9'h012:9'h013, 9'h016:9'h017, 9'h01a:9'h01b, 9'h01e:9'h02f, 9'h032:9'h033, 9'h036:9'h037, 9'h03a:9'h03b, 9'h03e:9'h04f, 9'h052:9'h053, 9'h056:9'h057, 9'h05a:9'h05b, 9'h05e:9'h06f, 9'h072:9'h073, 9'h076:9'h077, 9'h07a:9'h07b, 9'h07e:9'h08f, 9'h092:9'h093, 9'h096:9'h097, 9'h09a:9'h09b, 9'h09e:9'h0af, 9'h0b2:9'h0b3, 9'h0b6:9'h0b7, 9'h0ba:9'h0bb, 9'h0be:9'h0cf, 9'h0d2:9'h0d3, 9'h0d6:9'h0d7, 9'h0da:9'h0db, 9'h0de:9'h0ef, 9'h0f2:9'h0f3, 9'h0f6:9'h0f7, 9'h0fa:9'h0fb, 9'h0fe:9'h0ff);
+
+
+  // transitions(to same)
+
+  // transitions(to different)
+
+
+  // bad states
+  //bad_state s_not_WR_Q_STATE (not state);
+
+  // bad transitions 
+  //bad_trans t_not_WR_Q_TRANS (not trans);
+
+// }
+

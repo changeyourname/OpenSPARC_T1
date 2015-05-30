@@ -1,0 +1,200 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tso_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////
+// tso coverage signals
+/////////////////////////////////////////////////////////////////////////////
+
+`ifdef GATE_SIM
+
+`else 	// GATE_SIM 
+
+connect input tso_cov_top.tso_clk       		= "cmp_top.iop.sparc0.rclk" iskew -1
+connect input tso_cov_top.cmp_diag_done 		= "${top}.diag_done" iskew -1
+
+connect input  tso_cov_top.tso_mon_vcc   		= "${path_to_tso_mon}.tso_mon_vcc" iskew -1
+
+. for ( $t = 0; $t < 4; $t++ ) {
+connect input  tso_cov_top.sctag${t}_mb_info   		= "${path_to_tso_mon}.sctag${t}_mb_info" iskew -1
+connect input  tso_cov_top.sctag${t}_oq_info  		= "${path_to_tso_mon}.sctag${t}_oq_info" iskew -1
+connect input  tso_cov_top.sctag${t}_iq_info  		= "${path_to_tso_mon}.sctag${t}_iq_info" iskew -1
+connect input  tso_cov_top.sctag${t}_fb_info  		= "${path_to_tso_mon}.sctag${t}_fb_info" iskew -1
+connect input  tso_cov_top.sctag${t}_wb_info  		= "${path_to_tso_mon}.sctag${t}_wb_info" iskew -1
+connect input  tso_cov_top.sctag${t}_rdma_full		= "${path_to_tso_mon}.sctag${t}_rdma_full" iskew -1
+connect input  tso_cov_top.sctag${t}_snpq_full		= "${path_to_tso_mon}.sctag${t}_snpq_full" iskew -1
+
+.       for ( $e = 0; $e < 16; $e++ ) {
+connect input  tso_cov_top.sctag${t}_mb${e}_st_ny	= "${path_to_tso_mon}.sctag${t}_mb${e}_st_ny" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_ld_ny     	= "${path_to_tso_mon}.sctag${t}_mb${e}_ld_ny" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_wris8_ny  	= "${path_to_tso_mon}.sctag${t}_mb${e}_wris8_ny" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_wris64_ny 	= "${path_to_tso_mon}.sctag${t}_mb${e}_wris64_ny" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_st_y      	= "${path_to_tso_mon}.sctag${t}_mb${e}_st_y" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_ld_y      	= "${path_to_tso_mon}.sctag${t}_mb${e}_ld_y" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_wris8_y   	= "${path_to_tso_mon}.sctag${t}_mb${e}_wris8_y" iskew -1
+connect input  tso_cov_top.sctag${t}_mb${e}_wris64_y 	= "${path_to_tso_mon}.sctag${t}_mb${e}_wris64_y" iskew -1
+
+.}
+
+connect input tso_cov_top.sctag${t}_inst_vld_c2		   = "${path_to_cmp}.sctag${t}.arbctl_inst_vld_c2"	 iskew -1
+connect input tso_cov_top.sctag${t}_tagctl_hit_c2	   = "${path_to_cmp}.sctag${t}.tagctl.tagctl_hit_c2"	 iskew -1
+connect input tso_cov_top.sctag${t}_wbctl_hit_unqual_c2    = "${path_to_cmp}.sctag${t}.wbctl_hit_unqual_c2"	 iskew -1
+connect input tso_cov_top.sctag${t}_rdmatctl_hit_unqual_c2 = "${path_to_cmp}.sctag${t}.rdmatctl_hit_unqual_c2" iskew -1
+
+.	for ( $k = 0; $k < 16; $k++ ) {
+   connect input tso_cov_top.sctag${t}_l2mb_state${k}	= "${path_to_tso_mon}.sctag${t}_l2mb_state${k}" iskew -1
+.}
+ 
+.}
+connect input tso_cov_top.ifill_wyvld  		= "${path_to_tso_mon}.ifill_wyvld" 			iskew -1 
+connect input tso_cov_top.dfill_wyvld  		= "${path_to_tso_mon}.dfill_wyvld" 			iskew -1 
+
+connect input tso_cov_top.tso_l2_fsm1 		= "${path_to_tso_mon}.l2_fsm1" 				iskew -1 
+connect input tso_cov_top.tso_l2_fsm2 		= "${path_to_tso_mon}.l2_fsm2" 				iskew -1 
+connect input tso_cov_top.tso_l2_fsm3 		= "${path_to_tso_mon}.l2_fsm3" 				iskew -1 
+connect input tso_cov_top.tso_l2_fsm4 		= "${path_to_tso_mon}.l2_fsm4" 				iskew -1 
+
+connect input tso_cov_top.multiple_fanout_info	= "${path_to_tso_mon}.multiple_fanout_info" iskew -1 
+connect input tso_cov_top.cpx0_inv_fanout    	= "${path_to_tso_mon}.cpx0_inv_fanout" iskew -1 
+connect input tso_cov_top.cpx1_inv_fanout  	= "${path_to_tso_mon}.cpx1_inv_fanout" iskew -1 
+connect input tso_cov_top.cpx2_inv_fanout   	= "${path_to_tso_mon}.cpx2_inv_fanout" iskew -1 
+connect input tso_cov_top.cpx3_inv_fanout   	= "${path_to_tso_mon}.cpx3_inv_fanout" iskew -1 
+
+connect input tso_cov_top.blk_st_cnt0        	= "${path_to_tso_mon}.blk_st_cnt0" iskew -1 
+connect input tso_cov_top.blk_st_cnt1        	= "${path_to_tso_mon}.blk_st_cnt1" iskew -1 
+connect input tso_cov_top.blk_st_cnt2        	= "${path_to_tso_mon}.blk_st_cnt2" iskew -1 
+connect input tso_cov_top.blk_st_cnt3        	= "${path_to_tso_mon}.blk_st_cnt3" iskew -1 
+connect input tso_cov_top.blk_st_cnt4        	= "${path_to_tso_mon}.blk_st_cnt4" iskew -1 
+connect input tso_cov_top.blk_st_cnt5        	= "${path_to_tso_mon}.blk_st_cnt5" iskew -1 
+connect input tso_cov_top.blk_st_cnt6        	= "${path_to_tso_mon}.blk_st_cnt6" iskew -1 
+connect input tso_cov_top.blk_st_cnt7        	= "${path_to_tso_mon}.blk_st_cnt7" iskew -1 
+
+connect input tso_cov_top.st_blkst_mixture0     = "${path_to_tso_mon}.st_blkst_mixture0" iskew -1 
+connect input tso_cov_top.st_blkst_mixture1     = "${path_to_tso_mon}.st_blkst_mixture1" iskew -1 
+connect input tso_cov_top.st_blkst_mixture2     = "${path_to_tso_mon}.st_blkst_mixture2" iskew -1 
+connect input tso_cov_top.st_blkst_mixture3     = "${path_to_tso_mon}.st_blkst_mixture3" iskew -1 
+connect input tso_cov_top.st_blkst_mixture4     = "${path_to_tso_mon}.st_blkst_mixture4" iskew -1 
+connect input tso_cov_top.st_blkst_mixture5     = "${path_to_tso_mon}.st_blkst_mixture5" iskew -1 
+connect input tso_cov_top.st_blkst_mixture6     = "${path_to_tso_mon}.st_blkst_mixture6" iskew -1 
+connect input tso_cov_top.st_blkst_mixture7     = "${path_to_tso_mon}.st_blkst_mixture7" iskew -1 
+
+connect input tso_cov_top.ini_st_cnt0        	= "${path_to_tso_mon}.ini_st_cnt0" iskew -1 
+connect input tso_cov_top.ini_st_cnt1        	= "${path_to_tso_mon}.ini_st_cnt1" iskew -1 
+connect input tso_cov_top.ini_st_cnt2        	= "${path_to_tso_mon}.ini_st_cnt2" iskew -1 
+connect input tso_cov_top.ini_st_cnt3        	= "${path_to_tso_mon}.ini_st_cnt3" iskew -1 
+connect input tso_cov_top.ini_st_cnt4        	= "${path_to_tso_mon}.ini_st_cnt4" iskew -1 
+connect input tso_cov_top.ini_st_cnt5        	= "${path_to_tso_mon}.ini_st_cnt5" iskew -1 
+connect input tso_cov_top.ini_st_cnt6        	= "${path_to_tso_mon}.ini_st_cnt6" iskew -1 
+connect input tso_cov_top.ini_st_cnt7        	= "${path_to_tso_mon}.ini_st_cnt7" iskew -1 
+
+connect input tso_cov_top.st_inist_mixture0     = "${path_to_tso_mon}.st_inist_mixture0" iskew -1 
+connect input tso_cov_top.st_inist_mixture1     = "${path_to_tso_mon}.st_inist_mixture1" iskew -1 
+connect input tso_cov_top.st_inist_mixture2     = "${path_to_tso_mon}.st_inist_mixture2" iskew -1 
+connect input tso_cov_top.st_inist_mixture3     = "${path_to_tso_mon}.st_inist_mixture3" iskew -1 
+connect input tso_cov_top.st_inist_mixture4     = "${path_to_tso_mon}.st_inist_mixture4" iskew -1 
+connect input tso_cov_top.st_inist_mixture5     = "${path_to_tso_mon}.st_inist_mixture5" iskew -1 
+connect input tso_cov_top.st_inist_mixture6     = "${path_to_tso_mon}.st_inist_mixture6" iskew -1 
+connect input tso_cov_top.st_inist_mixture7     = "${path_to_tso_mon}.st_inist_mixture7" iskew -1 
+
+. sub connectInstance {
+.	my ( $instancePath, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+connect input tso_cov_top.C${c}_ifu_lsu_st_inst_e 	= "${instancePath}.lsu.ifu_lsu_st_inst_e" 		iskew -1
+connect input tso_cov_top.C${c}_ifu_lsu_casa_e 		= "${instancePath}.lsu.ifu_lsu_casa_e" 			iskew -1
+connect input tso_cov_top.C${c}_ifu_lsu_ldstub_e 	= "${instancePath}.lsu.ifu_lsu_ldstub_e" 		iskew -1
+connect input tso_cov_top.C${c}_ifu_lsu_swap_e 		= "${instancePath}.lsu.ifu_lsu_swap_e" 			iskew -1
+
+connect input tso_cov_top.C${c}_mbar_inst0_g 		= "${instancePath}.lsu.dctl.mbar_inst0_g" 		iskew -1
+connect input tso_cov_top.C${c}_mbar_inst1_g 		= "${instancePath}.lsu.dctl.mbar_inst1_g" 		iskew -1
+connect input tso_cov_top.C${c}_mbar_inst2_g 		= "${instancePath}.lsu.dctl.mbar_inst2_g" 		iskew -1
+connect input tso_cov_top.C${c}_mbar_inst3_g 		= "${instancePath}.lsu.dctl.mbar_inst3_g" 		iskew -1
+connect input tso_cov_top.C${c}_flush_inst0_g 		= "${instancePath}.lsu.dctl.flush_inst0_g" 		iskew -1
+connect input tso_cov_top.C${c}_flush_inst1_g 		= "${instancePath}.lsu.dctl.flush_inst1_g" 		iskew -1
+connect input tso_cov_top.C${c}_flush_inst2_g 		= "${instancePath}.lsu.dctl.flush_inst2_g" 		iskew -1
+connect input tso_cov_top.C${c}_flush_inst3_g 		= "${instancePath}.lsu.dctl.flush_inst3_g" 		iskew -1
+
+connect input tso_cov_top.C${c}_intrpt_disp_asi0_g 	= "${path_to_tso_mon}.spc${c}_intrpt_disp_asi0_g" 	iskew -1
+connect input tso_cov_top.C${c}_intrpt_disp_asi1_g 	= "${path_to_tso_mon}.spc${c}_intrpt_disp_asi1_g" 	iskew -1
+connect input tso_cov_top.C${c}_intrpt_disp_asi2_g 	= "${path_to_tso_mon}.spc${c}_intrpt_disp_asi2_g" 	iskew -1
+connect input tso_cov_top.C${c}_intrpt_disp_asi3_g 	= "${path_to_tso_mon}.spc${c}_intrpt_disp_asi3_g" 	iskew -1
+
+connect input tso_cov_top.C${c}_dfq_rptr_vld 		= "${instancePath}.lsu.qctl2.dfq_rptr_vld" 		iskew -1
+connect input tso_cov_top.C${c}_dfq_int_type 		= "${instancePath}.lsu.qctl2.dfq_int_type" 		iskew -1
+connect input tso_cov_top.C${c}_dfq_rd_advance 		= "${instancePath}.lsu.qctl2.dfq_rd_advance" 		iskew -1
+connect input tso_cov_top.C${c}_ifu_lsu_ibuf_busy	= "${instancePath}.lsu.qctl2.ifu_lsu_ibuf_busy" 	iskew -1
+connect input tso_cov_top.C${c}_inv_clear_d1		= "${instancePath}.lsu.qctl2.inv_clear_d1" 		iskew -1
+connect input tso_cov_top.C${c}_dfq_byp_ff_en 		= "${instancePath}.lsu.qctl2.dfq_byp_ff_en" 		iskew -1
+
+
+connect input tso_cov_top.C${c}_no_spc_rmo_st 		= "${instancePath}.lsu.dctl.no_spc_rmo_st" 		iskew -1
+
+connect input tso_cov_top.C${c}_lsu_way_hit 		= "${instancePath}.lsu.dctl.lsu_way_hit" 		iskew -1
+
+connect input tso_cov_top.C${c}T0_ackcnt		= "${instancePath}.lsu.dctl.ackcnt0"			iskew -1
+connect input tso_cov_top.C${c}T1_ackcnt		= "${instancePath}.lsu.dctl.ackcnt1"			iskew -1
+connect input tso_cov_top.C${c}T2_ackcnt		= "${instancePath}.lsu.dctl.ackcnt2"			iskew -1
+connect input tso_cov_top.C${c}T3_ackcnt		= "${instancePath}.lsu.dctl.ackcnt3"			iskew -1
+
+connect input tso_cov_top.C${c}_lsu_stb_cam_hit 	= "${instancePath}.lsu.stb_rwctl.stb_cam_hit_w"		iskew -1
+connect input tso_cov_top.C${c}_lsu_io_ld 		= "${instancePath}.lsu.stb_rwctl.io_ld" 		iskew -1
+connect input tso_cov_top.C${c}_ld0_l2cache_rq 		= "${instancePath}.lsu.qctl1.ld0_l2cache_rq" 		iskew -1
+connect input tso_cov_top.C${c}_ld1_l2cache_rq 		= "${instancePath}.lsu.qctl1.ld1_l2cache_rq" 		iskew -1
+connect input tso_cov_top.C${c}_ld2_l2cache_rq 		= "${instancePath}.lsu.qctl1.ld2_l2cache_rq" 		iskew -1
+connect input tso_cov_top.C${c}_ld3_l2cache_rq 		= "${instancePath}.lsu.qctl1.ld3_l2cache_rq" 		iskew -1
+
+connect input tso_cov_top.C${c}_lsu_snp_after_rd 	= "${path_to_tso_mon}.spc${c}_lsu_snp_after_rd" 	iskew -1
+connect input tso_cov_top.C${c}_lsu_rd_after_snp 	= "${path_to_tso_mon}.spc${c}_lsu_rd_after_snp" 	iskew -1
+
+connect input tso_cov_top.C${c}_stb_ld_hit_info 	= "${path_to_tso_mon}.spc${c}_stb_ld_hit_info" 	iskew -1
+
+connect input tso_cov_top.C${c}T0_stb_full 		= "${path_to_tso_mon}.C${c}T0_stb_full" 	iskew -1
+connect input tso_cov_top.C${c}T1_stb_full 		= "${path_to_tso_mon}.C${c}T1_stb_full" 	iskew -1
+connect input tso_cov_top.C${c}T2_stb_full 		= "${path_to_tso_mon}.C${c}T2_stb_full" 	iskew -1
+connect input tso_cov_top.C${c}T3_stb_full 		= "${path_to_tso_mon}.C${c}T3_stb_full" 	iskew -1
+connect input tso_cov_top.C${c}T0_stb_ne 		= "${path_to_tso_mon}.C${c}T0_stb_ne" 		iskew -1
+connect input tso_cov_top.C${c}T1_stb_ne 		= "${path_to_tso_mon}.C${c}T1_stb_ne" 		iskew -1
+connect input tso_cov_top.C${c}T2_stb_ne 		= "${path_to_tso_mon}.C${c}T2_stb_ne" 		iskew -1
+connect input tso_cov_top.C${c}T3_stb_ne 		= "${path_to_tso_mon}.C${c}T3_stb_ne" 		iskew -1
+
+connect input tso_cov_top.cpx_spc${c}_evict_icdc_inval_1c  = "${path_to_tso_mon}.cpx_spc${c}_evict_icdc_inval_1c"  iskew -1
+connect input tso_cov_top.cpx_spc${c}_st_ack_icdc_inval_1c = "${path_to_tso_mon}.cpx_spc${c}_st_ack_icdc_inval_1c" iskew -1
+connect input tso_cov_top.cpx_spc${c}_st_ack_dc_inval_8c   = "${path_to_tso_mon}.cpx_spc${c}_st_ack_dc_inval_8c"   iskew -1
+connect input tso_cov_top.cpx_spc${c}_st_ack_ic_inval_8c   = "${path_to_tso_mon}.cpx_spc${c}_st_ack_ic_inval_8c"   iskew -1
+connect input tso_cov_top.cpx_spc${c}_evict_dc_inval_8c	   = "${path_to_tso_mon}.cpx_spc${c}_evict_dc_inval_8c"    iskew -1
+connect input tso_cov_top.cpx_spc${c}_evict_ic_inval_8c	   = "${path_to_tso_mon}.cpx_spc${c}_evict_ic_inval_8c"    iskew -1
+
+
+connect input tso_cov_top.C${c}_non_b2b_atomic_ret	= "${path_to_tso_mon}.non_b2b_atomic_ret${c}" 	iskew -1
+
+. } ## connectInstance
+.
+.if ( $cores > 1 ) {
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.}
+
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $path_to_core[$core];
+.	&connectInstance( $inst, $core );
+. }
+
+`endif 	// GATE_SIM

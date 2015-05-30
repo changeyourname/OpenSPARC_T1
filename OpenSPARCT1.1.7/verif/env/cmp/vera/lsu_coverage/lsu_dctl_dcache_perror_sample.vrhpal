@@ -1,0 +1,31 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: lsu_dctl_dcache_perror_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+//***********************************************************************
+// dcache data parity error
+//***********************************************************************
+
+  wildcard state s_DCACHE_PERROR_ST0	(10'bX_111_010X0_0);
+  wildcard state s_DCACHE_PERROR_ST1	(10'bX_111_010X0_1);
+
+  wildcard state s_DCACHE_PERROR_ST2	(10'bX_111_1XXXX_X);
+  wildcard state s_DCACHE_PERROR_ST3	(10'b1_X11_X0XXX_X);
+  wildcard state s_DCACHE_PERROR_ST4	(10'b1_X11_XX11X_X);
+  wildcard state s_DCACHE_PERROR_ST5	(10'b1_X11_XXXX1_X);

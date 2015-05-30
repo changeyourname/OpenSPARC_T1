@@ -1,0 +1,60 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: dram_rank_stack_addr_param_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	dram_rank_stack_addr_param_sample.vrh
+// Description:
+// Coverage object for Address parameters and oob err.
+// These 32 bits are 4 set of address etc info.
+// These are _rd_adr_info_hi,_wr_adr_info_hi,_rd_adr_info_lo,_wr_adr_info_lo
+// Each set contains  :
+// {addr_err, stack_adr, rank_adr, bank_adr[2:0], eight_bank_mode, two_channel_mode}
+// Currently i am trying to cross all the conditions.
+// But the bank_adr[2] vld when eight_bank_mode is 0 may be an error? Current rtl
+// doesnt indicate. so check back!
+//
+// ***************************************************************************
+
+
+// coverage_def dram_rank_stack_addr_param_sample (bit [31:0] addr_etc_info)
+// {
+
+  // state declarations
+     m_state s_addr_r_s_bank_pa_err_etc_rd_hi_all    (8'h00:8'hff);
+     m_state s_addr_r_s_bank_pa_err_etc_wr_hi_all    (8'h00:8'hff); 
+     m_state s_addr_r_s_bank_pa_err_etc_rd_lo_all    (8'h00:8'hff);
+     m_state s_addr_r_s_bank_pa_err_etc_wr_lo_all    (8'h00:8'hff);
+
+
+
+  // transitions(to same)
+
+  // transitions(to different)
+
+
+  // bad states
+  //bad_state s_not_WR_Q_STATE (not state);
+
+  // bad transitions 
+  //bad_trans t_not_WR_Q_TRANS (not trans);
+
+// }
+

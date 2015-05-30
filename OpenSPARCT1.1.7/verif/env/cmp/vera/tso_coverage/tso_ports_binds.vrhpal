@@ -1,0 +1,393 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso_ports_binds.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tso_cov_inc.pal";
+#ifndef __L2_PORTS_BINDS_VRH__
+#define __L2_PORTS_BINDS_VRH__
+
+//  TSO coverage cov_ports definition
+//===================================
+
+//----------------------------------------------
+// A generic 1 bit port
+// checking if the bit (acting as a flag) is set.
+//----------------------------------------------
+port tso_1bit_port {
+  the_bit;
+}
+
+//----------------------------------------------
+// A generic 8 bit port for gathering flag bits
+//----------------------------------------------
+port tso_8bit_port {
+  the_bits;
+}
+
+//----------------------------------------------
+// A port for cpx2spc invalidation packet info
+// (basic info)
+//----------------------------------------------
+port tso_cpx_spc_inval_port{
+  inv_pkt;
+}
+
+//----------------------------------------------
+// and another one - the cpx invalidate fanout port
+//----------------------------------------------
+port tso_cpx_inv_fanout_port{
+  inv_fanout;
+}
+
+//----------------------------------------------
+// multiple fanout info port
+// muliple sctags have multiple fanout simultaneously
+//----------------------------------------------
+port tso_cpx_inv_fanout2_port{
+  multiple_fanout_info;
+}
+
+//----------------------------------------------
+// A port about the q full and high water mark info
+// of the L2 queues.
+//----------------------------------------------
+port tso_l2_q_info_port {
+  l2_q_info;	
+}
+
+//----------------------------------------------
+// a port to check that an L2 instruction hit the
+// L2 write-back buffer
+// inst_vld_c2 tagctl_hit_c2 wbctl_hit_unqual_c2;
+//----------------------------------------------
+port tso_l2_wbhit_port {
+  hit_info;
+}
+
+//----------------------------------------------
+// port for the l2 fsm-s defined in tso_mon - see there
+  // l2_fsm1,2,3,4;	
+//----------------------------------------------
+port tso_l2_fsm_port {
+  fsm_ext_state;
+}
+
+//----------------------------------------------
+// tee l2mb state port as defined in tso_mon
+//----------------------------------------------
+port tso_l2_l2mb_state_port{
+  l2mb_state;
+}
+
+//----------------------------------------------
+// store buffer coverage port definition
+// flush/membar/interrupt in E stage with
+// store buffer non empty
+// intrpt_disp_asi_g;	
+// flush_inst_g;	
+// mb_inst_g;	
+// no_spc_rmo_st
+// stb_full;
+// stb_ne;
+//----------------------------------------------
+port tso_lsu_stb_multiple_port {
+    state_vector;
+}
+
+//----------------------------------------------
+// incoming interrupt port.
+// dfq_rptr_vld         
+// dfq_int_type       
+// dfq_rd_advance    
+// ifu_lsu_ibuf_busy 
+// inv_clear_d1
+// dfq_byp_ff_en    
+//----------------------------------------------
+port tso_lsu_incoming_int_port {
+    state_vector;
+}
+
+//----------------------------------------------
+// store/casa/swap/ldstub hit the L1 
+// ifu_lsu_st_inst_e;	
+// ifu_lsu_casa_e;	
+// ifu_lsu_ldstub_e;	
+// ifu_lsu_swap_e;	
+// lsu_way_hit;	
+//----------------------------------------------
+port tso_lsu_sthit_port {
+  st_state;
+}
+
+//----------------------------------------------
+// NC store hits the store buffer
+// lsu_stb_cam_hit;
+// lsu_io_ld;
+// ld0_l2cache_rq;
+// ld1_l2cache_rq;
+// ld2_l2cache_rq;
+// ld3_l2cache_rq;
+//----------------------------------------------
+port tso_lsu_nc_port {
+  nc_state;
+}
+
+//----------------------------------------------
+// relaxed stores ports
+// st_rmost_mixture;
+// rmo_st_cnt;
+//----------------------------------------------
+port tso_lsu_rmost_port {
+  state_vector;
+}
+
+//----------------------------------------------
+// load hitting in the store buffer port
+//----------------------------------------------
+port tso_lsu_stb_ld_hit_port{
+  stb_ld_hit_info;
+}
+
+port tso_lsu_ackcnt_port{
+  ackcnt;
+}
+.#================================================================
+// BINDINGS
+.  for ( $t = 0; $t < 4; $t++ ) {
+    bind tso_l2_q_info_port tso_l2_mb_info_bind_sample_sctag${t} 	{ l2_q_info 	 tso_cov_top.sctag${t}_mb_info;}
+    bind tso_l2_q_info_port tso_l2_oq_info_bind_sample_sctag${t} 	{ l2_q_info 	 tso_cov_top.sctag${t}_oq_info;}
+    bind tso_l2_q_info_port tso_l2_iq_info_bind_sample_sctag${t} 	{ l2_q_info 	 tso_cov_top.sctag${t}_iq_info;}
+    bind tso_l2_q_info_port tso_l2_fb_info_bind_sample_sctag${t} 	{ l2_q_info 	 tso_cov_top.sctag${t}_fb_info;}
+    bind tso_l2_q_info_port tso_l2_wb_info_bind_sample_sctag${t} 	{ l2_q_info 	 tso_cov_top.sctag${t}_wb_info;}
+
+    bind tso_8bit_port	    tso_l2_rdma_snpq_full_bind_sample_sctag${t} 	{ 
+	the_bits	{
+			    tso_cov_top.sctag${t}_rdma_full,
+			    tso_cov_top.sctag${t}_snpq_full,
+			    tso_cov_top.ifill_wyvld,
+			    tso_cov_top.dfill_wyvld,
+			    tso_cov_top.tso_mon_vcc,			// filler
+			    tso_cov_top.tso_mon_vcc,
+			    tso_cov_top.tso_mon_vcc,
+			    tso_cov_top.tso_mon_vcc
+			};
+    }
+
+
+.  for ( $e = 0; $e < 16; $e++ ) {
+    bind tso_8bit_port	    tso_l2_l2mb_bind1_sample_sctag${t}_entry${e} 	{ 
+	the_bits	{
+				tso_cov_top.sctag${t}_mb${e}_st_ny,
+				tso_cov_top.sctag${t}_mb${e}_ld_ny,     
+				tso_cov_top.sctag${t}_mb${e}_wris8_ny,  
+				tso_cov_top.sctag${t}_mb${e}_wris64_ny, 
+				tso_cov_top.sctag${t}_mb${e}_st_y,
+				tso_cov_top.sctag${t}_mb${e}_ld_y,
+				tso_cov_top.sctag${t}_mb${e}_wris8_y,
+				tso_cov_top.sctag${t}_mb${e}_wris64_y
+			};
+    }
+.}
+
+    bind tso_l2_wbhit_port tso_l2_wbhit_bind_sample_sctag${t}	{
+	hit_info	{
+			    tso_cov_top.sctag${t}_inst_vld_c2,
+			    tso_cov_top.sctag${t}_tagctl_hit_c2,
+			    tso_cov_top.sctag${t}_wbctl_hit_unqual_c2
+			};
+    }
+
+// Use the WBPORT for RDMA hits also.
+//-----------------------------------
+    bind tso_l2_wbhit_port tso_l2_rdmahit_bind_sample_sctag${t}	{
+	hit_info	{
+			    tso_cov_top.sctag${t}_inst_vld_c2,
+			    tso_cov_top.sctag${t}_tagctl_hit_c2,
+			    tso_cov_top.sctag${t}_rdmatctl_hit_unqual_c2
+			};
+    }
+
+
+.   for ( $k = 0; $k < 16; $k++ ) {
+     bind  tso_l2_l2mb_state_port tso_l2_l2mb_state_bind_sample_sctag${t}_entry${k}{
+       		l2mb_state 		tso_cov_top.sctag${t}_l2mb_state${k};
+     }
+.  }
+
+.}
+
+    bind tso_l2_fsm_port  tso_l2_fsm1_bind_sample 		{
+	fsm_ext_state	{
+			    tso_cov_top.tso_l2_fsm1
+			};
+    }
+
+    bind tso_l2_fsm_port  tso_l2_fsm2_bind_sample 		{
+	fsm_ext_state	{
+			    tso_cov_top.tso_l2_fsm2
+			};
+    }
+
+    bind tso_l2_fsm_port  tso_l2_fsm3_bind_sample 		{
+	fsm_ext_state	{
+			    tso_cov_top.tso_l2_fsm3
+			};
+    }
+
+    bind tso_l2_fsm_port  tso_l2_fsm4_bind_sample 		{
+	fsm_ext_state	{
+			    tso_cov_top.tso_l2_fsm4
+			};
+    }
+
+.   for ( $t = 0; $t < 4; $t++ ) {
+    bind tso_cpx_inv_fanout_port tso_cpx_inv_fanout_bind_sample_sctag${t}{ 
+		inv_fanout 		tso_cov_top.cpx${t}_inv_fanout;
+    }
+.}
+    bind tso_cpx_inv_fanout2_port tso_cpx_inv_fanout2_bind_sample {
+		multiple_fanout_info	tso_cov_top.multiple_fanout_info;
+    }
+.#-----------------------------------------------------------------
+
+// put core-specific bindings here
+//--------------------------------
+.sub coreBindings {
+.  my( $core_str ) 	= @_;
+.  my $c		= $core_str;
+
+    bind tso_lsu_rmost_port  tso_lsu_blkst_bind_sample_c${c} { 
+	state_vector	{
+			    tso_cov_top.st_blkst_mixture${c},
+			    tso_cov_top.blk_st_cnt${c}
+			};
+    }
+    bind tso_lsu_rmost_port  tso_lsu_inist_bind_sample_c${c} { 
+	state_vector	{
+			    tso_cov_top.st_inist_mixture${c},
+			    tso_cov_top.ini_st_cnt${c}
+			};
+    }
+
+    bind tso_lsu_incoming_int_port  tso_lsu_incoming_int_bind_sample_c${c} {
+        state_vector{
+			tso_cov_top.C${c}_dfq_rptr_vld,
+			tso_cov_top.C${c}_dfq_int_type,
+			tso_cov_top.C${c}_dfq_rd_advance,
+			tso_cov_top.C${c}_ifu_lsu_ibuf_busy,
+			tso_cov_top.C${c}_inv_clear_d1,
+			tso_cov_top.C${c}_dfq_byp_ff_en
+        };
+    }
+
+.  for ( $t = 0; $t < 4; $t++ ) {		## per thread ld buf
+     bind tso_lsu_stb_multiple_port tso_lsu_stb_multiple_bind_sample_c${c}t${t} {
+	state_vector	{
+			    tso_cov_top.C${c}_intrpt_disp_asi${t}_g,
+			    tso_cov_top.C${c}_flush_inst${t}_g,
+			    tso_cov_top.C${c}_mbar_inst${t}_g,
+			    tso_cov_top.C${c}_no_spc_rmo_st[$t],
+			    tso_cov_top.C${c}T${t}_stb_full,
+			    tso_cov_top.C${c}T${t}_stb_ne
+			};
+     }
+
+.  } # for $t
+
+  bind tso_lsu_sthit_port tso_lsu_sthit_bind_sample_c${c} {
+	st_state	{
+			    tso_cov_top.C${c}_ifu_lsu_st_inst_e,
+			    tso_cov_top.C${c}_ifu_lsu_casa_e,
+			    tso_cov_top.C${c}_ifu_lsu_ldstub_e,
+			    tso_cov_top.C${c}_ifu_lsu_swap_e,
+			    tso_cov_top.C${c}_lsu_way_hit
+			};
+  } 	
+
+  bind tso_lsu_nc_port tso_lsu_nc_bind_sample_c${c} {
+	nc_state	{
+			    tso_cov_top.C${c}_lsu_stb_cam_hit, 
+			    tso_cov_top.C${c}_lsu_io_ld,
+			    tso_cov_top.C${c}_ld0_l2cache_rq,
+			    tso_cov_top.C${c}_ld1_l2cache_rq,
+			    tso_cov_top.C${c}_ld2_l2cache_rq,
+			    tso_cov_top.C${c}_ld3_l2cache_rq
+			};
+  }
+
+  bind tso_8bit_port tso_lsu_misc_bind_sample_c${c} {
+	the_bits	{
+			    tso_cov_top.C${c}_lsu_rd_after_snp, 
+			    tso_cov_top.C${c}_lsu_snp_after_rd,
+			    tso_cov_top.C${c}_non_b2b_atomic_ret,
+			    tso_cov_top.tso_mon_vcc, // repeated to pad out to 8 bits
+			    tso_cov_top.tso_mon_vcc,
+			    tso_cov_top.tso_mon_vcc,
+			    tso_cov_top.tso_mon_vcc,
+			    tso_cov_top.tso_mon_vcc
+			};
+  }
+
+  bind tso_lsu_stb_ld_hit_port          tso_lsu_stb_ld_hit_bind_sample_c${c} { 
+                stb_ld_hit_info         tso_cov_top.C${c}_stb_ld_hit_info;
+  }
+
+
+  bind tso_lsu_ackcnt_port tso_lsu_ackcnt_bind_sample_${c}0 { 
+                ackcnt         tso_cov_top.C${c}T0_ackcnt;
+  }
+  bind tso_lsu_ackcnt_port tso_lsu_ackcnt_bind_sample_${c}1 { 
+                ackcnt         tso_cov_top.C${c}T1_ackcnt;
+  }
+  bind tso_lsu_ackcnt_port tso_lsu_ackcnt_bind_sample_${c}2 { 
+                ackcnt         tso_cov_top.C${c}T2_ackcnt;
+  }
+  bind tso_lsu_ackcnt_port tso_lsu_ackcnt_bind_sample_${c}3 { 
+                ackcnt         tso_cov_top.C${c}T3_ackcnt;
+  }
+
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_st_ack_icdc_inval_1c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_st_ack_icdc_inval_1c;
+  }
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_evict_icdc_inval_1c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_evict_icdc_inval_1c;
+  }
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_st_ack_dc_inval_8c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_st_ack_dc_inval_8c;
+  }
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_st_ack_ic_inval_8c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_st_ack_ic_inval_8c;
+  }
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_evict_dc_inval_8c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_evict_dc_inval_8c;
+  }
+  bind tso_cpx_spc_inval_port  tso_cpx_spc_evict_ic_inval_8c_bind_sample_${c} {
+     		inv_pkt tso_cov_top.cpx_spc${c}_evict_ic_inval_8c;
+  }
+
+.}  # sub
+
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// BINDINGS FOR core_$core
+// ***********************************************************
+.	&coreBindings( $core );
+. }
+#endif

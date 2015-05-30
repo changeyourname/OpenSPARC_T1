@@ -1,0 +1,224 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: mt.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "mt_cov_inc.pal";
+#ifndef __MT_IF_VRH__
+#define __MT_IF_VRH__
+
+#include <vera_defines.vrh>
+
+interface mt_cov_top
+ {
+  // common signals
+  input cmp_clk			CLOCK;
+  input cmp_diag_done		PSAMPLE;
+
+  // Xbar
+
+ input [7:0] cpx_fp_req PSAMPLE;
+ input [7:0] cpx_io_req PSAMPLE;
+ input [7:0] cpx_sc0_req PSAMPLE;
+ input [7:0] cpx_sc1_req PSAMPLE;
+ input [7:0] cpx_sc2_req PSAMPLE;
+ input [7:0] cpx_sc3_req PSAMPLE;
+
+ input cpx_rdy_spc0 PSAMPLE;
+ input cpx_rdy_spc1 PSAMPLE;
+ input cpx_rdy_spc2 PSAMPLE;
+ input cpx_rdy_spc3 PSAMPLE;
+ input cpx_rdy_spc4 PSAMPLE;
+ input cpx_rdy_spc5 PSAMPLE;
+ input cpx_rdy_spc6 PSAMPLE;
+ input cpx_rdy_spc7 PSAMPLE;
+
+ input [4:0] spc0_pcx_req PSAMPLE;
+ input [4:0] spc1_pcx_req PSAMPLE;
+ input [4:0] spc2_pcx_req PSAMPLE;
+ input [4:0] spc3_pcx_req PSAMPLE;
+ input [4:0] spc4_pcx_req PSAMPLE;
+ input [4:0] spc5_pcx_req PSAMPLE;
+ input [4:0] spc6_pcx_req PSAMPLE;
+ input [4:0] spc7_pcx_req PSAMPLE;
+
+ input pcx_fpio_rdy PSAMPLE;
+ input pcx_sc0_rdy PSAMPLE;
+ input pcx_sc1_rdy PSAMPLE;
+ input pcx_sc2_rdy PSAMPLE;
+ input pcx_sc3_rdy PSAMPLE;
+
+
+.
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+  // signals 
+
+  input [5:0]	C${c}_mt_	PSAMPLE;
+  input [31:0]	C${c}_instr_s	PSAMPLE;
+
+  // starve
+  input C${c}_lsu_ifu_stallreq PSAMPLE;
+  input C${c}_ffu_ifu_stallreq_never PSAMPLE;
+  input C${c}_itlb_starv_alert PSAMPLE;
+  input C${c}_ifqctl_starv_alert PSAMPLE;
+
+  // flush
+
+  input C${c}_lsu_tlu_early_flush PSAMPLE;
+  input C${c}_ffu_lsu_kill_fst_w PSAMPLE;
+
+  input [48:0]   C${c}_pc_s     PSAMPLE;
+  input [48:0]   C${c}_pc_d     PSAMPLE;
+  input [48:0]   C${c}_pc_e     PSAMPLE;
+  input [48:0]   C${c}_pc_m     PSAMPLE;
+  input [48:0]   C${c}_pc_w     PSAMPLE;
+
+
+  input [3:0]	C${c}_thr_f	PSAMPLE;
+  input [3:0]	C${c}_thr_s	PSAMPLE;
+  input [3:0]	C${c}_thr_d	PSAMPLE;
+  input [3:0]	C${c}_thr_e	PSAMPLE;
+  input [3:0]	C${c}_thr_m	PSAMPLE;
+  input [3:0]	C${c}_thr_w	PSAMPLE;
+
+  input [3:0]	C${c}_vld_f	PSAMPLE;
+  input [3:0]	C${c}_vld_s	PSAMPLE;
+  input [3:0]	C${c}_vld_d	PSAMPLE;
+  input [3:0]	C${c}_vld_e	PSAMPLE;
+  input [3:0]	C${c}_vld_m	PSAMPLE;
+  input [3:0]	C${c}_vld_w	PSAMPLE;
+
+// trap from ifu
+  input         C${c}_trap_e    PSAMPLE;
+  input [8:0]   C${c}_ttype_e   PSAMPLE;
+  
+  input 	C${c}_trap_m	PSAMPLE;
+  input [8:0]	C${c}_ttype_m	PSAMPLE;
+
+  input         C${c}_trap_0w1  PSAMPLE;
+  input         C${c}_trap_1w1  PSAMPLE;
+  input         C${c}_trap_2w1  PSAMPLE;
+  input         C${c}_trap_3w1  PSAMPLE;
+
+// exception from exu
+// input         C${c}_trap_exu_e PSAMPLE;
+
+   input        C${c}_early_ttype_vld_e PSAMPLE;
+   input        C${c}_ecc_ue_trap_e PSAMPLE;
+
+  input [8:0]   C${c}_ttype_exu_e PSAMPLE;
+  
+// Reset and Idle are prioritized in M.  All others in E
+// reset interrupt
+  input         C${c}_ifu_rst_m  PSAMPLE;
+  input [1:0]   C${c}_thrid_m    PSAMPLE;
+
+  // MT switch fsm
+  input [4:0]   C${c}_fsm_state0  PSAMPLE;
+  input [4:0]   C${c}_fsm_state1  PSAMPLE;
+  input [4:0]   C${c}_fsm_state2  PSAMPLE;
+  input [4:0]   C${c}_fsm_state3  PSAMPLE;
+
+  // Rollback coverage
+  // this means a load miss triggered!!!!
+  /*
+   
+   assign dtu_fcl_retract_d = (dec_swl_mul_inst_d & swl_dec_mulbusy_e |
+                                                 dec_swl_div_inst_d & swl_dec_divbusy_e |
+                                                 dec_swl_allfp_d & swl_dec_fp_enable_d &
+                               swl_dec_fpbusy_e |
+                               retract_store_d
+//                             |  retract_iferr_d
+                               );
+  
+  input         C${c}_rollback_load    PSAMPLE;
+  input         C${c}_rollback_hazard  PSAMPLE;
+*/
+
+  input 	C${c}_rb_stg_d	PSAMPLE;
+  input 	C${c}_rb_stg_e	PSAMPLE;
+  input 	C${c}_rb_stg_w	PSAMPLE;
+
+// bypass
+
+ input C${c}_byp_rs1_ld PSAMPLE;
+ input C${c}_byp_rs2_ld PSAMPLE;
+
+ input C${c}_byp_rs1_e PSAMPLE;
+ input C${c}_byp_rs2_e PSAMPLE;
+
+ input C${c}_byp_rs1_w PSAMPLE;
+ input C${c}_byp_rs2_w PSAMPLE;
+
+ input C${c}_byp_rs1_m PSAMPLE;
+ input C${c}_byp_rs2_m PSAMPLE;
+
+
+ input C${c}_byp_dfq PSAMPLE;
+ input [1:0] C${c}_byp_dfq_thrid PSAMPLE;
+
+
+ // interrupt extra
+
+ input [1:0] C${c}_int_thid PSAMPLE;
+ input [3:0] C${c}_intr_req  PSAMPLE;
+ input       C${c}_intr_vld  PSAMPLE;
+
+
+ // MUL_DIV obj
+
+ input C${c}_new_div_d PSAMPLE;
+ input C${c}_new_mul_d PSAMPLE;
+
+ // for reg write port W2
+ input C${c}_ecl_byp_sel_load_m PSAMPLE;
+ input C${c}_ecl_byp_sel_pipe_m PSAMPLE;
+ input C${c}_ecl_byp_sel_restore_m PSAMPLE;
+ input [1:0] C${c}_ecl_irf_tid_m PSAMPLE;
+
+
+ // for reg write port W1
+ input C${c}_ecl_byp_sel_load_g PSAMPLE;
+ input C${c}_ecl_byp_sel_restore_g PSAMPLE;
+ input C${c}_ecl_sel_mul_g PSAMPLE;
+ input C${c}_ecl_sel_div_g PSAMPLE;
+ input [1:0] C${c}_ecl_irf_tid_g PSAMPLE;
+
+ // for long op wake up
+ input [3:0] C${c}_exu_ifu_longop_done_g PSAMPLE;
+
+ // for bug2770
+ input C${c}_ifu_lsu_ibuf_busy PSAMPLE;
+
+.
+. } # coreSignals
+.
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+
+ }
+
+#endif
+

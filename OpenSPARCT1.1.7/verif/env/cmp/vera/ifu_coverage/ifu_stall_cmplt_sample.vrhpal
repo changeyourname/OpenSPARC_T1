@@ -1,0 +1,114 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_stall_cmplt_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_stall_cmplt_cov.vr
+// Description:
+// This object covers conditions with completions arriving close to the
+// stall.
+//
+// State: 9'b: imss,thrrdy,stb8,stb9,stb_retry,retr_d,retr_wakeup,
+//             ldmw,ldst_cmplt
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_STALL_CMPLT_COV (bit [8:0] cov_vector)
+// {
+  wildcard trans t_imiss_0_ifill (9'b1xxxxxxxx -> 9'b01xxxxxxx);
+  wildcard trans t_imiss_1_ifill (9'b1xxxxxxxx -> 9'b00xxxxxxx -> 9'b01xxxxxxx);
+  wildcard trans t_imiss_2_ifill (9'b1xxxxxxxx -> 9'b00xxxxxxx[.2.] -> 9'b01xxxxxxx);
+  wildcard trans t_imiss_3_ifill (9'b1xxxxxxxx -> 9'b00xxxxxxx[.3.] -> 9'b01xxxxxxx);
+  wildcard trans t_imiss_4_ifill (9'b1xxxxxxxx -> 9'b00xxxxxxx[.4.] -> 9'b01xxxxxxx);
+
+  wildcard trans t_stb8_0_stb_retry (9'bxx1xxxxxx -> 9'bxx0x1xxxx);
+  wildcard trans t_stb8_1_stb_retry (9'bxx1xxxxxx -> 9'bxx0x0xxxx -> 9'bxx0x1xxxx);
+  wildcard trans t_stb8_2_stb_retry (9'bxx1xxxxxx -> 9'bxx0x0xxxx[.2.] -> 9'bxx0x1xxxx);
+  wildcard trans t_stb8_3_stb_retry (9'bxx1xxxxxx -> 9'bxx0x0xxxx[.3.] -> 9'bxx0x1xxxx);
+  wildcard trans t_stb8_4_stb_retry (9'bxx1xxxxxx -> 9'bxx0x0xxxx[.4.] -> 9'bxx0x1xxxx);  
+
+  wildcard trans t_stb9_0_stb_retry (9'bxxx1xxxxx -> 9'bxxx01xxxx);
+  wildcard trans t_stb9_1_stb_retry (9'bxxx1xxxxx -> 9'bxxx00xxxx -> 9'bxxx01xxxx);
+  wildcard trans t_stb9_2_stb_retry (9'bxxx1xxxxx -> 9'bxxx00xxxx[.2.] -> 9'bxxx01xxxx);
+  wildcard trans t_stb9_3_stb_retry (9'bxxx1xxxxx -> 9'bxxx00xxxx[.3.] -> 9'bxxx01xxxx);
+  wildcard trans t_stb9_4_stb_retry (9'bxxx1xxxxx -> 9'bxxx00xxxx[.4.] -> 9'bxxx01xxxx);
+
+  wildcard trans t_retrop_0_retr_wakeup (9'bxxxxx1xxx -> 9'bxxxxx01xx);
+  wildcard trans t_retrop_1_retr_wakeup (9'bxxxxx1xxx -> 9'bxxxxx00xx -> 9'bxxxxx01xx);
+  wildcard trans t_retrop_2_retr_wakeup (9'bxxxxx1xxx -> 9'bxxxxx00xx[.2.] -> 9'bxxxxx01xx);
+  wildcard trans t_retrop_3_retr_wakeup (9'bxxxxx1xxx -> 9'bxxxxx00xx[.3.] -> 9'bxxxxx01xx);
+  wildcard trans t_retrop_4_retr_wakeup (9'bxxxxx1xxx -> 9'bxxxxx00xx[.4.] -> 9'bxxxxx01xx);
+
+  wildcard trans t_ldmw_0_ldst_cmplt (9'bxxxxxxx1x -> 9'bxxxxxxx01);
+  wildcard trans t_ldmw_1_ldst_cmplt (9'bxxxxxxx1x -> 9'bxxxxxxx00 -> 9'bxxxxxxx01);
+  wildcard trans t_ldmw_2_ldst_cmplt (9'bxxxxxxx1x -> 9'bxxxxxxx00[.2.] -> 9'bxxxxxxx01);
+  wildcard trans t_ldmw_3_ldst_cmplt (9'bxxxxxxx1x -> 9'bxxxxxxx00[.3.] -> 9'bxxxxxxx01);
+  wildcard trans t_ldmw_4_ldst_cmplt (9'bxxxxxxx1x -> 9'bxxxxxxx00[.4.] -> 9'bxxxxxxx01);
+
+  wildcard state s_thrrdy_stb_retry             (9'bx1xx1xxxx);
+  wildcard state s_thrrdy_retr_wakeup           (9'bx1xxxx1xx);
+  wildcard state s_thrrdy_ldst_cmplt            (9'bx1xxxxxx1);
+  wildcard state s_stb_retry_retr_wakeup        (9'bxxxx1x1xx);
+  wildcard state s_stb_retry_ldst_cmplt         (9'bxxxx1xxx1);
+  wildcard state s_retr_wakeup_ldst_cmplt       (9'bxxxxxx1x1);  
+
+  wildcard trans t_thrrdy_0_stb_retry             (9'bx1xxxxxxx -> 9'bxxxx1xxxx);
+  wildcard trans t_thrrdy_1_stb_retry             (9'bx1xxxxxxx -> 9'bx0xx0xxxx -> 9'bxxxx1xxxx);    
+  wildcard trans t_thrrdy_2_stb_retry             (9'bx1xxxxxxx -> 9'bx0xx0xxxx[.2.] -> 9'bxxxx1xxxx);    
+  wildcard trans t_stb_retry_0_thrrdy             (9'bxxxx1xxxx -> 9'bx1xxxxxxx);
+  wildcard trans t_stb_retry_1_thrrdy             (9'bxxxx1xxxx -> 9'bx0xx0xxxx -> 9'bx1xxxxxxx);
+  wildcard trans t_stb_retry_2_thrrdy             (9'bxxxx1xxxx -> 9'bx0xx0xxxx[.2.] -> 9'bx1xxxxxxx);
+
+  wildcard trans t_thrrdy_0_retr_wakeup             (9'bx1xxxxxxx -> 9'bxxxxxx1xx);
+  wildcard trans t_thrrdy_1_retr_wakeup             (9'bx1xxxxxxx -> 9'bx0xxxx0xx -> 9'bxxxxxx1xx);    
+  wildcard trans t_thrrdy_2_retr_wakeup             (9'bx1xxxxxxx -> 9'bx0xxxx0xx[.2.] -> 9'bxxxxxx1xx);    
+  wildcard trans t_retr_wakeup_0_thrrdy             (9'bxxxxxx1xx -> 9'bx1xxxxxxx);
+  wildcard trans t_retr_wakeup_1_thrrdy             (9'bxxxxxx1xx -> 9'bx0xxxx0xx -> 9'bx1xxxxxxx);
+  wildcard trans t_retr_wakeup_2_thrrdy             (9'bxxxxxx1xx -> 9'bx0xxxx0xx[.2.] -> 9'bx1xxxxxxx);
+
+  wildcard trans t_thrrdy_0_ldst_cmplt             (9'bx1xxxxxxx -> 9'bxxxxxxxx1);
+  wildcard trans t_thrrdy_1_ldst_cmplt             (9'bx1xxxxxxx -> 9'bx0xxxxxx0 -> 9'bxxxxxxxx1);    
+  wildcard trans t_thrrdy_2_ldst_cmplt             (9'bx1xxxxxxx -> 9'bx0xxxxxx0[.2.] -> 9'bxxxxxxxx1);    
+  wildcard trans t_ldst_cmplt_0_thrrdy             (9'bxxxxxxxx1 -> 9'bx1xxxxxxx);
+  wildcard trans t_ldst_cmplt_1_thrrdy             (9'bxxxxxxxx1 -> 9'bx0xxxxxx0 -> 9'bx1xxxxxxx);
+  wildcard trans t_ldst_cmplt_2_thrrdy             (9'bxxxxxxxx1 -> 9'bx0xxxxxx0[.2.] -> 9'bx1xxxxxxx);
+
+  wildcard trans t_stb_retry_0_ldst_cmplt             (9'bxxxx1xxxx -> 9'bxxxxxxxx1);
+  wildcard trans t_stb_retry_1_ldst_cmplt             (9'bxxxx1xxxx -> 9'bxxxx0xxx0 -> 9'bxxxxxxxx1);    
+  wildcard trans t_stb_retry_2_ldst_cmplt             (9'bxxxx1xxxx -> 9'bxxxx0xxx0[.2.] -> 9'bxxxxxxxx1);    
+  wildcard trans t_ldst_cmplt_0_stb_retry             (9'bxxxxxxxx1 -> 9'bxxxx1xxxx);
+  wildcard trans t_ldst_cmplt_1_stb_retry             (9'bxxxxxxxx1 -> 9'bxxxx0xxx0 -> 9'bxxxxxxxx1);
+  wildcard trans t_ldst_cmplt_2_stb_retry             (9'bxxxxxxxx1 -> 9'bxxxx0xxx0[.2.] -> 9'bxxxxxxxx1);
+
+  wildcard trans t_stb_retry_0_retr_wakeup             (9'bxxxx1xxxx -> 9'bxxxxxx1xx);
+  wildcard trans t_stb_retry_1_retr_wakeup             (9'bxxxx1xxxx -> 9'bxxxx0x0xx -> 9'bxxxxxx1xx);    
+  wildcard trans t_stb_retry_2_retr_wakeup             (9'bxxxx1xxxx -> 9'bxxxx0x0xx[.2.] -> 9'bxxxxxx1xx);    
+  wildcard trans t_retr_wakeup_0_stb_retry             (9'bxxxxxx1xx -> 9'bxxxx1xxxx);
+  wildcard trans t_retr_wakeup_1_stb_retry             (9'bxxxxxx1xx -> 9'bxxxx0x0xx -> 9'bxxxx1xxxx);
+  wildcard trans t_retr_wakeup_2_stb_retry             (9'bxxxxxx1xx -> 9'bxxxx0x0xx[.2.] -> 9'bxxxx1xxxx);  
+
+  wildcard trans t_ldst_cmplt_0_retr_wakeup             (9'bxxxxxxxx1 -> 9'bxxxxxx1xx);
+  wildcard trans t_ldst_cmplt_1_retr_wakeup             (9'bxxxxxxxx1 -> 9'bxxxxxx0x0 -> 9'bxxxxxx1xx);    
+  wildcard trans t_ldst_cmplt_2_retr_wakeup             (9'bxxxxxxxx1 -> 9'bxxxxxx0x0[.2.] -> 9'bxxxxx1xx);    
+  wildcard trans t_retr_wakeup_0_ldst_cmplt             (9'bxxxxxx1xx -> 9'bxxxxxxxx1);
+  wildcard trans t_retr_wakeup_1_ldst_cmplt             (9'bxxxxxx1xx -> 9'bxxxxxx0x0 -> 9'bxxxxxxxx1);
+  wildcard trans t_retr_wakeup_2_ldst_cmplt             (9'bxxxxxx1xx -> 9'bxxxxxx0x0[.2.] -> 9'bxxxxxxxx1);  
+// }

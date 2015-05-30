@@ -1,0 +1,160 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpmss_cov_defines.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// arbdp_inst_c2 bit positions
+#define CTRUE       30
+#define REQTYPE     19:15
+#define NC          14
+#define JBI_INST    13
+#define PF           6
+#define BIS          5
+
+// defines for ccx_cpx_sequence
+#define CPX_NO_REQ        17'b00000000_0_xxxxxxxx
+#define CPX_NO_REQ_G0     17'b00000000_0_xxxxxxx0
+#define CPX_NO_REQ_G1     17'b00000000_0_xxxxxxx1
+#define CPX_SINGLE_REQ    17'b00000001_0_xxxxxxxx
+#define CPX_SINGLE_REQ_G0 17'b00000001_0_xxxxxxx0
+#define CPX_SINGLE_REQ_G1 17'b00000001_0_xxxxxxx1
+#define CPX_DOUBLE_REQ    17'b00000001_1_xxxxxxxx
+#define CPX_DOUBLE_REQ_G0 17'b00000001_1_xxxxxxx0
+#define CPX_DOUBLE_REQ_G1 17'b00000001_1_xxxxxxx1
+
+// defines for ccx_pcx_sequence
+#define PCX_NO_REQ        9'b0000_0_xxxx
+#define PCX_NO_REQ_G0     9'b0000_0_xxx0
+#define PCX_NO_REQ_G1     9'b0000_0_xxx1
+#define PCX_SINGLE_REQ    9'b0001_0_xxxx
+#define PCX_SINGLE_REQ_G0 9'b0001_0_xxx0
+#define PCX_SINGLE_REQ_G1 9'b0001_0_xxx1
+#define PCX_DOUBLE_REQ    9'b0001_1_xxxx
+#define PCX_DOUBLE_REQ_G0 9'b0001_1_xxx0
+#define PCX_DOUBLE_REQ_G1 9'b0001_1_xxx1
+
+// PCX reqtypes
+#define LOAD_RQ    5'b00000
+#define IMISS_RQ   5'b10000
+#define STORE_RQ   5'b00001
+#define CAS1_RQ    5'b00010
+#define CAS2_RQ    5'b00011
+#define SWAP_RQ    5'b00110
+#define STRLOAD_RQ 5'b00100
+#define STRST_RQ   5'b00101
+#define INT_RQ     5'b01001
+#define FWD_RQ     5'b01101
+#define FILL       5'b11111
+
+// CPX rtntypes
+#define LOAD_RET    4'b0000
+#define IFILL_RET   4'b0001
+#define ST_ACK      4'b0100
+#define STRLOAD_RET 4'b0010
+#define STRST_ACK   4'b0110
+#define INT_RET     4'b0111
+#define FWD_RPY_RET 4'b1011
+#define EVICT_REQ   4'b0011
+#define ERR_RET     4'b1100
+
+// defines for l2_inst_flow
+#define HIT     4'b1000
+#define MISS    4'b0000
+#define DEP     4'bx100
+#define DEPHIT  4'b1010
+#define DEPMISS 4'b0010
+
+// defines for l2_jbi_fields
+#define JBI_REQ_VLD    {1'b1, 32'bx}
+#define JBI_WR8_8B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h0, 8'bx}
+#define JBI_WR8_7B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h7, 8'bx}
+#define JBI_WR8_6B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h6, 8'bx}
+#define JBI_WR8_5B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h5, 8'bx}
+#define JBI_WR8_4B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h4, 8'bx}
+#define JBI_WR8_3B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h3, 8'bx}
+#define JBI_WR8_2B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h2, 8'bx}
+#define JBI_WR8_1B     {1'b0, 5'bx, 3'b010, 12'bx, 1'b0, 3'h1, 8'bx}
+#define JBI_REQ_ADDR0  {1'b0, 29'bx, 3'h0}
+#define JBI_REQ_ADDR1  {1'b0, 29'bx, 3'h1}
+#define JBI_REQ_ADDR2  {1'b0, 29'bx, 3'h2}
+#define JBI_REQ_ADDR3  {1'b0, 29'bx, 3'h3}
+#define JBI_REQ_ADDR4  {1'b0, 29'bx, 3'h4}
+#define JBI_REQ_ADDR5  {1'b0, 29'bx, 3'h5}
+#define JBI_REQ_ADDR6  {1'b0, 29'bx, 3'h6}
+#define JBI_REQ_ADDR7  {1'b0, 29'bx, 3'h7}
+#define JBI_CTAG11_0   {1'b0, 8'bx,        1'b0, 11'bx, 1'b0, 11'bx}
+#define JBI_CTAG11_1   {1'b0, 8'bx,        1'b1, 11'bx, 1'b0, 11'bx}
+#define JBI_CTAG10_0   {1'b0, 8'bx,  1'bx, 1'b0, 10'bx, 1'b0, 11'bx}
+#define JBI_CTAG10_1   {1'b0, 8'bx,  1'bx, 1'b1, 10'bx, 1'b0, 11'bx}
+#define JBI_CTAG9_0    {1'b0, 8'bx,  2'bx, 1'b0,  9'bx, 1'b0, 11'bx}
+#define JBI_CTAG9_1    {1'b0, 8'bx,  2'bx, 1'b1,  9'bx, 1'b0, 11'bx}
+#define JBI_CTAG8_0    {1'b0, 8'bx,  3'bx, 1'b0,  8'bx, 1'b0, 11'bx}
+#define JBI_CTAG8_1    {1'b0, 8'bx,  3'bx, 1'b1,  8'bx, 1'b0, 11'bx}
+#define JBI_CTAG7_0    {1'b0, 8'bx,  4'bx, 1'b0,  7'bx, 1'b0, 11'bx}
+#define JBI_CTAG7_1    {1'b0, 8'bx,  4'bx, 1'b1,  7'bx, 1'b0, 11'bx}
+#define JBI_CTAG6_0    {1'b0, 8'bx,  5'bx, 1'b0,  6'bx, 1'b0, 11'bx}
+#define JBI_CTAG6_1    {1'b0, 8'bx,  5'bx, 1'b1,  6'bx, 1'b0, 11'bx}
+#define JBI_CTAG5_0    {1'b0, 8'bx,  6'bx, 1'b0,  5'bx, 1'b0, 11'bx}
+#define JBI_CTAG5_1    {1'b0, 8'bx,  6'bx, 1'b1,  5'bx, 1'b0, 11'bx}
+#define JBI_CTAG4_0    {1'b0, 8'bx,  7'bx, 1'b0,  4'bx, 1'b0, 11'bx}
+#define JBI_CTAG4_1    {1'b0, 8'bx,  7'bx, 1'b1,  4'bx, 1'b0, 11'bx}
+#define JBI_CTAG3_0    {1'b0, 8'bx,  8'bx, 1'b0,  3'bx, 1'b0, 11'bx}
+#define JBI_CTAG3_1    {1'b0, 8'bx,  8'bx, 1'b1,  3'bx, 1'b0, 11'bx}
+#define JBI_CTAG2_0    {1'b0, 8'bx,  9'bx, 1'b0,  2'bx, 1'b0, 11'bx}
+#define JBI_CTAG2_1    {1'b0, 8'bx,  9'bx, 1'b1,  2'bx, 1'b0, 11'bx}
+#define JBI_CTAG1_0    {1'b0, 8'bx, 10'bx, 1'b0,  1'bx, 1'b0, 11'bx}
+#define JBI_CTAG1_1    {1'b0, 8'bx, 10'bx, 1'b1,  1'bx, 1'b0, 11'bx}
+#define JBI_CTAG0_0    {1'b0, 8'bx, 11'bx, 1'b0,        1'b0, 11'bx}
+#define JBI_CTAG0_1    {1'b0, 8'bx, 11'bx, 1'b1,        1'b0, 11'bx}
+
+// L2_ERROR_STATUS_REG_COV
+#define LDAC_0 10'bx, 1'b0, 21'bx
+#define LDAU_0 11'bx, 1'b0, 20'bx
+#define LDWC_0 12'bx, 1'b0, 19'bx
+#define LDWU_0 13'bx, 1'b0, 18'bx
+#define LDRC_0 14'bx, 1'b0, 17'bx
+#define LDRU_0 15'bx, 1'b0, 16'bx
+#define LDSC_0 16'bx, 1'b0, 15'bx
+#define LDSU_0 17'bx, 1'b0, 14'bx
+#define LTC_0  18'bx, 1'b0, 13'bx
+#define LRU_0  19'bx, 1'b0, 12'bx
+#define LVU_0  20'bx, 1'b0, 11'bx
+#define DAC_0  21'bx, 1'b0, 10'bx
+#define DAU_0  22'bx, 1'b0,  9'bx
+#define DRC_0  23'bx, 1'b0,  8'bx
+#define DRU_0  24'bx, 1'b0,  7'bx
+#define DSC_0  25'bx, 1'b0,  6'bx
+#define DSU_0  26'bx, 1'b0,  5'bx
+#define LDAC_1 10'bx, 1'b1, 21'bx
+#define LDAU_1 11'bx, 1'b1, 20'bx
+#define LDWC_1 12'bx, 1'b1, 19'bx
+#define LDWU_1 13'bx, 1'b1, 18'bx
+#define LDRC_1 14'bx, 1'b1, 17'bx
+#define LDRU_1 15'bx, 1'b1, 16'bx
+#define LDSC_1 16'bx, 1'b1, 15'bx
+#define LDSU_1 17'bx, 1'b1, 14'bx
+#define LTC_1  18'bx, 1'b1, 13'bx
+#define LRU_1  19'bx, 1'b1, 12'bx
+#define LVU_1  20'bx, 1'b1, 11'bx
+#define DAC_1  21'bx, 1'b1, 10'bx
+#define DAU_1  22'bx, 1'b1,  9'bx
+#define DRC_1  23'bx, 1'b1,  8'bx
+#define DRU_1  24'bx, 1'b1,  7'bx
+#define DSC_1  25'bx, 1'b1,  6'bx
+#define DSU_1  26'bx, 1'b1,  5'bx
+

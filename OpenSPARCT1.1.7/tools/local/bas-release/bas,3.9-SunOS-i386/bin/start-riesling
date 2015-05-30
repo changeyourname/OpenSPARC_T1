@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Script which starts Riesling
+
+ARGV="$*"
+
+PYTHONPATH=$PYTHONPATH:$TRE_ROOT/$tool,$version/lib/pfe:$TRE_ROOT/$tool,$version/lib/riesling/pfe
+export PYTHONPATH
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRE_ROOT/$tool,$version/lib/pfe
+export LD_LIBRARY_PATH
+
+echo "PYTHONPATH=$PYTHONPATH"
+echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+
+exe="$TRE_ROOT/$tool,$version/lib/python/bin/python -OO $TRE_ROOT/$tool,$version/lib/riesling/RiesCodeN2.py --ar n1"
+echo $exe $ARGV
+
+if [ -x $exe ]; then
+    exec $exe  $ARGV
+else
+    die "$exe: executable not found!"
+fi

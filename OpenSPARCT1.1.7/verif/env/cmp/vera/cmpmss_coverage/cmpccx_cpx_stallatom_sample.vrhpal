@@ -1,0 +1,34 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_cpx_stallatom_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// atom_stall[8:0] = {cpx.arb0.ccx_arb.arbdp.atom[3:0], cpx.arb0.ccx_arb.arbdp.grant_a[3:0], cpx.arb0.ccx_arb.arbdp.stall_a}
+
+// coverage_def CCX_CPX_STALLATOM_COV(bit [8:0] atom_grant_stall) {
+
+    // Transitions
+
+    // stalls from core0 only
+    wildcard trans bank0_stallatm2(9'bxxx1_xxx1_0 -> 9'bxxxx_xxx0_1);
+    wildcard trans bank1_stallatm2(9'bxx1x_xx1x_0 -> 9'bxxxx_xx0x_1);
+    wildcard trans bank2_stallatm2(9'bx1xx_x1xx_0 -> 9'bxxxx_x0xx_1);
+    wildcard trans bank3_stallatm2(9'b1xxx_1xxx_0 -> 9'bxxxx_0xxx_1);
+// }

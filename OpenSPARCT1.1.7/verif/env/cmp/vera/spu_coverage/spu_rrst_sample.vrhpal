@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_rrst_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_rrst_COV_VRH
+#define INC__TMP_spu_rrst_COV_VRH
+#define SIMUL_MA_DES_ST_STATE     4'b1110
+#define SIMUL_MA_RC4_ST_STATE     4'b1101
+#define SIMUL_MA_DES_RC4_ST_STATE 4'b1111
+
+/*
+ * Order of the signals in rrst_state:
+ * spu_mactl_streq, spu_encctl_streq,
+ * spu_desctl_streq, spu_rc4ctl_streq
+ */
+
+/*
+ * spu_rrst_cov
+ *
+ * This coverage object checks that the input requests spu_mactl_streq and
+ * spu_encctl_streq to the rrst arbiter are asserted simultaneously. It also
+ * checks that spu_encctl_streq is asserted for all possible causes.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample spu_rrst_sample_bind_C${c}.\$rrst_state {
+  // Declare states to be covered 
+  state s_SIMUL_MA_DES_ST_STATE (SIMUL_MA_DES_ST_STATE);
+  state s_SIMUL_MA_RC4_ST_STATE (SIMUL_MA_RC4_ST_STATE);
+  state s_SIMUL_MA_DES_RC4_ST_STATE (SIMUL_MA_DES_RC4_ST_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

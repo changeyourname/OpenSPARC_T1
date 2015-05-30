@@ -1,0 +1,62 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_ill_instr_case_2_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_ill_instr_case_2_COV_VRH
+#define INC__TMP_spu_ill_instr_case_2_COV_VRH
+#define ILL_INSTR_CASE_2_STATE 1'b1
+
+/* TODO:
+ * There needs to be another signal(s) here to indicate that the reason
+ * for the illegal instruction exception was really this case.
+ */
+
+/*
+ * Order of the signals in ill_instr_case_2_state:
+ * spu_tlu_rrsrv_illgl_m
+ */
+
+/*
+ * spu_ill_instr_case_2_cov
+ *
+ * This coverage object checks for one of three illegal instruction cases in
+ * the SPU. Here is the case, taken from the spu_testplan.tex
+ * file:
+ *
+ * Case 2: Writing reserved values to RW fields of the ASI registers. For
+ *   example, the OP field of the ASI\_STREAM\_CONTROL\_REG defines values
+ *   6-7 as reserved because they represent undefined opcodes.
+ *
+ * This coverage object does not declare any bad states, transitions, or
+ * bad transitions. All I care about is that we ended up in the states
+ * specified.
+ */
+
+#endif
+sample spu_ill_instr_case_2_sample_bind_C${c}.\$ill_instr_case_2_state {
+  // Declare states to be covered 
+  state s_ILL_INSTR_CASE_2_STATE (ILL_INSTR_CASE_2_STATE);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}

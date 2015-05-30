@@ -1,0 +1,169 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_cov.vconpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "ifu_cov_inc.pal";
+////////////////////////////////////////////////////////////////////////////////
+// ifu coverage signals
+////////////////////////////////////////////////////////////////////////////////
+
+// global signals
+connect input ifu_coverage_ifc.clk = "cmp_top.iop.sparc0.rclk" iskew -1 
+connect input ifu_coverage_ifc.cmp_diag_done = "cmp_top.diag_done" iskew -1
+
+. sub connectInstance {
+.	my ( $sparc_inst_path, $coreNum )	= @_;
+.	my $c				= $coreNum;
+.
+connect input ifu_coverage_ifc.C${c}_thr_f			= "${sparc_inst_path}.ifu.fcl.thr_f" iskew -1 
+connect input ifu_coverage_ifc.C${c}_thr_d			= "${sparc_inst_path}.ifu.fcl.thr_d" iskew -1	
+connect input ifu_coverage_ifc.C${c}_thr_e			= "${sparc_inst_path}.ifu.fcl.thr_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr_m			= "${sparc_inst_path}.ifu.fcl.thr_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr_w			= "${sparc_inst_path}.ifu.fcl.thr_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr_w1			= "${sparc_inst_path}.ifu.fcl.thr_w2" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_f			= "${sparc_inst_path}.ifu.fcl.inst_vld_f" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_s			= "${sparc_inst_path}.ifu.fcl.inst_vld_s" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_d			= "${sparc_inst_path}.ifu.fcl.fcl_dtu_inst_vld_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_e			= "${sparc_inst_path}.ifu.fcl.inst_vld_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_m			= "${sparc_inst_path}.ifu.fcl.inst_vld_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_vld_w			= "${sparc_inst_path}.ifu.fcl.inst_vld_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_ifq_icmiss_s1		= "${sparc_inst_path}.ifu.fcl.fcl_ifq_icmiss_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_dtu_swc_s 		= "${sparc_inst_path}.ifu.fcl.fdp_fcl_swc_s2" iskew -1
+//connect input ifu_coverage_ifc.C${c}_fcl_dtu_swc_s 		= "${sparc_inst_path}.ifu.fcl.fcl_dtu_swc_s" iskew -1
+//connect input ifu_coverage_ifc.C${c}_fcl_dtu_swc_s 		= "${sparc_inst_path}.ifu.swl.sw_cond_s" iskew -1
+//connect input ifu_coverage_ifc.C${c}_insterr_s1 		= "${sparc_inst_path}.ifu.errctl.insterr_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_erd_erc_nirpe_s1 		= "${sparc_inst_path}.ifu.errctl.erd_erc_nirpe_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_erd_erc_fetpe_s1 		= "${sparc_inst_path}.ifu.errctl.erd_erc_fetpe_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_erb_ievld_s1 		= "${sparc_inst_path}.ifu.errctl.fcl_erb_ievld_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_ictagerr_s1 		= "${sparc_inst_path}.ifu.errctl.ictagerr_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_swc_d 			= "${sparc_inst_path}.ifu.swl.swc_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_swc_e 			= "${sparc_inst_path}.ifu.swl.swc_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_intr_vld_d 		= "${sparc_inst_path}.ifu.fcl.intr_vld_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_intr_vld_s 		= "${sparc_inst_path}.ifu.fcl.any_intr_vec_s" iskew -1
+connect input ifu_coverage_ifc.C${c}_async_intr_vld_s 		= "${sparc_inst_path}.ifu.fcl.arst_vld_s" iskew -1
+connect input ifu_coverage_ifc.C${c}_switch_store_d 		= "${sparc_inst_path}.ifu.swl.switch_store_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_retract_store_d 		= "${sparc_inst_path}.ifu.swl.retract_store_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_retract_iferr_d	 	= "${sparc_inst_path}.ifu.swl.retract_iferr_d" iskew -1
+//connect input ifu_coverage_ifc.C${c}_retract_iferr_d1 		= "${sparc_inst_path}.ifu.fcl.retract_iferr_d1" iskew -1
+//connect input ifu_coverage_ifc.C${c}_thr_match_de		= "${sparc_inst_path}.ifu.fcl.thr_match_de" iskew -1
+connect input ifu_coverage_ifc.C${c}_dec_swl_mul_inst_d 	= "${sparc_inst_path}.ifu.swl.dec_swl_mul_inst_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_swl_dec_mulbusy_e 		= "${sparc_inst_path}.ifu.swl.swl_dec_mulbusy_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_dec_swl_div_inst_d 	= "${sparc_inst_path}.ifu.swl.dec_swl_div_inst_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_swl_dec_divbusy_e 		= "${sparc_inst_path}.ifu.swl.swl_dec_divbusy_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_dec_swl_allfp_d 		= "${sparc_inst_path}.ifu.swl.dec_swl_allfp_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_swl_dec_fpbusy_e 		= "${sparc_inst_path}.ifu.swl.swl_dec_fpbusy_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_swl_dec_fp_enable_d 	= "${sparc_inst_path}.ifu.swl.swl_dec_fp_enable_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifu_tlu_ttype_vld_m 	= "${sparc_inst_path}.ifu.ifu_tlu_ttype_vld_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_trap_m 			= "${sparc_inst_path}.ifu.fcl.trap_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifu_tlu_ttype_m 		= "${sparc_inst_path}.ifu.ifu_tlu_ttype_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_irf_ce_m 			= "${sparc_inst_path}.ifu.fcl.irf_ce_m" iskew -1
+connect input ifu_coverage_ifc.C${c}_irf_ce_w 			= "${sparc_inst_path}.ifu.fcl.irf_ce_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_flush_pipe_w 	= "${sparc_inst_path}.ifu.tlu_ifu_flush_pipe_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_dtu_fcl_rollback_g 	= "${sparc_inst_path}.ifu.fcl.dtu_fcl_rollback_g" iskew -1
+connect input ifu_coverage_ifc.C${c}_mark4rb_w 			= "${sparc_inst_path}.ifu.fcl.mark4rb_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifu_tlu_flush_w 		= "${sparc_inst_path}.ifu.ifu_tlu_flush_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_dtu_nuke_thr_w 	= "${sparc_inst_path}.ifu.fcl.fcl_dtu_nuke_thr_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_dtu_resum_thr_w 	= "${sparc_inst_path}.ifu.fcl.fcl_dtu_resum_thr_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_ffu_ifu_fst_ce_w 		= "${sparc_inst_path}.ifu.ffu_ifu_fst_ce_w" iskew -1
+connect input ifu_coverage_ifc.C${c}_lsu_ifu_dc_parity_error_w2 = "${sparc_inst_path}.ifu.lsu_ifu_dc_parity_error_w2" iskew -1
+connect input ifu_coverage_ifc.C${c}_dtu_inst_d 		= "${sparc_inst_path}.ifu.dec.dtu_inst_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_stbcnt_d 			= "${sparc_inst_path}.ifu.swl.stbcnt_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_asi_internal_d 		= "${sparc_inst_path}.lsu.dctl.asi_internal_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_all_dst_ge1 		= "${sparc_inst_path}.ifu.swl.all_dst_ge1" iskew -1 
+connect input ifu_coverage_ifc.C${c}_all_dst_ge2 		= "${sparc_inst_path}.ifu.swl.all_dst_ge2" iskew -1
+connect input ifu_coverage_ifc.C${c}_all_dst_ge3 		= "${sparc_inst_path}.ifu.swl.all_dst_ge3" iskew -1
+connect input ifu_coverage_ifc.C${c}_all_dst_eq4 		= "${sparc_inst_path}.ifu.swl.all_dst_eq4" iskew -1
+connect input ifu_coverage_ifc.C${c}_dec_swl_st_inst_d 		= "${sparc_inst_path}.ifu.swl.dec_swl_st_inst_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr0_state 		= "${sparc_inst_path}.ifu.swl.thrfsm0.thr_state" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr1_state 		= "${sparc_inst_path}.ifu.swl.thrfsm1.thr_state" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr2_state 		= "${sparc_inst_path}.ifu.swl.thrfsm2.thr_state" iskew -1
+connect input ifu_coverage_ifc.C${c}_thr3_state 		= "${sparc_inst_path}.ifu.swl.thrfsm3.thr_state" iskew -1
+connect input ifu_coverage_ifc.C${c}_ffu_ifu_stallreq 		= "${sparc_inst_path}.ifu.ffu_ifu_stallreq" iskew -1
+connect input ifu_coverage_ifc.C${c}_lsu_ifu_stallreq 		= "${sparc_inst_path}.ifu.lsu_ifu_stallreq" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifq_fcl_stallreq		= "${sparc_inst_path}.ifu.ifq_fcl_stallreq" iskew -1
+connect input ifu_coverage_ifc.C${c}_dtu_inst_anull_e 		= "${sparc_inst_path}.ifu.fcl.dtu_inst_anull_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_itlb_starv_alert 		= "${sparc_inst_path}.ifu.fcl.itlb_starv_alert" iskew -1
+connect input ifu_coverage_ifc.C${c}_pc_oor_f 			= "${sparc_inst_path}.ifu.fcl.fcl_fdp_pcoor_f" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlb_cam_miss_s1	 	= "${sparc_inst_path}.ifu.fcl.tlb_cam_miss_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_inst_acc_exc_s1 		= "${sparc_inst_path}.ifu.fcl.inst_acc_exc_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_privop_d 			= "${sparc_inst_path}.ifu.dec.privop_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_hprivop_d 			= "${sparc_inst_path}.ifu.dec.hprivop_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_ill_inst_d			= "${sparc_inst_path}.ifu.dec.ill_inst_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_fpdis_trap_d 		= "${sparc_inst_path}.ifu.dec.fpdis_trap_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_fcl_ifq_canthr		= "${sparc_inst_path}.ifu.fcl.fcl_ifq_canthr" iskew -1
+connect input ifu_coverage_ifc.C${c}_stb_retry 			= "${sparc_inst_path}.ifu.swl.stb_retry" iskew -1
+connect input ifu_coverage_ifc.C${c}_retr_thr_wakeup 		= "${sparc_inst_path}.ifu.swl.retr_thr_wakeup" iskew -1
+connect input ifu_coverage_ifc.C${c}_lsu_ifu_ldst_cmplt		= "${sparc_inst_path}.ifu.swl.lsu_ifu_ldst_cmplt" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifq_dtu_thrrdy 		= "${sparc_inst_path}.ifu.ifqctl.ifq_dtu_thrrdy" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifq_dtu_pred_rdy		= "${sparc_inst_path}.ifu.ifqctl.ifq_dtu_pred_rdy" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_hwint_i3 		= "${sparc_inst_path}.ifu.tlu_ifu_hwint_i3" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_sftint_vld 	= "${sparc_inst_path}.ifu.tlu_ifu_sftint_vld" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_rerr_vld 		= "${sparc_inst_path}.ifu.tlu_ifu_rerr_vld" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_hintp_vld 		= "${sparc_inst_path}.ifu.tlu_ifu_hintp_vld" iskew -1
+connect input ifu_coverage_ifc.C${c}_spu_ifu_ttype_vld_w2 	= "${sparc_inst_path}.ifu.spu_ifu_ttype_vld_w2" iskew -1
+connect input ifu_coverage_ifc.C${c}_spu_ifu_ttype_tid_w2 	= "${sparc_inst_path}.ifu.spu_ifu_ttype_tid_w2" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_rstthr_i2 		= "${sparc_inst_path}.ifu.tlu_ifu_rstthr_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_rstint_i2 		= "${sparc_inst_path}.ifu.tlu_ifu_rstint_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_resumint_i2 	= "${sparc_inst_path}.ifu.tlu_ifu_resumint_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_ifu_nukeint_i2 	= "${sparc_inst_path}.ifu.tlu_ifu_nukeint_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_mil0_state 		= "${sparc_inst_path}.ifu.ifqctl.mil0.milstate" iskew -1
+connect input ifu_coverage_ifc.C${c}_mil1_state 		= "${sparc_inst_path}.ifu.ifqctl.mil1.milstate" iskew -1
+connect input ifu_coverage_ifc.C${c}_mil2_state 		= "${sparc_inst_path}.ifu.ifqctl.mil2.milstate" iskew -1
+connect input ifu_coverage_ifc.C${c}_mil3_state 		= "${sparc_inst_path}.ifu.ifqctl.mil3.milstate" iskew -1
+connect input ifu_coverage_ifc.C${c}_block_fetch_s1 		= "${sparc_inst_path}.ifu.ifqctl.block_fetch_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_pc_s 			= "${sparc_inst_path}.ifu.fdp.pc_s" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlb_entry_vld 		= "${sparc_inst_path}.ifu.itlb.tlb_entry_vld" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifqop_i2 			= "${sparc_inst_path}.ifu.ifqdp.ifqop_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_evpkt_i2 			= "${sparc_inst_path}.ifu.invctl.evpkt_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_invall_i2			= "${sparc_inst_path}.ifu.invctl.invall_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_ldinv_i2			= "${sparc_inst_path}.ifu.invctl.ldinv_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_ldinv_addr_i2 		= "${sparc_inst_path}.ifu.invctl.ldinv_addr_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifc_inv_ifqadv_i2		= "${sparc_inst_path}.ifu.invctl.ifc_inv_ifqadv_i2" iskew -1
+connect input ifu_coverage_ifc.C${c}_itlb_feterr_s1 		= "${sparc_inst_path}.ifu.errctl.itlb_feterr_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_idcv_ary 			= "${sparc_inst_path}.ifu.icv.idcv_ary" iskew -1
+connect input ifu_coverage_ifc.C${c}_icache_rd 			= "${sparc_inst_path}.ifu.ict.rdreq_y" iskew -1
+connect input ifu_coverage_ifc.C${c}_icache_wr 			= "${sparc_inst_path}.ifu.ict.wrreq_y" iskew -1
+connect input ifu_coverage_ifc.C${c}_icache_idx			= "${sparc_inst_path}.ifu.ict.index_y" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifu_lsu_pcxpkt_e 		= "${sparc_inst_path}.ifu.ifu_lsu_pcxpkt_e" iskew -1
+connect input ifu_coverage_ifc.C${c}_lsu_ifu_pcxpkt_ack_d 	= "${sparc_inst_path}.ifu.lsu_ifu_pcxpkt_ack_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_itlb_fcl_imiss_s_l 	= "${sparc_inst_path}.ifu.fcl.itlb_fcl_imiss_s_l" iskew -1
+connect input ifu_coverage_ifc.C${c}_rdreq_s1 			= "${sparc_inst_path}.ifu.fcl.rdreq_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_stall_s1 			= "${sparc_inst_path}.ifu.fcl.stall_s1" iskew -1
+connect input ifu_coverage_ifc.C${c}_dirmap_icache 		= "${sparc_inst_path}.ifu.lsu_ifu_direct_map_l1" iskew -1
+connect input ifu_coverage_ifc.C${c}_icache_wrway 		= "${sparc_inst_path}.ifu.ict.dec_wrway_y" iskew -1
+connect input ifu_coverage_ifc.C${c}_ccr_d 			= "${sparc_inst_path}.ifu.exu_ifu_cc_d" iskew -1
+connect input ifu_coverage_ifc.C${c}_demap_hit 			= "${sparc_inst_path}.ifu.itlb.demap_hit" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_itlb_dmp_vld_g		= "${sparc_inst_path}.ifu.tlu_itlb_dmp_vld_g" iskew -1
+connect input ifu_coverage_ifc.C${c}_tlu_itlb_wr_vld_g		= "${sparc_inst_path}.ifu.tlu_itlb_wr_vld_g" iskew -1
+connect input ifu_coverage_ifc.C${c}_ifu_tlu_tlb_done		= "${sparc_inst_path}.ifu.ifu_tlu_itlb_done" iskew -1
+
+.
+. } ## connectInstance
+.
+. for ( $core = 0; $core < $cores; $core++ ) {
+. 	my $inst = $SPARC_COV_PATHS[$core];
+.	if ( $cores > 1 ) {
+
+// ***********************************************************
+// CONNECTIONS FOR core_$core
+// ***********************************************************
+.	}
+.	&connectInstance( $inst, $core );
+. }
+

@@ -1,0 +1,88 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: ifu_thrfsm_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+// ***************************************************************************
+//
+// File:	ifu_thrfsm_cov.vr
+// Description:
+// Coverage object for the thread state machine
+//
+// State: 5'b: thr_state(5)
+//
+// ***************************************************************************
+
+
+// coverage_def IFU_THRFSM_COV (bit [4:0] ifu_thrfsm_state)
+// {
+
+  // state declarations
+  state s_THRFSM_IDLE      (THRFSM_IDLE);
+  state s_THRFSM_HALT      (THRFSM_HALT);
+  state s_THRFSM_RDY       (THRFSM_RDY);
+  state s_THRFSM_RUN       (THRFSM_RUN);
+  state s_THRFSM_WAIT      (THRFSM_WAIT);
+  state s_THRFSM_SPEC_RDY  (THRFSM_SPEC_RDY);
+  state s_THRFSM_SPEC_RUN  (THRFSM_SPEC_RUN);
+
+  // transitions(to same)
+  trans t_s_THRFSM_IDLE_s_THRFSM_IDLE         (THRFSM_IDLE -> THRFSM_IDLE);
+  trans t_s_THRFSM_HALT_s_THRFSM_HALT         (THRFSM_HALT -> THRFSM_HALT);
+  trans t_s_THRFSM_RDY_s_THRFSM_RDY           (THRFSM_RDY -> THRFSM_RDY);
+  trans t_s_THRFSM_RUN_s_THRFSM_RUN           (THRFSM_RUN -> THRFSM_RUN);
+  trans t_s_THRFSM_WAIT_s_THRFSM_WAIT         (THRFSM_WAIT -> THRFSM_WAIT);
+  trans t_s_THRFSM_SPEC_RDY_s_THRFSM_SPEC_RDY (THRFSM_SPEC_RDY -> THRFSM_SPEC_RDY);
+  trans t_s_THRFSM_SPEC_RUN_s_THRFSM_SPEC_RUN (THRFSM_SPEC_RUN -> THRFSM_SPEC_RUN);
+
+  // transitions(to different)
+  trans t_s_THRFSM_IDLE_s_THRFSM_WAIT         (THRFSM_IDLE -> THRFSM_WAIT);
+  trans t_s_THRFSM_IDLE_s_THRFSM_RDY          (THRFSM_IDLE -> THRFSM_RDY);
+  trans t_s_THRFSM_WAIT_s_THRFSM_IDLE         (THRFSM_WAIT -> THRFSM_IDLE);
+  trans t_s_THRFSM_WAIT_s_THRFSM_HALT         (THRFSM_WAIT -> THRFSM_HALT);
+  trans t_s_THRFSM_WAIT_s_THRFSM_RDY          (THRFSM_WAIT -> THRFSM_RDY);
+  trans t_s_THRFSM_WAIT_s_THRFSM_SPEC_RDY     (THRFSM_WAIT -> THRFSM_SPEC_RDY);
+  trans t_s_THRFSM_HALT_s_THRFSM_IDLE         (THRFSM_HALT -> THRFSM_IDLE);
+  trans t_s_THRFSM_HALT_s_THRFSM_WAIT         (THRFSM_HALT -> THRFSM_WAIT);
+  trans t_s_THRFSM_HALT_s_THRFSM_RDY          (THRFSM_HALT -> THRFSM_RDY);
+  trans t_s_THRFSM_RDY_s_THRFSM_WAIT          (THRFSM_RDY -> THRFSM_WAIT);
+  trans t_s_THRFSM_RDY_s_THRFSM_RUN           (THRFSM_RDY -> THRFSM_RUN);
+  trans t_s_THRFSM_RUN_s_THRFSM_RDY           (THRFSM_RUN -> THRFSM_RDY);
+  trans t_s_THRFSM_RUN_s_THRFSM_WAIT          (THRFSM_RUN -> THRFSM_WAIT);
+  trans t_s_THRFSM_SPEC_RDY_s_THRFSM_WAIT     (THRFSM_SPEC_RDY -> THRFSM_WAIT);
+  trans t_s_THRFSM_SPEC_RDY_s_THRFSM_SPEC_RUN (THRFSM_SPEC_RDY -> THRFSM_SPEC_RUN);
+  trans t_s_THRFSM_SPEC_RDY_s_THRFSM_RDY      (THRFSM_SPEC_RDY -> THRFSM_RDY);
+  trans t_s_THRFSM_SPEC_RDY_s_THRFSM_RUN      (THRFSM_SPEC_RDY -> THRFSM_RUN);
+  trans t_s_THRFSM_SPEC_RUN_s_THRFSM_SPEC_RDY (THRFSM_SPEC_RUN -> THRFSM_SPEC_RDY);
+  trans t_s_THRFSM_SPEC_RUN_s_THRFSM_WAIT     (THRFSM_SPEC_RUN -> THRFSM_WAIT);
+  trans t_s_THRFSM_SPEC_RUN_s_THRFSM_RUN      (THRFSM_SPEC_RUN -> THRFSM_RUN);
+  trans t_s_THRFSM_SPEC_RUN_s_THRFSM_RDY      (THRFSM_SPEC_RUN -> THRFSM_RDY);
+
+  // transitions(combinations)
+  // to be added
+
+  // bad states
+  bad_state s_not_THRFSM_STATE (not state);
+
+  // bad transitions 
+  bad_trans t_not_THRFSM_TRANS (not trans);
+  bad_trans t_thr_stuck_in_spec_rdy (THRFSM_SPEC_RDY -> THRFSM_SPEC_RDY -> THRFSM_SPEC_RDY -> THRFSM_SPEC_RDY);
+  bad_trans t_thr_stuck_in_spec_run (THRFSM_SPEC_RUN -> THRFSM_SPEC_RUN -> THRFSM_SPEC_RUN -> THRFSM_SPEC_RUN);
+
+// }
+

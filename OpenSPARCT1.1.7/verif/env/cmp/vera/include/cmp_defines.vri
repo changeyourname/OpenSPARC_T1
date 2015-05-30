@@ -1,0 +1,53 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmp_defines.vri
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#ifndef INC__TMP_CMP_VRI
+#define INC__TMP_CMP_VRI
+
+#define DRAM_TIMEOUT    (10*65536)
+#define DRAM_UCB_TIMEOUT 1000
+#define PCX_MAINBOX0	1
+#define PCX_MAINBOX1	2
+#define PCX_MAINBOX2	3
+#define PCX_MAINBOX3	4
+#define PCX_MAINBOX4	5
+#define PCX_MAINBOX5	6
+#define PCX_MAINBOX6	7
+#define PCX_MAINBOX7	8
+
+#define CPX_MAINBOX0	9
+#define CPX_MAINBOX1	10
+#define CPX_MAINBOX2	11
+#define CPX_MAINBOX3	12
+#define CPX_MAINBOX4	13
+#define CPX_MAINBOX5	14
+#define CPX_MAINBOX6	15
+#define CPX_MAINBOX7	16
+
+#define INTF0_WIDTH 61
+#define INTF1_WIDTH 125
+#define INTF2_WIDTH 148
+#define INTF3_WIDTH 145
+#define INTF4_WIDTH 77
+
+#endif
+
+
+

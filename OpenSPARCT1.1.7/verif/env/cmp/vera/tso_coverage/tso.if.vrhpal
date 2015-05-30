@@ -1,0 +1,239 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: tso.if.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#inc "tso_cov_inc.pal";
+#ifndef __TSO_IF_VRH__
+#define __TSO_IF_VRH__
+
+//-----------------------------------
+// interface signals for tso coverage
+//-----------------------------------
+interface tso_cov_top
+{
+
+// The clock and the diag done
+//----------------------------
+  input tso_clk			CLOCK ;
+  input cmp_diag_done		PSAMPLE ;
+
+// A "filler" VCC signal
+//----------------------
+  input       tso_mon_vcc	PSAMPLE;
+
+
+//-------------------------------------------
+// CPX packets which provide I$, D$ mutual
+// exclusivity have occured
+//-------------------------------------------
+  input       ifill_wyvld 			PSAMPLE;
+  input       dfill_wyvld 			PSAMPLE;
+
+//-------------------------------------------
+// L2 queues info - bit 1 is for full bit 0
+// is for HWM 
+//-------------------------------------------
+.	for ( $t = 0; $t < 4; $t++ ) {
+  input [1:0] sctag${t}_mb_info   		PSAMPLE;
+  input [1:0] sctag${t}_oq_info  		PSAMPLE;
+  input [1:0] sctag${t}_iq_info  		PSAMPLE;
+  input [1:0] sctag${t}_fb_info  		PSAMPLE;
+  input [1:0] sctag${t}_wb_info  		PSAMPLE;
+  input       sctag${t}_rdma_full		PSAMPLE;
+  input       sctag${t}_snpq_full 		PSAMPLE;
+
+//-------------------------------------------
+// L2 linked lists info 
+// ny stands for not young, y stands for young
+// see the tso_mon monitor and also L2 design
+//-------------------------------------------
+.	for ( $e = 0; $e < 16; $e++ ) {
+  input sctag${t}_mb${e}_st_ny     		PSAMPLE;
+  input sctag${t}_mb${e}_ld_ny     		PSAMPLE;
+  input sctag${t}_mb${e}_wris8_ny  		PSAMPLE;
+  input sctag${t}_mb${e}_wris64_ny 		PSAMPLE;
+  input sctag${t}_mb${e}_st_y      		PSAMPLE;
+  input sctag${t}_mb${e}_ld_y      		PSAMPLE;
+  input sctag${t}_mb${e}_wris8_y   		PSAMPLE;
+  input sctag${t}_mb${e}_wris64_y  		PSAMPLE;
+.}
+
+//-------------------------------------------
+// the 4 tags by 16 l2mb state variable 
+// reflect how a transaction went through L2MB
+// see tso_mon
+//-------------------------------------------
+.	for ( $k = 0; $k < 16; $k++ ) {
+  input [3:0] sctag${t}_l2mb_state${k} PSAMPLE;
+.}
+
+//-------------------------------------------
+// c2 stage of L2 pipeline
+// instruction valid, hit. writeback buffer hit
+// rdmawr buffer hit
+//-------------------------------------------
+  input	sctag${t}_inst_vld_c2 			PSAMPLE;
+  input	sctag${t}_tagctl_hit_c2 		PSAMPLE;
+  input	sctag${t}_wbctl_hit_unqual_c2 		PSAMPLE;
+  input	sctag${t}_rdmatctl_hit_unqual_c2 	PSAMPLE;
+.}
+
+//------------------------------
+// See the FSM-s in tso_mon.vpal
+//------------------------------
+  input [3:0] tso_l2_fsm1		PSAMPLE;
+  input [3:0] tso_l2_fsm2		PSAMPLE;
+  input [3:0] tso_l2_fsm3		PSAMPLE;
+  input [3:0] tso_l2_fsm4		PSAMPLE;
+
+//------------------------------
+// Invalidate fanout of the cpx.
+// see tso_mon again.
+//------------------------------
+  input [3:0] cpx0_inv_fanout		PSAMPLE;
+  input [3:0] cpx1_inv_fanout		PSAMPLE;
+  input [3:0] cpx2_inv_fanout		PSAMPLE;
+  input [3:0] cpx3_inv_fanout		PSAMPLE;
+
+  input [3:0] multiple_fanout_info	PSAMPLE;
+
+//------------------------------
+// rmo store counters. see tso_mon
+//------------------------------
+  input [3:0] blk_st_cnt0		PSAMPLE;
+  input [3:0] blk_st_cnt1		PSAMPLE;
+  input [3:0] blk_st_cnt2		PSAMPLE;
+  input [3:0] blk_st_cnt3		PSAMPLE;
+  input [3:0] blk_st_cnt4		PSAMPLE;
+  input [3:0] blk_st_cnt5		PSAMPLE;
+  input [3:0] blk_st_cnt6		PSAMPLE;
+  input [3:0] blk_st_cnt7		PSAMPLE;
+
+  input st_blkst_mixture0		PSAMPLE;
+  input st_blkst_mixture1		PSAMPLE;
+  input st_blkst_mixture2		PSAMPLE;
+  input st_blkst_mixture3		PSAMPLE;
+  input st_blkst_mixture4		PSAMPLE;
+  input st_blkst_mixture5		PSAMPLE;
+  input st_blkst_mixture6		PSAMPLE;
+  input st_blkst_mixture7		PSAMPLE;
+
+  input [3:0] ini_st_cnt0		PSAMPLE;
+  input [3:0] ini_st_cnt1		PSAMPLE;
+  input [3:0] ini_st_cnt2		PSAMPLE;
+  input [3:0] ini_st_cnt3		PSAMPLE;
+  input [3:0] ini_st_cnt4		PSAMPLE;
+  input [3:0] ini_st_cnt5		PSAMPLE;
+  input [3:0] ini_st_cnt6		PSAMPLE;
+  input [3:0] ini_st_cnt7		PSAMPLE;
+
+  input st_inist_mixture0		PSAMPLE;
+  input st_inist_mixture1		PSAMPLE;
+  input st_inist_mixture2		PSAMPLE;
+  input st_inist_mixture3		PSAMPLE;
+  input st_inist_mixture4		PSAMPLE;
+  input st_inist_mixture5		PSAMPLE;
+  input st_inist_mixture6		PSAMPLE;
+  input st_inist_mixture7		PSAMPLE;
+.
+.#================================================================
+. sub coreSignals {
+.	my( $core_str ) = @_;
+.	my $c		= $core_str;
+
+//------------------------------------
+// some (self-explanatory) core signals
+//------------------------------------
+  input         C${c}_ifu_lsu_st_inst_e		PSAMPLE ;
+  input         C${c}_ifu_lsu_casa_e		PSAMPLE ;
+  input         C${c}_ifu_lsu_swap_e		PSAMPLE ;
+  input         C${c}_ifu_lsu_ldstub_e		PSAMPLE ;
+
+  input         C${c}_mbar_inst0_g		PSAMPLE ;
+  input         C${c}_mbar_inst1_g		PSAMPLE ;
+  input         C${c}_mbar_inst2_g		PSAMPLE ;
+  input         C${c}_mbar_inst3_g		PSAMPLE ;
+  input         C${c}_flush_inst0_g		PSAMPLE ;
+  input         C${c}_flush_inst1_g		PSAMPLE ;
+  input         C${c}_flush_inst2_g		PSAMPLE ;
+  input         C${c}_flush_inst3_g		PSAMPLE ;
+  input [3:0]   C${c}_no_spc_rmo_st		PSAMPLE ;
+
+  input 	C${c}_intrpt_disp_asi0_g	PSAMPLE;
+  input 	C${c}_intrpt_disp_asi1_g	PSAMPLE;
+  input 	C${c}_intrpt_disp_asi2_g	PSAMPLE;
+  input 	C${c}_intrpt_disp_asi3_g	PSAMPLE;
+
+  input 	C${c}_dfq_rptr_vld         	PSAMPLE;
+  input 	C${c}_dfq_int_type           	PSAMPLE;
+  input 	C${c}_dfq_rd_advance    	PSAMPLE;
+  input 	C${c}_ifu_lsu_ibuf_busy  	PSAMPLE;
+  input 	C${c}_inv_clear_d1		PSAMPLE;
+  input 	C${c}_dfq_byp_ff_en        	PSAMPLE;
+
+  input [3:0]   C${c}_lsu_way_hit		PSAMPLE ;
+  input [3:0]   C${c}T0_ackcnt			PSAMPLE ;
+  input [3:0]   C${c}T1_ackcnt			PSAMPLE ;
+  input [3:0]   C${c}T2_ackcnt			PSAMPLE ;
+  input [3:0]   C${c}T3_ackcnt			PSAMPLE ;
+
+  input 	C${c}_lsu_stb_cam_hit		PSAMPLE ;
+  input 	C${c}_lsu_io_ld			PSAMPLE ;
+  input 	C${c}_ld0_l2cache_rq		PSAMPLE ;
+  input 	C${c}_ld1_l2cache_rq		PSAMPLE ;
+  input 	C${c}_ld2_l2cache_rq		PSAMPLE ;
+  input 	C${c}_ld3_l2cache_rq		PSAMPLE ;
+
+  input 	C${c}_lsu_snp_after_rd		PSAMPLE ;
+  input 	C${c}_lsu_rd_after_snp		PSAMPLE ;
+
+  input [10:0]  C${c}_stb_ld_hit_info		PSAMPLE;
+
+  input [5:0] cpx_spc${c}_evict_icdc_inval_1c	PSAMPLE;
+  input [5:0] cpx_spc${c}_st_ack_icdc_inval_1c	PSAMPLE;
+  input [5:0] cpx_spc${c}_st_ack_dc_inval_8c	PSAMPLE;
+  input [5:0] cpx_spc${c}_st_ack_ic_inval_8c	PSAMPLE;
+  input [5:0] cpx_spc${c}_evict_dc_inval_8c	PSAMPLE;
+  input [5:0] cpx_spc${c}_evict_ic_inval_8c	PSAMPLE;
+
+  input       	C${c}_non_b2b_atomic_ret	PSAMPLE;
+
+  input 	C${c}T0_stb_full		PSAMPLE;
+  input 	C${c}T1_stb_full		PSAMPLE;
+  input 	C${c}T2_stb_full		PSAMPLE;
+  input 	C${c}T3_stb_full		PSAMPLE;
+  input 	C${c}T0_stb_ne			PSAMPLE;
+  input 	C${c}T1_stb_ne			PSAMPLE;
+  input 	C${c}T2_stb_ne			PSAMPLE;
+  input 	C${c}T3_stb_ne			PSAMPLE;
+
+. } # coreSignals
+.
+.#================================================================
+. foreach $core ( @CORE_STR ) {
+
+// ***********************************************************
+// SIGNALS FOR core_$core
+// ***********************************************************
+.	&coreSignals( $core );
+. }
+
+}
+
+#endif

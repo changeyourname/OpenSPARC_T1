@@ -1,0 +1,77 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: cmpccx_cpx_qfull_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+
+
+// qfull[31:0] = {cpx.arb7.ccx_arb.qfull[3:0], ... , cpx.arb0.ccx_arb.qfull[3:0]}
+
+// coverage_def CCX_CPX_QFULL_COV(bit [31:0] qfull) {
+
+    // States
+
+    wildcard state allbanks_core0(32'hXXXXXXXf);
+    wildcard state allbanks_core1(32'hXXXXXXfX);
+    wildcard state allbanks_core2(32'hXXXXXfXX);
+    wildcard state allbanks_core3(32'hXXXXfXXX);
+    wildcard state allbanks_core4(32'hXXXfXXXX);
+    wildcard state allbanks_core5(32'hXXfXXXXX);
+    wildcard state allbanks_core6(32'hXfXXXXXX);
+    wildcard state allbanks_core7(32'hfXXXXXXX);
+
+    wildcard state bank0_core0({28'hXXXXXXX, 4'bxxx1});
+    wildcard state bank1_core0({28'hXXXXXXX, 4'bxx1x});
+    wildcard state bank2_core0({28'hXXXXXXX, 4'bx1xx});
+    wildcard state bank3_core0({28'hXXXXXXX, 4'b1xxx});
+
+    wildcard state bank0_core1({24'hXXXXXX, 4'bxxx1, 4'hX});
+    wildcard state bank1_core1({24'hXXXXXX, 4'bxx1x, 4'hX});
+    wildcard state bank2_core1({24'hXXXXXX, 4'bx1xx, 4'hX});
+    wildcard state bank3_core1({24'hXXXXXX, 4'b1xxx, 4'hX});
+
+    wildcard state bank0_core2({20'hXXXXX, 4'bxxx1, 8'hXX});
+    wildcard state bank1_core2({20'hXXXXX, 4'bxx1x, 8'hXX});
+    wildcard state bank2_core2({20'hXXXXX, 4'bx1xx, 8'hXX});
+    wildcard state bank3_core2({20'hXXXXX, 4'b1xxx, 8'hXX});
+
+    wildcard state bank0_core3({16'hXXXX, 4'bxxx1, 12'hXXX});
+    wildcard state bank1_core3({16'hXXXX, 4'bxx1x, 12'hXXX});
+    wildcard state bank2_core3({16'hXXXX, 4'bx1xx, 12'hXXX});
+    wildcard state bank3_core3({16'hXXXX, 4'b1xxx, 12'hXXX});
+
+    wildcard state bank0_core4({12'hXXX, 4'bxxx1, 16'hXXXX});
+    wildcard state bank1_core4({12'hXXX, 4'bxx1x, 16'hXXXX});
+    wildcard state bank2_core4({12'hXXX, 4'bx1xx, 16'hXXXX});
+    wildcard state bank3_core4({12'hXXX, 4'b1xxx, 16'hXXXX});
+
+    wildcard state bank0_core5({8'hXX, 4'bxxx1, 20'hXXXXX});
+    wildcard state bank1_core5({8'hXX, 4'bxx1x, 20'hXXXXX});
+    wildcard state bank2_core5({8'hXX, 4'bx1xx, 20'hXXXXX});
+    wildcard state bank3_core5({8'hXX, 4'b1xxx, 20'hXXXXX});
+
+    wildcard state bank0_core6({4'hX, 4'bxxx1, 24'hXXXXXX});
+    wildcard state bank1_core6({4'hX, 4'bxx1x, 24'hXXXXXX});
+    wildcard state bank2_core6({4'hX, 4'bx1xx, 24'hXXXXXX});
+    wildcard state bank3_core6({4'hX, 4'b1xxx, 24'hXXXXXX});
+
+    wildcard state bank0_core7({4'bxxx1, 28'hXXXXXXX});
+    wildcard state bank1_core7({4'bxx1x, 28'hXXXXXXX});
+    wildcard state bank2_core7({4'bx1xx, 28'hXXXXXXX});
+    wildcard state bank3_core7({4'b1xxx, 28'hXXXXXXX});
+// }

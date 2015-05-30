@@ -1,0 +1,58 @@
+// ========== Copyright Header Begin ==========================================
+// 
+// OpenSPARC T1 Processor File: spu_su_ctl_reg_clobber_sample.vrhpal
+// Copyright (c) 2006 Sun Microsystems, Inc.  All Rights Reserved.
+// DO NOT ALTER OR REMOVE COPYRIGHT NOTICES.
+// 
+// The above named program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public
+// License version 2 as published by the Free Software Foundation.
+// 
+// The above named program is distributed in the hope that it will be 
+// useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public
+// License along with this work; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+// 
+// ========== Copyright Header End ============================================
+#include <vera_defines.vrh>
+#include "spu_rtl.vrh"
+
+#ifndef INC__TMP_spu_su_ctl_reg_clobber_COV_VRH
+#define INC__TMP_spu_su_ctl_reg_clobber_COV_VRH
+
+// Put defines here...
+
+/*
+ * Order of the signals in su_ctl_reg_clobber_state:
+ * strm_op_inprog
+ * spu_encctl_ctl_reg_busy bit[32]
+ * spu_encctl_ctl_wen
+ */
+
+/*
+ * spu_su_ctl_reg_clobber_cov
+ *
+ * This coverage object checks that we have attempted to write the
+ * SU CTL register while in the period of time after the encryption
+ * state machine becomes idle but we're still waiting for streaming
+ * store acks. At this time strm_op_inprog is deasserted, but the
+ * BUSY bit in the CTL register is still asserted. Writes to the
+ * CTL register are only allowed by the rtl when ~strm_op_inprog.
+ *
+ * TODO:
+ */
+
+#endif
+
+sample spu_su_ctl_reg_clobber_sample_bind_C${c}.\$su_ctl_reg_clobber_state {
+  // Declare states to be covered 
+  state s_SU_CTL_REG_CLOBBER (3'b011);
+
+  // Declare bad states
+  // Declare transitions to be covered
+  // Declare bad transitions
+}
